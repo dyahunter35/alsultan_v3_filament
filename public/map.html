@@ -1,28 +1,217 @@
-<script>
-    function debugLocation() {
-        console.log("=== Location Debug Information ===");
-        console.log("Geolocation supported:", "geolocation" in navigator);
-        console.log("HTTPS:", window.location.protocol === "https:");
-        console.log("Localhost:", window.location.hostname === "localhost");
-        console.log("User Agent:", navigator.userAgent);
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الحصول على الموقع وعرضه على الخريطة</title>
 
-        if (navigator.permissions) {
-            navigator.permissions
-                .query({ name: "geolocation" })
-                .then((status) => {
-                    console.log("Permission state:", status.state);
-                    alert(status.state);
-                });
+    <!-- تضمين Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        #map {
+            height: 400px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        .button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+        .success {
+            color: green;
+            margin-top: 10px;
+        }
+        .instructions {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>تحديد الموقع وعرضه على الخريطة</h1>
+
+        <div>
+            <button id="getLocationBtn" class="button">الحصول على موقعي</button>
+            <button id="showOnMapBtn" class="button" disabled>عرض على الخريطة</button>
+        </div>
+
+        <div id="message"></div>
+
+        <div id="map"></div>
+
+        <div id="instructions" class="instructions" style="display: none;">
+            <h3>إذا لم يعمل التحديد تلقائياً، يرجى اتباع التعليمات التالية:</h3>
+            <ol>
+                <li>تأكد من أنك قد سمحت للمتصفح بالحصول على موقعك.</li>
+                <li>تحقق من إعدادات الموقع في جهازك.</li>
+                <li>تأكد من أنك متصل بالإنترنت.</li>
+                <li>جرب استخدام متصفح آخر.</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- تضمين Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // العناصر في DOM
+        const getLocationBtn = document.getElementById('getLocationBtn');
+        const showOnMapBtn = document.getElementById('showOnMapBtn');
+        const messageDiv = document.getElementById('message');
+        const mapDiv = document.getElementById('map');
+        const instructionsDiv = document.getElementById('instructions');
+
+        let userLocation = null;
+        let map = null;
+        let marker = null;
+
+        // التحقق من دعم المتصفح لـ Geolocation
+        if (!navigator.geolocation) {
+            showMessage('المتصفح لا يدعم خدمة تحديد الموقع.', 'error');
+            getLocationBtn.disabled = true;
+        } else {
+            getLocationBtn.addEventListener('click', getUserLocation);
         }
 
-        // Test basic location
-        navigator.geolocation.getCurrentPosition(
-            (pos) => console.log("✓ Location test successful:", pos.coords),
-            (err) => console.log("✗ Location test failed:", err.message),
-            { timeout: 5000 }
-        );
-    }
+        showOnMapBtn.addEventListener('click', showOnMap);
 
-    // Run debug
-    debugLocation();
-</script>
+        // دالة للحصول على موقع المستخدم
+        function getUserLocation() {
+            showMessage('جاري الحصول على الموقع...', 'success');
+            getLocationBtn.disabled = true;
+
+            const options = {
+                enableHighAccuracy: true, // نحاول الحصول على دقة عالية
+                timeout: 10000,           // انتظار 10 ثواني
+                maximumAge: 0             // لا نريد بيانات موقع قديمة
+            };
+
+            navigator.geolocation.getCurrentPosition(
+                successCallback,
+                errorCallback,
+                options
+            );
+        }
+
+        // دالة الاستدعاء عند النجاح
+        function successCallback(position) {
+            const { latitude, longitude, accuracy } = position.coords;
+            userLocation = { lat: latitude, lng: longitude, accuracy };
+
+            showMessage(`تم تحديد موقعك بنجاح! (دقة: ${accuracy} متر)`, 'success');
+            showOnMapBtn.disabled = false;
+
+            // إظهار تعليمات إضافية في حالة دقة منخفضة
+            if (accuracy > 1000) {
+                showMessage('دقة الموقع منخفضة. يرجى التحقق من إعدادات الموقع في جهازك.', 'error');
+            }
+        }
+
+        // دالة الاستدعاء عند الفشل
+        function errorCallback(error) {
+            let errorMessage = '';
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    errorMessage = 'تم رفض الإذن للحصول على الموقع. يرجى السماح بالوصول إلى الموقع وتحديث الصفحة.';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMessage = 'معلومات الموقع غير متاحة.';
+                    break;
+                case error.TIMEOUT:
+                    errorMessage = 'انتهت المهلة في انتظار الحصول على الموقع.';
+                    break;
+                default:
+                    errorMessage = 'حدث خطأ غير معروف أثناء الحصول على الموقع.';
+            }
+            showMessage(errorMessage, 'error');
+            instructionsDiv.style.display = 'block';
+            getLocationBtn.disabled = false;
+        }
+
+        // دالة لعرض الرسائل
+        function showMessage(msg, type) {
+            messageDiv.textContent = msg;
+            messageDiv.className = type; // 'success' أو 'error'
+        }
+
+        // دالة لعرض الموقع على الخريطة
+        function showOnMap() {
+            if (!userLocation) {
+                showMessage('لا يوجد موقع لعرضه.', 'error');
+                return;
+            }
+
+            // إذا كانت الخريطة غير موجودة، نقوم بتهيئتها
+            if (!map) {
+                map = L.map('map').setView([userLocation.lat, userLocation.lng], 13);
+
+                // إضافة طبقة الخريطة من OpenStreetMap
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+            } else {
+                map.setView([userLocation.lat, userLocation.lng], 13);
+            }
+
+            // إزالة العلامة القديمة إذا وجدت
+            if (marker) {
+                map.removeLayer(marker);
+            }
+
+            // إضافة علامة للموقع
+            marker = L.marker([userLocation.lat, userLocation.lng]).addTo(map)
+                .bindPopup('أنت هنا!')
+                .openPopup();
+
+            // إضافة دائرة لتمثيل دقة الموقع
+            if (userLocation.accuracy) {
+                const circle = L.circle([userLocation.lat, userLocation.lng], {
+                    color: 'red',
+                    fillColor: '#f03',
+                    fillOpacity: 0.2,
+                    radius: userLocation.accuracy
+                }).addTo(map);
+            }
+        }
+    </script>
+</body>
+</html>
