@@ -11,6 +11,7 @@
                 .query({ name: "geolocation" })
                 .then((status) => {
                     console.log("Permission state:", status.state);
+                    alert(status.state);
                 });
         }
 
