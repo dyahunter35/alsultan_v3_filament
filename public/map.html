@@ -1,0 +1,27 @@
+<script>
+    function debugLocation() {
+        console.log("=== Location Debug Information ===");
+        console.log("Geolocation supported:", "geolocation" in navigator);
+        console.log("HTTPS:", window.location.protocol === "https:");
+        console.log("Localhost:", window.location.hostname === "localhost");
+        console.log("User Agent:", navigator.userAgent);
+
+        if (navigator.permissions) {
+            navigator.permissions
+                .query({ name: "geolocation" })
+                .then((status) => {
+                    console.log("Permission state:", status.state);
+                });
+        }
+
+        // Test basic location
+        navigator.geolocation.getCurrentPosition(
+            (pos) => console.log("✓ Location test successful:", pos.coords),
+            (err) => console.log("✗ Location test failed:", err.message),
+            { timeout: 5000 }
+        );
+    }
+
+    // Run debug
+    debugLocation();
+</script>
