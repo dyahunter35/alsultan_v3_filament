@@ -82,9 +82,9 @@ class Truck extends Model implements HasMedia
         return $this->hasMany(\App\Models\TruckNote::class, "truck_id", 'id')->orderBy('id', 'DESC');
     }
 
-    public function toStore()
+    public function toBranch()
     {
-        return $this->hasOne(\App\Models\Store::class, 'id', "to");
+        return $this->hasOne(\App\Models\Branch::class, 'id', "to");
     }
 
     public function companyId()

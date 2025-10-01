@@ -29,17 +29,19 @@ class TruckResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        //static::translateConfigureForm();
+        static::translateConfigureForm();
         return TruckForm::configure($schema);
     }
 
     public static function infolist(Schema $schema): Schema
     {
+        static::translateConfigureInfolist();
         return TruckInfolist::configure($schema);
     }
 
     public static function table(Table $table): Table
     {
+        static::translateConfigureTable();
         return TrucksTable::configure($table);
     }
 

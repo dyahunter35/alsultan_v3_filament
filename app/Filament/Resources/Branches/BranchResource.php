@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Branches;
 
+use App\Filament\Pages\Concerns\HasResource;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
@@ -15,33 +16,59 @@ use App\Filament\Resources\BranchResource\Pages;
 use App\Filament\Resources\BranchResource\RelationManagers;
 use App\Models\Branch;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 
 class BranchResource extends Resource
 {
+    use HasResource;
     protected static ?string $model = Branch::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?int $navigationSort = 4;
+
+    protected static string | \BackedEnum | null $navigationIcon = Heroicon::Wallet;
 
     public static function form(Schema $schema): Schema
     {
+        static::translateConfigureForm();
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('slug')
-                    ->required()
-                    ->maxLength(255),
-            ]);
+                Section::make()
+                    ->schema([
+                        TextInput::make('name')
+                            ->required()
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn($state, $set) => $set('slug', Str::slug($state)))
+                            ->maxLength(255),
+                        TextInput::make('slug')
+                            ->required()
+                            ->readOnly()
+                            ->maxLength(255),
+                    ])->columns(2)
+                    ->columnSpan(2),
+                Section::make()
+                    ->schema([
+
+                        Select::make('user')
+                            ->relationship('users', 'name')
+                            ->multiple()
+                            ->preload(),
+                    ])
+                    ->columnSpan(1)
+
+            ])->columns(3);
     }
 
     public static function table(Table $table): Table
     {
+        static::translateConfigureTable();
         return $table
             ->columns([
                 TextColumn::make('name')

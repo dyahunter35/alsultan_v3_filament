@@ -1,20 +1,37 @@
 <?php
-
 return [
     'navigation' => [
-        'group' => 'التقارير',
+        'group' => 'إدارة المستخدمين',
+        'label' => 'الفروع',
+        'plural_label' => 'الفروع',
+        'model_label' => 'فرع',
     ],
     'breadcrumbs' => [
-        'index' => 'التقارير',
+        'index' => 'الفروع',
+        'create' => 'إضافة فرع',
+        'edit' => 'تعديل الفرع',
     ],
-    'single_branch' => [
-        'label' => 'تقرير مخزن :b',
-        'plural_label' => 'تقرير المخزن',
-        'model_label' => 'تقرير بضاعة الفروع'
+    'fields' => [
+        'name' => [
+            'label' => 'الاسم',
+            'placeholder' => 'أدخل الاسم',
+        ],
+        'slug' => [
+            'label' => 'المعرف (Slug)',
+            'placeholder' => 'يُولّد تلقائياً من الاسم',
+        ],
+        'users' => [
+            'label' => 'المستخدمون',
+        ],
+
+        'created_at' => [
+            'label' => 'تاريخ الإنشاء',
+            'placeholder' => '',
+        ],
+        'updated_at' => [
+            'label' => 'آخر تعديل',
+            'placeholder' => '',
+        ],
     ],
-     'all_branch' => [
-        'label' => 'تقرير جمميع المخازن',
-        'plural_label' => 'تقرير المخازن',
-        'model_label' => 'تقرير البضاعة الكلي'
-    ],
+
 ];

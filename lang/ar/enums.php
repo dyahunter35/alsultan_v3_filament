@@ -15,11 +15,9 @@ return [
         'company' => 'شركة',
         'contractor' => 'مقاول',
     ],
+
     'truck_state' => [
-        //     case OnWay = '0';
-        // case reach = '1';
-        // case barn = '-1';
-        // case port = '-2';
+        
         '0' => 'علي الطريق',
         '1' => 'تم الوصول',
         '-1' => 'الحظيرة',
@@ -50,6 +48,6 @@ return [
             'label' => 'ريال قطري',
             'description' => 'الريال القطري',
         ],
-       
+
     ]
 ];

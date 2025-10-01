@@ -2,109 +2,102 @@
 
 namespace App\Filament\Resources\Trucks\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
-use Filament\Tables\Columns\IconColumn;
+use App\Enums\Country;
+use App\Enums\TruckType;
+use App\Models\Truck;
+use Filament\Actions;
+use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Malzariey\FilamentDaterangepickerFilter\Enums\OpenDirection;
+use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 
 class TrucksTable
 {
     public static function configure(Table $table): Table
     {
         return $table
+            ->query(Truck::where('type', TruckType::Outer))
             ->columns([
-                TextColumn::make('driver_name')
+
+                Tables\Columns\TextColumn::make('driver_name')
+                    ->getStateUsing(fn($record) =>  $record->driver_name . '<br>' . $record->driver_phone)->html()
                     ->searchable(),
-                TextColumn::make('driver_phone')
+
+                Tables\Columns\TextColumn::make('car_number')
+                    ->getStateUsing(fn($record) =>  $record->truck_model . '<br>' . $record->car_number)->html()
+
                     ->searchable(),
-                TextColumn::make('car_number')
-                    ->searchable(),
-                TextColumn::make('pack_date')
+                Tables\Columns\TextColumn::make('pack_date')
                     ->date()
                     ->sortable(),
-                TextColumn::make('company_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('company')
-                    ->searchable(),
-                TextColumn::make('from_type')
-                    ->searchable(),
-                TextColumn::make('from_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('branch_to')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('arrive_date')
-                    ->date()
-                    ->sortable(),
-                TextColumn::make('truck_status')
+
+                Tables\Columns\TextColumn::make('truck_status')
                     ->badge()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('total_amount')
+                    ->badge()
+                    ->sortable()
+                    ->summarize([
+                        Tables\Columns\Summarizers\Sum::make()
+                            ->money(),
+                    ]),
+                Tables\Columns\TextColumn::make('contractorInfo.name')
+                    ->label(__('truck.fields.contractor_id.label'))
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('companyId.name')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('type')
-                    ->badge(),
-                IconColumn::make('is_converted')
+                Tables\Columns\TextColumn::make('from.name')
+                    ->badge()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('toBranch.name')
+                    ->label(__('truck.fields.to.label'))
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('arrive_date')
+                    ->date()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+
+                Tables\Columns\IconColumn::make('is_converted')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->boolean(),
-                TextColumn::make('note')
-                    ->searchable(),
-                TextColumn::make('category_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('country')
-                    ->badge()
-                    ->searchable(),
-                TextColumn::make('city')
-                    ->searchable(),
-                TextColumn::make('truck_model')
-                    ->searchable(),
-                TextColumn::make('trip_days')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('diff_trip')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('agreed_duration')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('delay_day_value')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('truck_fare')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('delay_value')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('total_amount')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('created_at')
+                Tables\Columns\TextColumn::make('note')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('deleted_at')
+                Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('toStore')
+                    ->label(__('truck.filters.toStore.label'))
+                    ->relationship('toBranch', 'name'),
+
+                SelectFilter::make('country')
+                    ->label(__('truck.filters.country.label'))
+                    ->options(Country::class),
+
+                DateRangeFilter::make('pack_date')
+                    ->label(__('truck.filters.pack_date.label'))->opens(OpenDirection::RIGHT),
+                DateRangeFilter::make('arrive_date')
+                    ->label(__('truck.filters.arrive_date.label'))->opens(OpenDirection::RIGHT),
+
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+                Actions\ViewAction::make(),
+                Actions\EditAction::make(),
             ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+            ->groupedBulkActions([
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

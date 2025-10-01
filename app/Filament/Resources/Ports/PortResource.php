@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Ports;
 
+use App\Filament\Pages\Concerns\HasResource;
 use App\Filament\Resources\Ports\Pages\CreatePort;
 use App\Filament\Resources\Ports\Pages\EditPort;
 use App\Filament\Resources\Ports\Pages\ListPorts;
@@ -18,22 +19,26 @@ use Filament\Tables\Table;
 
 class PortResource extends Resource
 {
+    use HasResource;
     protected static ?string $model = Port::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     public static function form(Schema $schema): Schema
     {
+        static::translateConfigureForm();
         return PortForm::configure($schema);
     }
 
     public static function infolist(Schema $schema): Schema
     {
+        static::translateConfigureInfolist();
         return PortInfolist::configure($schema);
     }
 
     public static function table(Table $table): Table
     {
+        static::translateConfigureTable();
         return PortsTable::configure($table);
     }
 

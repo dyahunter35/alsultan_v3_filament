@@ -5,6 +5,9 @@ export default {
     content: [
         "./app/Filament/**/*.php",
         "./resources/views/**/*.blade.php",
+        "./resources/**/*.blade.php",
+        "./resources/**/*.js",
+        "./resources/**/*.vue",
         "./vendor/filament/**/*.blade.php",
         "./vendor/jaocero/radio-deck/resources/views/**/*.blade.php",
         "./vendor/awcodes/mason/resources/**/*.blade.php",
