@@ -17,7 +17,15 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            $table->string('address')->nullable();
+            $table->string('permanent')->nullable();
+            $table->boolean('blocked')->default(false);
+            $table->boolean('is_valut')->default(false);
+            
             $table->rememberToken();
+            $table->softDeletes();
+
             $table->timestamps();
         });
 

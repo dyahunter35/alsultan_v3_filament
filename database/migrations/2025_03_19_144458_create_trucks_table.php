@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\TruckState;
 use App\Enums\TruckType;
 use App\Models\Branch;
 use App\Models\Category;
@@ -25,6 +26,11 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\Company::class)
                 ->nullable()
                 ->cascadeOnDelete();
+
+            $table->foreignIdFor(\App\Models\Company::class, 'contractor_id')
+                ->nullable()
+                ->cascadeOnDelete();
+
             $table->string('company')->comment('من الشركة او المخزن')->nullable();
 
             $table->nullableMorphs('from', 'from');
@@ -32,12 +38,12 @@ return new class extends Migration
             $table->foreignIdFor(Branch::class, 'branch_to')->comment("الفرع");
 
             $table->date('arrive_date')->nullable()->comment("تاريخ الوصول");
-            $table->tinyInteger('truck_status')->comment("حاله الشحنة");
-            $table->enum('type',TruckType::getKeys())->comment("١ -خارجي , ٢ - داخلي");
+            $table->enum('truck_status', TruckState::getKeys())->comment("١ -خارجي , ٢ - داخلي");
+            $table->enum('type', TruckType::getKeys());
             $table->boolean('is_converted')->comment("1 -تم التحويل , 0 - لم يتم")->default(0);
             $table->string('note')->nullable();
 
-            $table->foreignIdFor(Category::class);
+            $table->foreignIdFor(Category::class, 'category_id');
             $table->string('country')->nullable();
             $table->string('city')->nullable();
             $table->string('truck_model')->nullable();
@@ -51,8 +57,8 @@ return new class extends Migration
             $table->integer('delay_value')->comment("قيمة الععطلات")->nullable();
             $table->integer('total_amount')->comment("المجموع الكلي")->nullable();
 
-            $table->timestamps();
             $table->softDeletes();
+            $table->timestamps();
         });
     }
 

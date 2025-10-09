@@ -9,12 +9,11 @@ use Illuminate\Support\Str;
 use Filament\Infolists;
 use ReflectionClass;
 use ReflectionProperty;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Wizard\Step;
 use Filament\Forms\Components\Repeater;
 use Filament\Infolists\Components\Entry;
 use Filament\Schemas\Components\Component;
-use Filament\Schemas\Components\Section as ComponentsSection;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Wizard\Step as WizardStep;
 use Illuminate\Support\Facades\Lang;
@@ -64,7 +63,7 @@ trait HasTranslateConfigure
             $componentType = get_class($component);
 
             // Special handling for Section components
-            if ($component instanceof ComponentsSection) {
+            if ($component instanceof Section) {
                 $heading = $component->getHeading();
                 if ($heading) {
                     $cleanHeading = (string) str($heading)->snake();
@@ -164,19 +163,72 @@ trait HasTranslateConfigure
             $componentType = get_class($component);
 
             // Special handling for Section components
-            if ($component instanceof ComponentsSection) {
+            if ($component instanceof Section) {
                 $heading = $component->getHeading();
                 if ($heading) {
                     $cleanHeading = (string) str($heading)->snake();
-                    if ($localeHeading = static::getSmartTranslation('fields.' . $cleanHeading . '.label')) {
+                    if ($localeHeading = static::getSmartTranslation('sections.' . $cleanHeading . '.label')) {
                         $component->heading($localeHeading);
                     }
 
                     // Also look for a description
-                    if (method_exists($component, 'getDescription') && $description = static::getSmartTranslation('form.' . $cleanHeading . '.description')) {
+                    if (method_exists($component, 'getDescription') && $description = static::getSmartTranslation('sections.' . $cleanHeading . '.description')) {
                         $component->description($description);
                     }
+
+                    if (method_exists($component, 'getIcon') && $icon = static::getSmartTranslation('sections.' . $cleanHeading . '.icon')) {
+                        $component->icon($icon);
+                    }
                 }
+            }
+
+
+            // Repeter
+            // Handle Repeater Components and nested fields
+            if ($component instanceof \Filament\Forms\Components\Repeater) {
+                $repeaterLabel = $component->getLabel();
+                if ($repeaterLabel) {
+                    $cleanRepeater = (string) str($repeaterLabel)->snake();
+                    //dd($cleanRepeater);
+                    /* if ($localeRepeaterLabel = static::getSmartTranslation('fields.' . $cleanRepeater . '.label')) {
+                        $component->label($localeRepeaterLabel);
+                    } */
+
+                    if ($localeRepeaterDesc = static::getSmartTranslation('fields.' . $cleanRepeater . '.description')) {
+                        $component->description($localeRepeaterDesc);
+                    }
+                }
+                //dd($component->getChildComponents());
+                // Loop over nested fields inside the repeater
+                /*  foreach ($component->getItems() as $nestedField) {
+                    if ($nestedField instanceof \Filament\Forms\Components\Field) {
+                        $fieldName = (string) str($nestedField->getName())->snake();
+                        $translationBase = 'fields.' . $cleanRepeater . '.fields.' . $fieldName;
+
+                        if ($localeLabel = static::getSmartTranslation($translationBase . '.label')) {
+                            $nestedField->label($localeLabel);
+                        }
+                        if ($localePlaceholder = static::getSmartTranslation($translationBase . '.placeholder')) {
+                            $nestedField->placeholder($localePlaceholder);
+                        }
+                        if ($localeHelper = static::getSmartTranslation($translationBase . '.helper_text')) {
+                            $nestedField->helperText($localeHelper);
+                        }
+
+                        // Optional: handle options
+                        if (method_exists($nestedField, 'options')) {
+                            $options = $nestedField->getOptions();
+                            if (is_array($options)) {
+                                $translatedOptions = [];
+                                foreach ($options as $key => $value) {
+                                    $optionKey = $translationBase . '.options.' . Str::slug((string) $key, '_');
+                                    $translatedOptions[$key] = static::getSmartTranslation($optionKey) ?? $value;
+                                }
+                                $nestedField->options($translatedOptions);
+                            }
+                        }
+                    }
+                } */
             }
 
             // Special handling for Wizard Steps

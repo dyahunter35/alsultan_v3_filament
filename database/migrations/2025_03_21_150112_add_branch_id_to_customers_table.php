@@ -14,7 +14,6 @@ return new class extends Migration
     {
         Schema::table('customers', function (Blueprint $table) {
             $table->foreignIdFor(Branch::class)->index();
-
         });
     }
 

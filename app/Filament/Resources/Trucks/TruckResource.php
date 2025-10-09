@@ -7,6 +7,7 @@ use App\Filament\Resources\Trucks\Pages\CreateTruck;
 use App\Filament\Resources\Trucks\Pages\EditTruck;
 use App\Filament\Resources\Trucks\Pages\ListTrucks;
 use App\Filament\Resources\Trucks\Pages\ViewTruck;
+use App\Filament\Resources\Trucks\RelationManagers\DocumentsRelationManager;
 use App\Filament\Resources\Trucks\Schemas\TruckForm;
 use App\Filament\Resources\Trucks\Schemas\TruckInfolist;
 use App\Filament\Resources\Trucks\Tables\TrucksTable;
@@ -48,7 +49,7 @@ class TruckResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            DocumentsRelationManager::class,
         ];
     }
 

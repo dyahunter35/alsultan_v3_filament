@@ -11,6 +11,13 @@ return [
         'create' => 'إضافة شاحنة',
         'edit' => 'تعديل شاحنة',
     ],
+
+    'sections'=>[
+        'driver_info'=>'بيانات السائق',
+        'contract_info'=>'بيانات التعاقد',
+        'status_info'=>'بيانات حاله الشحنة',
+        'financial_info'=>'التفاصيل المالية',
+    ],
     'fields' => [
         'cargo_id' => [
             'label' => 'معرف الحمولة',
@@ -56,7 +63,7 @@ return [
             'label' => 'المعبر',
             'placeholder' => 'ادخل نوع المصدر',
         ],
-        
+
         'arrive_date' => [
             'label' => 'تاريخ الوصول',
             'placeholder' => 'اختر تاريخ الوصول',
@@ -110,19 +117,21 @@ return [
             'placeholder'=>''
         ],
         'truck_fare'=>[
-            'label' => 'اجرة الشاحة ( النولون )',
-            'placeholder'=>''
+            'label' => 'اجرة الشاحة',
+            'placeholder'=>'',
+            'helper_text'=>'( النولون )'
         ],
         'delay_value'=>[
-            'label' => 'قيمة التاخير ( العطلات )',
-            'placeholder'=>''
+            'label' => 'قيمة التاخير',
+            'placeholder'=>'',
+            'helper_text'=>'( العطلات )'
         ],
         'total_amount'=>[
             'label' => 'المبلغ الكلي',
             'placeholder'=>''
         ],
 
-        
+
     ],
      'filters' => [
 

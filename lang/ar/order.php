@@ -157,6 +157,9 @@ return [
         ]
     ],
     'actions' => [
+        'print'=>[
+            'label' => 'طباعة'
+        ],
         'reset' => [
             'label' => 'إعادة تعيين',
             'modal' => [
@@ -208,9 +211,13 @@ return [
         ],
     ],
     'invoice' => [
+
         'labels' => [
             'today' => 'اليوم',
-            'subtotal' => 'قبل الخصم'
+            'subtotal' => 'قبل الخصم',
+            'customer' => 'بيانات العميل',
+            'signature' => 'التوقيع',
+            'balance_due' => 'الرصيد المستحق',
         ]
     ]
 ];

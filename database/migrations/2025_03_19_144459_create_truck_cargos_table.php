@@ -18,15 +18,21 @@ return new class extends Migration
 
             $table->foreignId('truck_id')->constrained()->cascadeOnDelete();
 
-            $table->enum('type', TruckType::getKeys())->comment("١ -خارجي , ٢ - داخلي");
+            $table->enum('type', TruckType::getKeys())->comment("local , outer");
+
+            $table->string('size')->nullable();
 
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
 
-            $table->double('quantity');
+            $table->double('unit_quantity')->comment('الكميات بالوحدة وليس الطرد');
+
+            $table->double('quantity')->comment('الكميات بالطرد');
 
             $table->double('real_quantity')->nullable();
 
             $table->double('weight')->nullable();
+
+            $table->double('unit_price')->nullable();
 
             $table->string('note')->nullable();
             $table->timestamps();

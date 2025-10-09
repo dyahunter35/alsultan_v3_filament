@@ -1,0 +1,28 @@
+@import "../../../../vendor/filament/filament/resources/css/theme.css";
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    
+
+    #report-content,
+    #report-content * {
+        visibility: visible;
+    }
+
+    #report-content {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        border: none;
+        box-shadow: none;
+    }
+}

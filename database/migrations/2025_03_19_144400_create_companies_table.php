@@ -16,8 +16,15 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('location');
-            $table->enum('type',CompanyType::getKeys());
+            $table->enum('type', CompanyType::getKeys());
             $table->string('default_currency')->nullable();
+
+            $table->string('contact_person')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('email')->nullable();
+            $table->enum('partner_type', ['client', 'supplier', 'partner'])->default('client');
+
+            $table->softDeletes();
             $table->timestamps();
         });
     }

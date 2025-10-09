@@ -8,11 +8,11 @@ use Filament\Support\Contracts\HasIcon;
 use App\Traits\EnumsKeys;
 use Filament\Support\Contracts;
 
-enum TruckType: int implements HasLabel, HasColor, HasIcon
+enum TruckType: string implements HasLabel, HasColor, HasIcon
 {
     use EnumsKeys;
-    case Local = 2;
-    case Outer = 1;
+    case Local = 'local';
+    case Outer = 'outer';
 
     public function getLabel(): ?string
     {

@@ -2,6 +2,8 @@
 
 namespace App\Traits;
 
+use App\Enums\Group;
+
 trait EnumsKeys
 {
     public static function getKeys(): array
@@ -46,5 +48,44 @@ trait EnumsKeys
     public static function getString(): string
     {
         return implode(',', self::getKeys());
+    }
+
+
+    /// Grouped
+    public static function getGrouped(): array
+    {
+        $grouped = [];
+
+        foreach (self::cases() as $case) {
+            $reflection = new \ReflectionEnumUnitCase(self::class, $case->name);
+            $attributes = $reflection->getAttributes(Group::class);
+
+            if (!empty($attributes)) {
+                $groupName =  $attributes[0]->newInstance()->group;
+                //$groupName = (app()->getLocale() == 'ar') ? $groupName : 'aaaaa';
+                $grouped[$groupName][$case->value] = $case->getLabel();
+            }
+        }
+
+        return $grouped;
+    }
+
+    public static function getGroupName(string $group): array
+    {
+        $grouped = [];
+
+        foreach (self::cases() as $case) {
+            $reflection = new \ReflectionEnumUnitCase(self::class, $case->name);
+            $attributes = $reflection->getAttributes(Group::class);
+
+            if (!empty($attributes)) {
+                $groupName =  $attributes[0]->newInstance()->group;
+                if($groupName == $group)
+                //$groupName = (app()->getLocale() == 'ar') ? $groupName : 'aaaaa';
+                $grouped[]=$case->value ;
+            }
+        }
+
+        return $grouped;
     }
 }

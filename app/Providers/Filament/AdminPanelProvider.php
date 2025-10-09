@@ -11,6 +11,7 @@ use App\Filament\Resources\Products\Pages\BranchReport;
 use App\Filament\Resources\Products\Pages\ProductStockReport;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use App\Models\Branch;
+use Filament\Enums\ThemeMode;
 use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -41,13 +42,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->font('Poppins')
             ->databaseTransactions()
-            ->databaseNotifications()
-            /* ->colors(fn() => [
-                'primary' =>'#0af053',
-                'secondry'=>'#0af053',
-                'info'=>'#0af053',
-                'danger'=>'#0af053'
-            ]) */
+            //->databaseNotifications()
             ->brandName(fn() => __('app.name'))
             //->brandLogo(fn  ()=>asset('asset/images/logo/gas 200.png'))
             ->favicon(asset('asset/logo.png'))
@@ -56,7 +51,8 @@ class AdminPanelProvider extends PanelProvider
             ->tenantRegistration(RegisterBranch::class)
             ->tenantProfile(EditBranch::class)
             ->collapsibleNavigationGroups(true)
-
+            ->defaultThemeMode(ThemeMode::Light)
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->renderHook(
                 'panels::head.end', // ⬅ يضيف قبل </head>
                 fn(): string =>

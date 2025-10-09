@@ -11,17 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('truck_docs', function (Blueprint $table) {
+        Schema::create('documents', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(App\Models\Truck::class)
-                ->constrained()
-                ->cascadeOnDelete();
+
+            // علاقة polymorphic عشان نقدر نربط المستند بأي موديل (Truck, Contract, ...)
+            $table->morphs('documentable'); // بيعمل عمودين: documentable_id, documentable_type
+
             $table->string('name')->nullable();
             $table->string('type')->nullable();
             $table->string('note')->nullable();
-            $table->date('issuance_date')->comment('تاريخ الاصدار')->nullable();
+            $table->string('file_type')->nullable();
+            $table->date('issuance_date')->nullable()->comment('تاريخ الإصدار');
+
             $table->timestamps();
         });
+
     }
 
     /**
@@ -29,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('truck_docs');
+        Schema::dropIfExists('documents');
     }
 };

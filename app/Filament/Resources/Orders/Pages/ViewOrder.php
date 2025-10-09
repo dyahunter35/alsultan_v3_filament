@@ -18,7 +18,7 @@ use Filament\Resources\Pages\ViewRecord;
 class ViewOrder extends ViewRecord
 {
     protected static string $resource = OrderResource::class;
-    protected string $view = 'filament.resources.order-resource.print-order';
+    protected string $view = 'filament.resources.order-resource.pages.print-order';
 
     public function getTitle(): string
     {
@@ -32,13 +32,13 @@ class ViewOrder extends ViewRecord
             EditAction::make()->icon('heroicon-o-pencil'),
             DeleteAction::make()->icon('heroicon-o-trash'),
             Action::make('print')
-                ->label(trans('filament-invoices::messages.invoices.actions.print'))
+                ->label(trans('order.actions.print.label'))
                 ->icon('heroicon-o-printer')
                 ->color('info')
                 ->action(function () {
                     $this->js('window.print()');
                 }),
 
-              ];
+        ];
     }
 }

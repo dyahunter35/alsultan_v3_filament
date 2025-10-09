@@ -2,20 +2,22 @@
 
 namespace App\Enums;
 
+use App\Traits\EnumsKeys;
 use Filament\Support\Contracts\HasLabel;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 
 enum TruckState: string implements HasLabel, HasColor, HasIcon
 {
-    case OnWay = '0';
-    case reach = '1';
-    case barn = '-1';
-    case port = '-2';
+    use EnumsKeys;
+    case OnWay = 'on_way';
+    case reach = 'reach';
+    case barn = 'barn';
+    case port = 'port';
 
     public function arabic(): string
     {
-        return __('enums.truck_state.'.$this->value);
+        return __('enums.truck_state.' . $this->value);
     }
 
     public function getLabel(): ?string

@@ -157,11 +157,14 @@ return [
                 'refund' => 'Money Back',
             ],
         ],
-        'amount'=>[
-            'label'=>'Amount'
+        'amount' => [
+            'label' => 'Amount'
         ]
     ],
     'actions' => [
+        'print'=>[
+            'label' => 'Print'
+        ],
         'reset' => [
             'label' => 'Reset',
             'modal' => [
@@ -174,11 +177,11 @@ return [
                 'heading' => 'Create Order',
                 'submit' => 'Create',
             ],
-            'notifications'=>[
-                'at_least_one'=>'Order must have at least one item.',
-                'stock'=>[
-                    'title'=>'Stock Error',
-                    'message'=> 'The requested quantity for `:product` is not available.'
+            'notifications' => [
+                'at_least_one' => 'Order must have at least one item.',
+                'stock' => [
+                    'title' => 'Stock Error',
+                    'message' => 'The requested quantity for `:product` is not available.'
                 ]
             ]
         ],
@@ -213,11 +216,14 @@ return [
             ],
         ],
     ],
-    'invoice'=>[
+    'invoice' => [
 
-        'labels'=>[
-            'today'=> 'Today',
-            'subtotal'=> 'Before Discount'
+        'labels' => [
+            'today' => 'Today',
+            'subtotal' => 'Before Discount',
+            'customer' => 'Customer Details',
+            'signature'=>'Signature',
+            'balance_due'=>'Balance Due',
         ]
     ]
 ];

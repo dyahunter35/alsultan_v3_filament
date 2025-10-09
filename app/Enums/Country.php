@@ -2,11 +2,13 @@
 
 namespace App\Enums;
 
+use App\Traits\EnumsKeys;
 use Filament\Support\Contracts\HasLabel;
 use Filament\Support\Contracts\HasColor;
 
 enum Country: string implements HasLabel, HasColor
 {
+    use EnumsKeys;
     case Egypt = 'egypt';
     case Qatar = 'qatar';
     case Hind = 'hind';

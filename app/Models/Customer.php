@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\GuestCustomer;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,6 +15,8 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Customer extends Model implements HasMedia
 {
+    use HasFactory;
+
     use SoftDeletes;
     use InteractsWithMedia;
 
@@ -31,6 +34,4 @@ class Customer extends Model implements HasMedia
     {
         return $this->belongsTo(Branch::class);
     }
-
-   
 }

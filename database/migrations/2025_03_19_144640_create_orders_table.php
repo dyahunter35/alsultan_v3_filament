@@ -31,6 +31,9 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->foreignId('caused_by')->nullable()->constrained('users')->nullOnDelete();
 
+            $table->json('guest_customer')->nullable();
+            $table->boolean('is_guest')->nullable();
+
             $table->timestamps();
             $table->softDeletes();
         });

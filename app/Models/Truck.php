@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -17,18 +18,17 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 class Truck extends Model implements HasMedia
 {
     use InteractsWithMedia;
+    use SoftDeletes;
 
     use HasFactory;
 
-    protected $guarded = [
-
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'truck_status' => TruckState::class,
         //'arrive_date' =>  Carbon::class,
         'type' => TruckType::class,
-        'country'=>Country::class
+        'country' => Country::class
     ];
 
     public function scopeConverte($query)
@@ -63,9 +63,9 @@ class Truck extends Model implements HasMedia
         return $this->hasMany(\App\Models\TruckCargo::class, "truck_id", 'id')->orderBy('id', 'DESC');
     }
 
-     public function docs()
+    public function documents()
     {
-        return $this->hasMany(\App\Models\TruckDocs::class, "truck_id", 'id')->orderBy('id', 'DESC');
+        return $this->morphMany(Document::class, 'documentable');
     }
 
     public function trans()
@@ -73,7 +73,8 @@ class Truck extends Model implements HasMedia
         return $this->hasMany(\App\Models\StoreTransaction::class, "truck_id", 'id')->orderBy('id', 'DESC');
     }
 
-    public function category(){
+    public function category()
+    {
         return $this->belongsTo(Category::class);
     }
 
@@ -94,7 +95,7 @@ class Truck extends Model implements HasMedia
 
     public function contractorInfo()
     {
-        return $this->belongsTo(\App\Models\Company::class,'contractor_id');
+        return $this->belongsTo(\App\Models\Company::class, 'contractor_id');
     }
 
     public function isConverted(): bool
@@ -121,6 +122,4 @@ class Truck extends Model implements HasMedia
 
         $this->is_converted = true;
     }
-
-
 }

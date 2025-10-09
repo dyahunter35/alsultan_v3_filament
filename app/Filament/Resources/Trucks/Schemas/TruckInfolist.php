@@ -34,10 +34,9 @@ class TruckInfolist
                     ->date()
                     ->placeholder('-'),
                 TextEntry::make('truck_status')
-                    ->badge()
-                    ->numeric(),
-                TextEntry::make('type')
                     ->badge(),
+                /* TextEntry::make('type')
+                    ->badge(), */
                 IconEntry::make('is_converted')
                     ->boolean(),
                 TextEntry::make('note')
@@ -80,7 +79,7 @@ class TruckInfolist
                     ->placeholder('-'),
                 TextEntry::make('deleted_at')
                     ->dateTime()
-                    ->visible(fn (Truck $record): bool => $record->trashed()),
+                    ->visible(fn(Truck $record): bool => $record->trashed()),
             ]);
     }
 }

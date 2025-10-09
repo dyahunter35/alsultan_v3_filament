@@ -14,12 +14,16 @@ return [
         'create' => 'إضافة شركة',
         'edit' => 'تعديل شركة',
     ],
-    'fields' => [
-        'company_details' => [
-            'label' => 'تفاصيل الشركة',
+    'sections'=>[
+        'company_details'=> [
+            'label'=>'تفاصيل الشركة',
             'description' => 'معلومات عامة عن الشركة',
             'icon' => 'heroicon-o-building-office-2',
-        ],
+        ] ,
+
+    ],
+    'fields' => [
+
         'name' => [
             'label' => 'اسم الشركة',
             'placeholder' => 'ادخل اسم الشركة',

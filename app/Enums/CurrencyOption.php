@@ -2,13 +2,16 @@
 
 namespace App\Enums;
 
+use App\Traits\EnumsKeys;
 use Filament\Support\Contracts\HasLabel;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasDescription;
 use Filament\Support\Contracts\HasIcon;
 
-enum CurrencyOption: string implements HasLabel, HasColor, HasDescription,HasIcon
+enum CurrencyOption: string implements HasLabel, HasColor, HasDescription, HasIcon
 {
+    use EnumsKeys;
+
     case egy = 'Egy';
     case dolar = 'Dollar';
     case ryal = 'Ryal';
@@ -23,16 +26,16 @@ enum CurrencyOption: string implements HasLabel, HasColor, HasDescription,HasIco
 
     public function getLabel(): ?string
     {
-        return __('enums.currency_option.' . $this->name.'.label');
+        return __('enums.currency_option.' . $this->name . '.label');
     }
 
-    public function getDescription(): ?string {
-        return __('enums.currency_option.' . $this->name.'.description');
-
+    public function getDescription(): ?string
+    {
+        return __('enums.currency_option.' . $this->name . '.description');
     }
     public function getIcon(): ?string
     {
-        return match($this) {   
+        return match ($this) {
             self::egy => 'heroicon-o-currency-pound',
             self::dolar => 'heroicon-o-currency-dollar',
             self::ryal => 'heroicon-o-currency-dollar',

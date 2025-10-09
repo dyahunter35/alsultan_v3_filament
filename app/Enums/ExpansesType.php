@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+use App\Traits\EnumsKeys;
 use Attribute;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
@@ -9,6 +10,8 @@ use Filament\Support\Contracts\HasLabel;
 
 enum ExpansesType: string implements HasIcon, HasLabel, HasColor
 {
+    use EnumsKeys;
+
     case NORMAL = 'normal';
     case CURRENCY = 'currency';
     // store
@@ -119,27 +122,5 @@ enum ExpansesType: string implements HasIcon, HasLabel, HasColor
         };
     }
 
-    public static function getGrouped(): array
-    {
-        $grouped = [];
 
-        foreach (self::cases() as $case) {
-            $reflection = new \ReflectionEnumUnitCase(self::class, $case->name);
-            $attributes = $reflection->getAttributes(Group::class);
-
-            if (!empty($attributes)) {
-                $groupName =  $attributes[0]->newInstance()->group;
-                $groupName = (app()->getLocale() == 'ar')? $groupName:'aaaaa';
-                $grouped[$groupName][$case->value] = $case->getLabel();
-            }
-        }
-
-        return $grouped;
-    }
-}
-
-#[Attribute(Attribute::TARGET_CLASS_CONSTANT)]
-class Group
-{
-    public function __construct(public string $group) {}
 }

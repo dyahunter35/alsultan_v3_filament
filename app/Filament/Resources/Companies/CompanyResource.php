@@ -7,6 +7,7 @@ use App\Filament\Resources\Companies\Pages\CreateCompany;
 use App\Filament\Resources\Companies\Pages\EditCompany;
 use App\Filament\Resources\Companies\Pages\ListCompanies;
 use App\Filament\Resources\Companies\Pages\ViewCompany;
+use App\Filament\Resources\Companies\RelationManagers\TruckRelationManager;
 use App\Filament\Resources\Companies\Schemas\CompanyForm;
 use App\Filament\Resources\Companies\Schemas\CompanyInfolist;
 use App\Filament\Resources\Companies\Tables\CompaniesTable;
@@ -45,7 +46,7 @@ class CompanyResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            TruckRelationManager::class
         ];
     }
 

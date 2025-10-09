@@ -11,6 +11,12 @@ return [
         'create' => 'Add Truck',
         'edit' => 'Edit Truck',
     ],
+    'sections' => [
+        'driver_info' => 'Driver Information',
+        'contract_info' => 'Contract Information',
+        'status_info' => 'Truck Status Information',
+        'financial_info' => 'Financial Information',
+    ],
     'fields' => [
         'cargo_id' => [
             'label' => 'Cargo ID',
@@ -106,12 +112,15 @@ return [
             'placeholder' => ''
         ],
         'truck_fare' => [
-            'label' => 'Truck Fare (Freight)',
-            'placeholder' => ''
+            'label' => 'Truck Fare',
+            'placeholder' => '',
+            'helper_text' => '(Freight)'
         ],
         'delay_value' => [
-            'label' => 'Delay Value (Holidays)',
-            'placeholder' => ''
+            'label' => 'Delay Value',
+            'placeholder' => '',
+            'helper_text' => '(Holidays)'
+
         ],
         'total_amount' => [
             'label' => 'Total Amount',

@@ -21,7 +21,13 @@ return new class extends Migration
             $table->string('barcode')->unique()->nullable();
             $table->longText('description')->nullable();
             $table->unsignedBigInteger('qty')->default(0);
+
             $table->timestamp('low_stock_notified_at')->nullable();
+            $table->unsignedBigInteger('security_stock')->default(0);
+            $table->boolean('is_visible')->default(false);
+            $table->decimal('old_price', 10, 2)->nullable();
+            $table->decimal('price', 10, 2)->nullable();
+            $table->decimal('cost', 10, 2)->nullable();
 
             $table->timestamps();
         });

@@ -19,6 +19,13 @@ class DatabaseSeeder extends Seeder
             ShieldSeeder::class,
             UserSeeder::class,
             BranchSeeder::class,
+            CompanySeeder::class,
+            ContractSeeder::class,
+            CustomerSeeder::class,
+            PortSeeder::class,
+            ProductSeeder::class,
+            TruckSeeder::class
+
         ]);
     }
 }

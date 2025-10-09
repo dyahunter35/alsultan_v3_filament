@@ -6,6 +6,7 @@ use App\Enums\CompanyType;
 use App\Enums\CurrencyOption;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Company extends Model
 {
@@ -18,4 +19,10 @@ class Company extends Model
         'default_currency' => CurrencyOption::class,
         'type' => CompanyType::class
     ];
+
+    public function trucks(): HasMany {
+        return $this->hasMany(Truck::class);
+    }
+
+    
 }
