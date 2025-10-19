@@ -26,8 +26,17 @@ class UserSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
+        $rep = User::create([
+            'name' =>  'Sales Representative',
+            'email' => strtolower('rep@test.com'),
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
+
+        ]);
+
         // Attach role to user
         $user->assignRole('super_admin');
+        $rep->assignRole('sales');
         // Create Stores
 
     }
