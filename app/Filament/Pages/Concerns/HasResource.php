@@ -2,10 +2,12 @@
 
 namespace App\Filament\Pages\Concerns;
 
+use BackedEnum;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Form;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\File;
 
 trait HasResource
@@ -95,7 +97,7 @@ trait HasResource
 
         return null;
     }
-    
+
     /**
      * Automatically generate translation file for this resource
      * This can be called from the resource class to create initial translations
@@ -105,10 +107,10 @@ trait HasResource
         $localePath = static::getLocalePath();
         $locale = app()->getLocale();
         $filePath = lang_path($locale . '/' . $localePath . '.php');
-        
+
         // Extract all translatable strings from the form
         $strings = static::extractTranslatableStrings($form);
-        
+
         // Add standard resource translations
         $strings['navigation_group'] = null;
         $strings['label']['model_label'] = static::getModelLabel();
@@ -117,24 +119,30 @@ trait HasResource
         $strings['label']['list_project'] = 'Project List';
         $strings['breadcrumb']['index'] = static::getPluralModelLabel();
         $strings['breadcrumb']['list_project'] = 'Project List';
-        
+
         // Check if file exists and we're not overwriting
         if (File::exists($filePath) && !$overwrite) {
             // Merge with existing translations
             $existingStrings = require($filePath);
             $strings = array_replace_recursive($existingStrings, $strings);
         }
-        
+
         // Create the PHP file content
         $fileContent = "<?php\n\nreturn " . var_export($strings, true) . ";\n";
-        
+
         // Make sure the directory exists
         $directory = dirname($filePath);
         if (!File::isDirectory($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
-        
+
         // Write the file
         return File::put($filePath, $fileContent) !== false;
+    }
+
+    public static function getNavigationIcon(): string | BackedEnum | Htmlable | null
+    {
+        return  static::getLocale('navigation.icon') ??
+            static::$navigationIcon;
     }
 }

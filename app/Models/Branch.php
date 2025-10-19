@@ -31,13 +31,6 @@ class Branch extends Model
 
     }
 
-
-    public function customers(): HasMany
-    {
-        return $this->hasMany(Customer::class);
-    }
-
-
     public function roles(): HasMany
     {
         return $this->hasMany(Role::class, 'team_id');

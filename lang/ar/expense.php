@@ -5,6 +5,7 @@ return [
         'label' => 'المنصرفات',
         'plural_label' => 'المنصرفات',
         'model_label' => 'منصرف',
+        'icon' => 'heroicon-m-currency-dollar'
     ],
     'breadcrumbs' => [
         'index' => 'المنصرفات',

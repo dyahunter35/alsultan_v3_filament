@@ -2,7 +2,9 @@
 
 namespace App\Enums;
 
-enum PaymentOptions: string
+use Filament\Support\Contracts\HasLabel;
+
+enum PaymentOptions: string implements HasLabel
 {
     case BOK = 'bok';
     case IBOK = 'ibok';
@@ -14,19 +16,30 @@ enum PaymentOptions: string
     case START_PA = 'start';
     case BANK = 'bank';
 
-    public function arabic(): string
+    public function getLabel(): ?string
     {
-        return match ($this) {
-            self::BOK => 'بنكك',
-            self::IBOK => 'اي بوك',
-            self::CHEQUE => 'شيك',
-            self::CASH => 'كاش',
-            self::FORI => 'فوري',
-            self::MIN_DEP => 'خصم قيمة ترحيل',
-            self::PLUS_DEP => 'إضافة قيمة ترحيل',
-            self::START_PA => 'رصيد سابق مرحل',
-            self::BANK => 'تحويل بنكي',
-        };
+        return (app()->getLocale() == 'en') ? match ($this) {
+            self::BOK => 'BOK',
+            self::IBOK => 'IBOK',
+            self::CHEQUE => 'Cheque',
+            self::CASH => 'Cash',
+            self::FORI => 'Fori',
+            self::MIN_DEP => 'Min Dep',
+            self::PLUS_DEP => 'Plus Dep',
+            self::START_PA => 'Start Pa',
+            self::BANK => 'Bank Transfer',
+        } :
+            match ($this) {
+                self::BOK => 'بنكك',
+                self::IBOK => 'اي بوك',
+                self::CHEQUE => 'شيك',
+                self::CASH => 'كاش',
+                self::FORI => 'فوري',
+                self::MIN_DEP => 'خصم قيمة ترحيل',
+                self::PLUS_DEP => 'إضافة قيمة ترحيل',
+                self::START_PA => 'رصيد سابق مرحل',
+                self::BANK => 'تحويل بنكي',
+            };
     }
 
 

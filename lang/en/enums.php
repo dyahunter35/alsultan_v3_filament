@@ -21,10 +21,10 @@ return [
         // case reach = '1';
         // case barn = '-1';
         // case port = '-2';
-        '0' => 'on way',
-        '1' => 'reached',
-        '-1' => 'barn',
-        '-2' => 'port',
+        'on_way' => 'on way',
+        'reach' => 'reached',
+        'barn' => 'barn',
+        'port' => 'port',
     ],
     'currency_option' => [
         'dolar' =>
@@ -44,14 +44,14 @@ return [
             'label' => 'UAE Dirham',
             'description' => 'United Arab Emirates Dirham',
         ],
-         'inr' => [
+        'inr' => [
             'label' => 'Indian Rupee',
             'description' => 'Indian Rupee',
         ],
-         'qar' => [
+        'qar' => [
             'label' => 'Qatari Riyal',
             'description' => 'Qatari Riyal',
         ],
-        
+
     ]
 ];

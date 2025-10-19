@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\ExpenseType;
 use App\Models\Branch;
 use App\Models\Customer;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -16,7 +17,14 @@ class CustomerFactory extends Factory
             'name' => $this->faker->name(),
             'phone' => $this->faker->phoneNumber(),
             'email' => $this->faker->unique()->safeEmail(),
-            'branch_id' => Branch::inRandomOrder()->first()?->id
+            'permanent' => $this->faker->randomElement(ExpenseType::getKeys()),
+            'permanent' => $this->faker->randomElement(
+                ExpenseType::SALE->value,
+                ExpenseType::GOVERNMENT_FEES->value,
+                ExpenseType::DEBTORS->value,
+                ExpenseType::CUSTOMS->value,
+                ExpenseType::TAX->value,
+            ),
         ];
     }
 }

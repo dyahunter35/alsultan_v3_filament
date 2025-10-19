@@ -122,4 +122,15 @@ class Truck extends Model implements HasMedia
 
         $this->is_converted = true;
     }
+
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
+    }
 }

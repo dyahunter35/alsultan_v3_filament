@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources\Customers;
 
+use App\Enums\ExpenseType;
+use App\Filament\Pages\Concerns\HasResource;
+use App\Filament\Pages\Reports\CustomersReport;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\TextInput;
@@ -21,8 +24,11 @@ use App\Filament\Resources\Customers\Pages\EditCustomer;
 use App\Filament\Resources\CustomerResource\Pages;
 use App\Filament\Resources\CustomerResource\RelationManagers;
 use App\Models\Customer;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Facades\Filament;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -31,66 +37,47 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CustomerResource extends Resource
 {
+    use HasResource;
     protected static ?string $model = Customer::class;
-    protected static bool $isScopedToTenant = true;
 
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-m-user';
     protected static ?int $navigationSort = 2;
 
-    public static function getModelLabel(): string
-    {
-        return __('customer.navigation.model_label');
-    }
 
-    public static function getPluralModelLabel(): string
-    {
-        return __('customer.navigation.plural_label');
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return __('customer.navigation.label');
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return __('customer.navigation.group');
-    }
 
     public static function form(Schema $schema): Schema
     {
+        static::translateConfigureForm();
         return $schema
             ->components([
                 Section::make()
                     ->schema([
-
-
                         TextInput::make('name')
-                            ->label(__('customer.fields.name.label'))
-                            ->placeholder(__('customer.fields.name.placeholder'))
                             ->required()
                             ->maxLength(255),
                         TextInput::make('email')
-                            ->label(__('customer.fields.email.label'))
-                            ->placeholder(__('customer.fields.email.placeholder'))
                             ->email()
-                            ->required()
                             ->maxLength(255),
 
                         TextInput::make('phone')
-                            ->label(__('customer.fields.phone.label'))
-                            ->placeholder(__('customer.fields.phone.placeholder'))
                             ->tel()
                             ->maxLength(255)
                             ->default(null),
 
+                        Select::make('permanent')
+                            ->options([
+                                ExpenseType::SALE->value => ExpenseType::SALE->getLabel(),
+                                ExpenseType::GOVERNMENT_FEES->value => ExpenseType::GOVERNMENT_FEES->getLabel(),
+                                ExpenseType::DEBTORS->value => ExpenseType::DEBTORS->getLabel(),
+                                ExpenseType::CUSTOMS->value => ExpenseType::CUSTOMS->getLabel(),
+                                ExpenseType::TAX->value => ExpenseType::TAX->getLabel(),
+                            ])
+                            ->default(ExpenseType::SALE->value)
                     ])->columnSpan(2)
                     ->columns(2),
                 Section::make()
                     ->schema([
                         SpatieMediaLibraryFileUpload::make('photo')
-                            ->label(__('customer.fields.photo.label'))
-                            ->placeholder(__('customer.fields.photo.placeholder'))
                             ->collection('customer_photos'),
                     ])->columnSpan(1),
 
@@ -99,6 +86,7 @@ class CustomerResource extends Resource
 
     public static function table(Table $table): Table
     {
+        static::translateConfigureTable();
         return $table
             ->columns([
                 SpatieMediaLibraryImageColumn::make('photo')
@@ -106,21 +94,19 @@ class CustomerResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('name')
-                    ->label(__('customer.fields.name.label'))
                     ->searchable(),
                 TextColumn::make('email')
-                    ->label(__('customer.fields.email.label'))
                     ->searchable(),
                 TextColumn::make('phone')
-                    ->label(__('customer.fields.phone.label'))
+                    ->searchable(),
+                TextColumn::make('permanent')
+                    ->badge()
                     ->searchable(),
                 TextColumn::make('created_at')
-                    ->label(__('user.fields.created_at.label'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label(__('user.fields.updated_at.label'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -134,6 +120,7 @@ class CustomerResource extends Resource
                     ->visible(auth()->user()->can('restore_customer')),
             ])
             ->recordActions([
+
                 EditAction::make(),
                 DeleteAction::make()
                     ->visible(fn($record) => !$record->deleted_at),
@@ -141,6 +128,14 @@ class CustomerResource extends Resource
                     ->visible(fn($record) => $record->deleted_at),
                 ForceDeleteAction::make()
                     ->visible(fn($record) => $record->deleted_at),
+
+                ActionGroup::make([
+                    Action::make('report')
+                        ->label(__('customer.reports.ledger.title'))
+                        ->url(fn(Customer $record): string => CustomersReport::getUrl(['customerId' => $record->id]))
+                        ->openUrlInNewTab(),
+                ]),
+
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -158,9 +153,9 @@ class CustomerResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         /** @var class-string<Model> $modelClass */
-        $modelClass = static::$model;
+        return $modelClass = static::getEloquentQuery()->count();
 
-        return (string) Filament::getTenant()->customers->count();
+        return (string) Customer::count();
     }
     public static function getPages(): array
     {

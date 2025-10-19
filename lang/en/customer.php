@@ -5,7 +5,7 @@ return [
         'label' => 'Customers',
         'plural_label' => 'Customers',
         'model_label' => 'Customer',
-        'search_key'=>'Customer name'
+        'search_key' => 'Customer name'
     ],
     'breadcrumbs' => [
         'index' => 'Customers',
@@ -33,6 +33,11 @@ return [
                 'female' => 'Female',
             ],
         ],
+        'permanent' => [
+            'label' => 'Permanent',
+            'placeholder' => 'Select permanent type',
+
+        ],
         'photo' => [
             'label' => 'Photo',
             'placeholder' => 'Upload customer photo',
@@ -56,6 +61,23 @@ return [
             'count' => 'Total Customers',
             'active' => 'Active Customers',
             'inactive' => 'Inactive Customers',
+        ],
+    ],
+    'actions' => [
+        'refresh' => [
+            'label' => 'Refresh Balances',
+        ],
+    ],
+    'notifications' => [
+        'refresh_success' => [
+            'title' => 'Customer balances updated successfully.',
+        ],
+
+    ],
+    'reports' => [
+        'ledger' => [
+            'title' => 'Customer Ledger Report',
+            'title_for' => 'Ledger Report for :customer',
         ],
     ],
 

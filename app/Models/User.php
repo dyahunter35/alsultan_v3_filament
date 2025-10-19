@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Traits\HasFinancials;
 use Attribute;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\HasTenants;
@@ -11,6 +12,7 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -23,6 +25,7 @@ class User extends Authenticatable implements HasTenants
     use HasFactory, Notifiable;
     use SoftDeletes;
     use HasRoles;
+    use HasFinancials;
 
     /**
      * The attributes that are mass assignable.
@@ -85,5 +88,23 @@ class User extends Authenticatable implements HasTenants
     public function canAccessTenant(Model $tenant): bool
     {
         return $this->branch()->whereKey($tenant)->exists();
+    }
+
+    // المصاريف التي دفعها هذا المستخدم
+    public function expensesPaid(): MorphMany
+    {
+        return $this->morphMany(Expense::class, 'payer');
+    }
+
+    // المصاريف التي استفاد منها
+    public function expensesBeneficiary()
+    {
+        return $this->morphMany(Expense::class, 'beneficiary');
+    }
+
+    // المصاريف التي أنشأها
+    public function expensesCreated()
+    {
+        return $this->hasMany(Expense::class, 'created_by');
     }
 }

@@ -10,6 +10,8 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Pages\Page;
+use Filament\Resources\Concerns\HasTabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -18,6 +20,7 @@ use Filament\Tables\Table;
 class ExpensesList extends Page implements HasTable
 {
     use HasPage;
+    use HasTabs;
     use InteractsWithTable;
 
     protected string $view = 'filament.clusters.expanes.pages.expenses-list';
@@ -93,5 +96,48 @@ class ExpensesList extends Page implements HasTable
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public function getTabs(): array
+    {
+        return [
+            // 1. زر القائمة الافتراضية (عرض جميع السجلات)
+            'all' => Tab::make('جميع المصروفات'),
+
+            // 2. Tab للعملة (Currency)
+            'create-currency' => Tab::make('صرف عملة')
+                ->badgeColor('success')
+                ->modifyQueryUsing(fn($query) => $query->where('expense_type', \App\Enums\ExpansesType::CURRENCY))
+
+            /* // 3. Tab للجمارك (Customs)
+            'create-customs' => Tab::make('مصروف جمارك')
+                ->badgeColor('warning')
+                ->modifyQueryUsing(fn ($query) => $query->where('expense_type', \App\Enums\ExpansesType::CUSTOMS))
+                ->url(ExpenseResource::getUrl('create-customs')),
+
+            // 4. Tab للحكومة (Gov)
+            'create-gov' => Tab::make('مصروف حكومي')
+                ->badgeColor('info')
+                ->modifyQueryUsing(fn ($query) => $query->where('expense_type', \App\Enums\ExpansesType::GOVERMENT))
+                ->url(ExpenseResource::getUrl('create-gov')),
+
+            // 5. Tab للضرائب (Tax)
+            'create-tax' => Tab::make('ضرائب')
+                ->badgeColor('danger')
+                ->modifyQueryUsing(fn ($query) => $query->where('expense_type', \App\Enums\ExpansesType::TAX))
+                ->url(ExpenseResource::getUrl('create-tax')),
+
+            // 6. Tab للمخازن (Stores)
+            'create-stores' => Tab::make('مصروف مخازن')
+                ->badgeColor('primary')
+                ->modifyQueryUsing(fn ($query) => $query->where('expense_type', \App\Enums\ExpansesType::STORES))
+                ->url(ExpenseResource::getUrl('create-stores')),
+ */
+            // 7. Tab للتحويلات (Transaction)
+            /* 'create-transaction' => Tab::make('تحويلات مالية')
+                ->badgeColor('secondary')
+                ->modifyQueryUsing(fn ($query) => $query->where('expense_type', \App\Enums\ExpansesType::REP_TRA)) // افترضنا نوع التحويل من Enumerator
+                ->url(ExpenseResource::getUrl('create-transaction')), */
+        ];
     }
 }

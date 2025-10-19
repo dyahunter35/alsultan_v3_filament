@@ -13,6 +13,7 @@ use App\Filament\Resources\Expenses\Tables\ExpensesTable;
 use App\Models\Expense;
 use BackedEnum;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
@@ -60,4 +61,6 @@ class ExpenseResource extends Resource
             'edit' => EditExpense::route('/{record}/edit'),
         ];
     }
+
+   
 }

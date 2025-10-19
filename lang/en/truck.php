@@ -11,144 +11,135 @@ return [
         'create' => 'Add Truck',
         'edit' => 'Edit Truck',
     ],
+
     'sections' => [
         'driver_info' => 'Driver Information',
-        'contract_info' => 'Contract Information',
-        'status_info' => 'Truck Status Information',
-        'financial_info' => 'Financial Information',
+        'contract_info' => 'Contract Details',
+        'status_info' => 'Shipment Status',
+        'financial_info' => 'Financial Details',
     ],
+
     'fields' => [
         'cargo_id' => [
             'label' => 'Cargo ID',
-            'placeholder' => 'Enter Cargo ID',
+            'placeholder' => 'Enter cargo ID',
         ],
         'driver_name' => [
             'label' => 'Driver Name',
-            'placeholder' => 'Enter Driver Name',
+            'placeholder' => 'Enter driver name',
         ],
         'driver_phone' => [
             'label' => 'Driver Phone',
-            'placeholder' => 'Enter Driver Phone',
+            'placeholder' => 'Enter driver phone number',
         ],
         'car_number' => [
-            'label' => 'Car Number',
-            'placeholder' => 'Enter Car Number',
+            'label' => 'Truck Number',
+            'placeholder' => 'Enter truck number',
+        ],
+        'truck_model' => [
+            'label' => 'Truck Model',
+            'placeholder' => 'Enter truck model',
         ],
         'pack_date' => [
-            'label' => 'Pack Date',
-            'placeholder' => 'Choose Pack Date',
+            'label' => 'Loading Date',
+            'placeholder' => 'Select loading date',
         ],
-        'contractor' => [
+        'contractor_id' => [
             'label' => 'Contractor',
-            'placeholder' => 'Enter Contractor',
+            'placeholder' => 'Enter contractor',
         ],
         'company' => [
             'label' => 'Company',
-            'placeholder' => 'Enter Company',
+            'placeholder' => 'Enter company',
         ],
         'company_id' => [
             'label' => 'Company ID',
-            'placeholder' => 'Enter Company ID',
+            'placeholder' => 'Enter company ID',
         ],
         'to' => [
-            'label' => 'To',
-            'placeholder' => 'Enter Destination',
+            'label' => 'Warehouse',
+            'placeholder' => 'Enter destination',
         ],
         'from' => [
-            'label' => 'From',
-            'placeholder' => 'Enter Source Type',
+            'label' => 'Port',
+            'placeholder' => 'Enter source type',
         ],
-
         'arrive_date' => [
-            'label' => 'Arrive Date',
-            'placeholder' => 'Choose Arrive Date',
+            'label' => 'Arrival Date',
+            'placeholder' => 'Select arrival date',
         ],
         'truck_status' => [
             'label' => 'Truck Status',
-            'placeholder' => 'Enter Truck Status',
+            'placeholder' => 'Enter truck status',
         ],
         'type' => [
             'label' => 'Type',
-            'placeholder' => 'Enter Type',
+            'placeholder' => 'Enter type',
         ],
         'is_converted' => [
-            'label' => 'Is Converted',
-            'placeholder' => 'Is Converted?',
+            'label' => 'Converted',
+            'placeholder' => 'Was it converted?',
         ],
         'note' => [
             'label' => 'Note',
-            'placeholder' => 'Enter Note',
+            'placeholder' => 'Enter note',
         ],
-
         'category' => [
-            'label' => 'Shipment Type',
-            'placeholder' => ''
+            'label' => 'Cargo Type',
+            'placeholder' => '',
         ],
-
         'country' => [
             'label' => 'Shipping Country',
-            'placeholder' => ''
+            'placeholder' => '',
         ],
-
         'city' => [
             'label' => 'City',
-            'placeholder' => ''
+            'placeholder' => '',
         ],
-
         'trip_days' => [
-            'label' => 'Number of Trip Days',
-            'placeholder' => ''
+            'label' => 'Trip Duration (Days)',
+            'placeholder' => '',
         ],
         'agreed_duration' => [
-            'label' => 'Agreed Days',
-            'placeholder' => ''
+            'label' => 'Agreed Duration (Days)',
+            'placeholder' => '',
         ],
         'diff_trip' => [
-            'label' => 'Difference Between Days',
-            'placeholder' => ''
+            'label' => 'Days Difference',
+            'placeholder' => '',
         ],
         'delay_day_value' => [
             'label' => 'Delay Day Value',
-            'placeholder' => ''
+            'placeholder' => '',
         ],
         'truck_fare' => [
             'label' => 'Truck Fare',
             'placeholder' => '',
-            'helper_text' => '(Freight)'
+            'helper_text' => '(Nolon)',
         ],
         'delay_value' => [
             'label' => 'Delay Value',
             'placeholder' => '',
-            'helper_text' => '(Holidays)'
-
+            'helper_text' => '(Holidays)',
         ],
         'total_amount' => [
             'label' => 'Total Amount',
-            'placeholder' => ''
+            'placeholder' => '',
         ],
     ],
 
-    'relations' => [
-
-        'cargo' => [
-            'label' => 'Cargo',
-            'placeholder' => 'Select Cargo',
-            'fields' => [
-                'name' => [
-                    'label' => 'Product Amount',
-                    'placeholder' => ''
-                ],
-            ],
+    'filters' => [
+        'toStore' => [
+            'label' => 'By Warehouse',
         ],
-    ],
-
-    'widgets' => [
-        'stats' => [
-            'label' => 'Truck Statistics',
-            'count' => 'Total Trucks',
-            'active' => 'Active Trucks',
-            'inactive' => 'Inactive Trucks',
-            'delayed' => 'Delayed Trucks',
+        'country' => [
+            'label' => 'By Country of Origin',
+        ],
+        'pack_date' => [
+            'label' => 'By Loading Date',
+        ],
+        'arrive_date' => [
+            'label' => 'By Arrival Date',
         ],
     ],
 ];

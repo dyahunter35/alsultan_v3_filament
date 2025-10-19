@@ -6,10 +6,12 @@
         "dev": "vite"
     },
     "devDependencies": {
+        "@fortawesome/fontawesome-free": "^7.1.0",
         "@tailwindcss/vite": "^4.1.14",
         "autoprefixer": "^10.4.21",
         "axios": "^1.8.2",
         "concurrently": "^9.0.1",
+        "daisyui": "^5.2.0",
         "laravel-vite-plugin": "^1.2.0",
         "postcss": "^8.5.6",
         "tailwindcss": "^4.1.14",

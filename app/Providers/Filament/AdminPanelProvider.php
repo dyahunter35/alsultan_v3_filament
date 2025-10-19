@@ -40,6 +40,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('/')
             ->login()
+            ->spa()
             ->font('Poppins')
             ->databaseTransactions()
             //->databaseNotifications()

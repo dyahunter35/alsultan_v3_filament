@@ -24,6 +24,12 @@ class CompaniesTable
                 TextColumn::make('default_currency')
                     ->badge()
                     ->searchable(),
+
+                TextColumn::make('trucks_count')
+                    ->counts('trucks')
+                    ->badge()
+                    ->searchable(),
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

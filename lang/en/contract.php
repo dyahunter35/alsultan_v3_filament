@@ -2,10 +2,11 @@
 
 return [
     'navigation' => [
-        'group' => 'Contract Management',
+        'group' => 'Company Management',
         'label' => 'Contract',
         'plural_label' => 'Contracts',
         'model_label' => 'Contract',
+        'icon' => 'heroicon-m-document-duplicate'
     ],
 
     'breadcrumbs' => [

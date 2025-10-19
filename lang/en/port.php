@@ -5,6 +5,7 @@ return [
         'label' => 'Ports',
         'plural_label' => 'Ports',
         'model_label' => 'Port',
+        'icon' => 'heroicon-m-map-pin',
     ],
     'breadcrumbs' => [
         'index' => 'Ports',
@@ -20,7 +21,7 @@ return [
             'label' => 'Description',
             'placeholder' => '',
         ],
-      
+
         'created_at' => [
             'label' => 'Created at',
             'placeholder' => '',

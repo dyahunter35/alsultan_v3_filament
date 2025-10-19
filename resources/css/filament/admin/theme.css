@@ -1,14 +1,19 @@
 @import "../../../../vendor/filament/filament/resources/css/theme.css";
 
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
 
+@plugin "daisyui";
+
+/*
 @media print {
     body * {
         visibility: hidden;
     }
 
-    
+
 
     #report-content,
     #report-content * {
@@ -25,4 +30,4 @@
         border: none;
         box-shadow: none;
     }
-}
+} */

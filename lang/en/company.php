@@ -5,6 +5,7 @@ return [
         'label' => 'Companies',
         'plural_label' => 'Companies',
         'model_label' => 'Company',
+        'icon' => 'heroicon-m-building-office-2'
     ],
     'breadcrumbs' => [
         'index' => 'Companies',

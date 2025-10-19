@@ -1,13 +1,15 @@
 <x-filament-panels::page>
-
-    <form wire:submit="create">
+    {{-- <form wire:submit.prevent="{{ $editingRecord ? 'update' : 'create' }}">
         {{ $this->form }}
 
-        <x-filament::button icon="heroicon-m-plus" type='submit'>
-            Submit
+        <x-filament::button type="submit" icon="heroicon-o-plus" class="mt-4">
+            {{ $editingRecord ? 'تحديث المصروف' : 'إضافة مصروف جديد' }}
         </x-filament::button>
-    </form>
+    </form> --}}
+
     <x-filament-actions::modals />
 
-    {{ $this->table }}
+    <div class="mt-8">
+        {{ $this->table }}
+    </div>
 </x-filament-panels::page>

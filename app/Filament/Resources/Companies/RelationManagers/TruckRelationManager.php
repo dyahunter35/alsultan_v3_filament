@@ -17,8 +17,9 @@ class TruckRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->query(fn() => $this->ownerRecord->trucks())
             ->headerActions([
-               Actions\CreateAction::make(),
+                Actions\CreateAction::make(),
             ]);
     }
 }

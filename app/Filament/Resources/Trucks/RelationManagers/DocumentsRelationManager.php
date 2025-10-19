@@ -34,9 +34,7 @@ class DocumentsRelationManager extends RelationManager
     public function form(Schema $schema): Schema
     {
         return $schema
-            ->components([
-
-            ]);
+            ->components([]);
     }
 
     public function infolist(Schema $schema): Schema
@@ -67,7 +65,7 @@ class DocumentsRelationManager extends RelationManager
                     ->searchable(),
             ])
             ->filters([
-                TrashedFilter::make(),
+                //TrashedFilter::make(),
             ])
             ->headerActions([
                 CreateAction::make(),
@@ -78,18 +76,18 @@ class DocumentsRelationManager extends RelationManager
                 EditAction::make(),
                 DetachAction::make(),
                 DeleteAction::make(),
-                ForceDeleteAction::make(),
-                RestoreAction::make(),
+                //ForceDeleteAction::make(),
+                //RestoreAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DetachBulkAction::make(),
                     DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
+                    //ForceDeleteBulkAction::make(),
+                    //RestoreBulkAction::make(),
                 ]),
             ])
-            ->modifyQueryUsing(fn (Builder $query) => $query
+            ->modifyQueryUsing(fn(Builder $query) => $query
                 ->withoutGlobalScopes([
                     SoftDeletingScope::class,
                 ]));

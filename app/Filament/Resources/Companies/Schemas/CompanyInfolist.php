@@ -14,7 +14,8 @@ class CompanyInfolist
         return $schema
             ->components([
                 Section::make('company_details')
-                    ->columns(2)
+                    ->columns(4)
+                    ->columnSpanFull()
                     ->schema([
 
                         TextEntry::make('name'),

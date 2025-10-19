@@ -14,19 +14,9 @@ return new class extends Migration
         Schema::create('expenses', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('beneficiary_id')
-                ->nullable()
-                ->comment('الحساب المستفيد')
-                ->constrained('users')
-                ->nullOnDelete()
-                ->cascadeOnUpdate();
+            $table->nullableMorphs('beneficiary');
 
-            $table->foreignId('payer_id')
-                ->nullable()
-                ->comment('الحساب الدافع')
-                ->constrained('users')
-                ->nullOnDelete()
-                ->cascadeOnUpdate();
+            $table->nullableMorphs('payer');
 
             $table->foreignId('representative_id')
                 ->nullable()
@@ -34,6 +24,8 @@ return new class extends Migration
                 ->constrained('users')
                 ->nullOnDelete()
                 ->cascadeOnUpdate();
+
+
 
             $table->foreignId('branch_id')
                 ->nullable()

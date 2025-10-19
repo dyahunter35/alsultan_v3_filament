@@ -99,12 +99,14 @@ class TruckForm
                     ->label(__('truck.fields.contractor_id.label'))
                     ->relationship('contractorInfo', 'name')
                     ->searchable()
+                    ->default(fn() => request()->get('contractor_id')) // <-- pre-fill
                     ->preload(),
 
                 Forms\Components\Select::make('company_id')
                     ->label(__('truck.fields.company_id.label'))
                     ->relationship('companyId', 'name')
                     ->searchable()
+                    ->default(fn() => request()->get('company_id')) // <-- pre-fill
                     ->preload(),
 
                 Forms\Components\Hidden::make('type')

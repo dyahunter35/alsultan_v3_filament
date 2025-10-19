@@ -5,45 +5,91 @@ namespace App\Models;
 use App\Enums\PaymentOptions;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Supplying extends Model
 {
     use HasFactory;
-    use SoftDeletes;
 
+    /**
+     * الحقول القابلة للتعبئة
+     */
     protected $fillable = [
-        'user_id','rep_id', 'amount', 'total_amount', 'caused_by',
-        'payment_serial', 'payment_function', 'statment', 'status', 'created_at',
+        'customer_id',
+        'representative_id',
+        'is_completed',
+        'payment_method',
+        'paid_amount',
+        'statement',
+        'payment_reference',
+        'total_amount',
+        'created_by',
     ];
 
-    protected $hidden = [
-        'updated_at', 'user_id'
-    ];
-
-    protected $attributes = [
-        'total_amount' => 0,
-    ];
+    /**
+     * التحويل التلقائي للأنواع
+     */
     protected $casts = [
-        'payment_function' => PaymentOptions::class,
+        'is_completed' => 'boolean',
+        'paid_amount' => 'double',
+        'total_amount' => 'double',
+        'payment_method' => PaymentOptions::class
     ];
 
-    public function users()
+    protected static function boot()
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        parent::boot();
+
+        static::creating(function ($supplying) {
+            // تعيين المستخدم الذي أنشأ السجل تلقائيًا
+            if (auth()->check()) {
+                $supplying->created_by = auth()->id();
+            }
+        });
+        static::created(function ($supplying) {
+            app('App\Services\CustomerService')->updateCustomerBalance($supplying->customer_id);
+        });
+        static::updated(function ($supplying) {
+            app('App\Services\CustomerService')->updateCustomerBalance($supplying->customer_id);
+        });
     }
 
-    public function causers()
+    /**
+     * العلاقة مع المستخدم المنفذ (User)
+     */
+    public function customer()
     {
-        return $this->belongsTo(User::class, 'caused_by', 'id');
-    }
-    public function to()
-    {
-        return $this->belongsTo(User::class, 'rep_id', 'id');
+        return $this->belongsTo(Customer::class, 'customer_id');
     }
 
-    public function getUserNameAttribute()
+    /**
+     * العلاقة مع المندوب (Representative)
+     */
+    public function representative()
     {
-        return User::find($this->user_id)->name;
+        return $this->belongsTo(User::class, 'representative_id');
+    }
+
+    /**
+     * العلاقة مع المستخدم الذي أنشأ السجل
+     */
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * سكوب لتصفية السجلات المكتملة فقط
+     */
+    public function scopeCompleted($query)
+    {
+        return $query->where('is_completed', true);
+    }
+
+    /**
+     * سكوب لتصفية السجلات غير المكتملة فقط
+     */
+    public function scopeNotCompleted($query)
+    {
+        return $query->where('is_completed', false);
     }
 }

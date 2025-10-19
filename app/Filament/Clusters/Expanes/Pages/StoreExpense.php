@@ -2,25 +2,37 @@
 
 namespace App\Filament\Clusters\Expanes\Pages;
 
+use App\Enums\ExpenseType;
 use App\Filament\Clusters\Expanes\ExpanesCluster;
+use App\Filament\Forms\Components\DecimalInput;
+use App\Filament\Forms\Components\MorphField;
+use App\Filament\Forms\Components\MorphSelect;
 use App\Filament\Pages\Concerns\HasPage;
 use App\Models\Expense;
 use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ReplicateAction;
+use Filament\Actions\RestoreAction;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Form;
+use Filament\Schemas\Components\Section;
 use Filament\Support\Exceptions\Halt;
 use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Contracts\Support\Htmlable;
@@ -47,20 +59,7 @@ class StoreExpense extends Page implements HasActions, HasSchemas, HasTable
     public $stats;
     public $loading = true;
 
-    public function getTitle(): string | Htmlable
-    {
-        return __('user.profile.edit.label');
-    }
 
-    public function getBreadcrumb(): string | Htmlable
-    {
-        return __('user.profile.edit.label');
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return __('user.profile.label');
-    }
     public function mount(): void
     {
         $user = auth()->user()->toArray();
@@ -76,62 +75,254 @@ class StoreExpense extends Page implements HasActions, HasSchemas, HasTable
     {
         return $schema
             ->statePath('data')
-            ->components([
-                TextInput::make('name')
-            ])
+            ->model(Expense::class)
+            ->components($this->expenseForm())
         ;
     }
 
     public function create(): void
     {
-        dd($this->form->getState());
+        Expense::create($this->form->getState());
+        Notification::make()
+            ->title('تم إنشاء المصروف بنجاح')
+            ->success()
+            ->send();
+        $this->data = [];
+    }
+
+
+
+    public function edit(Model $record): void
+    {
+        $this->editingRecord = $record;
+
+        // نملأ الـ form بالبيانات، MorphSelect سيقوم بتحويل id/type تلقائياً
+        $this->form->fill($record->attributesToArray());
+    }
+
+    public function update(): void
+    {
+        if (!$this->editingRecord) return;
+
+        $this->editingRecord->update($this->form->getState());
+        Notification::make()
+            ->title('تم تحديث المصروف بنجاح')
+            ->success()
+            ->send();
+
+        $this->editingRecord = null;
+        $this->data = [];
     }
 
     public function table(Table $table): Table
     {
+        // dd(ExpansesType::getGroupName('store'));
         return $table
-            ->query(User::query())
+            ->query(Expense::whereIn('expense_type', ExpenseType::getGroupName('store')))
             ->columns([
-                TextColumn::make('name')
-                    ->label(__('user.fields.name.label'))
-                    ->searchable(),
-                TextColumn::make('email')
-                    ->label(__('user.fields.email.label'))
+                Tables\Columns\TextColumn::make('id')
+                    ->label('رقم المصروف')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('expense_type')
+                    ->label('نوع المصروف')
+                    ->sortable()
                     ->searchable(),
 
-                TextColumn::make('roles.name')
-                    ->label(__('user.fields.roles.label'))
-                    ->searchable()
-                    ->badge()
-                    ->sortable(),
-                TextColumn::make('branch.name')
-                    ->label(__('user.fields.branch.label'))
-                    ->searchable()
-                    ->badge()
-                    ->sortable(),
-                TextColumn::make('created_at')
-                    ->label(__('user.fields.created_at.label'))
+                Tables\Columns\TextColumn::make('payer.name')
+                    ->label('الحساب الدافع')
+                    ->formatStateUsing(fn($record) => optional($record->payer)->name)
+                    ->searchable(),
 
+                Tables\Columns\TextColumn::make('beneficiary.name')
+                    ->label('الحساب المستفيد')
+                    ->formatStateUsing(fn($record) => optional($record->beneficiary)->name)
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('branch.name')
+                    ->label('المخزن')
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('amount')
+                    ->label('الكمية'),
+
+                Tables\Columns\TextColumn::make('unit_price')
+                    ->label('سعر الوحدة'),
+
+                Tables\Columns\TextColumn::make('total_amount')
+                    ->label('الإجمالي'),
+
+                Tables\Columns\IconColumn::make('is_paid')
+                    ->label('حالة الدفع')
+                    ->boolean(),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('تاريخ الإنشاء')
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->label(__('user.fields.updated_at.label'))
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
             ->filters([
                 TrashedFilter::make()
                     ->visible(auth()->user()->can('restore_user')),
             ])
             ->recordActions([
+                EditAction::make()
+                    ->schema($this->expenseForm()),
+                /* Action::make('edit')
+                    ->label('تعديل')
+                    ->action(fn($record) => $this->edit($record)), */
+                ReplicateAction::make(),
 
-                Action::make('edit')
-                    ->action(fn($record) => $this->form->fill($record->attributesToArray())),
+                DeleteAction::make()
+                    ->requiresConfirmation(),
+                RestoreAction::make()
+                    ->visible(fn($record) => $record->deleted_at),
+                ForceDeleteAction::make()
+                    ->visible(fn($record) => $record->deleted_at),
             ])
-            ->toolbarActions([]);
+            ->toolbarActions([
+                CreateAction::make()
+                    ->schema($this->expenseForm())
+
+            ]);
     }
+
+    public function expenseForm()
+    {
+        return [
+            Section::make()->columns(3)
+                ->schema([
+
+                    Section::make()->schema([
+                        // 1. القيمة المخفية لنوع المصروف (Fixed for this page)
+                        Forms\Components\Select::make('expense_type')
+                            ->live()
+                            ->options(ExpenseType::getGroupList('store'))
+                            ->columnSpanFull(),
+
+
+                        // 3. الحساب الدافع (الدفع من حساب)
+                        MorphSelect::make('payer_select')
+                            ->label('من حساب')
+                            ->models([
+                                'user' => \App\Models\User::class,
+                                'customer' => \App\Models\Customer::class,
+                            ]),
+
+                        Forms\Components\Hidden::make('payer_id'),
+                        Forms\Components\Hidden::make('payer_type'),
+
+                        // 2. الحساب المستفيد (إلى) - يفترض أنه حساب يتعلق بالمخزن
+
+                        MorphSelect::make('beneficiary_select')
+                            ->label('الي حساب')
+                            ->models([
+                                'user' => \App\Models\User::class,
+                                'customer' => \App\Models\Customer::class,
+                            ]),
+
+                        Forms\Components\Hidden::make('beneficiary_id'),
+                        Forms\Components\Hidden::make('beneficiary_type'),
+                        /* MorphField::make('beneficiary')
+                        ->label('إلى حساب')
+                        ->models([
+                            'user' => \App\Models\User::class,
+                            'customer' => \App\Models\Customer::class,
+                        ]), */
+                        // 4. المخزن (جديد وخاص بهذا النوع)
+                        Forms\Components\Select::make('branch_id')
+                            ->label(__('المخزن'))
+                            ->relationship('branch', 'name') // يفترض وجود علاقة 'store' في موديل Expense
+                            ->required()
+                            ->default(fn() => Filament::getTenant()),
+
+                        // 5. الكمية / amount (عدد الوحدات المشتراة/الكمية)
+                        DecimalInput::make('amount')
+                            ->label(__('الكمية'))
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(
+                                function ($set, $get, $state) {
+                                    $price = $get('unit_price') ?? 0;
+                                    $amount = $get('amount') ?? 0;
+                                    $set('total_amount', ($amount * $price));
+                                }
+                            )
+                            ->required(),
+
+                        // 6. سعر الوحدة / unit_price
+                        DecimalInput::make('unit_price')
+                            ->label(__('سعر الوحدة'))
+                            ->numeric()
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(
+                                function ($set, $get, $state) {
+                                    $price = $get('unit_price') ?? 1;
+                                    $amount = $get('amount') ?? 1;
+                                    $set('total_amount', ($amount * $price));
+                                }
+                            )
+                            ->required(),
+
+                        DecimalInput::make('total_amount')
+                            ->label(__('الصافي')),
+
+                        // 11. الملاحظات
+                        Forms\Components\Textarea::make('notes')
+                            ->label(__('ملاحظات'))
+
+                            ->rows(2)
+                            ->columnSpanFull() // يجعل حقل الملاحظات يأخذ عرض العمودين كاملاً
+                            ->nullable(),
+
+                    ])
+                        ->columns(2)
+                        ->columnSpan(2),
+                    Section::make()->schema([
+                        // 7. وسيلة الدفع
+                        Forms\Components\Select::make('payment_method')
+                            ->label(__('وسيلة الدفع'))
+                            ->options(collect(\App\Enums\PaymentOptions::cases())->mapWithKeys(fn($case) => [$case->value => $case->arabic()])),
+
+                        // 8. رقم الإشعار/الإيصال
+                        Forms\Components\TextInput::make('payment_reference')
+                            ->label(__('رقم الإشعار/الإيصال'))
+                            ->numeric()
+                            ->nullable(),
+
+                        // 9. حالة الدفع (عاجل/مؤجل)
+                        Forms\Components\Select::make('is_paid')
+                            ->label(__('حالة الدفع'))
+                            ->options([1 => 'مدفوع (عاجل)', 0 => 'غير مدفوع (مؤجل)'])
+                            ->default(1),
+
+                        // 10. التاريخ
+                        Forms\Components\DateTimePicker::make('created_at')
+                            ->label(__('تاريخ العملية'))
+                            ->default(now()),
+                    ])
+                        ->columnSpan(1)
+                        ->columns(1)
+                ])
+
+        ];
+    }
+
+
+    protected function getFormActions(): array
+    {
+        return [
+            Action::make('save')
+                ->label('حفظ')
+                ->action(function () {
+                    if ($this->editingRecord) {
+                        $this->update();
+                    } else {
+                        $this->create();
+                    }
+                }),
+        ];
+    }
+
     /* public function save(): void
     {
         try {

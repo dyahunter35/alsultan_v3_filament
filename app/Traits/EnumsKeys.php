@@ -88,4 +88,22 @@ trait EnumsKeys
 
         return $grouped;
     }
+    public static function getGroupList(string $group): array
+    {
+        $grouped = [];
+
+        foreach (self::cases() as $case) {
+            $reflection = new \ReflectionEnumUnitCase(self::class, $case->name);
+            $attributes = $reflection->getAttributes(Group::class);
+
+            if (!empty($attributes)) {
+                $groupName =  $attributes[0]->newInstance()->group;
+                if($groupName == $group)
+                //$groupName = (app()->getLocale() == 'ar') ? $groupName : 'aaaaa';
+                $grouped[$case->value]= $case->getLabel() ;
+            }
+        }
+
+        return $grouped;
+    }
 }

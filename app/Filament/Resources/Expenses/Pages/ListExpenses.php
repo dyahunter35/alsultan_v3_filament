@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Expenses\Pages;
 use App\Filament\Resources\Expenses\ExpenseResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\Tabs\Tab;
 
 class ListExpenses extends ListRecords
 {
@@ -16,4 +17,5 @@ class ListExpenses extends ListRecords
             CreateAction::make(),
         ];
     }
+
 }

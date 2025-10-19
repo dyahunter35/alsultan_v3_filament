@@ -5,7 +5,7 @@ return [
         'label' => 'العملاء',
         'plural_label' => 'العملاء',
         'model_label' => 'عميل',
-        'search_key'=> 'اسم العميل'
+        'search_key' => 'اسم العميل'
     ],
     'breadcrumbs' => [
         'index' => 'العملاء',
@@ -25,7 +25,10 @@ return [
             'label' => 'رقم الهاتف',
             'placeholder' => 'أدخل رقم الهاتف',
         ],
-        
+        'permanent' => [
+            'label' => 'نوع العميل',
+            'placeholder' => 'اختر نوع العميل',
+        ],
         'photo' => [
             'label' => 'الصورة',
             'placeholder' => 'رفع صورة العميل',
@@ -49,6 +52,22 @@ return [
             'count' => 'إجمالي العملاء',
             'active' => 'العملاء النشطين',
             'inactive' => 'العملاء غير النشطين',
+        ],
+    ],
+    'actions' => [
+        'refresh' => [
+            'label' => 'تحديث الأرصدة',
+        ],
+    ],
+    'notifications' => [
+        'refresh_success' => [
+            'title' => 'تم تحديث أرصدة العملاء بنجاح.',
+        ],
+    ],
+    'reports' => [
+        'ledger' => [
+            'title' => 'كشف حساب العملاء',
+            'title_for' => 'كشف حساب العميل :customer',
         ],
     ],
 

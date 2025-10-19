@@ -2,7 +2,7 @@
 
 return [
     'navigation' => [
-        'group' => 'إدارة العقود',
+        'group' => 'إدارة الشركات',
         'label' => 'عقد',
         'plural_label' => 'العقود',
         'model_label' => 'عقد',

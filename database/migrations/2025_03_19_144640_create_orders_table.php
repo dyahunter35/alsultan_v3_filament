@@ -16,7 +16,15 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Branch::class)->index();
             $table->foreignId('customer_id')->nullable()->constrained('customers')->nullOnDelete();
-            $table->string('number', 32)->unique();
+
+            $table->foreignId('representative_id')
+                ->nullable()
+                ->comment('المندوب')
+                ->constrained('users')
+                ->nullOnDelete()
+                ->cascadeOnUpdate();
+
+            $table->string('number', 32)->unique()->cumment('invoice number');
             $table->decimal('total_price', 12, 2)->nullable();
             $table->enum('status', ['new', 'processing', 'shipped', 'delivered', 'cancelled'])->default('new');
             $table->string('currency');
