@@ -17,14 +17,13 @@ class CustomerFactory extends Factory
             'name' => $this->faker->name(),
             'phone' => $this->faker->phoneNumber(),
             'email' => $this->faker->unique()->safeEmail(),
-            'permanent' => $this->faker->randomElement(ExpenseType::getKeys()),
-            'permanent' => $this->faker->randomElement(
+            'permanent' => $this->faker->randomElement([
                 ExpenseType::SALE->value,
                 ExpenseType::GOVERNMENT_FEES->value,
                 ExpenseType::DEBTORS->value,
                 ExpenseType::CUSTOMS->value,
                 ExpenseType::TAX->value,
-            ),
+            ]),
         ];
     }
 }
