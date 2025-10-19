@@ -48,7 +48,7 @@ return new class extends Migration
             $table->foreignId('created_by')
                 ->comment('المستخدم الذي أنشأ العملية')
                 ->constrained('users');
-
+            $table->softDeletes();
             $table->timestamps();
         });
     }
