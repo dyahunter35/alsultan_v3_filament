@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Customers;
 
+use App\Enums\ExpenseGroup;
 use App\Enums\ExpenseType;
 use App\Filament\Pages\Concerns\HasResource;
 use App\Filament\Pages\Reports\CustomersReport;
@@ -65,14 +66,8 @@ class CustomerResource extends Resource
                             ->default(null),
 
                         Select::make('permanent')
-                            ->options([
-                                ExpenseType::SALE->value => ExpenseType::SALE->getLabel(),
-                                ExpenseType::GOVERNMENT_FEES->value => ExpenseType::GOVERNMENT_FEES->getLabel(),
-                                ExpenseType::DEBTORS->value => ExpenseType::DEBTORS->getLabel(),
-                                ExpenseType::CUSTOMS->value => ExpenseType::CUSTOMS->getLabel(),
-                                ExpenseType::TAX->value => ExpenseType::TAX->getLabel(),
-                            ])
-                            ->default(ExpenseType::SALE->value)
+                            ->options(ExpenseGroup::class)
+                            ->default(ExpenseGroup::SALE->value)
                     ])->columnSpan(2)
                     ->columns(2),
                 Section::make()

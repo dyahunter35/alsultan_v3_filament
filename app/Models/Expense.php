@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use App\Enums\ExpenseType;
 use App\Enums\Payment;
+use App\Enums\PaymentOptions;
+use App\Models\ExpenseType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -13,9 +14,19 @@ class Expense extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'expense_type' => ExpenseType::class,
-        'payment_method' => Payment::class,
+        //'expense_type' => ExpenseType::class,
+        'payment_method' => PaymentOptions::class,
     ];
+
+    public function scopeTypes($query, $type)
+    {
+        return $query->whereIn(
+            'expense_type_id',
+            ExpenseType::where('group', $type)->pluck('id')
+        );
+    }
+
+
 
     protected static function boot()
     {
@@ -27,19 +38,38 @@ class Expense extends Model
             }
         });
 
+        /*  static::saving(function ($expense) {
+            if ($expense->expense_type_id) {
+                $expense->custom_expense_type = null;
+            } elseif ($expense->custom_expense_type) {
+                $expense->expense_type_id = null;
+            }
+        });
 
         static::created(function ($expense) {
-            app('App\Services\CustomerService')->updateCustomerBalance($expense->beneficiary_id);
-            app('App\Services\CustomerService')->updateCustomerBalance($expense->payer_id);
+            if ($expense->payer_type === 'App\Models\Customer') {
+                app('App\Services\CustomerService')->updateCustomerBalance($expense->payer_id);
+            }
+            if ($expense->beneficiary_type === 'App\Models\Customer') {
+                app('App\Services\CustomerService')->updateCustomerBalance($expense->beneficiary_id);
+            }
         });
         static::updated(function ($expense) {
-            app('App\Services\CustomerService')->updateCustomerBalance($expense->beneficiary_id);
-            app('App\Services\CustomerService')->updateCustomerBalance($expense->payer_id);
+            if ($expense->payer_type === 'App\Models\Customer') {
+                app('App\Services\CustomerService')->updateCustomerBalance($expense->payer_id);
+            }
+            if ($expense->beneficiary_type === 'App\Models\Customer') {
+                app('App\Services\CustomerService')->updateCustomerBalance($expense->beneficiary_id);
+            }
         });
         static::deleted(function ($expense) {
-            app('App\Services\CustomerService')->updateCustomerBalance($expense->beneficiary_id);
-            app('App\Services\CustomerService')->updateCustomerBalance($expense->payer_id);
-        });
+            if ($expense->payer_type === 'App\Models\Customer') {
+                app('App\Services\CustomerService')->updateCustomerBalance($expense->payer_id);
+            }
+            if ($expense->beneficiary_type === 'App\Models\Customer') {
+                app('App\Services\CustomerService')->updateCustomerBalance($expense->beneficiary_id);
+            }
+        }); */
     }
 
     public function beneficiary()
@@ -65,5 +95,10 @@ class Expense extends Model
     public function truck()
     {
         return $this->belongsTo(Truck::class);
+    }
+
+    public function type()
+    {
+        return $this->belongsTo(ExpenseType::class, 'expense_type_id');
     }
 }

@@ -4,9 +4,9 @@ namespace App\Filament\Resources\Ports\Pages;
 
 use App\Filament\Resources\Ports\PortResource;
 use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ListRecords;
+use Filament\Resources\Pages\ManageRecords;
 
-class ListPorts extends ListRecords
+class ManagePorts extends ManageRecords
 {
     protected static string $resource = PortResource::class;
 

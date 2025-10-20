@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\GuestCustomer;
+use App\Enums\ExpenseGroup;
 use App\Enums\ExpenseType;
 use App\Traits\HasCustomerFinancialReport;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -27,9 +28,17 @@ class Customer extends Model implements HasMedia
     use HasCustomerFinancialReport;
 
     protected $guarded = [];
+
     protected $casts = [
-        'permanent' => ExpenseType::class,
+        'permanent' => ExpenseGroup::class,
     ];
+
+    public function getNameAttribute($value): string
+    {
+
+        $permanentLabel = $this->permanent?->getLabel() ?? '';
+        return ($this->permanent == ExpenseGroup::SALE) ? $value : $value . ($permanentLabel ? " ($permanentLabel)" : '');
+    }
 
     /** 🔸 المصروفات التي دفعها */
     public function expensesAsPayer(): MorphMany

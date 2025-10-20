@@ -4,7 +4,7 @@ return [
     'navigation' => [
         'group' => 'إدارة المستخدمين',
         'label' => 'التوريدات',
-        'plural_label' => 'الموردين',
+        'plural_label' => 'التوريدات المالية',
         'model_label' => 'توريدة',
         'search_key' => 'التوريدة'
     ],

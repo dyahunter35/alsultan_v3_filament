@@ -1,7 +1,7 @@
 <?php
 return [
     'navigation' => [
-        'group' => 'ادارة المتجات',
+        'group' => 'إدارة المنتجات',
         'label' => 'الوحدات',
         'plural_label' => 'الوحدات',
         'model_label' => 'وحدة',
@@ -12,10 +12,22 @@ return [
         'edit' => 'تعديل الوحدة',
     ],
     'fields' => [
-        'cargo_id' => [
-            'label' => 'معرف الحمولة',
-            'placeholder' => 'ادخل معرف الحمولة',
+        'name' => [
+            'label' => 'الاسم',
+            'placeholder' => 'ادخل اسم الوحدة',
         ],
+        'description' => [
+            'label' => 'الوصف',
+            'placeholder' => 'ادخل وصف الوحدة',
+        ],
+        'created_at' => [
+            'label' => 'تاريخ الإنشاء',
+            'placeholder' => '',
+        ],
+        'updated_at' => [
+            'label' => 'آخر تعديل',
+            'placeholder' => '',
+        ]
     ]
 
 ];

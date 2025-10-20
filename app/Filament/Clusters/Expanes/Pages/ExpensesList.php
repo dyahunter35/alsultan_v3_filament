@@ -38,16 +38,23 @@ class ExpensesList extends Page implements HasTable
                     ->dateTime('Y-m-d H:i')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('expense_type')
-                    ->label('النوع')
+                Tables\Columns\TextColumn::make('type.label')
+                    ->label('نوع المنصرف')
+                    ->formatStateUsing(
+                        fn($state, $record) =>
+                        $record->expense_type_id
+                            ? $record->type->label
+                            : $record->custom_expense_type
+                    )
                     ->badge(),
 
-                Tables\Columns\TextColumn::make('beneficiary.rep_name')
+
+                Tables\Columns\TextColumn::make('beneficiary.name')
                     ->label('المستفيد')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('payer.rep_name')
+                Tables\Columns\TextColumn::make('payer.name')
                     ->label('الدافع')
                     ->searchable()
                     ->sortable(),
@@ -96,48 +103,5 @@ class ExpensesList extends Page implements HasTable
                     DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public function getTabs(): array
-    {
-        return [
-            // 1. زر القائمة الافتراضية (عرض جميع السجلات)
-            'all' => Tab::make('جميع المصروفات'),
-
-            // 2. Tab للعملة (Currency)
-            'create-currency' => Tab::make('صرف عملة')
-                ->badgeColor('success')
-                ->modifyQueryUsing(fn($query) => $query->where('expense_type', \App\Enums\ExpansesType::CURRENCY))
-
-            /* // 3. Tab للجمارك (Customs)
-            'create-customs' => Tab::make('مصروف جمارك')
-                ->badgeColor('warning')
-                ->modifyQueryUsing(fn ($query) => $query->where('expense_type', \App\Enums\ExpansesType::CUSTOMS))
-                ->url(ExpenseResource::getUrl('create-customs')),
-
-            // 4. Tab للحكومة (Gov)
-            'create-gov' => Tab::make('مصروف حكومي')
-                ->badgeColor('info')
-                ->modifyQueryUsing(fn ($query) => $query->where('expense_type', \App\Enums\ExpansesType::GOVERMENT))
-                ->url(ExpenseResource::getUrl('create-gov')),
-
-            // 5. Tab للضرائب (Tax)
-            'create-tax' => Tab::make('ضرائب')
-                ->badgeColor('danger')
-                ->modifyQueryUsing(fn ($query) => $query->where('expense_type', \App\Enums\ExpansesType::TAX))
-                ->url(ExpenseResource::getUrl('create-tax')),
-
-            // 6. Tab للمخازن (Stores)
-            'create-stores' => Tab::make('مصروف مخازن')
-                ->badgeColor('primary')
-                ->modifyQueryUsing(fn ($query) => $query->where('expense_type', \App\Enums\ExpansesType::STORES))
-                ->url(ExpenseResource::getUrl('create-stores')),
- */
-            // 7. Tab للتحويلات (Transaction)
-            /* 'create-transaction' => Tab::make('تحويلات مالية')
-                ->badgeColor('secondary')
-                ->modifyQueryUsing(fn ($query) => $query->where('expense_type', \App\Enums\ExpansesType::REP_TRA)) // افترضنا نوع التحويل من Enumerator
-                ->url(ExpenseResource::getUrl('create-transaction')), */
-        ];
     }
 }

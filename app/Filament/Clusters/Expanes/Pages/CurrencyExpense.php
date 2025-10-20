@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Expanes\Pages;
 
+use App\Enums\ExpenseGroup;
 use App\Filament\Clusters\Expanes\ExpanesCluster;
 use App\Filament\Forms\Components\DecimalInput;
 use App\Filament\Forms\Components\MorphField;
@@ -42,9 +43,9 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Component;
 
-class StoreExpense extends Page implements HasActions, HasTable
+class CurrencyExpense extends Page implements HasActions, HasTable
 {
-    // use HasSinglePage;
+    use HasSinglePage;
 
     use InteractsWithActions;
     use InteractsWithTable;
@@ -55,10 +56,11 @@ class StoreExpense extends Page implements HasActions, HasTable
 
     public function table(Table $table): Table
     {
-        //self::translateConfigureTable();
+        // dd(Expense::types('debtors'));
+        self::translateConfigureTable();
         // dd(ExpansesType::getGroupName('store'));
         return $table
-            ->query(Expense::whereIn('expense_type_id', ExpenseType::where('group', 'store')->pluck('id')))
+            ->query(Expense::types('debtors'))
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->label('رقم المصروف')
@@ -79,10 +81,10 @@ class StoreExpense extends Page implements HasActions, HasTable
                     ->formatStateUsing(fn($record) => optional($record->payer)->name)
                     ->searchable(),
 
-                /* Tables\Columns\TextColumn::make('beneficiary.name')
+                Tables\Columns\TextColumn::make('beneficiary.name')
                     ->label('الحساب المستفيد')
                     ->formatStateUsing(fn($record) => optional($record->beneficiary)->name)
-                    ->searchable(), */
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('branch.name')
                     ->label('المخزن')
@@ -134,16 +136,18 @@ class StoreExpense extends Page implements HasActions, HasTable
 
     public static function expenseForm()
     {
+        $type = ExpenseType::where('group', 'debtors');
         return [
             Grid::make()->columns(2)
                 ->schema([
 
                     Section::make()->schema([
                         // 1. القيمة المخفية لنوع المصروف (Fixed for this page)
-                        Forms\Components\Select::make('expense_type')
+                        Forms\Components\Select::make('expense_type_id')
                             ->live()
-                            ->options(ExpenseType::where('group', 'store')->pluck('label', 'id'))
+                            ->options($type->pluck('label', 'id'))
                             ->required()
+                            ->default($type->first()?->id)
                             ->columnSpanFull(),
 
 
@@ -161,16 +165,16 @@ class StoreExpense extends Page implements HasActions, HasTable
 
                         // 2. الحساب المستفيد (إلى) - يفترض أنه حساب يتعلق بالمخزن
 
-                        /*  MorphSelect::make('beneficiary_select')
+                        MorphSelect::make('beneficiary_select')
                             ->label('الي حساب')
                             ->models([
                                 'user' => \App\Models\User::class,
-                                'customer' => \App\Models\Customer::class,
+                                'customer' => fn() => \App\Models\Customer::where('permanent', ExpenseGroup::DEBTORS->value)->get(),
                             ])
                             ->required(),
 
                         Forms\Components\Hidden::make('beneficiary_id'),
-                        Forms\Components\Hidden::make('beneficiary_type'), */
+                        Forms\Components\Hidden::make('beneficiary_type'),
 
                         Forms\Components\Select::make('branch_id')
                             ->label(__('المخزن'))

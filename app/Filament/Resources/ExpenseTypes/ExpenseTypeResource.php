@@ -1,15 +1,17 @@
 <?php
 
-namespace App\Filament\Resources\Ports;
+namespace App\Filament\Resources\ExpenseTypes;
 
+use App\Enums\ExpenseGroup;
 use App\Filament\Pages\Concerns\HasResource;
-use App\Filament\Resources\Ports\Pages\ManagePorts;
-use App\Models\Port;
+use App\Filament\Resources\ExpenseTypes\Pages\ManageExpenseTypes;
+use App\Models\ExpenseType;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -17,24 +19,29 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class PortResource extends Resource
+class ExpenseTypeResource extends Resource
 {
     use HasResource;
-    protected static ?string $model = Port::class;
+
+    protected static ?string $model = ExpenseType::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'name';
+    protected static ?string $recordTitleAttribute = 'label';
 
     public static function form(Schema $schema): Schema
     {
         self::translateConfigureForm();
         return $schema
             ->components([
-                TextInput::make('name')
+                TextInput::make('key')
                     ->required(),
-                TextInput::make('description')
-                    ->nullable(),
+                TextInput::make('label')
+                    ->required(),
+                Select::make('group')
+                    ->options(ExpenseGroup::class)
+                    ->default(null),
+
             ]);
     }
 
@@ -42,11 +49,18 @@ class PortResource extends Resource
     {
         self::translateConfigureTable();
         return $table
-            ->recordTitleAttribute('name')
+            ->recordTitleAttribute('label')
             ->columns([
-                TextColumn::make('name')
+                TextColumn::make('key')
                     ->searchable(),
-                TextColumn::make('description')
+                TextColumn::make('label')
+                    ->searchable(),
+                TextColumn::make('group')
+                    ->badge()
+                    ->searchable(),
+                TextColumn::make('icon')
+                    ->searchable(),
+                TextColumn::make('color')
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -74,7 +88,7 @@ class PortResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ManagePorts::route('/'),
+            'index' => ManageExpenseTypes::route('/'),
         ];
     }
 }

@@ -4,6 +4,7 @@ namespace App\Filament\Forms\Components;
 
 use Filament\Forms\Components\Select;
 use Closure;
+use Illuminate\Database\Eloquent\Builder;
 
 class MorphSelect extends Select
 {
@@ -36,7 +37,7 @@ class MorphSelect extends Select
         $this->setUpOptions();
         $this->reactive();
 
-        // Hydrate state تلقائيًا من id & type عند التحديث
+        // Hydrate state من id & type عند التحديث
         $this->afterStateHydrated(function (MorphSelect $component, $state, callable $get) {
             if (!$state) {
                 $id = $get($this->getIdField());
@@ -51,11 +52,11 @@ class MorphSelect extends Select
 
         $this->afterStateUpdated(function ($state, callable $set) {
             if (!$state) return;
-
             foreach ($this->getModels() as $prefix => $class) {
                 if (str_starts_with($state, "{$prefix}_")) {
                     $set($this->getIdField(), (int) str_replace("{$prefix}_", '', $state));
                     $set($this->getTypeField(), $class);
+
                     break;
                 }
             }
@@ -64,9 +65,22 @@ class MorphSelect extends Select
 
     protected function getModels(): array
     {
-        return is_callable($this->models)
-            ? call_user_func($this->models)
-            : $this->models;
+        $models = is_callable($this->models) ? call_user_func($this->models) : $this->models;
+
+        // لو returned array من Closure فيها Builder أو Collection، نرجع فقط اسم الكلاس
+        foreach ($models as $prefix => $model) {
+            if ($model instanceof \Closure) {
+                // نحاول نحتفظ باسم الكلاس الأصلي (مثلاً من الـ Builder)
+                $builder = $model();
+                if ($builder instanceof \Illuminate\Database\Eloquent\Builder) {
+                    $models[$prefix] = $builder->getModel()::class;
+                } elseif ($builder instanceof \Illuminate\Database\Eloquent\Collection && $builder->first()) {
+                    $models[$prefix] = get_class($builder->first());
+                }
+            }
+        }
+
+        return $models;
     }
 
     protected function detectMorphFields(): void
@@ -83,15 +97,31 @@ class MorphSelect extends Select
         $this->options(function () {
             $options = [];
             foreach ($this->getModels() as $prefix => $model) {
-                $records = $model::query()
-                    ->select('id', 'name')
-                    ->get()
-                    ->mapWithKeys(fn($record) => [
-                        "{$prefix}_{$record->id}" => ($prefix === 'user' ? '👤 ' : '💼 ') . $record->name
-                    ]);
 
-                $options = array_merge($options, $records->toArray());
+                if (is_callable($model)) {
+                    $records = $model();
+                    if ($records instanceof Builder) {
+                        $records = $records->select('id', 'name', 'permanent')->get();
+                    }
+                } else {
+                    $records = $model::query()->select('id', 'name', 'permanent')->get();
+                }
+
+                $mapped = $records->mapWithKeys(function ($record) use ($prefix) {
+                    $label = $record->name;
+
+                    // لو Customer، أضف النوع بين قوسين
+                    if (property_exists($record, 'permanent')) {
+                        $label .= " ({$record->permanent})";
+                    }
+
+                    $icon = $prefix === 'user' ? '👤 ' : '💼 ';
+                    return ["{$prefix}_{$record->id}" => $icon . $label];
+                })->toArray();
+
+                $options = array_merge($options, $mapped);
             }
+
             return $options;
         });
     }

@@ -17,6 +17,7 @@ class CustomerFactory extends Factory
             'name' => $this->faker->name(),
             'phone' => $this->faker->phoneNumber(),
             'email' => $this->faker->unique()->safeEmail(),
+            'address' => $this->faker->address(),
             'permanent' => $this->faker->randomElement([
                 ExpenseType::SALE->value,
                 ExpenseType::GOVERNMENT_FEES->value,

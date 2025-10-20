@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Filament\Resources\Ports;
+namespace App\Filament\Resources\Units;
 
 use App\Filament\Pages\Concerns\HasResource;
-use App\Filament\Resources\Ports\Pages\ManagePorts;
-use App\Models\Port;
+use App\Filament\Resources\Units\Pages\ManageUnits;
+use App\Models\Unit;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -17,10 +17,10 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class PortResource extends Resource
+class UnitResource extends Resource
 {
     use HasResource;
-    protected static ?string $model = Port::class;
+    protected static ?string $model = Unit::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
@@ -48,6 +48,10 @@ class PortResource extends Resource
                     ->searchable(),
                 TextColumn::make('description')
                     ->searchable(),
+                TextColumn::make('deleted_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -74,7 +78,7 @@ class PortResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ManagePorts::route('/'),
+            'index' => ManageUnits::route('/'),
         ];
     }
 }

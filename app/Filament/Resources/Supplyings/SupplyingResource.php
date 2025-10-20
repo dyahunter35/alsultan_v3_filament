@@ -21,8 +21,9 @@ class SupplyingResource extends Resource
     use HasResource;
 
     protected static ?string $model = Supplying::class;
+    protected static string | \BackedEnum | null $navigationIcon = Heroicon::CurrencyDollar;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static ?int $navigationSort = 3;
 
     protected static ?string $recordTitleAttribute = 'customer_id';
 
