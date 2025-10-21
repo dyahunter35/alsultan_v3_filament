@@ -9,6 +9,7 @@ use App\Models\Customer;
 use App\Enums\ExpenseType;
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentOptions;
+use App\Models\ExpenseType as ModelsExpenseType;
 
 class ExpenseSeeder extends Seeder
 {
@@ -16,6 +17,7 @@ class ExpenseSeeder extends Seeder
     {
         $users = User::all();
         $customers = Customer::all();
+        $expenseType = ModelsExpenseType::all();
 
         if ($users->isEmpty() || $customers->isEmpty()) {
             $this->command->warn('⚠️ ما في بيانات كفاية في users أو customers لإضافة المصروفات.');
@@ -28,8 +30,7 @@ class ExpenseSeeder extends Seeder
         for ($i = 0; $i < $count; $i++) {
             $beneficiary = $i % 2 === 0 ? $customers->random() : $users->random();
             $payer = $i % 2 === 0 ? $customers->random() : $users->random();
-
-            $expenseType = collect(ExpenseType::cases())->random();
+            $expenseType1 = $expenseType->random();
             $paymentMethod = collect(PaymentOptions::cases())->random();
 
             DB::table('expenses')->insert([
@@ -43,7 +44,7 @@ class ExpenseSeeder extends Seeder
                 'unit_price' => fake()->randomFloat(2, 50, 500),
                 'total_amount' => fake()->randomFloat(2, 500, 2000),
                 'remaining_amount' => fake()->randomFloat(2, 0, 500),
-                'expense_type' => $expenseType->value,
+                'expense_type' => $expenseType1,
                 'payment_method' => $paymentMethod->value,
                 'payment_reference' => strtoupper(fake()->bothify('PAY-###??')),
                 'is_paid' => fake()->boolean(70),
