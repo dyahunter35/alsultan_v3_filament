@@ -1,7 +1,7 @@
 <?php
 return [
     'navigation' => [
-        'group' => 'العملات',
+        'group' => 'المالية',
         'label' => 'أنواع المصروفات',
         'plural_label' => 'أنواع المصروفات',
         'model_label' => 'نوع المصروف',

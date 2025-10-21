@@ -21,6 +21,15 @@ class Company extends Model
         'type' => CompanyType::class
     ];
 
+    public function scopeCompany($query)
+    {
+        return $query->where('type', CompanyType::Company->value);
+    }
+
+    public function scopeContractor($query)
+    {
+        return $query->where('type', CompanyType::Contractor->value);
+    }
 
     // Trucks where this company is the "company"
     public function trucksAsCompany()
@@ -34,7 +43,10 @@ class Company extends Model
         return $this->hasMany(Truck::class, 'contractor_id');
     }
 
-
+    public function currencyTransactions()
+    {
+        return $this->morphMany(CurrencyTransaction::class, 'party');
+    }
     public function expenses()
     {
         // through trucks
@@ -44,7 +56,7 @@ class Company extends Model
     protected function firstName(): Attribute
     {
         return Attribute::make(
-            get: fn(string $value) => $this->trucks(),
+            // get: fn(string $value) => $this->trucks(),
             //set: fn (string $value) => strtolower($value),
         );
     }

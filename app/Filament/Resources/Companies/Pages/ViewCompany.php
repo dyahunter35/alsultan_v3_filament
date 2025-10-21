@@ -20,6 +20,7 @@ class ViewCompany extends ViewRecord
         return [
             //Widgets\Companystate::make(['record', $this->record]),
             Widgets\CompanyFinanceOverview::class,
+            Widgets\CurrencyWidget::class,
         ];
     }
 

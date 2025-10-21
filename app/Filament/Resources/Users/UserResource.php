@@ -79,16 +79,22 @@ class UserResource extends Resource
                             ->maxLength(255),
 
                         TextInput::make('password')
-                            ->label(__('user.fields.password.label'))
-                            ->placeholder(__('user.fields.password.placeholder'))
-                            ->password()
-                            ->required()
-                            ->revealable(filament()->arePasswordsRevealable())
-                            ->rule(Password::default())
-                            ->autocomplete('new-password')
-                            ->dehydrated(fn($state): bool => filled($state))
-                            ->dehydrateStateUsing(fn($state): string => Hash::make($state))
-                            ->live(debounce: 500),
+                            ->label('كلمة السر')
+                            ->placeholder('أدخل كلمة السر الجديدة')
+                            ->password()                          // يخفي النص المدخل
+                            ->required(fn($record) => !$record)
+                            ->revealable()                        // زر لإظهار/إخفاء كلمة السر
+                            ->rule(
+                                Password::default()          // الحد الأدنى للطول
+                                //->mixedCase()         // يجب أن تحتوي على حروف كبيرة وصغيرة
+                                //->letters()           // يجب أن تحتوي على حروف
+                                //->numbers()           // يجب أن تحتوي على أرقام
+                                //->symbols()           // يجب أن تحتوي على رموز
+                                //->uncompromised()     // تتحقق من عدم تسريبها في خروقات
+                            )->dehydrated(fn($state) => filled($state))  // حفظ فقط إذا تم تعبئتها
+                            ->dehydrateStateUsing(fn($state) => Hash::make($state)) // تشفير قبل الحفظ
+                        //->helperText('يجب أن تحتوي كلمة السر على 8 أحرف على الأقل، أحرف كبيرة وصغيرة، أرقام ورموز.')
+
                     ])->columnSpan(2)
                     ->columns(2),
                 Section::make(__('user.sections.roles'))
@@ -170,19 +176,19 @@ class UserResource extends Resource
             ])
             ->toolbarActions([
                 Action::make('export_pdf')
-                ->label('Export PDF')
-                // ->icon('heroicon-o-pdf')
-                ->action(function (\Filament\Tables\Contracts\HasTable $livewire) {
-                    // جلب بيانات الجدول حسب الفلترة الحالية
-                    $data = $livewire->getFilteredTableQuery()->get();
+                    ->label('Export PDF')
+                    // ->icon('heroicon-o-pdf')
+                    ->action(function (\Filament\Tables\Contracts\HasTable $livewire) {
+                        // جلب بيانات الجدول حسب الفلترة الحالية
+                        $data = $livewire->getFilteredTableQuery()->get();
 
-                    $pdf = Pdf::loadView('filament.resources.user-resource.reports.users-print', compact('data'));
+                        $pdf = Pdf::loadView('filament.resources.user-resource.reports.users-print', compact('data'));
 
-                    return response()->streamDownload(
-                        fn() => print($pdf->output()),
-                        'users.pdf'
-                    );
-                }),
+                        return response()->streamDownload(
+                            fn() => print($pdf->output()),
+                            'users.pdf'
+                        );
+                    }),
 
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

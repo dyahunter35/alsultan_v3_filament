@@ -1,7 +1,8 @@
 <?php
 
 return [
-    'name' => 'Alsultan Co',
-    'phone' => '+249 11932935 - +249 994550705'
-
+    'name' => 'Alsultan Company',
+    'address' => 'Sudan, Omdurman, Popular Market',
+    'phone' => '+249912345678',
+    'email' => 'test@test.com',
 ];

@@ -24,6 +24,8 @@ use Filament\Actions\RestoreAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
@@ -61,6 +63,7 @@ class CurrencyExpense extends Page implements HasActions, HasTable
         // dd(ExpansesType::getGroupName('store'));
         return $table
             ->query(Expense::types('debtors'))
+            ->defaultSort('id', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->label('رقم المصروف')
@@ -130,6 +133,10 @@ class CurrencyExpense extends Page implements HasActions, HasTable
             ->toolbarActions([
                 CreateAction::make()
                     ->schema($this->expenseForm())
+                    ->preserveFormDataWhenCreatingAnother(fn(array $data): array => $data)
+
+
+
 
             ]);
     }
@@ -138,18 +145,31 @@ class CurrencyExpense extends Page implements HasActions, HasTable
     {
         $type = ExpenseType::where('group', 'debtors');
         return [
-            Grid::make()->columns(2)
+            Grid::make()
+                ->columns(1)
                 ->schema([
 
                     Section::make()->schema([
                         // 1. القيمة المخفية لنوع المصروف (Fixed for this page)
                         Forms\Components\Select::make('expense_type_id')
-                            ->live()
+                            ->label('نوع المصروف')
                             ->options($type->pluck('label', 'id'))
                             ->required()
                             ->default($type->first()?->id)
                             ->columnSpanFull(),
 
+
+
+                        MorphSelect::make('beneficiary_select')
+                            ->label('الي حساب')
+                            ->models([
+                                'user' => \App\Models\Company::class,
+                                'customer' => fn() => \App\Models\Customer::where('permanent', ExpenseGroup::DEBTORS->value)->get(),
+                            ])
+                            ->required(),
+
+                        Forms\Components\Hidden::make('beneficiary_id'),
+                        Forms\Components\Hidden::make('beneficiary_type'),
 
                         // 3. الحساب الدافع (الدفع من حساب)
                         MorphSelect::make('payer_select')
@@ -165,65 +185,13 @@ class CurrencyExpense extends Page implements HasActions, HasTable
 
                         // 2. الحساب المستفيد (إلى) - يفترض أنه حساب يتعلق بالمخزن
 
-                        MorphSelect::make('beneficiary_select')
-                            ->label('الي حساب')
-                            ->models([
-                                'user' => \App\Models\User::class,
-                                'customer' => fn() => \App\Models\Customer::where('permanent', ExpenseGroup::DEBTORS->value)->get(),
-                            ])
-                            ->required(),
 
-                        Forms\Components\Hidden::make('beneficiary_id'),
-                        Forms\Components\Hidden::make('beneficiary_type'),
-
-                        Forms\Components\Select::make('branch_id')
-                            ->label(__('المخزن'))
-                            ->relationship('branch', 'name') // يفترض وجود علاقة 'store' في موديل Expense
-                            ->required()
-                            ->default(fn() => Filament::getTenant()->id),
-
-                        // 5. الكمية / amount (عدد الوحدات المشتراة/الكمية)
-                        DecimalInput::make('amount')
-                            ->label(__('الكمية'))
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(
-                                function ($set, $get, $state) {
-                                    $price = $get('unit_price') ?? 0;
-                                    $amount = $get('amount') ?? 0;
-                                    $set('total_amount', ($amount * $price));
-                                }
-                            )
-                            ->required(),
-
-                        // 6. سعر الوحدة / unit_price
-                        DecimalInput::make('unit_price')
-                            ->label(__('سعر الوحدة'))
-                            ->numeric()
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(
-                                function ($set, $get, $state) {
-                                    $price = $get('unit_price') ?? 1;
-                                    $amount = $get('amount') ?? 1;
-                                    $set('total_amount', ($amount * $price));
-                                }
-                            )
-                            ->required(),
-
-                        DecimalInput::make('total_amount')
-                            ->label(__('الصافي')),
-
-                        // 11. الملاحظات
-                        Forms\Components\Textarea::make('notes')
-                            ->label(__('ملاحظات'))
-
-                            ->rows(2)
-                            ->columnSpanFull() // يجعل حقل الملاحظات يأخذ عرض العمودين كاملاً
+                        Select::make('representative_id')
+                            ->label(__('المندوب'))
+                            ->options(User::sales())
                             ->nullable(),
 
-                    ])
-                        ->columns(2)
-                        ->columnSpan(2),
-                    Section::make()->schema([
+
                         // 7. وسيلة الدفع
                         Forms\Components\Select::make('payment_method')
                             ->label(__('وسيلة الدفع'))
@@ -234,6 +202,49 @@ class CurrencyExpense extends Page implements HasActions, HasTable
                             ->label(__('رقم الإشعار/الإيصال'))
                             ->numeric()
                             ->nullable(),
+                        /* Forms\Components\Select::make('branch_id')
+                            ->label(__('المخزن'))
+                            ->relationship('branch', 'name') // يفترض وجود علاقة 'store' في موديل Expense
+                            ->required()
+                            ->default(fn() => Filament::getTenant()->id), */
+
+                        // 5. الكمية / amount (عدد الوحدات المشتراة/الكمية)
+
+                        // 10. التاريخ
+                        Forms\Components\DateTimePicker::make('created_at')
+                            ->label(__('تاريخ العملية'))
+                            ->default(now()),
+
+                        Forms\Components\Textarea::make('notes')
+                            ->label(__('ملاحظات'))
+
+                            ->rows(2)
+                            ->columnSpanFull() // يجعل حقل الملاحظات يأخذ عرض العمودين كاملاً
+                            ->nullable(),
+                        Hidden::make('amount')
+                            ->label(__('الكمية'))
+                            ->default(1)
+                            ->required(),
+
+                        // 6. سعر الوحدة / unit_price
+                        DecimalInput::make('unit_price')
+                            ->label(__('المبلغ المراد تحويله'))
+                            ->numeric()
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(
+                                function ($set, $get, $state) {
+                                    $price = $get('unit_price') ?? 1;
+                                    $amount = 1;
+                                    $set('total_amount', ($amount * $price));
+                                }
+                            )
+                            ->required(),
+
+
+
+                        DecimalInput::make('total_amount')
+                            ->readOnly()
+                            ->label(__('الصافي')),
 
                         // 9. حالة الدفع (عاجل/مؤجل)
                         Forms\Components\Select::make('is_paid')
@@ -241,13 +252,10 @@ class CurrencyExpense extends Page implements HasActions, HasTable
                             ->options([1 => 'مدفوع (عاجل)', 0 => 'غير مدفوع (مؤجل)'])
                             ->default(1),
 
-                        // 10. التاريخ
-                        Forms\Components\DateTimePicker::make('created_at')
-                            ->label(__('تاريخ العملية'))
-                            ->default(now()),
+
                     ])
-                        ->columnSpan(2)
-                        ->columns(2)
+                        ->columnSpan(1)
+                        ->columns(1)
                 ])
 
         ];

@@ -33,6 +33,12 @@ class Customer extends Model implements HasMedia
         'permanent' => ExpenseGroup::class,
     ];
 
+    public function scopePer($query, $type)
+    {
+        return $query->where('permanent', $type);
+    }
+
+
     public function getNameAttribute($value): string
     {
 

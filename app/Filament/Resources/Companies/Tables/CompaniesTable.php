@@ -25,10 +25,10 @@ class CompaniesTable
                     ->badge()
                     ->searchable(),
 
-                TextColumn::make('trucks_count')
-                    ->counts('trucks')
+                /* TextColumn::make('trucks_count')
+                    ->counts('trucksAsCompany')
                     ->badge()
-                    ->searchable(),
+                    ->searchable(), */
 
                 TextColumn::make('created_at')
                     ->dateTime()

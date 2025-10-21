@@ -14,7 +14,7 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Url;
 
-class CustomersReport extends Page implements Forms\Contracts\HasForms
+class CurrencyCustomersReport extends Page implements Forms\Contracts\HasForms
 {
     use HasReport;
     use Forms\Concerns\InteractsWithForms;
@@ -36,6 +36,7 @@ class CustomersReport extends Page implements Forms\Contracts\HasForms
 
     public function getTitle(): string | Htmlable
     {
+        dd(self::getLocalePath());
         return $this->customer
             ? __('customer.reports.ledger.title_for', ['customer' => $this->customer->name])
             : __('customer.reports.ledger.title');
@@ -88,7 +89,7 @@ class CustomersReport extends Page implements Forms\Contracts\HasForms
                 ->schema([
                     Forms\Components\Select::make('customerId')
                         ->label('العميل')
-                        ->options(Customer::per(ExpenseGroup::SALE)->pluck('name', 'id'))
+                        ->options(Customer::per(ExpenseGroup::DEBTORS)->pluck('name', 'id'))
                         ->searchable()
                         ->reactive()
                         ->afterStateUpdated(fn() => $this->loadLedger()),

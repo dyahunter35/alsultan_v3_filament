@@ -63,6 +63,13 @@ class User extends Authenticatable implements HasTenants
         ];
     }
 
+
+    public function scopeSales($query)
+    {
+        return User::role('sales')->pluck('name', 'id');
+    }
+
+
     protected function repName(): Attribute
     {
         // #TODO :: update role

@@ -22,7 +22,13 @@
                 font-family: Amiri, sans-serif;
                 width: 100%;
                 margin: 0 auto;
-                background: white;
+                margin-top: 33px;
+            }
+
+            h3,
+            h2 {
+
+                font-style: bold;
             }
 
             header {
@@ -62,7 +68,7 @@
             }
         </style>
     </head>
-    <div class="space-y-6 content">
+    <div class="mt-6 space-y-6 content">
         {{-- 🔹 الفلاتر --}}
         <div class="p-4 bg-white shadow-sm dark:bg-gray-800 rounded-xl">
             {{ $this->form }}
@@ -75,10 +81,12 @@
                 <header class="clearfix">
                     <div id="logo" style="text-align:center; margin-top:10px;">
                         <img width="80" src="{{ asset('asset/logo.png') }}" alt="logo" class="mx-auto" />
-                        <h3>{{ config('constants.app_name', 'اسم النظام') }}</h3>
+                        <h2 class="text-bold">{{ __('app.name') }}</h2>
+                        <h3>{{ __('app.address') }}</h3>
                     </div>
                     <h2 style="margin:10px 0; border-top:1px solid #aaa; border-bottom:1px solid #aaa; padding:4px;">
-                        كشف حساب العميل: {{ $customer?->name ?? '—' }}
+                        {{-- كشف حساب العميل: {{ $customer?->name ?? '—' }} --}}
+                        {{ $this->getTitle() }}
                     </h2>
 
                     <div class="border row" style="border:1px dashed #999; padding:6px;">
