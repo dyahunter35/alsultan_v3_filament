@@ -44,7 +44,7 @@ class ExpenseSeeder extends Seeder
                 'unit_price' => fake()->randomFloat(2, 50, 500),
                 'total_amount' => fake()->randomFloat(2, 500, 2000),
                 'remaining_amount' => fake()->randomFloat(2, 0, 500),
-                'expense_type_id' => $expenseType1,
+                'expense_type_id' => $expenseType1->id,
                 'payment_method' => $paymentMethod->value,
                 'payment_reference' => strtoupper(fake()->bothify('PAY-###??')),
                 'is_paid' => fake()->boolean(70),
