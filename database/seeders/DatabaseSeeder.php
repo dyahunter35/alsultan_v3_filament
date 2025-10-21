@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Currency;
+use App\Models\Unit;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -23,9 +25,12 @@ class DatabaseSeeder extends Seeder
             ContractSeeder::class,
             CustomerSeeder::class,
             PortSeeder::class,
+            UnitSeeder::class,
             ProductSeeder::class,
-            TruckSeeder::class
-
+            TruckSeeder::class,
+            CurrenciesSeeder::class,
+            ExpenseTypesSeeder::class,
+            ExpenseSeeder::class,
         ]);
     }
 }
