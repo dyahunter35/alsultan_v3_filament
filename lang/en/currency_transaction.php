@@ -1,11 +1,11 @@
 <?php
 return [
     'navigation' => [
-        'group' => 'Currency Transactions',
+        'group' => 'Finance',
         'label' => 'CurrencyTransactions',
         'plural_label' => 'CurrencyTransactions',
         'model_label' => 'CurrencyTransaction',
-        'icon' => 'heroicon-m-building-office-2',
+        'icon' => 'heroicon-m-currency-dollar',
     ],
     'breadcrumbs' => [
         'index' => 'CurrencyTransactions',

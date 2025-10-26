@@ -53,6 +53,8 @@ class StoreExpense extends Page implements HasActions, HasTable
 
     protected static ?string $cluster = ExpanesCluster::class;
 
+    protected static ?int $navigationSort = 2;
+
     public function table(Table $table): Table
     {
         //self::translateConfigureTable();

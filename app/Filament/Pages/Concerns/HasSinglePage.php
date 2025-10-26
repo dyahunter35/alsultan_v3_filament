@@ -15,10 +15,14 @@ trait HasSinglePage
 {
     use HasTranslateConfigure;
 
+    public static function className()
+    {
+        return Str::of(class_basename(static::class))->snake()->value();
+    }
+
     public static function getLocalePath(): string
     {
-
-        return Str::of(class_basename(static::class))->snake();
+        return self::className();
     }
 
     public static function getLocale($key): string | null
@@ -53,6 +57,11 @@ trait HasSinglePage
         return null;
     }
 
+    public static function getNavigationGroup(): ?string
+    {
+        return static::getLocale('navigation.group') ?? parent::getNavigationGroup();
+    }
+
     public static function getActiveNavigationIcon(): string | BackedEnum | Htmlable | null
     {
         $localePath = static::getLocalePath();
@@ -68,6 +77,7 @@ trait HasSinglePage
         $localePath = static::getLocalePath();
 
         if (trans()->has($locale = $localePath . '.' . 'navigation.heading', [], app()->getLocale())) {
+
             return trans($locale);
         }
         return static::$navigationLabel ?? static::$title ?? str(class_basename(static::class))

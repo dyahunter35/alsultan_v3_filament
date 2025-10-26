@@ -13,6 +13,8 @@ class CurrencyTransaction extends Model
         'currency_id',
         'party_type',
         'party_id',
+        'payer_type',
+        'payer_id',
         'amount',
         'total',
         'transaction_type',
@@ -25,6 +27,11 @@ class CurrencyTransaction extends Model
     }
 
     public function party()
+    {
+        return $this->morphTo();
+    }
+
+    public function payer()
     {
         return $this->morphTo();
     }

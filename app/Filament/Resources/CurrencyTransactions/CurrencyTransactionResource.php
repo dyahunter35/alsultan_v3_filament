@@ -42,8 +42,16 @@ class CurrencyTransactionResource extends Resource
         self::translateConfigureForm();
         return $schema
             ->components([
-                Select::make('currency_id')
-                    ->relationship('currency', 'name')
+
+                MorphSelect::make('payer')
+                    ->models([
+                        'company' => \App\Models\Company::class,
+                        'customer' => fn() => \App\Models\Customer::where('permanent', ExpenseGroup::DEBTORS->value)->get(),
+                    ]),
+
+                Hidden::make('payer_type')
+                    ->required(),
+                Hidden::make('payer_id')
                     ->required(),
 
                 MorphSelect::make('party')
@@ -54,6 +62,10 @@ class CurrencyTransactionResource extends Resource
                 Hidden::make('party_type')
                     ->required(),
                 Hidden::make('party_id')
+                    ->required(),
+
+                Select::make('currency_id')
+                    ->relationship('currency', 'name')
                     ->required(),
                 DecimalInput::make('amount')
                     ->required()
@@ -99,6 +111,8 @@ class CurrencyTransactionResource extends Resource
                 TextColumn::make('currency.name')
                     ->numeric()
                     ->sortable(),
+                TextColumn::make('payer.name')
+                    ->searchable(),
                 TextColumn::make('party.name')
                     ->searchable(),
 

@@ -5,6 +5,7 @@ return [
         'label' => 'Trucks',
         'plural_label' => 'Trucks',
         'model_label' => 'Truck',
+        'icon' => 'heroicon-m-truck',
     ],
     'breadcrumbs' => [
         'index' => 'Trucks',

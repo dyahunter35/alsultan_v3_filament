@@ -5,7 +5,7 @@ return [
         'label' => 'المنصرفات',
         'plural_label' => 'المنصرفات',
         'model_label' => 'منصرف',
-        'icon' => 'heroicon-m-currency-dollar'
+        'icon' => 'heroicon-m-currency-dollar',
     ],
     'breadcrumbs' => [
         'index' => 'المنصرفات',
@@ -14,15 +14,15 @@ return [
     ],
     'tabs' => [
         'currency' => [
-            'label' => 'العملة/التحويل',
-            'icon' => 'heroicon-o-user'
+            'label' => 'العملة / التحويل',
+            'icon' => 'heroicon-o-user',
         ],
-        'store' => 'منصرفات مخازن',
-        'financial' => 'معاملات مالية',
-        'customs' => 'جمارك',
-        'papers' => 'شهادات وارد',
-        'tax' => 'ضرائب',
-        'government' => 'رسوم حكومية',
+        'store' => 'منصرفات المخازن',
+        'financial' => 'المعاملات المالية',
+        'customs' => 'الجمارك',
+        'papers' => 'شهادات الوارد',
+        'tax' => 'الضرائب',
+        'government' => 'الرسوم الحكومية',
     ],
     'fields' => [
         'exp_type' => [
@@ -42,30 +42,30 @@ return [
             'placeholder' => 'اختر المندوب',
         ],
         'payed_method' => [
-            'label' => 'وسيلة الدفع',
-            'placeholder' => 'اختر وسيلة الدفع',
+            'label' => 'طريقة الدفع',
+            'placeholder' => 'اختر طريقة الدفع',
         ],
         'payed_serial' => [
-            'label' => 'رقم الاشعار',
-            'placeholder' => 'ادخل رقم الاشعار',
+            'label' => 'رقم الإشعار',
+            'placeholder' => 'أدخل رقم الإشعار',
         ],
         'quantity' => [
-            'label' => 'المبلغ المراد تحويله',
-            'placeholder' => 'ادخل المبلغ',
+            'label' => 'المبلغ',
+            'placeholder' => 'أدخل المبلغ',
         ],
         'price' => [
             'label' => 'السعر',
-            'placeholder' => 'ادخل السعر',
+            'placeholder' => 'أدخل السعر',
         ],
         'formatted_quantity' => [
-            'label' => 'المبلغ كتابة',
+            'label' => 'المبلغ كتابةً',
         ],
         'statement' => [
-            'label' => 'ملاحظات',
-            'placeholder' => 'ادخل الملاحظات',
+            'label' => 'الوصف / الملاحظات',
+            'placeholder' => 'أدخل الملاحظات',
         ],
         'payed' => [
-            'label' => 'طريقة الدفع',
+            'label' => 'نوع الدفع',
             'options' => [
                 'urgent' => 'عاجل',
                 'delayed' => 'مؤجل',
@@ -76,26 +76,26 @@ return [
             'placeholder' => 'اختر المخزن',
         ],
         'total' => [
-            'label' => 'الصافي',
+            'label' => 'الإجمالي',
         ],
         'total_price' => [
-            'label' => 'المتبقي',
+            'label' => 'الرصيد المتبقي',
         ],
         'tax_number' => [
             'label' => 'رقم الضريبة',
-            'placeholder' => 'ادخل رقم الضريبة',
+            'placeholder' => 'أدخل رقم الضريبة',
         ],
         'tax_amount' => [
             'label' => 'قيمة الضريبة',
-            'placeholder' => 'ادخل قيمة الضريبة',
+            'placeholder' => 'أدخل قيمة الضريبة',
         ],
         'gov_fee_type' => [
             'label' => 'نوع الرسوم',
-            'placeholder' => 'ادخل نوع الرسوم',
+            'placeholder' => 'أدخل نوع الرسوم',
         ],
         'gov_fee_amount' => [
             'label' => 'قيمة الرسوم',
-            'placeholder' => 'ادخل قيمة الرسوم',
+            'placeholder' => 'أدخل قيمة الرسوم',
         ],
         'created_at' => [
             'label' => 'التاريخ',

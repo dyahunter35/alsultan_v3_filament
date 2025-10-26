@@ -33,6 +33,9 @@ class ExpenseSeeder extends Seeder
             $expenseType1 = $expenseType->random();
             $paymentMethod = collect(PaymentOptions::cases())->random();
 
+            $amount = fake()->numberBetween(1, 10);
+            $price = fake()->randomFloat(2, 50, 500);
+            $total = $amount * $price;
             DB::table('expenses')->insert([
                 'beneficiary_type' => get_class($beneficiary),
                 'beneficiary_id' => $beneficiary->id,
@@ -40,10 +43,10 @@ class ExpenseSeeder extends Seeder
                 'payer_id' => $payer->id,
                 'representative_id' => $users->random()->id,
                 'branch_id' => 1,
-                'amount' => fake()->numberBetween(1, 10),
-                'unit_price' => fake()->randomFloat(2, 50, 500),
-                'total_amount' => fake()->randomFloat(2, 500, 2000),
-                'remaining_amount' => fake()->randomFloat(2, 0, 500),
+                'amount' => $amount,
+                'unit_price' => $price,
+                'total_amount' => $total,
+                'remaining_amount' => fake()->randomFloat(2, 0, $total),
                 'expense_type_id' => $expenseType1->id,
                 'payment_method' => $paymentMethod->value,
                 'payment_reference' => strtoupper(fake()->bothify('PAY-###??')),

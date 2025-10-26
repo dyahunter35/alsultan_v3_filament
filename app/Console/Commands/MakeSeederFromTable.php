@@ -15,7 +15,7 @@ class MakeSeederFromTable extends Command
      *
      * @var string
      */
-    protected $signature = 'make:seeder-table {table}';
+    protected $signature = 'make:table-seeder {table}';
     protected $description = 'Generate a seeder from an existing table';
 
     public function handle()

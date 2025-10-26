@@ -56,21 +56,29 @@ class CurrencyExpense extends Page implements HasActions, HasTable
 
     protected static ?string $cluster = ExpanesCluster::class;
 
+    protected static ?int $navigationSort = 1;
+
+    public static function getLocalePath(): string
+    {
+        return 'expense.' . static::className();
+    }
+
     public function table(Table $table): Table
     {
-        // dd(Expense::types('debtors'));
         self::translateConfigureTable();
-        // dd(ExpansesType::getGroupName('store'));
+        self::translateConfigureForm();
         return $table
             ->query(Expense::types('debtors'))
             ->defaultSort('id', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                    ->label('رقم المصروف')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('type.label')
-                    ->label('نوع المنصرف')
                     ->formatStateUsing(
                         fn($state, $record) =>
                         $record->expense_type_id
@@ -80,36 +88,25 @@ class CurrencyExpense extends Page implements HasActions, HasTable
                     ->badge(),
 
                 Tables\Columns\TextColumn::make('payer.name')
-                    ->label('الحساب الدافع')
                     ->formatStateUsing(fn($record) => optional($record->payer)->name)
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('beneficiary.name')
-                    ->label('الحساب المستفيد')
                     ->formatStateUsing(fn($record) => optional($record->beneficiary)->name)
                     ->searchable(),
 
+                Tables\Columns\TextColumn::make('amount'),
+
                 Tables\Columns\TextColumn::make('branch.name')
-                    ->label('المخزن')
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('amount')
-                    ->label('الكمية'),
-
-                Tables\Columns\TextColumn::make('unit_price')
-                    ->label('سعر الوحدة'),
-
-                Tables\Columns\TextColumn::make('total_amount')
-                    ->label('الإجمالي'),
-
+                Tables\Columns\TextColumn::make('amount'),
+                Tables\Columns\TextColumn::make('unit_price'),
+                Tables\Columns\TextColumn::make('total_amount'),
                 Tables\Columns\IconColumn::make('is_paid')
-                    ->label('حالة الدفع')
                     ->boolean(),
 
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('تاريخ الإنشاء')
-                    ->dateTime()
-                    ->sortable(),
+
             ])
             ->filters([
                 TrashedFilter::make()
@@ -134,10 +131,6 @@ class CurrencyExpense extends Page implements HasActions, HasTable
                 CreateAction::make()
                     ->schema($this->expenseForm())
                     ->preserveFormDataWhenCreatingAnother(fn(array $data): array => $data)
-
-
-
-
             ]);
     }
 
@@ -152,15 +145,16 @@ class CurrencyExpense extends Page implements HasActions, HasTable
                     Section::make()->schema([
                         // 1. القيمة المخفية لنوع المصروف (Fixed for this page)
                         Forms\Components\Select::make('expense_type_id')
-                            ->label('نوع المصروف')
                             ->options($type->pluck('label', 'id'))
                             ->required()
+                            ->label(__('expense.currency_expense.fields.type.label'))
                             ->default($type->first()?->id)
                             ->columnSpanFull(),
 
 
 
                         MorphSelect::make('beneficiary_select')
+                            ->label(__('expense.currency_expense.fields.beneficiary.label'))
                             ->label('الي حساب')
                             ->models([
                                 'user' => \App\Models\Company::class,

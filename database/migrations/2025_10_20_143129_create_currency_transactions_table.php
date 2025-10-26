@@ -17,6 +17,9 @@ return new class extends Migration
             // العملية الأساسية
             $table->foreignId('currency_id')->constrained()->cascadeOnDelete();
 
+            // الجهة المدفوعة / المستلمة
+            $table->morphs('payer'); // payer_id , payer_type
+
             // الجهة المرتبطة (Customer / Company / User)
             $table->morphs('party'); // party_id , party_type
 

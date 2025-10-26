@@ -12,11 +12,14 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Model;
 
 class SupplyingForm
 {
     public static function configure(Schema $schema): Schema
     {
+
+
         return $schema
             ->columns(3)
             ->components([
@@ -26,16 +29,20 @@ class SupplyingForm
                     ->schema([
                         Select::make('customer_id')
                             ->relationship('customer', 'name')
+                            ->preload()
+                            ->required()
+                            ->searchable()
                             ->default(fn() => request()->get('customer_id', null)),
                         Select::make('representative_id')
                             ->relationship('representative', 'name')
-                            ->default(null),
+                            ->preload()
+                            ->required()
+                            ->searchable()
+                            ->default(fn() => request()->get('rep_id', null)),
 
                         Select::make('payment_method')
                             ->options(PaymentOptions::class)
                             ->default(null),
-                        Hidden::make('paid_amount')
-                            ->required(),
 
                         TextInput::make('statement')
                             ->required(),
@@ -45,6 +52,10 @@ class SupplyingForm
                             ->required()
                             ->live(onBlur: true)
                             ->numeric(),
+
+                        DecimalInput::make('paid_amount')
+                            ->required(fn(?Model $record) => $record != null),
+
                     ]),
                 Section::make()
                     ->columns(1)
@@ -58,14 +69,9 @@ class SupplyingForm
                             ->required(),
 
                         DatePicker::make('created_at')
-
                             ->default(now()),
                     ]),
-
-
-
                 Hidden::make('created_by')
-
                     ->default(fn() => auth()->user()->id),
             ]);
     }

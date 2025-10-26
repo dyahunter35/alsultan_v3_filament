@@ -13,7 +13,7 @@ class Supplying extends Model
     /**
      * الحقول القابلة للتعبئة
      */
-    protected $fillable = [
+    /* protected $fillable = [
         'customer_id',
         'representative_id',
         'is_completed',
@@ -23,7 +23,9 @@ class Supplying extends Model
         'payment_reference',
         'total_amount',
         'created_by',
-    ];
+    ]; */
+
+    protected $guarded = [];
 
     /**
      * التحويل التلقائي للأنواع
@@ -44,6 +46,8 @@ class Supplying extends Model
             if (auth()->check()) {
                 $supplying->created_by = auth()->id();
             }
+            if ($supplying->is_completed)
+                $supplying->paid_amount = $supplying->total_amount;
         });
         static::created(function ($supplying) {
             app('App\Services\CustomerService')->updateCustomerBalance($supplying->customer_id);

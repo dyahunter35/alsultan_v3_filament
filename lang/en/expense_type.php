@@ -1,7 +1,7 @@
 <?php
 return [
     'navigation' => [
-        'group' => 'Currency',
+        'group' => 'Finance',
         'label' => 'ExpenseTypes',
         'plural_label' => 'ExpenseTypes',
         'model_label' => 'ExpenseType',
