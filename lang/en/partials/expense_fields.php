@@ -7,7 +7,7 @@ return [
         'label' => 'نوع المنصرف',
     ],
     'payer' => [
-        'label' => 'المدفوع من قبله',
+        'label' => 'من',
     ],
     'beneficiary' => [
         'label' => 'المستفيد',
@@ -18,6 +18,10 @@ return [
     'branch' => [
         'label' => 'المخزن',
         'placeholder' => 'اختر المخزن',
+    ],
+    'truck' => [
+        'label' => 'الشاحنة',
+        'placeholder' => '',
     ],
     'payment_method' => [
         'label' => 'وسيلة الدفع',

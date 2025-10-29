@@ -34,7 +34,6 @@ class ExpensesList extends Page implements HasTable
         return 'expense.' . static::className();
     }
 
-
     public function table(Table $table): Table
     {
         static::translateConfigureTable();

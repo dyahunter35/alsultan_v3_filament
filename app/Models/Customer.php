@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Casts\GuestCustomer;
+use App\Enums\CurrencyType;
 use App\Enums\ExpenseGroup;
 use App\Enums\ExpenseType;
+use App\Traits\HasCurrencyFinancial;
 use App\Traits\HasCustomerFinancialReport;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -26,6 +28,7 @@ class Customer extends Model implements HasMedia
     use InteractsWithMedia;
     use HasFinancialRelations;
     use HasCustomerFinancialReport;
+    use HasCurrencyFinancial;
 
     protected $guarded = [];
 

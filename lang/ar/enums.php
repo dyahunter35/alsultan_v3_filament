@@ -49,5 +49,31 @@ return [
             'description' => 'الريال القطري',
         ],
 
+    ],
+
+    'payment_option' => [
+        'bok' => 'بنكك',
+        'ibok' => 'اي بوك',
+        'cheque' => 'شيك',
+        'cash' => 'كاش',
+        'fori' => 'فوري',
+        'min_dep' => 'خصم قيمة ترحيل',
+        'plus_dep' => 'اضافة قيمة ترحيل',
+        'start' => 'رصيد سابق مرحل',
+        'bank' => 'تحويل بنكي',
+    ],
+
+    'currency_type' => [
+        'send' => 'ارسال الي',
+        'convert' => 'تحويل عملة داخلي',
+    ],
+    'expense_group' => [
+        'sale' => 'مبيعات',
+        'debtors' => 'الدائنون',
+        'customs' => 'جمارك',
+        'certificates' => 'شهادات وارد',
+        'tax' => 'ضرائب',
+        'government_fees' => 'رسوم حكومية',
     ]
+
 ];

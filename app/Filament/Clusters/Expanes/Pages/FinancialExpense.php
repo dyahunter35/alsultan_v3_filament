@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Expanes\Pages;
 
+use App\Enums\ExpenseGroup;
 use App\Filament\Clusters\Expanes\ExpanesCluster;
 use App\Filament\Forms\Components\DecimalInput;
 use App\Filament\Forms\Components\MorphField;
@@ -23,6 +24,8 @@ use Filament\Actions\RestoreAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
@@ -42,7 +45,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Component;
 
-class StoreExpense extends Page implements HasActions, HasTable
+class FinancialExpense extends Page implements HasActions, HasTable
 {
     use HasSinglePage;
 
@@ -53,7 +56,7 @@ class StoreExpense extends Page implements HasActions, HasTable
 
     protected static ?string $cluster = ExpanesCluster::class;
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
 
     public static function getLocalePath(): string
     {
@@ -63,17 +66,18 @@ class StoreExpense extends Page implements HasActions, HasTable
     public function table(Table $table): Table
     {
         self::translateConfigureTable();
-        // dd(ExpansesType::getGroupName('store'));
+        self::translateConfigureForm();
         return $table
-            ->query(Expense::types('store'))
+            ->query(Expense::types(ExpenseGroup::CURRENCY->value))
             ->defaultSort('id', 'desc')
             ->modelLabel(__('expense.' . static::className() . '.navigation.model_label'))
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                    ->label('رقم المصروف')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('branch.name')
-                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('type.label')
                     ->formatStateUsing(
@@ -84,34 +88,30 @@ class StoreExpense extends Page implements HasActions, HasTable
                     )
                     ->badge(),
 
-                Tables\Columns\TextColumn::make('payer.name')
-                    ->formatStateUsing(fn($record) => optional($record->payer)->name)
-                    ->searchable(),
-
-                /* Tables\Columns\TextColumn::make('beneficiary.name')
-                    ->label('الحساب المستفيد')
-                    ->formatStateUsing(fn($record) => optional($record->beneficiary)->name)
+                /*  Tables\Columns\TextColumn::make('payer.name')
+                    // ->formatStateUsing(fn($record) => optional($record->payer)->name)
                     ->searchable(), */
 
+                Tables\Columns\TextColumn::make('beneficiary.name')
+                    // ->formatStateUsing(fn($record) => optional($record->beneficiary)->name)
+                    ->searchable(),
 
+                Tables\Columns\TextColumn::make('representative.name')
+                    // ->formatStateUsing(fn($record) => optional($record->beneficiary)->name)
+                    ->searchable(),
 
-                Tables\Columns\TextColumn::make('amount')
-                    ->label('الكمية'),
+                //Tables\Columns\TextColumn::make('amount'),
 
-                Tables\Columns\TextColumn::make('unit_price')
-                    ->label('سعر الوحدة'),
+                // Tables\Columns\TextColumn::make('branch.name')
+                //     ->searchable(),
 
-                Tables\Columns\TextColumn::make('total_amount')
-                    ->label('الإجمالي'),
-
+                //Tables\Columns\TextColumn::make('amount'),
+                //Tables\Columns\TextColumn::make('unit_price'),
+                Tables\Columns\TextColumn::make('total_amount'),
                 Tables\Columns\IconColumn::make('is_paid')
-                    ->label('حالة الدفع')
                     ->boolean(),
 
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('تاريخ الإنشاء')
-                    ->dateTime()
-                    ->sortable(),
+
             ])
             ->filters([
                 TrashedFilter::make()
@@ -137,30 +137,50 @@ class StoreExpense extends Page implements HasActions, HasTable
                 CreateAction::make()
                     ->schema($this->expenseForm())
                     ->preserveFormDataWhenCreatingAnother(fn(array $data): array => $data)
-
-
             ]);
     }
 
     public static function expenseForm()
     {
+        $type = ExpenseType::where('group', ExpenseGroup::CURRENCY->value);
         return [
-            Grid::make()->columns(2)
+            Grid::make()
+                ->columns(2)
                 ->schema([
 
                     Section::make()->schema([
                         // 1. القيمة المخفية لنوع المصروف (Fixed for this page)
                         Forms\Components\Select::make('expense_type_id')
-                            ->label(__(self::getLocalePath() . '.fields.type.label'))
-                            ->live()
-                            ->options(ExpenseType::where('group', 'store')->pluck('label', 'id'))
+                            ->options($type->pluck('label', 'id'))
                             ->required()
+                            ->label(__('expense.currency_expense.fields.type.label'))
+                            ->default($type->first()?->id)
+                            ->preload()
+                            ->searchable()
                             ->columnSpanFull(),
 
+                        Select::make('representative_id')
+                            ->label(__('المندوب'))
+                            ->options(User::sales())
+                            ->preload()
+                            ->searchable()
+                            ->nullable(),
+
+                        MorphSelect::make('beneficiary_select')
+                            ->label(__(self::getLocalePath() . '.fields.beneficiary.label'))
+                            ->models([
+                                'user' => \App\Models\User::class,
+                                'customer' => fn() => \App\Models\Customer::per(ExpenseGroup::CURRENCY->value)->get(),
+                            ])
+                            ->preload()
+                            ->required(),
+
+                        Forms\Components\Hidden::make('beneficiary_id'),
+                        Forms\Components\Hidden::make('beneficiary_type'),
 
                         // 3. الحساب الدافع (الدفع من حساب)
-                        MorphSelect::make('payer_select')
-                            ->label(__(self::getLocalePath() . '.fields.payer.label'))
+                        /*  MorphSelect::make('payer_select')
+                            ->label('من حساب')
                             ->models([
                                 'user' => \App\Models\User::class,
                                 'customer' => \App\Models\Customer::class,
@@ -168,69 +188,14 @@ class StoreExpense extends Page implements HasActions, HasTable
                             ->required(),
 
                         Forms\Components\Hidden::make('payer_id'),
-                        Forms\Components\Hidden::make('payer_type'),
+                        Forms\Components\Hidden::make('payer_type'), */
 
                         // 2. الحساب المستفيد (إلى) - يفترض أنه حساب يتعلق بالمخزن
 
-                        /*  MorphSelect::make('beneficiary_select')
-                            ->label('الي حساب')
-                            ->models([
-                                'user' => \App\Models\User::class,
-                                'customer' => \App\Models\Customer::class,
-                            ])
-                            ->required(),
 
-                        Forms\Components\Hidden::make('beneficiary_id'),
-                        Forms\Components\Hidden::make('beneficiary_type'), */
 
-                        Forms\Components\Select::make('branch_id')
-                            ->label(__('المخزن'))
-                            ->relationship('branch', 'name') // يفترض وجود علاقة 'store' في موديل Expense
-                            ->required()
-                            ->default(fn() => Filament::getTenant()->id),
 
-                        // 5. الكمية / amount (عدد الوحدات المشتراة/الكمية)
-                        /* DecimalInput::make('amount')
-                            ->label(__('الكمية'))
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(
-                                function ($set, $get, $state) {
-                                    $price = $get('unit_price') ?? 0;
-                                    $amount = $get('amount') ?? 0;
-                                    $set('total_amount', ($amount * $price));
-                                }
-                            )
-                            ->required(), */
 
-                        // 6. سعر الوحدة / unit_price
-                        /* DecimalInput::make('unit_price')
-                            ->label(__('سعر الوحدة'))
-                            ->numeric()
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(
-                                function ($set, $get, $state) {
-                                    $price = $get('unit_price') ?? 1;
-                                    $amount = $get('amount') ?? 1;
-                                    $set('total_amount', ($amount * $price));
-                                }
-                            )
-                            ->required(), */
-
-                        DecimalInput::make('total_amount')
-                            ->live(onBlur: true),
-
-                        // 11. الملاحظات
-                        Forms\Components\Textarea::make('notes')
-                            ->label(__('ملاحظات'))
-
-                            ->rows(2)
-                            ->columnSpanFull() // يجعل حقل الملاحظات يأخذ عرض العمودين كاملاً
-                            ->nullable(),
-
-                    ])
-                        ->columns(2)
-                        ->columnSpan(2),
-                    Section::make()->schema([
                         // 7. وسيلة الدفع
                         Forms\Components\Select::make('payment_method')
                             ->label(__('وسيلة الدفع'))
@@ -241,6 +206,43 @@ class StoreExpense extends Page implements HasActions, HasTable
                             ->label(__('رقم الإشعار/الإيصال'))
                             ->numeric()
                             ->nullable(),
+                        /* Forms\Components\Select::make('branch_id')
+                            ->label(__('المخزن'))
+                            ->relationship('branch', 'name') // يفترض وجود علاقة 'store' في موديل Expense
+                            ->required()
+                            ->default(fn() => Filament::getTenant()->id), */
+
+                        // 5. الكمية / amount (عدد الوحدات المشتراة/الكمية)
+
+                        // 10. التاريخ
+                        Forms\Components\DateTimePicker::make('created_at')
+                            ->label(__('تاريخ العملية'))
+                            ->default(now()),
+
+                        Forms\Components\Textarea::make('notes')
+                            ->label(__('ملاحظات'))
+
+                            ->rows(2)
+                            ->columnSpanFull() // يجعل حقل الملاحظات يأخذ عرض العمودين كاملاً
+                            ->nullable(),
+                        Hidden::make('amount')
+                            ->label(__('الكمية'))
+                            ->default(1)
+                            ->required(),
+
+                        // 6. سعر الوحدة / unit_price
+                        DecimalInput::make('total_amount')
+                            ->label(__('المبلغ المراد تحويله'))
+                            ->numeric()
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(
+                                function ($set, $get, $state) {
+                                    $price = $get('unit_price') ?? 1;
+                                    $amount = 1;
+                                    $set('total_amount', ($amount * $price));
+                                }
+                            )
+                            ->required(),
 
                         // 9. حالة الدفع (عاجل/مؤجل)
                         Forms\Components\Select::make('is_paid')
@@ -248,10 +250,6 @@ class StoreExpense extends Page implements HasActions, HasTable
                             ->options([1 => 'مدفوع (عاجل)', 0 => 'غير مدفوع (مؤجل)'])
                             ->default(1),
 
-                        // 10. التاريخ
-                        Forms\Components\DateTimePicker::make('created_at')
-                            ->label(__('تاريخ العملية'))
-                            ->default(now()),
                     ])
                         ->columnSpan(2)
                         ->columns(2)

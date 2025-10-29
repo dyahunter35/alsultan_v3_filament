@@ -2,15 +2,13 @@
 
 namespace App\Filament\Clusters\Expanes\Pages;
 
+use App\Enums\ExpenseGroup;
 use App\Filament\Clusters\Expanes\ExpanesCluster;
 use App\Filament\Forms\Components\DecimalInput;
-use App\Filament\Forms\Components\MorphField;
 use App\Filament\Forms\Components\MorphSelect;
-use App\Filament\Pages\Concerns\HasPage;
 use App\Filament\Pages\Concerns\HasSinglePage;
 use App\Models\Expense;
 use App\Models\ExpenseType;
-use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
@@ -21,28 +19,22 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ReplicateAction;
 use Filament\Actions\RestoreAction;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Schemas\Concerns\InteractsWithSchemas;
-use Filament\Schemas\Contracts\HasSchemas;
-use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Filament\Pages\Page;
-use Filament\Schemas\Components\Form;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Support\Exceptions\Halt;
 use Filament\Tables\Filters\TrashedFilter;
-use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Model;
-use Livewire\Component;
+use Illuminate\Support\Str;
 
-class StoreExpense extends Page implements HasActions, HasTable
+
+class TaxExpense extends Page implements HasActions, HasTable
 {
     use HasSinglePage;
 
@@ -53,7 +45,7 @@ class StoreExpense extends Page implements HasActions, HasTable
 
     protected static ?string $cluster = ExpanesCluster::class;
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 6;
 
     public static function getLocalePath(): string
     {
@@ -65,10 +57,46 @@ class StoreExpense extends Page implements HasActions, HasTable
         self::translateConfigureTable();
         // dd(ExpansesType::getGroupName('store'));
         return $table
-            ->query(Expense::types('store'))
+            ->query(Expense::types(ExpenseGroup::TAX))
             ->defaultSort('id', 'desc')
             ->modelLabel(__('expense.' . static::className() . '.navigation.model_label'))
-            ->columns([
+            ->columns(
+
+                TaxExpense::expenseTableColumns()
+
+            )
+            ->filters([
+                TrashedFilter::make()
+                    ->visible(auth()->user()->can('restore_expense')),
+            ])
+            ->recordActions([
+                EditAction::make()
+                    ->schema(self::expenseForm()),
+                /* Action::make('edit')
+                    ->label('تعديل')
+                    ->action(fn($record) => $this->edit($record)), */
+                ReplicateAction::make()
+                    ->schema(self::expenseForm()),
+
+                DeleteAction::make()
+                    ->requiresConfirmation(),
+                RestoreAction::make()
+                    ->visible(fn($record) => $record->deleted_at),
+                ForceDeleteAction::make()
+                    ->visible(fn($record) => $record->deleted_at),
+            ])
+            ->toolbarActions([
+                CreateAction::make()
+                    ->schema($this->expenseForm())
+                    ->preserveFormDataWhenCreatingAnother(fn(array $data): array => $data)
+
+            ]);
+    }
+
+    public static function expenseTableColumns()
+    {
+        return
+            [
                 Tables\Columns\TextColumn::make('id')
                     ->label('رقم المصروف')
                     ->sortable(),
@@ -95,54 +123,23 @@ class StoreExpense extends Page implements HasActions, HasTable
 
 
 
-                Tables\Columns\TextColumn::make('amount')
-                    ->label('الكمية'),
+                Tables\Columns\TextColumn::make('amount'),
 
-                Tables\Columns\TextColumn::make('unit_price')
-                    ->label('سعر الوحدة'),
+                Tables\Columns\TextColumn::make('unit_price'),
 
-                Tables\Columns\TextColumn::make('total_amount')
-                    ->label('الإجمالي'),
+                Tables\Columns\TextColumn::make('total_amount'),
 
                 Tables\Columns\IconColumn::make('is_paid')
-                    ->label('حالة الدفع')
                     ->boolean(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('تاريخ الإنشاء')
                     ->dateTime()
                     ->sortable(),
-            ])
-            ->filters([
-                TrashedFilter::make()
-                    ->visible(auth()->user()->can('restore_user')),
-            ])
-            ->recordActions([
-                EditAction::make()
-                    ->schema(self::expenseForm()),
-                /* Action::make('edit')
-                    ->label('تعديل')
-                    ->action(fn($record) => $this->edit($record)), */
-                ReplicateAction::make()
-                    ->schema(self::expenseForm()),
 
-                DeleteAction::make()
-                    ->requiresConfirmation(),
-                RestoreAction::make()
-                    ->visible(fn($record) => $record->deleted_at),
-                ForceDeleteAction::make()
-                    ->visible(fn($record) => $record->deleted_at),
-            ])
-            ->toolbarActions([
-                CreateAction::make()
-                    ->schema($this->expenseForm())
-                    ->preserveFormDataWhenCreatingAnother(fn(array $data): array => $data)
-
-
-            ]);
+            ];
     }
 
-    public static function expenseForm()
+    public static function expenseForm($truckId = null)
     {
         return [
             Grid::make()->columns(2)
@@ -153,8 +150,40 @@ class StoreExpense extends Page implements HasActions, HasTable
                         Forms\Components\Select::make('expense_type_id')
                             ->label(__(self::getLocalePath() . '.fields.type.label'))
                             ->live()
-                            ->options(ExpenseType::where('group', 'store')->pluck('label', 'id'))
+                            ->options(ExpenseType::where('group', ExpenseGroup::TAX)->pluck('label', 'id'))
                             ->required()
+                            ->createOptionForm([
+                                Grid::make(2)
+                                    ->schema([
+
+                                        TextInput::make('label')
+                                            ->label(__('expense_type.fields.label.label'))
+                                            ->live(onBlur: true)
+                                            ->afterStateUpdated(fn($set, $state) => $set('key', Str::slug($state)))
+                                            ->required(),
+
+                                        TextInput::make('key')
+                                            ->readOnly()
+                                            ->label(__('expense_type.fields.key.label'))
+                                            ->required(),
+
+                                        Hidden::make('group')
+                                            ->label(__('expense_type.fields.group.label'))
+                                            ->default(ExpenseGroup::TAX->value),
+                                    ])
+
+                            ])
+                            ->createOptionUsing(function ($data, $set) {
+                                ExpenseType::create($data);
+                                Notification::make()
+                                    ->body('create successfully')
+                                    ->send();
+                            })
+                            ->reactive()
+                            ->createOptionAction(fn(Action $action) => $action
+                                ->modalHeading(__('customer.actions.create.modal.heading'))
+                                ->modalSubmitActionLabel(__('customer.actions.create.modal.submit'))
+                                ->modalWidth('lg'))
                             ->columnSpanFull(),
 
 
@@ -188,6 +217,14 @@ class StoreExpense extends Page implements HasActions, HasTable
                             ->relationship('branch', 'name') // يفترض وجود علاقة 'store' في موديل Expense
                             ->required()
                             ->default(fn() => Filament::getTenant()->id),
+
+                        Forms\Components\Select::make('truck_id')
+                            ->label(__('الشاحنة'))
+                            ->relationship('truck', 'driver_name') // يفترض وجود علاقة 'store' في موديل Expense
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->default($truckId),
 
                         // 5. الكمية / amount (عدد الوحدات المشتراة/الكمية)
                         /* DecimalInput::make('amount')

@@ -70,6 +70,7 @@ class CurrencyExpense extends Page implements HasActions, HasTable
         return $table
             ->query(Expense::types('debtors'))
             ->defaultSort('id', 'desc')
+            ->modelLabel(__('expense.' . static::className() . '.navigation.model_label'))
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->sortable(),
@@ -88,20 +89,24 @@ class CurrencyExpense extends Page implements HasActions, HasTable
                     ->badge(),
 
                 Tables\Columns\TextColumn::make('payer.name')
-                    ->formatStateUsing(fn($record) => optional($record->payer)->name)
+                    // ->formatStateUsing(fn($record) => optional($record->payer)->name)
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('beneficiary.name')
-                    ->formatStateUsing(fn($record) => optional($record->beneficiary)->name)
+                    // ->formatStateUsing(fn($record) => optional($record->beneficiary)->name)
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('amount'),
-
-                Tables\Columns\TextColumn::make('branch.name')
+                Tables\Columns\TextColumn::make('representative.name')
+                    // ->formatStateUsing(fn($record) => optional($record->beneficiary)->name)
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('amount'),
-                Tables\Columns\TextColumn::make('unit_price'),
+                //Tables\Columns\TextColumn::make('amount'),
+
+                // Tables\Columns\TextColumn::make('branch.name')
+                //     ->searchable(),
+
+                //Tables\Columns\TextColumn::make('amount'),
+                //Tables\Columns\TextColumn::make('unit_price'),
                 Tables\Columns\TextColumn::make('total_amount'),
                 Tables\Columns\IconColumn::make('is_paid')
                     ->boolean(),
@@ -118,7 +123,8 @@ class CurrencyExpense extends Page implements HasActions, HasTable
                 /* Action::make('edit')
                     ->label('تعديل')
                     ->action(fn($record) => $this->edit($record)), */
-                ReplicateAction::make(),
+                ReplicateAction::make()
+                    ->schema(self::expenseForm()),
 
                 DeleteAction::make()
                     ->requiresConfirmation(),
@@ -139,7 +145,7 @@ class CurrencyExpense extends Page implements HasActions, HasTable
         $type = ExpenseType::where('group', 'debtors');
         return [
             Grid::make()
-                ->columns(1)
+                ->columns(2)
                 ->schema([
 
                     Section::make()->schema([
@@ -149,17 +155,17 @@ class CurrencyExpense extends Page implements HasActions, HasTable
                             ->required()
                             ->label(__('expense.currency_expense.fields.type.label'))
                             ->default($type->first()?->id)
+                            ->preload()
+                            ->searchable()
                             ->columnSpanFull(),
 
-
-
                         MorphSelect::make('beneficiary_select')
-                            ->label(__('expense.currency_expense.fields.beneficiary.label'))
-                            ->label('الي حساب')
+                            ->label(__(self::getLocalePath() . '.fields.beneficiary.label'))
                             ->models([
-                                'user' => \App\Models\Company::class,
-                                'customer' => fn() => \App\Models\Customer::where('permanent', ExpenseGroup::DEBTORS->value)->get(),
+                                //'user' => \App\Models\Company::class,
+                                'customer' => fn() => \App\Models\Customer::per(ExpenseGroup::DEBTORS->value)->get(),
                             ])
+                            ->preload()
                             ->required(),
 
                         Forms\Components\Hidden::make('beneficiary_id'),
@@ -183,6 +189,8 @@ class CurrencyExpense extends Page implements HasActions, HasTable
                         Select::make('representative_id')
                             ->label(__('المندوب'))
                             ->options(User::sales())
+                            ->preload()
+                            ->searchable()
                             ->nullable(),
 
 
@@ -221,7 +229,7 @@ class CurrencyExpense extends Page implements HasActions, HasTable
                             ->required(),
 
                         // 6. سعر الوحدة / unit_price
-                        DecimalInput::make('unit_price')
+                        DecimalInput::make('total_amount')
                             ->label(__('المبلغ المراد تحويله'))
                             ->numeric()
                             ->live(onBlur: true)
@@ -234,22 +242,15 @@ class CurrencyExpense extends Page implements HasActions, HasTable
                             )
                             ->required(),
 
-
-
-                        DecimalInput::make('total_amount')
-                            ->readOnly()
-                            ->label(__('الصافي')),
-
                         // 9. حالة الدفع (عاجل/مؤجل)
                         Forms\Components\Select::make('is_paid')
                             ->label(__('حالة الدفع'))
                             ->options([1 => 'مدفوع (عاجل)', 0 => 'غير مدفوع (مؤجل)'])
                             ->default(1),
 
-
                     ])
-                        ->columnSpan(1)
-                        ->columns(1)
+                        ->columnSpan(2)
+                        ->columns(2)
                 ])
 
         ];

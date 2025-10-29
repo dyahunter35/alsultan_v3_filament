@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Country;
+use App\Enums\ExpenseGroup;
 use App\Enums\TruckState;
 use App\Enums\TruckType;
 use Carbon\Carbon;
@@ -132,5 +133,29 @@ class Truck extends Model implements HasMedia
     public function expenses()
     {
         return $this->hasMany(Expense::class);
+    }
+
+    public function taxExpenses()
+    {
+        return $this->hasMany(Expense::class)->whereIn(
+            'expense_type_id',
+            ExpenseType::where('group', ExpenseGroup::TAX)->pluck('id')
+        );
+    }
+
+    public function customExpenses()
+    {
+        return $this->hasMany(Expense::class)->whereIn(
+            'expense_type_id',
+            ExpenseType::where('group', ExpenseGroup::CUSTOMS)->pluck('id')
+        );
+    }
+
+    public function certificateExpenses()
+    {
+        return $this->hasMany(Expense::class)->whereIn(
+            'expense_type_id',
+            ExpenseType::where('group', ExpenseGroup::CERTIFICATES)->pluck('id')
+        );
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Customers\Pages;
 
+use App\Filament\Resources\Companies\Widgets\CurrencyWidget;
 use Filament\Actions\DeleteAction;
 use App\Filament\Resources\Customers\CustomerResource;
 use Filament\Actions;
@@ -17,6 +18,7 @@ class EditCustomer extends EditRecord
         return [
             //Widgets\Companystate::make(['record', $this->record]),
             Widgets\CustomerFinanceOverview::class,
+            CurrencyWidget::class
         ];
     }
     protected function getHeaderActions(): array

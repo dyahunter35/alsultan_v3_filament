@@ -12,11 +12,11 @@ return [
         'edit' => 'تعديل شاحنة',
     ],
 
-    'sections'=>[
-        'driver_info'=>'بيانات السائق',
-        'contract_info'=>'بيانات التعاقد',
-        'status_info'=>'بيانات حاله الشحنة',
-        'financial_info'=>'التفاصيل المالية',
+    'sections' => [
+        'driver_info' => 'بيانات السائق',
+        'contract_info' => 'بيانات التعاقد',
+        'status_info' => 'بيانات حاله الشحنة',
+        'financial_info' => 'التفاصيل المالية',
     ],
     'fields' => [
         'cargo_id' => [
@@ -85,55 +85,55 @@ return [
             'placeholder' => 'ادخل ملاحظة',
         ],
 
-        'category'=>[
+        'category' => [
             'label' => 'نوع الشحنة',
-            'placeholder'=>''
+            'placeholder' => ''
         ],
 
-        'country'=>[
+        'country' => [
             'label' => 'بلد الشحن',
-            'placeholder'=>''
+            'placeholder' => ''
         ],
 
-        'city'=>[
+        'city' => [
             'label' => 'المدينة',
-            'placeholder'=>''
+            'placeholder' => ''
         ],
 
-        'trip_days'=>[
+        'trip_days' => [
             'label' => 'عدد ايام الرحلة',
-            'placeholder'=>''
+            'placeholder' => ''
         ],
-        'agreed_duration'=>[
+        'agreed_duration' => [
             'label' => 'الايام المتفق عليها',
-            'placeholder'=>''
+            'placeholder' => ''
         ],
-        'diff_trip'=>[
+        'diff_trip' => [
             'label' => 'الفرق بين الايام',
-            'placeholder'=>''
+            'placeholder' => ''
         ],
-        'delay_day_value'=>[
+        'delay_day_value' => [
             'label' => 'قيمة يوم التاخير',
-            'placeholder'=>''
+            'placeholder' => ''
         ],
-        'truck_fare'=>[
+        'truck_fare' => [
             'label' => 'اجرة الشاحة',
-            'placeholder'=>'',
-            'helper_text'=>'( النولون )'
+            'placeholder' => '',
+            'helper_text' => '( النولون )'
         ],
-        'delay_value'=>[
+        'delay_value' => [
             'label' => 'قيمة التاخير',
-            'placeholder'=>'',
-            'helper_text'=>'( العطلات )'
+            'placeholder' => '',
+            'helper_text' => '( العطلات )'
         ],
-        'total_amount'=>[
+        'total_amount' => [
             'label' => 'المبلغ الكلي',
-            'placeholder'=>''
+            'placeholder' => ''
         ],
 
 
     ],
-     'filters' => [
+    'filters' => [
 
         'toStore' => [
 
@@ -153,6 +153,11 @@ return [
 
             'label' => 'حسب تاريخ الوصول ',
 
+        ]
+    ],
+    'actions' => [
+        'create' => [
+            'label' => 'إضافة شاحنة',
         ]
     ]
 ];

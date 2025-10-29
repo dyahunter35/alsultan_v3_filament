@@ -68,6 +68,7 @@ class CustomerResource extends Resource
                         Select::make('permanent')
                             ->options(ExpenseGroup::class)
                             ->default(ExpenseGroup::SALE->value)
+
                     ])->columnSpan(2)
                     ->columns(2),
                 Section::make()

@@ -69,6 +69,10 @@ class User extends Authenticatable implements HasTenants
         return User::role('sales')->pluck('name', 'id');
     }
 
+    public function getNameAttribute($value): string
+    {
+        return ($this->hasRole('sales')) ?  $value .  " (مندوب)" : $value;
+    }
 
     protected function repName(): Attribute
     {

@@ -25,18 +25,16 @@ return new class extends Migration
                 ->nullOnDelete()
                 ->cascadeOnUpdate();
 
-
-
             $table->foreignId('branch_id')
                 ->nullable()
                 ->constrained('branches')
                 ->nullOnDelete()
                 ->cascadeOnUpdate();
 
-            $table->double('amount');              // الكمية / المبلغ
-            $table->double('unit_price');          // سعر الوحدة
+            $table->double('amount')->default(1)->nullable();              // الكمية / المبلغ
+            $table->double('unit_price')->default(0)->nullable();          // سعر الوحدة
             $table->double('total_amount');        // الإجمالي
-            $table->double('remaining_amount');    // الباقي غير مدفوع
+            $table->double('remaining_amount')->default(0)->nullable();    // الباقي غير مدفوع
 
             //$table->string('expense_type');        // نوع المصروف
             $table->string('payment_method');      // وسيلة الدفع

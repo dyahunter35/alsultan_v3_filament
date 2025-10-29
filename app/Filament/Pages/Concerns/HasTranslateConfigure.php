@@ -190,9 +190,9 @@ trait HasTranslateConfigure
                 if ($repeaterLabel) {
                     $cleanRepeater = (string) str($repeaterLabel)->snake();
                     //dd($cleanRepeater);
-                    /* if ($localeRepeaterLabel = static::getSmartTranslation('fields.' . $cleanRepeater . '.label')) {
+                    if ($localeRepeaterLabel = static::getSmartTranslation('fields.' . $cleanRepeater . '.label')) {
                         $component->label($localeRepeaterLabel);
-                    } */
+                    }
 
                     if ($localeRepeaterDesc = static::getSmartTranslation('fields.' . $cleanRepeater . '.description')) {
                         $component->description($localeRepeaterDesc);

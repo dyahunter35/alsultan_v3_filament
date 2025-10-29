@@ -37,23 +37,24 @@ class ContractForm
                     ])->columns(2)
                     ->columnSpan(2),
 
-                Schemas\Components\Section::make('items')
+                Schemas\Components\Section::make()
                     ->schema([
                         Forms\Components\Repeater::make('items')
                             ->relationship('items') // ✅ ربط الـ Repeater بالعلاقة
-                            ->label(null)
                             ->schema([
                                 Forms\Components\TextInput::make('description')
-                                    ->label('Name')
+                                    ->label(__('contract.fields.items.fields.description.label'))
                                     ->required(),
 
                                 Forms\Components\TextInput::make('size')
-                                    ->label('Size')
+                                    ->label(__('contract.fields.items.fields.size.label'))
                                     ->required(),
 
-                                DecimalInput::make('machine_count'),
+                                DecimalInput::make('machine_count')
+                                    ->label(__('contract.fields.items.fields.machine_count.label')),
                                 DecimalInput::make('quantity')
-                                    ->label('Quantity')
+                                    ->label(__('contract.fields.items.fields.quantity.label'))
+
                                     ->afterStateUpdated(function ($state, callable $set, callable $get) {
                                         $set('total_price', $get('unit_price') ?? 1 * $state ?? 0);
                                         $set('total_weight', $get('weight') ?? 1 * $state ?? 0);
@@ -61,7 +62,7 @@ class ContractForm
                                     ->live(onBlur: true),
 
                                 Forms\Components\TextInput::make('weight')
-                                    ->label('Weight')
+                                    ->label(__('contract.fields.items.fields.weight.label'))
                                     ->numeric()
                                     ->afterStateUpdated(function ($state, callable $set, callable $get) {
                                         $set('total_weight', $get('quantity') ?? 1 * $state ?? 0);
@@ -70,23 +71,23 @@ class ContractForm
                                     ->default(1),
 
                                 DecimalInput::make('unit_price')
-                                    ->label('Unit Price')
+                                    ->label(__('contract.fields.items.fields.unit_price.label'))
                                     ->afterStateUpdated(function ($state, callable $set, callable $get) {
                                         $set('total_price', $get('quantity') ?? 1 * $state ?? 0);
                                     })
                                     ->live(onBlur: true),
 
                                 DecimalInput::make('total_weight')
-                                    ->label('Total Weight')
-                                    ->disabled()
+                                    ->label(__('contract.fields.items.fields.total_weight.label'))
+                                    ->readOnly()
                                     ->dehydrated(false)
                                     ->reactive()
                                     ->suffix('kg'),
 
                                 // ✅ عرض الإجماليات المحسوبة تلقائياً
                                 DecimalInput::make('total_price')
-                                    ->label('Total Price')
-                                    ->disabled()
+                                    ->label(__('contract.fields.items.fields.total_price.label'))
+                                    ->readOnly()
                                     ->dehydrated(false)
                                     ->reactive()
                                     ->suffix('$'),
@@ -111,7 +112,7 @@ class ContractForm
 
                                 // Forms\Components\TextInput::make('name')->label('Document Name'),
                                 SpatieMediaLibraryFileUpload::make('file')
-                                    ->collection('documents'),
+                                    ->collection('contract_docs'),
                                 Forms\Components\Textarea::make('description')->rows(2),
                             ])
                             ->columns(2)

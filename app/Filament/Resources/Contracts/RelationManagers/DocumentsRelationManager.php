@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Trucks\RelationManagers;
+namespace App\Filament\Resources\Contracts\RelationManagers;
 
 use App\Filament\Pages\Concerns\HasRelationManager;
 use Filament\Actions\AttachAction;
@@ -63,7 +63,7 @@ class DocumentsRelationManager extends RelationManager
                 Schemas\Components\Section::make()
                     ->schema([
                         Forms\Components\SpatieMediaLibraryFileUpload::make('file')
-                            ->collection('truck_docs')
+                            ->collection('contract_docs')
                             ->multiple()
                             ->required()
                             ->columnSpanFull()
@@ -100,7 +100,7 @@ class DocumentsRelationManager extends RelationManager
             ->recordTitleAttribute('name')
             ->columns([
                 Tables\Columns\SpatieMediaLibraryImageColumn::make('file')
-                    ->collection('truck_docs')
+                    ->collection('contract_docs')
                     ->conversion('thumbnail')
                     ->circular()
                     ->height(50)
@@ -123,7 +123,7 @@ class DocumentsRelationManager extends RelationManager
             ])
 
             ->recordActions([
-                ViewAction::make(),
+                // ViewAction::make(),
                 EditAction::make(),
                 DetachAction::make(),
                 DeleteAction::make(),

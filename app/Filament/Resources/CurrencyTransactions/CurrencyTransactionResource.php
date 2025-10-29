@@ -2,12 +2,14 @@
 
 namespace App\Filament\Resources\CurrencyTransactions;
 
+use App\Enums\CurrencyType;
 use App\Enums\ExpenseGroup;
 use App\Filament\Forms\Components\DecimalInput;
 use App\Filament\Forms\Components\MorphField;
 use App\Filament\Forms\Components\MorphSelect;
 use App\Filament\Pages\Concerns\HasResource;
 use App\Filament\Resources\CurrencyTransactions\Pages\ManageCurrencyTransactions;
+use App\Models\CurrencyBalance;
 use App\Models\CurrencyTransaction;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -21,6 +23,7 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ViewField;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -43,26 +46,56 @@ class CurrencyTransactionResource extends Resource
         return $schema
             ->components([
 
-                MorphSelect::make('payer')
-                    ->models([
-                        'company' => \App\Models\Company::class,
-                        'customer' => fn() => \App\Models\Customer::where('permanent', ExpenseGroup::DEBTORS->value)->get(),
-                    ]),
+                Select::make('type')
+                    ->options(\App\Enums\CurrencyType::class)
+                    ->default(CurrencyType::SEND)
+                    ->live()
+                    ->columnSpanFull()
+                    ->required(),
+
+                ViewField::make('payer_currencies')
+                    ->label('Currencies')
+                    ->view('filament.resources.customers.forms.customer-currencies-table')
+                    ->reactive()
+                    ->hidden(fn(callable $get) => empty($get('payer_currencies')))
+                    ->columnSpanFull(),
+
+                Select::make('payer_id')
+                    ->options(fn() => \App\Models\Customer::where('permanent', ExpenseGroup::DEBTORS->value)->get()
+                        ->mapWithKeys(fn(\App\Models\Customer $customer) => [
+                            $customer->id => sprintf(
+                                '%s (%s SDG)',
+                                $customer->name,
+                                number_format($customer->balance, 2)
+                            )
+                        ]))
+                    ->reactive()
+                    ->afterStateUpdated(function (callable $set, $state) {
+                        $currencies = CurrencyBalance::where('owner_type', \App\Models\Customer::class)
+                            ->where('owner_id', $state)
+                            ->get();
+
+                        $set('payer_currencies', $currencies);
+                    }),
+
 
                 Hidden::make('payer_type')
-                    ->required(),
-                Hidden::make('payer_id')
+                    ->default(\App\Models\Customer::class)
                     ->required(),
 
                 MorphSelect::make('party')
                     ->models([
                         'company' => \App\Models\Company::class,
                         'customer' => fn() => \App\Models\Customer::where('permanent', ExpenseGroup::DEBTORS->value)->get(),
-                    ]),
+                    ])
+                    ->live()
+                    ->visible(fn(callable $get) =>  $get('type') === CurrencyType::SEND),
                 Hidden::make('party_type')
-                    ->required(),
+                    ->required(fn(callable $get) =>  $get('type') === CurrencyType::SEND),
+
                 Hidden::make('party_id')
-                    ->required(),
+                    ->required(fn(callable $get) =>  $get('type') === CurrencyType::SEND),
+
 
                 Select::make('currency_id')
                     ->relationship('currency', 'name')
@@ -72,6 +105,7 @@ class CurrencyTransactionResource extends Resource
                     ->live(onBlur: true)
                     ->afterStateUpdated(
                         function ($set, $get, $state) {
+                            //dd($get('type'));
                             $price = $get('rate') ?? 0;
                             $amount = $get('amount') ?? 0;
                             $set('total', ($amount * $price));
@@ -94,10 +128,7 @@ class CurrencyTransactionResource extends Resource
                     ->required()
                     ->numeric(),
 
-                Select::make('type')
-                    ->options(['add' => 'Add', 'deduct' => 'Deduct'])
-                    ->default('add')
-                    ->required(),
+
                 TextInput::make('note')
                     ->default(null),
             ]);
@@ -111,9 +142,11 @@ class CurrencyTransactionResource extends Resource
                 TextColumn::make('currency.name')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('payer.name')
-                    ->searchable(),
+
                 TextColumn::make('party.name')
+                    ->searchable(),
+
+                TextColumn::make('payer.name')
                     ->searchable(),
 
                 TextColumn::make('amount')

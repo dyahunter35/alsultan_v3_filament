@@ -31,21 +31,10 @@ enum ExpenseGroup: string implements HasIcon, HasLabel
 
     case GOVERNMENT_FEES = 'government_fees'; // رسوم حكومية
 
-    public function arabic(): string
-    {
-        return $this->value; /* match ($this) {
-            self::SALE => 'مبيعات',
-            self::DEBTORS => 'الدائنون',
-            self::CUSTOMS => 'جمارك',
-            self::CERTIFICATES => 'شهادات وارد',
-            self::TAX => 'ضرائب',
-            self::GOVERNMENT_FEES => 'رسوم حكومية',
-        }; */
-    }
 
     public function getLabel(): ?string
     {
-        return $this->arabic();
+        return __('enums.expense_group.' . $this->value);
     }
 
     public function getColor(): string|array|null

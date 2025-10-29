@@ -15,6 +15,16 @@ trait HasSinglePage
 {
     use HasTranslateConfigure;
 
+    public function getModelLabel(): ?string
+    {
+        $localePath = static::getLocalePath();
+
+        if (trans()->has($locale = $localePath . '.' . 'navigation.heading', [], app()->getLocale())) {
+            return trans($locale);
+        }
+        return $this->heading ?? $this->getHeading();
+    }
+
     public static function className()
     {
         return Str::of(class_basename(static::class))->snake()->value();

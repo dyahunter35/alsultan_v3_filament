@@ -34,7 +34,7 @@ return [
     'is_paid' => [
         'label' => 'نوع الدفع',
     ],
-    'total' => [
+    'total_amount' => [
         'label' => 'الإجمالي',
     ],
     'created_at' => [

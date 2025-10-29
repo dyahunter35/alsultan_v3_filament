@@ -44,11 +44,26 @@ class MorphSelect extends Select
                 $type = $get($this->getTypeField());
 
                 if ($id && $type) {
-                    $prefix = $this->getPrefixFromType($type);
-                    $component->state("{$prefix}_{$id}");
+                    // إذا كان Closure، حوله إلى اسم الكلاس الصحيح
+                    foreach ($this->getModels() as $prefix => $model) {
+                        if ($model instanceof \Closure) {
+                            $result = $model();
+                            if ($result instanceof \Illuminate\Database\Eloquent\Collection && $result->first()) {
+                                $model = get_class($result->first());
+                            } elseif ($result instanceof \Illuminate\Database\Eloquent\Builder) {
+                                $model = $result->getModel()::class;
+                            }
+                        }
+
+                        if ($model === $type) {
+                            $component->state("{$prefix}_{$id}");
+                            break;
+                        }
+                    }
                 }
             }
         });
+
 
         $this->afterStateUpdated(function ($state, callable $set) {
             if (!$state) return;

@@ -54,8 +54,7 @@ class TrucksTable
                     ->badge()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('toBranch.name')
-                    ->label(__('truck.fields.to.label'))
-                    ->searchable(),
+                    ->label(__('truck.fields.to.label')),
                 Tables\Columns\TextColumn::make('arrive_date')
                     ->date()
                     ->toggleable(isToggledHiddenByDefault: true)

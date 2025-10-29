@@ -16,6 +16,7 @@ use TomatoPHP\FilamentInvoices\Facades\FilamentInvoices;
 use TomatoPHP\FilamentInvoices\Services\Contracts\InvoiceFor;
 use TomatoPHP\FilamentInvoices\Services\Contracts\InvoiceFrom;
 use BezhanSalleh\LanguageSwitch\LanguageSwitch;
+use Filament\Tables\Columns\TextColumn;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,9 +33,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+
+        TextColumn::configureUsing(function (TextColumn $column) {
+            $column->formatStateUsing(fn($state) => is_numeric($state) ? number_format((float) $state) : $state);
+        });
+
+
+
         LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
             $switch
-                        ->visible(outsidePanels: true)
+                ->visible(outsidePanels: true)
 
                 ->locales(['ar', 'en']); // also accepts a closure
         });

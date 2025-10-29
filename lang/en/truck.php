@@ -143,4 +143,9 @@ return [
             'label' => 'By Arrival Date',
         ],
     ],
+    'actions' => [
+        'create' => [
+            'label' => 'Add Truck',
+        ]
+    ]
 ];

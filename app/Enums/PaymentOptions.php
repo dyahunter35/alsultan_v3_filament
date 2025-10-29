@@ -2,10 +2,13 @@
 
 namespace App\Enums;
 
+use App\Traits\EnumsKeys;
 use Filament\Support\Contracts\HasLabel;
 
 enum PaymentOptions: string implements HasLabel
 {
+    use EnumsKeys;
+
     case BOK = 'bok';
     case IBOK = 'ibok';
     case CHEQUE = 'cheque';
@@ -16,32 +19,10 @@ enum PaymentOptions: string implements HasLabel
     case START_PA = 'start';
     case BANK = 'bank';
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
-        return (app()->getLocale() == 'en') ? match ($this) {
-            self::BOK => 'BOK',
-            self::IBOK => 'IBOK',
-            self::CHEQUE => 'Cheque',
-            self::CASH => 'Cash',
-            self::FORI => 'Fori',
-            self::MIN_DEP => 'Min Dep',
-            self::PLUS_DEP => 'Plus Dep',
-            self::START_PA => 'Start Pa',
-            self::BANK => 'Bank Transfer',
-        } :
-            match ($this) {
-                self::BOK => 'بنكك',
-                self::IBOK => 'اي بوك',
-                self::CHEQUE => 'شيك',
-                self::CASH => 'كاش',
-                self::FORI => 'فوري',
-                self::MIN_DEP => 'خصم قيمة ترحيل',
-                self::PLUS_DEP => 'إضافة قيمة ترحيل',
-                self::START_PA => 'رصيد سابق مرحل',
-                self::BANK => 'تحويل بنكي',
-            };
+        return __('enums.payment_option.' . $this->value);
     }
-
 
     public function color(): string
     {

@@ -10,6 +10,10 @@ trait HasRelationManager
 {
     use HasTranslateConfigure;
 
+    public static function className()
+    {
+        return Str::of(class_basename(static::class))->snake()->value();
+    }
     public static function getLocalePath(): string
     {
         if (isset(static::$localePath)) {

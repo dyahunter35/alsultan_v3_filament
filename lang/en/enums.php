@@ -1,40 +1,36 @@
 <?php
 
 return [
-    'all' => 'all',
+
+    'all' => 'All',
 
     'country' => [
         'egypt' => 'Egypt',
         'qatar' => 'Qatar',
-        'hind' => 'Hind',
+        'hind' => 'India',
         'sudan' => 'Sudan',
     ],
 
     'company_type' => [
         'company' => 'Company',
         'contractor' => 'Contractor',
-
     ],
 
     'truck_state' => [
-        //     case OnWay = '0';
-        // case reach = '1';
-        // case barn = '-1';
-        // case port = '-2';
-        'on_way' => 'on way',
-        'reach' => 'reached',
-        'barn' => 'barn',
-        'port' => 'port',
+        'on_way' => 'On the Way',
+        'reach' => 'Arrived',
+        'barn' => 'Warehouse',
+        'port' => 'Port',
     ],
+
     'currency_option' => [
-        'dolar' =>
-        [
+        'dolar' => [
             'label' => 'US Dollar',
             'description' => 'United States Dollar',
         ],
         'ryal' => [
             'label' => 'Saudi Riyal',
-            'description' => 'Saudi Arabian Riyal',
+            'description' => 'Saudi Riyal',
         ],
         'egy' => [
             'label' => 'Egyptian Pound',
@@ -52,6 +48,32 @@ return [
             'label' => 'Qatari Riyal',
             'description' => 'Qatari Riyal',
         ],
+    ],
 
-    ]
+    'payment_option' => [
+        'bok' => 'Bankak',
+        'ibok' => 'iBankak',
+        'cheque' => 'Cheque',
+        'cash' => 'Cash',
+        'fori' => 'Fawry',
+        'min_dep' => 'Deduct Freight Value',
+        'plus_dep' => 'Add Freight Value',
+        'start' => 'Previous Carried Balance',
+        'bank' => 'Bank Transfer',
+    ],
+
+    'currency_type' => [
+        'send' => 'Send To',
+        'convert' => 'Internal Currency Exchange',
+    ],
+
+    'expense_group' => [
+        'sale' => 'Sales',
+        'debtors' => 'Creditors',
+        'customs' => 'Customs',
+        'certificates' => 'Import Certificates',
+        'tax' => 'Taxes',
+        'government_fees' => 'Government Fees',
+    ],
+
 ];

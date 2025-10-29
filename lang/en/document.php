@@ -4,9 +4,9 @@ return [
         'plural' => 'Documents',
         'single' => 'document',
     ],
-   
+
     'fields' => [
-       
+
         'name' => [
             'label' => 'Document Name',
             'placeholder' => 'Enter document name',
@@ -23,6 +23,10 @@ return [
         'file' => [
             'label' => 'File',
             'placeholder' => 'Upload file',
+        ],
+        'note' => [
+            'label' => 'Notes',
+            'placeholder' => 'Enter notes',
         ],
         'created_at' => [
             'label' => 'Created At',
