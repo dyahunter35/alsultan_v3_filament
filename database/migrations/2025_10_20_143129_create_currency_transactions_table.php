@@ -22,7 +22,7 @@ return new class extends Migration
             $table->nullableMorphs('payer'); // payer_id , payer_type
 
             // الجهة المرتبطة (Customer / Company / User)
-            $table->morphs('party'); // party_id , party_type
+            $table->nullableMorphs('party'); // party_id , party_type
 
             // القيم المالية
             $table->double('amount');
