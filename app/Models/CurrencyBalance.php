@@ -129,7 +129,13 @@ class CurrencyBalance extends Model
                 'ct.payer_type as owner_type',
                 'ct.currency_id',
                 'c.exchange_rate',
-                DB::raw('-ct.amount as net_amount')
+                DB::raw("
+                    CASE
+                        WHEN ct.type = '" . CurrencyType::SEND->value . "' THEN -ct.amount
+                        WHEN ct.type = '" . CurrencyType::Convert->value . "' THEN ct.amount
+                        ELSE 0
+                    END as net_amount
+                ")
             )
             ->whereNotNull('ct.payer_id')
             ->whereNotNull('ct.payer_type');
