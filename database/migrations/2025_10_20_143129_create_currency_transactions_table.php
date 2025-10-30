@@ -30,7 +30,7 @@ return new class extends Migration
             $table->double('total')->computed('amount * rate');
 
             // نوع المعاملة (إضافة / خصم)
-            $table->enum('type', CurrencyType::getKeys())->default('add');
+            $table->enum('type', CurrencyType::getKeys())->default(CurrencyType::SEND);
 
             $table->string('note')->nullable();
             $table->softDeletes();

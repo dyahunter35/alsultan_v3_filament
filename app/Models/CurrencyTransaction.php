@@ -31,18 +31,18 @@ class CurrencyTransaction extends Model
     protected static function booted(): void
     {
         static::saved(function (self $tx) {
-            \App\Models\CurrencyBalance::refreshForOwners([
+            \App\Models\CurrencyBalance::refreshBalances([
                 [$tx->payer_type, $tx->payer_id],
                 [$tx->party_type, $tx->party_id],
             ]);
         });
 
         static::updated(function (self $tx) {
-            \App\Models\CurrencyBalance::refreshAllBalances();
+            \App\Models\CurrencyBalance::refreshBalances();
         });
 
         static::deleted(function (self $tx) {
-            \App\Models\CurrencyBalance::refreshForOwners([
+            \App\Models\CurrencyBalance::refreshBalances([
                 [$tx->payer_type, $tx->payer_id],
                 [$tx->party_type, $tx->party_id],
             ]);
