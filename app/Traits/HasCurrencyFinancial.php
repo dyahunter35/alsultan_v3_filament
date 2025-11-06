@@ -31,6 +31,11 @@ trait HasCurrencyFinancial
         return $this->morphMany(CurrencyBalance::class, 'owner');
     }
 
+    public function currencyValue($currencyId)
+    {
+        return $this->currencyBalance->where('currency_id', $currencyId)->first()->amount ?? 0;
+    }
+
 
     public function getNetCurrenciesAttribute(): Collection
     {

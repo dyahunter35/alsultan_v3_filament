@@ -74,18 +74,6 @@ class User extends Authenticatable implements HasTenants
         return ($this->hasRole('sales')) ?  $value .  " (مندوب)" : $value;
     }
 
-    protected function repName(): Attribute
-    {
-        // #TODO :: update role
-        return Attribute::make(
-            get: fn() => $this->name . ($this->hasRole('super_admin') ? ' - مندوب' : ''),
-        );
-    }
-    public function getRepNameAttribute()
-    {
-        return  $this->name . ($this->hasRole('مندوب') ? ' - مندوب' : '');
-    }
-
     public function branch(): BelongsToMany
     {
         return $this->belongsToMany(Branch::class);

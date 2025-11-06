@@ -10,6 +10,7 @@ return [
     'expense_report' => [
         'heading' => 'تقرير المصروفات',
         'icon' => 'heroicon-m-credit-card',
+        'sort' => 5
     ],
     'customers_report' => [
         'heading' => 'كشف حساب العميل',

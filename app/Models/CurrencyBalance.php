@@ -133,6 +133,7 @@ class CurrencyBalance extends Model
                     CASE
                         WHEN ct.type = '" . CurrencyType::SEND->value . "' THEN -ct.amount
                         WHEN ct.type = '" . CurrencyType::Convert->value . "' THEN ct.amount
+                        WHEN ct.type = '" . CurrencyType::CompanyExpense->value . "' THEN -ct.amount
                         ELSE 0
                     END as net_amount
                 ")

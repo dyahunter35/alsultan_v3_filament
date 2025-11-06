@@ -95,6 +95,10 @@ class CustomerResource extends Resource
                     ->searchable(),
                 TextColumn::make('phone')
                     ->searchable(),
+                TextColumn::make('balance')
+                    // ->money('SDG')
+                    ->searchable(),
+
                 TextColumn::make('permanent')
                     ->badge()
                     ->searchable(),

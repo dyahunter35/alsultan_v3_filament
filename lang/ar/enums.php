@@ -17,7 +17,6 @@ return [
     ],
 
     'truck_state' => [
-
         'on_way' => 'علي الطريق',
         'reach' => 'تم الوصول',
         'barn' => 'الحظيرة',
@@ -66,6 +65,7 @@ return [
     'currency_type' => [
         'send' => 'ارسال الي',
         'convert' => 'تحويل عملة داخلي',
+        'company' => 'منصرف. شركة',
     ],
     'expense_group' => [
         'sale' => 'مبيعات',

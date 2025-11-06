@@ -9,6 +9,7 @@ use App\Filament\Forms\Components\MorphField;
 use App\Filament\Forms\Components\MorphSelect;
 use App\Filament\Pages\Concerns\HasResource;
 use App\Filament\Resources\CurrencyTransactions\Pages\ManageCurrencyTransactions;
+use App\Models\Company;
 use App\Models\CurrencyBalance;
 use App\Models\CurrencyTransaction;
 use BackedEnum;
@@ -28,6 +29,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -44,94 +46,7 @@ class CurrencyTransactionResource extends Resource
     {
         self::translateConfigureForm();
         return $schema
-            ->components([
-
-                Select::make('type')
-                    ->options(\App\Enums\CurrencyType::class)
-                    ->default(CurrencyType::SEND)
-                    ->live()
-                    ->columnSpanFull()
-                    ->required(),
-
-                ViewField::make('payer_currencies')
-                    ->label('Currencies')
-                    ->view('filament.resources.customers.forms.customer-currencies-table')
-                    ->reactive()
-                    ->hidden(fn(callable $get) => empty($get('payer_currencies')))
-                    ->columnSpanFull(),
-
-                Select::make('payer_id')
-                    ->options(fn() => \App\Models\Customer::where('permanent', ExpenseGroup::DEBTORS->value)->get()
-                        ->mapWithKeys(fn(\App\Models\Customer $customer) => [
-                            $customer->id => sprintf(
-                                '%s (%s SDG)',
-                                $customer->name,
-                                number_format($customer->balance, 2)
-                            )
-                        ]))
-                    ->reactive()
-                    ->afterStateUpdated(function (callable $set, $state) {
-                        $currencies = CurrencyBalance::where('owner_type', \App\Models\Customer::class)
-                            ->where('owner_id', $state)
-                            ->get();
-
-                        $set('payer_currencies', $currencies);
-                    }),
-
-
-                Hidden::make('payer_type')
-                    ->default(\App\Models\Customer::class)
-                    ->required(),
-
-                MorphSelect::make('party')
-                    ->models([
-                        'company' => \App\Models\Company::class,
-                        'customer' => fn() => \App\Models\Customer::where('permanent', ExpenseGroup::DEBTORS->value)->get(),
-                    ])
-                    ->live()
-                    ->visible(fn(callable $get) =>  $get('type') === CurrencyType::SEND),
-                Hidden::make('party_type')
-                    ->required(fn(callable $get) =>  $get('type') === CurrencyType::SEND),
-
-                Hidden::make('party_id')
-                    ->required(fn(callable $get) =>  $get('type') === CurrencyType::SEND),
-
-
-                Select::make('currency_id')
-                    ->relationship('currency', 'name')
-                    ->required(),
-                DecimalInput::make('amount')
-                    ->required()
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(
-                        function ($set, $get, $state) {
-                            //dd($get('type'));
-                            $price = $get('rate') ?? 0;
-                            $amount = $get('amount') ?? 0;
-                            $set('total', ($amount * $price));
-                        }
-                    )
-                    ->numeric(),
-                DecimalInput::make('rate')
-                    ->required()
-                    ->numeric()
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(
-                        function ($set, $get, $state) {
-                            $price = $get('rate') ?? 0;
-                            $amount = $get('amount') ?? 0;
-                            $set('total', ($amount * $price));
-                        }
-                    )
-                    ->default(1),
-                DecimalInput::make('total')
-                    ->required()
-                    ->numeric(),
-
-
-                TextInput::make('note')
-                    ->default(null),
-            ]);
+            ->components(self::formSchema());
     }
 
     public static function table(Table $table): Table
@@ -139,33 +54,38 @@ class CurrencyTransactionResource extends Resource
         self::translateConfigureTable();
         return $table
             ->columns([
+                TextColumn::make('created_at')
+                    ->date('d-m-Y')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('currency.name')
-                    ->numeric()
+                    ->badge()
                     ->sortable(),
 
-                TextColumn::make('party.name')
+                TextColumn::make('payer.name')
                     ->searchable(),
 
-                TextColumn::make('payer.name')
+                TextColumn::make('party.name')
                     ->searchable(),
 
                 TextColumn::make('amount')
                     ->numeric()
                     ->sortable(),
+
                 TextColumn::make('rate')
                     ->numeric()
                     ->sortable(),
+
                 TextColumn::make('total')
                     ->numeric()
                     ->sortable(),
+
                 TextColumn::make('type')
                     ->badge(),
+
                 TextColumn::make('note')
                     ->searchable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
@@ -177,6 +97,8 @@ class CurrencyTransactionResource extends Resource
             ])
             ->filters([
                 TrashedFilter::make(),
+                SelectFilter::make('type')
+                    ->options(CurrencyType::class)
             ])
             ->recordActions([
                 EditAction::make(),
@@ -197,6 +119,113 @@ class CurrencyTransactionResource extends Resource
     {
         return [
             'index' => ManageCurrencyTransactions::route('/'),
+        ];
+    }
+
+    public static function formSchema($type = CurrencyType::SEND): array
+    {
+        return [
+
+            Select::make('type')
+                ->options(\App\Enums\CurrencyType::class)
+                ->default($type)
+                ->live()
+                ->columnSpanFull()
+                ->required(),
+
+            ViewField::make('payer_currencies')
+                ->label('Currencies')
+                ->view('filament.resources.customers.forms.customer-currencies-table')
+                ->reactive()
+                ->hidden(fn(callable $get) => empty($get('payer_currencies')))
+                ->columnSpanFull(),
+
+            Select::make('payer_id')
+                ->options(
+                    fn($get) => ($get('type') != CurrencyType::CompanyExpense) ?
+                        \App\Models\Customer::select('name', 'id', 'balance')->where('permanent', ExpenseGroup::DEBTORS->value)->get()
+                        ->mapWithKeys(fn(\App\Models\Customer $customer) => [
+                            $customer->id => sprintf(
+                                '%s (%s SDG)',
+                                $customer->name,
+                                number_format($customer->balance, 2)
+                            )
+                        ]) : Company::select('name', 'id', 'type')->get()
+                        ->mapWithKeys(fn(\App\Models\Company $company) => [
+                            $company->id => sprintf(
+                                '%s ( %s )',
+                                $company->name,
+                                ($company->type?->getLabel())
+                            )
+                        ])
+
+                )
+                ->reactive()
+                ->afterStateUpdated(function (callable $set, $state) {
+                    $currencies = CurrencyBalance::where('owner_type', \App\Models\Customer::class)
+                        ->where('owner_id', $state)
+                        ->get();
+
+                    $set('payer_currencies', $currencies);
+                }),
+
+
+            Hidden::make('payer_type')
+                ->default(\App\Models\Customer::class)
+                ->required(),
+
+            MorphSelect::make('party')
+                ->models([
+                    'company' => \App\Models\Company::class,
+                    'customer' => fn() => \App\Models\Customer::where('permanent', ExpenseGroup::DEBTORS->value)->get(),
+                ])
+                ->live()
+                ->hidden(fn(callable $get) => in_array($get('type'), [CurrencyType::Convert, CurrencyType::CompanyExpense])),
+            Hidden::make('party_type')
+                ->hidden(fn(callable $get) => in_array($get('type'), [CurrencyType::Convert, CurrencyType::CompanyExpense])),
+
+            Hidden::make('party_id')
+                ->hidden(fn(callable $get) => in_array($get('type'), [CurrencyType::Convert, CurrencyType::CompanyExpense])),
+
+
+            Select::make('currency_id')
+                ->relationship('currency', 'name')
+                ->required(),
+            DecimalInput::make('amount')
+                ->required()
+                ->live(onBlur: true)
+                ->afterStateUpdated(
+                    function ($set, $get, $state) {
+                        //dd($get('type'));
+                        $price = $get('rate') ?? 1;
+                        $amount = $get('amount') ?? 0;
+                        $set('total', ($amount * $price));
+                    }
+                )
+                ->numeric(),
+
+            DecimalInput::make('rate')
+                ->required()
+                ->numeric()
+                ->live(onBlur: true)
+                ->afterStateUpdated(
+                    function ($set, $get, $state) {
+                        $price = $get('rate') ?? 1;
+                        $amount = $get('amount') ?? 0;
+                        $set('total', ($amount * $price));
+                    }
+                )
+                ->visible(fn(callable $get) => in_array($get('type'), [CurrencyType::CompanyExpense]))
+                ->default(1),
+
+            DecimalInput::make('total')
+                ->required()
+                ->readOnly()
+                ->numeric(),
+
+
+            TextInput::make('note')
+                ->default(null),
         ];
     }
 

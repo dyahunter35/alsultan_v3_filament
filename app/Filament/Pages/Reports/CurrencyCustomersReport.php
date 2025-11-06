@@ -36,7 +36,7 @@ class CurrencyCustomersReport extends Page implements Forms\Contracts\HasForms
 
     public function getTitle(): string | Htmlable
     {
-        dd(self::getLocalePath());
+        //dd(self::getLocalePath());
         return $this->customer
             ? __('customer.reports.ledger.title_for', ['customer' => $this->customer->name])
             : __('customer.reports.ledger.title');

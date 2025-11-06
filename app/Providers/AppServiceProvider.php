@@ -17,6 +17,7 @@ use TomatoPHP\FilamentInvoices\Services\Contracts\InvoiceFor;
 use TomatoPHP\FilamentInvoices\Services\Contracts\InvoiceFrom;
 use BezhanSalleh\LanguageSwitch\LanguageSwitch;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -38,12 +39,14 @@ class AppServiceProvider extends ServiceProvider
             $column->formatStateUsing(fn($state) => is_numeric($state) ? number_format((float) $state) : $state);
         });
 
-
+        // ترتيب افتراضي لكل الجداول في Filament
+        Table::configureUsing(function (Table $table): void {
+            $table->defaultSort('created_at', 'desc');
+        });
 
         LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
             $switch
                 ->visible(outsidePanels: true)
-
                 ->locales(['ar', 'en']); // also accepts a closure
         });
 

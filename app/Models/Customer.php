@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use App\Traits\HasFinancialRelations;
+use App\Traits\HasLedger;
 
 class Customer extends Model implements HasMedia
 {
@@ -27,7 +28,8 @@ class Customer extends Model implements HasMedia
     use SoftDeletes;
     use InteractsWithMedia;
     use HasFinancialRelations;
-    use HasCustomerFinancialReport;
+    //use HasCustomerFinancialReport;
+    use HasLedger;
     use HasCurrencyFinancial;
 
     protected $guarded = [];

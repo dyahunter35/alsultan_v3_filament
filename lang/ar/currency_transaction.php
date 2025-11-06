@@ -13,15 +13,15 @@ return [
         'edit' => 'تعديل معاملة عملة',
     ],
     'fields' => [
-        'currency_id' => [
+        'currency' => [
             'label' => 'العملة',
             'placeholder' => '',
         ],
         'party' => [
             'label' => 'الجهة المستفيدة',
         ],
-        'party_type' => [
-            'label' => 'نوع الجهة',
+        'payer' => [
+            'label' => 'جهه الدفع',
             'placeholder' => '',
         ],
         'party_id' => [

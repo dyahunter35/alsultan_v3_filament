@@ -18,7 +18,7 @@ class CustomerService
         $startDate = $startDate ? Carbon::parse($startDate)->startOfDay() : null;
         $endDate   = $endDate ? Carbon::parse($endDate)->endOfDay() : null;
 
-        // ✅ الرصيد الافتتاحي قبل startDate
+        // ✅ الرصيد المرحل قبل startDate
         $openingBalance = $this->calculateOpeningBalance($customer, $startDate);
 
         $ledger->push([
@@ -30,13 +30,25 @@ class CustomerService
             'balance' => $openingBalance,
         ]);
 
-        // تحديد الفترة
-        $rangeStart = $startDate;
-        $rangeEnd   = $endDate;
+        // ✅ نحدد الفترة المطلوبة:
+        if ($startDate && !$endDate) {
+            // في حالة تحديد startDate فقط ⇒ نجيب اليوم المحدد فقط
+            $rangeStart = $startDate;
+            $rangeEnd   = $startDate->copy()->endOfDay();
+        } elseif ($startDate && $endDate) {
+            // في حالة تحديد تاريخين ⇒ نجيب المدى بينهما
+            $rangeStart = $startDate;
+            $rangeEnd   = $endDate;
+        } else {
+            // بدون تواريخ ⇒ كل السجل
+            $rangeStart = null;
+            $rangeEnd   = null;
+        }
 
+        // 🔹 كل الحركات المالية
         $transactions = collect();
 
-        // 🔹 مصروفات دافع
+        // مصروفات دافع
         $transactions = $transactions->merge(
             $customer->expensesAsPayer()
                 ->when($rangeStart, fn($q) => $q->where('created_at', '>=', $rangeStart))
@@ -44,14 +56,14 @@ class CustomerService
                 ->get()
                 ->map(fn($e) => [
                     'type' => 'expense_paid',
-                    'date' => $e->created_at,
+                    'date' => $e->created_at?->format('Y-m-d'),
                     'description' => 'دفع مصروف',
                     'amount_in' => 0,
                     'amount_out' => $e->total_amount,
                 ])
         );
 
-        // 🔹 مصروفات مستلمة
+        // مصروفات مستلمة
         $transactions = $transactions->merge(
             $customer->expensesAsBeneficiary()
                 ->when($rangeStart, fn($q) => $q->where('created_at', '>=', $rangeStart))
@@ -59,14 +71,14 @@ class CustomerService
                 ->get()
                 ->map(fn($e) => [
                     'type' => 'expense_received',
-                    'date' => $e->created_at,
+                    'date' => $e->created_at?->format('Y-m-d'),
                     'description' => 'استلام مصروف',
                     'amount_in' => $e->total_amount,
                     'amount_out' => 0,
                 ])
         );
 
-        // 🔹 التوريدات
+        // التوريدات
         $transactions = $transactions->merge(
             $customer->supplyings()
                 ->when($rangeStart, fn($q) => $q->where('created_at', '>=', $rangeStart))
@@ -74,14 +86,14 @@ class CustomerService
                 ->get()
                 ->map(fn($s) => [
                     'type' => 'supplying',
-                    'date' => $s->created_at,
+                    'date' => $s->created_at?->format('Y-m-d'),
                     'description' => 'توريد',
                     'amount_in' => 0,
                     'amount_out' => $s->total_amount,
                 ])
         );
 
-        // 🔹 المبيعات
+        // المبيعات
         $transactions = $transactions->merge(
             $customer->sales()
                 ->when($rangeStart, fn($q) => $q->where('created_at', '>=', $rangeStart))
@@ -89,38 +101,25 @@ class CustomerService
                 ->get()
                 ->map(fn($o) => [
                     'type' => 'sale',
-                    'date' => $o->created_at,
+                    'date' => $o->created_at?->format('Y-m-d'),
                     'description' => 'بيع',
                     'amount_in' => $o->total,
                     'amount_out' => 0,
                 ])
         );
 
-        // 🔹 تحويل العملات (فقط لو النوع convert)
-        $transactions = $transactions->merge(
-            $customer->currencyConversion()
-                ->when($rangeStart, fn($q) => $q->where('created_at', '>=', $rangeStart))
-                ->when($rangeEnd, fn($q) => $q->where('created_at', '<=', $rangeEnd))
-                ->where('type', 'convert')
-                ->get()
-                ->map(fn($c) => [
-                    'type' => 'currency_conversion',
-                    'date' => $c->created_at,
-                    'description' => 'تحويل عملة (' . optional($c->currency)->name . ')',
-                    'amount_in' => 0,
-                    'amount_out' => $c->total,
-                ])
-        );
+        // ✅ ترتيب حسب التاريخ
+        $transactions = $transactions->sortBy('date')->values();
 
-        // ترتيب حسب التاريخ وحساب الرصيد المتراكم
+        // ✅ حساب الرصيد المتراكم
         $balance = $openingBalance;
-        return $ledger
-            ->merge($transactions->sortBy('date')->values())
-            ->map(function ($item) use (&$balance) {
-                $balance += $item['amount_in'] - $item['amount_out'];
-                $item['balance'] = $balance;
-                return $item;
-            });
+        foreach ($transactions as $t) {
+            $balance += $t['amount_in'] - $t['amount_out'];
+            $t['balance'] = $balance;
+            $ledger->push($t);
+        }
+
+        return $ledger;
     }
 
     /**
@@ -133,16 +132,11 @@ class CustomerService
         $date = Carbon::parse($startDate)->startOfDay();
         $balance = 0;
 
+        // مصروفات قبل التاريخ
         $balance -= $customer->expensesAsPayer()->where('created_at', '<', $date)->sum('total_amount');
         $balance += $customer->expensesAsBeneficiary()->where('created_at', '<', $date)->sum('total_amount');
         $balance -= $customer->supplyings()->where('created_at', '<', $date)->sum('total_amount');
         $balance += $customer->sales()->where('created_at', '<', $date)->sum('total');
-
-        // تحويل العملات فقط لو النوع convert
-        $balance -= $customer->currencyConversion()
-            ->where('created_at', '<', $date)
-            ->where('type', 'convert')
-            ->sum('total');
 
         return $balance;
     }
@@ -154,8 +148,7 @@ class CustomerService
     {
         $balance =
             ($customer->expensesAsBeneficiary()->sum('total_amount') + $customer->sales()->sum('total'))
-            - ($customer->expensesAsPayer()->sum('total_amount') + $customer->supplyings()->sum('total_amount') +
-                $customer->currencyConversion()->where('type', 'convert')->sum('total'));
+            - ($customer->expensesAsPayer()->sum('total_amount') + $customer->supplyings()->sum('total_amount'));
 
         $customer->update(['balance' => $balance]);
 

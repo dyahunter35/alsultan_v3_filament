@@ -13,6 +13,7 @@ enum CurrencyType: string implements HasLabel, HasIcon, HasColor
 
     case SEND = 'send';
     case Convert = 'convert';
+    case CompanyExpense = 'company';
 
     public function getLabel(): ?string
     {
@@ -24,6 +25,7 @@ enum CurrencyType: string implements HasLabel, HasIcon, HasColor
         return match ($this) {
             self::SEND => 'heroicon-o-arrow-right-start-on-rectangle',
             self::Convert => 'heroicon-o-arrow-path-rounded-square',
+            self::CompanyExpense => 'heroicon-o-building-office-2',
         };
     }
 
@@ -32,6 +34,7 @@ enum CurrencyType: string implements HasLabel, HasIcon, HasColor
         return match ($this) {
             self::SEND => 'success',
             self::Convert => 'info',
+            self::CompanyExpense => 'danger',
         };
     }
 }

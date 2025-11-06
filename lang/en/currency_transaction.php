@@ -13,15 +13,15 @@ return [
         'edit' => 'Edit CurrencyTransaction',
     ],
     'fields' => [
-        'currency_id' => [
-            'label' => 'Currency Id',
+        'currency' => [
+            'label' => 'Currency',
             'placeholder' => '',
         ],
         'party' => [
             'label' => 'Party',
         ],
-        'party_type' => [
-            'label' => 'Party Type',
+        'payer' => [
+            'label' => 'Payer',
             'placeholder' => '',
         ],
         'party_id' => [
