@@ -158,4 +158,50 @@ class Truck extends Model implements HasMedia
             ExpenseType::where('group', ExpenseGroup::CERTIFICATES)->pluck('id')
         );
     }
+
+    public function calculateCostPerGram(): float
+    {
+        // 🧾 1. جمع جميع المصاريف المرتبطة بالشاحنة
+        $totalExpenses = $this->expenses()->sum('total_amount');
+
+        // 🚛 2. أجرة النولون من نفس الشاحنة
+        $freightCost = floatval($this->truck_fare ?? 0);
+
+        // ⏱️ 3. تكلفة الأيام الإضافية
+        $extraDaysCost = ($this->diff_trip ?? 0) * ($this->delay_day_value ?? 0);
+
+        // 🧮 4. حساب الوزن الكلي للبضائع
+        $totalWeight = $this->cargos()->sum('weight');
+
+        if ($totalWeight <= 0) {
+            return 0; // تجنب القسمة على صفر
+        }
+
+        // 💰 5. إجمالي التكاليف الفعلية
+        $totalCost = $totalExpenses + $freightCost + $extraDaysCost;
+
+        // ⚖️ 6. حساب تكلفة الجرام الواحد
+        return $totalCost / $totalWeight;
+    }
+
+    public function calculateProductsCosts(): array
+    {
+        $costPerGram = $this->calculateCostPerGram();
+        $productsCosts = [];
+
+        foreach ($this->cargos as $cargo) {
+            $productWeight = $cargo->weight ?? 0;
+            $productCost = $productWeight * $costPerGram;
+
+            $productsCosts[] = [
+                'cargo_id' => $cargo->id,
+                'product_id' => $cargo->details_id,
+                'weight' => $productWeight,
+                'cost_per_gram' => round($costPerGram, 4),
+                'total_cost' => round($productCost, 2),
+            ];
+        }
+
+        return $productsCosts;
+    }
 }

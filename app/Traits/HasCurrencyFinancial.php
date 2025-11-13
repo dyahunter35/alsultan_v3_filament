@@ -59,4 +59,35 @@ trait HasCurrencyFinancial
                 ];
             });
     }
+
+    public function getNetCurrenciesByDate(Carbon $date): Collection
+    {
+        // نضبط التاريخ ليكون نهاية اليوم المحدد لضمان شمول جميع حركات ذلك اليوم
+        $cutOffDate = $date->endOfDay();
+
+        return self::query() // استخدام self::query() لبدء الاستعلام من نموذج Currency
+            ->withSum(['transactionsAsPayer' => function ($q) use ($cutOffDate) {
+                // تصفية حسب التاريخ ونوع الحركة (SEND)
+                $q->where('type', CurrencyType::SEND)
+                    ->where('created_at', '<=', $cutOffDate);
+            }], 'amount')
+            ->withSum(['transactionsAsParty' => function ($q) use ($cutOffDate) {
+                // تصفية حسب التاريخ ونوع الحركة (SEND)
+                $q->where('type', CurrencyType::SEND)
+                    ->where('created_at', '<=', $cutOffDate);
+            }], 'amount')
+            ->get()
+            ->map(function ($currency) {
+                $sent = $currency->transactions_as_payer_sum_amount ?? 0;
+                $received = $currency->transactions_as_party_sum_amount ?? 0;
+
+                return [
+                    'currency_name' => $currency->name,
+                    'sent' => $sent,
+                    'received' => $received,
+                    // صافي الرصيد حتى ذلك التاريخ
+                    'net' => $received - $sent,
+                ];
+            });
+    }
 }

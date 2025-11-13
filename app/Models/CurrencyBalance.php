@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use App\Enums\CurrencyType;
-
+use Illuminate\Support\Carbon;
 
 class CurrencyBalance extends Model
 {
@@ -36,70 +36,23 @@ class CurrencyBalance extends Model
 
     public static function refreshAllBalances()
     {
-        // 1️⃣ تأثير الـ payer
-        $payerBalances = DB::table('currency_transactions as ct')
-            ->join('currencies as c', 'ct.currency_id', '=', 'c.id')
-            ->select(
-                'ct.payer_id as owner_id',
-                'ct.payer_type as owner_type',
-                'ct.currency_id',
-                'c.exchange_rate',
-                DB::raw('-ct.amount as net_amount')
-            )
-            ->whereNotNull('ct.payer_id')
-            ->whereNotNull('ct.payer_type');
-
-        // 2️⃣ تأثير الـ party
-        $partyBalances = DB::table('currency_transactions as ct')
-            ->join('currencies as c', 'ct.currency_id', '=', 'c.id')
-            ->select(
-                'ct.party_id as owner_id',
-                'ct.party_type as owner_type',
-                'ct.currency_id',
-                'c.exchange_rate',
-                DB::raw('ct.amount as net_amount')
-
-            )
-            ->whereNotNull('ct.party_id')
-            ->whereNotNull('ct.party_type');
-
-        // 3️⃣ دمج النتائج باستخدام unionAll
-        $allBalances = $payerBalances->unionAll($partyBalances)->get();
-
-        // 4️⃣ تجميع النتائج في PHP لكل owner/عملة
-        $grouped = [];
-        foreach ($allBalances as $row) {
-            $key = $row->owner_type . ':' . $row->owner_id . ':' . $row->currency_id;
-            if (!isset($grouped[$key])) {
-                $grouped[$key] = [
-                    'owner_id' => $row->owner_id,
-                    'owner_type' => $row->owner_type,
-                    'currency_id' => $row->currency_id,
-                    'exchange_rate' => $row->exchange_rate,
-                    'net_amount' => 0,
-                ];
-            }
-            $grouped[$key]['net_amount'] += $row->net_amount;
-        }
-
-        // 5️⃣ تحديث أو إنشاء السجلات
-        foreach ($grouped as $row) {
-            static::updateOrCreate(
-                [
-                    'owner_id' => $row['owner_id'],
-                    'owner_type' => $row['owner_type'],
-                    'currency_id' => $row['currency_id'],
-                ],
-                [
-                    'amount' => $row['net_amount'],
-                    'total_in_sdg' => $row['net_amount'] * $row['exchange_rate'],
-                ]
-            );
-        }
+        // هذه الدالة ستحسب الرصيد الإجمالي التراكمي (باستخدام اليوم الحالي كـ cutOffDate)
+        static::refreshBalances([], Carbon::now());
     }
 
-    public static function refreshBalances(array $owners = []): void
+    /**
+     * يحسب ويحدث الأرصدة الصافية للمالكين المحددين (أو جميعهم) حتى تاريخ معين.
+     *
+     * @param array $owners قائمة بالمالكين المطلوب تحديثهم: [[$ownerType, $ownerId], ...]
+     * @param \Illuminate\Support\Carbon $date التاريخ الذي سيتم استخدامه كحد أقصى للحركات
+     * @return void
+     */
+    public static function refreshBalances(array $owners = [], ?Carbon $date = null): void
     {
+        // إذا لم يتم تمرير تاريخ، نستخدم اليوم الحالي.
+        // ونضبطه لنهاية اليوم لضمان شمول جميع حركات ذلك اليوم.
+        $cutOffDate = ($date ?? Carbon::now())->endOfDay()->toDateTimeString();
+
         // دالة مساعدة لتطبيق شرط المالكين إذا تم تمريرهم
         $applyOwnerFilter = function ($query) use ($owners) {
             if (empty($owners)) {
@@ -139,7 +92,10 @@ class CurrencyBalance extends Model
                 ")
             )
             ->whereNotNull('ct.payer_id')
-            ->whereNotNull('ct.payer_type');
+            ->whereNotNull('ct.payer_type')
+            // 🚨 شرط التاريخ الجديد 🚨
+            ->where('ct.created_at', '<=', $cutOffDate);
+
 
         $applyOwnerFilter($payerBalances);
 
@@ -154,15 +110,21 @@ class CurrencyBalance extends Model
                 DB::raw('ct.amount as net_amount')
             )
             ->whereNotNull('ct.party_id')
-            ->whereNotNull('ct.party_type');
+            ->whereNotNull('ct.party_type')
+            // 🚨 شرط التاريخ الجديد 🚨
+            ->where('ct.created_at', '<=', $cutOffDate);
+
 
         $applyOwnerFilter($partyBalances);
 
         // 3️⃣ دمج النتائج
+        // Note: Using a standard Eloquent Collection method get() instead of DB::select(...)
+        // to handle the union result if needed, but the current structure using get() on union is fine.
         $allBalances = $payerBalances->unionAll($partyBalances)->get();
 
         // 4️⃣ تجميع النتائج في PHP لكل owner/عملة
         $grouped = [];
+        // ... (بقية منطق التجميع والتحديث كما هو)
         foreach ($allBalances as $row) {
             $key = $row->owner_type . ':' . $row->owner_id . ':' . $row->currency_id;
             if (!isset($grouped[$key])) {
@@ -179,7 +141,7 @@ class CurrencyBalance extends Model
 
         // 5️⃣ تحديث أو إنشاء السجلات
         foreach ($grouped as $row) {
-            CurrencyBalance::updateOrCreate(
+            static::updateOrCreate(
                 [
                     'owner_id' => $row['owner_id'],
                     'owner_type' => $row['owner_type'],

@@ -10,12 +10,20 @@ class TruckCargo extends Model
     use HasFactory;
 
     protected $fillable = [
-        'id', 'truck_id', 'details_id', 'quantity', 'real_quantity', 'weight', 'unit_id', 'cateogrie_id', 'note'
+        'id',
+        'truck_id',
+        'details_id',
+        'quantity',
+        'real_quantity',
+        'weight',
+        'unit_id',
+        'cateogrie_id',
+        'note'
     ];
 
     public function product()
     {
-        return $this->hasOne(\App\Models\Product::class);
+        return $this->belongsTo(\App\Models\Product::class);
     }
 
     public function truck()

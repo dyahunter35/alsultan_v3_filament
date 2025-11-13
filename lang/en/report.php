@@ -26,4 +26,9 @@ return [
         'icon' => 'heroicon-m-currency-dollar',
         'sort' => 3,
     ],
+    'companies_report' => [
+        'heading' => 'كشف حساب الشركات',
+        'icon' => 'heroicon-m-currency-dollar',
+        'sort' => 4,
+    ],
 ];
