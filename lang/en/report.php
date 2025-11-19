@@ -1,34 +1,40 @@
 <?php
 
 return [
-    'group' => 'تقارير',
+    'group' => 'Reports',
     'sales_report' => [
-        'heading' => 'تقرير المبيعات',
+        'heading' => 'Sales Report',
         'icon' => 'heroicon-m-currency-dollar',
         'sort' => 1,
     ],
     'expense_report' => [
-        'heading' => 'تقرير المصروفات',
+        'heading' => 'Expenses Report',
         'icon' => 'heroicon-m-credit-card',
+        'sort' => 5,
     ],
     'customers_report' => [
-        'heading' => 'كشف حساب العميل',
+        'heading' => 'Customer Account Statement',
         'icon' => 'heroicon-m-user-group',
         'sort' => 1,
     ],
     'currency_customers_report' => [
-        'heading' => 'كشف حساب العملاء بالعملات',
+        'heading' => 'Customer Account Statement in Currencies',
         'icon' => 'heroicon-m-currency-dollar',
         'sort' => 2,
     ],
     'currency_summary_report' => [
-        'heading' => 'كشف حساب العملات',
+        'heading' => 'Currency Account Statement',
         'icon' => 'heroicon-m-currency-dollar',
         'sort' => 3,
     ],
     'companies_report' => [
-        'heading' => 'كشف حساب الشركات',
+        'heading' => 'Company Account Statement',
         'icon' => 'heroicon-m-currency-dollar',
         'sort' => 4,
+    ],
+    'truck_report' => [
+        'heading' => 'Truck Report',
+        'icon' => 'heroicon-m-truck',
+        'sort' => 5,
     ],
 ];

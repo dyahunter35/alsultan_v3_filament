@@ -142,7 +142,7 @@ class StoreExpense extends Page implements HasActions, HasTable
             ]);
     }
 
-    public static function expenseForm()
+    public static function expenseForm($truckId = null)
     {
         return [
             Grid::make()->columns(2)
@@ -184,11 +184,17 @@ class StoreExpense extends Page implements HasActions, HasTable
                         Forms\Components\Hidden::make('beneficiary_type'), */
 
                         Forms\Components\Select::make('branch_id')
-                            ->label(__('المخزن'))
+                            ->label(__(self::getLocalePath() . '.fields.branch_id.label'))
                             ->relationship('branch', 'name') // يفترض وجود علاقة 'store' في موديل Expense
                             ->required()
                             ->default(fn() => Filament::getTenant()->id),
 
+                        Forms\Components\Select::make('truck_id')
+                            ->relationship('truck', 'driver_name') // يفترض وجود علاقة 'store' في موديل Expense
+                            ->label(__(self::getLocalePath() . '.fields.truck.label'))
+                            ->searchable()
+                            ->preload()
+                            ->default($truckId),
                         // 5. الكمية / amount (عدد الوحدات المشتراة/الكمية)
                         /* DecimalInput::make('amount')
                             ->label(__('الكمية'))

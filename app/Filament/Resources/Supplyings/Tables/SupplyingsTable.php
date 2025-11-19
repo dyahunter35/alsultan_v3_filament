@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Supplyings\Tables;
 
+use App\Filament\Resources\Customers\CustomerResource;
+use App\Filament\Resources\Users\UserResource;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -16,9 +18,14 @@ class SupplyingsTable
         return $table
             ->defaultSort('id', 'desc')
             ->columns([
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable(),
                 TextColumn::make('customer.name')
+                    ->url(fn($record) => ((CustomerResource::getUrl('edit', ['record' => $record]))))
                     ->sortable(),
                 TextColumn::make('representative.name')
+                    ->url(fn($record) => ((UserResource::getUrl('edit', ['record' => $record]))))
                     ->sortable(),
                 IconColumn::make('is_completed')
                     ->boolean(),
@@ -38,10 +45,7 @@ class SupplyingsTable
                 TextColumn::make('creator.name')
 
                     ->sortable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()

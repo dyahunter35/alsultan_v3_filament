@@ -34,6 +34,7 @@ class Supplying extends Model
         'is_completed' => 'boolean',
         'paid_amount' => 'double',
         'total_amount' => 'double',
+        'payment_reference' => 'string',
         'payment_method' => PaymentOptions::class
     ];
 
@@ -50,10 +51,10 @@ class Supplying extends Model
                 $supplying->paid_amount = $supplying->total_amount;
         });
         static::created(function ($supplying) {
-            app('App\Services\CustomerService')->updateCustomerBalance($supplying->customer_id);
+            app('App\Services\CustomerService')->updateCustomerBalance(Customer::find($supplying->customer_id));
         });
         static::updated(function ($supplying) {
-            app('App\Services\CustomerService')->updateCustomerBalance($supplying->customer_id);
+            app('App\Services\CustomerService')->updateCustomerBalance(Customer::find($supplying->customer_id));
         });
     }
 

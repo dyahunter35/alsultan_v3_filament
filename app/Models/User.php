@@ -5,7 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Traits\HasFinancials;
-use Attribute;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
@@ -37,9 +37,9 @@ class User extends Authenticatable implements HasTenants
         'email',
         'password',
     ];
-    protected $appends = [
+    /* protected $appends = [
         'rep_name',
-    ];
+    ]; */
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -69,9 +69,15 @@ class User extends Authenticatable implements HasTenants
         return User::role('sales')->pluck('name', 'id');
     }
 
-    public function getNameAttribute($value): string
+    protected function name(): Attribute
     {
-        return ($this->hasRole('sales')) ?  $value .  " (مندوب)" : $value;
+        return Attribute::make(
+            // Accessor (للعرض في كل مكان):
+            get: fn(string $value) => $this->hasRole('sales') ? $value . " (مندوب)" : $value,
+
+            // Mutator (للتنظيف عند الحفظ):
+            set: fn(string $value) => str_replace(' (مندوب)', '', $value),
+        );
     }
 
     public function branch(): BelongsToMany
@@ -90,7 +96,7 @@ class User extends Authenticatable implements HasTenants
     }
 
     // المصاريف التي دفعها هذا المستخدم
-    public function expensesPaid(): MorphMany
+    /* public function expensesPaid(): MorphMany
     {
         return $this->morphMany(Expense::class, 'payer');
     }
@@ -99,7 +105,7 @@ class User extends Authenticatable implements HasTenants
     public function expensesBeneficiary()
     {
         return $this->morphMany(Expense::class, 'beneficiary');
-    }
+    } */
 
     // المصاريف التي أنشأها
     public function expensesCreated()

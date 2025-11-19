@@ -6,6 +6,7 @@ use App\Enums\Country;
 use App\Enums\ExpenseGroup;
 use App\Enums\TruckState;
 use App\Enums\TruckType;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -98,6 +99,7 @@ class Truck extends Model implements HasMedia
     {
         return $this->belongsTo(\App\Models\Company::class, 'contractor_id');
     }
+
 
     public function isConverted(): bool
     {
@@ -203,5 +205,13 @@ class Truck extends Model implements HasMedia
         }
 
         return $productsCosts;
+    }
+
+    protected function totalWeight(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->cargos()->sum('weight'),
+            //set: fn (string $value) => strtolower($value),
+        );
     }
 }

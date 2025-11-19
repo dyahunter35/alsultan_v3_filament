@@ -57,7 +57,7 @@ return [
     ],
     'widgets' => [
         'stats' => [
-            'label' => 'Customer Statistics',
+            'label' => 'Customer Finincial Report',
             'count' => 'Total Customers',
             'active' => 'Active Customers',
             'inactive' => 'Inactive Customers',

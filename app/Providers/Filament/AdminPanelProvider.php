@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\Profile;
 use App\Filament\Pages\Dashboard\MainDashboard;
 use App\Filament\Pages\Tenancy\EditBranch;
 use BezhanSalleh\FilamentShield\Middleware\SyncShieldTenant;
@@ -41,6 +42,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('/')
             ->login()
             ->spa()
+            ->profile(Profile::class)
             ->font('Poppins')
             ->databaseTransactions()
             //->databaseNotifications()

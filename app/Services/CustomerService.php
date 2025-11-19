@@ -152,10 +152,7 @@ class CustomerService
      */
     public function updateCustomerBalance(Customer $customer): float
     {
-        $balance =
-            ($customer->expensesAsBeneficiary()->sum('total_amount') + $customer->sales()->sum('total'))
-            - ($customer->expensesAsPayer()->sum('total_amount') + $customer->supplyings()->sum('total_amount') +
-                $customer->currencyConversion()->where('type', 'convert')->sum('total'));
+        $balance = $customer->net_balance;
 
         $customer->update(['balance' => $balance]);
 

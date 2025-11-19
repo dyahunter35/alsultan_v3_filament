@@ -4,9 +4,9 @@ return [
         'plural' => 'Courrency Histories',
         'single' => 'financial transaction',
     ],
-   
+
     'fields' => [
-       
+
         'code' => [
             'label' => 'Currency Code',
             'placeholder' => 'Enter code',
@@ -48,4 +48,9 @@ return [
         'edit' => 'تعديل',
         'delete' => 'حذف',
     ],
+    'widgets' => [
+        'state' => [
+            'label' => 'Currency Financial'
+        ]
+    ]
 ];

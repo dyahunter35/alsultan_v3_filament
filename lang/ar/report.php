@@ -32,4 +32,9 @@ return [
         'icon' => 'heroicon-m-currency-dollar',
         'sort' => 4,
     ],
+    'truck_report' => [
+        'heading' => 'كشف الشاحنات',
+        'icon' => 'heroicon-m-truck',
+        'sort' => 5,
+    ],
 ];

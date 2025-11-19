@@ -35,6 +35,7 @@ class CurrencyTransaction extends Model
                 [$tx->payer_type, $tx->payer_id],
                 [$tx->party_type, $tx->party_id],
             ]);
+            //\App\Models\Customer::
         });
 
         static::updated(function (self $tx) {

@@ -3,6 +3,7 @@
 namespace App\Filament\Forms\Components;
 
 use Filament\Forms\Components\TextInput;
+use Filament\Support\RawJs;
 
 class DecimalInput extends TextInput
 {
@@ -16,6 +17,9 @@ class DecimalInput extends TextInput
         $this->rules(['numeric', 'regex:/^\d+(\.\d{1,2})?$/']);
         $this->hint(fn($state) => number_format($state ?? 0, 2));
         $this->hintColor('info');
+        //$this->mask(RawJs::make('$money($input)'));
+        //$this->stripCharacters(',');
+
         $this->default(0);
     }
 }

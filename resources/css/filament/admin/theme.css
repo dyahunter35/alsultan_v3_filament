@@ -7,13 +7,14 @@
 
 @plugin "daisyui";
 
-/*
 @media print {
     body * {
         visibility: hidden;
     }
 
-
+    .no-print {
+        visibility: hidden;
+    }
 
     #report-content,
     #report-content * {
@@ -24,10 +25,11 @@
         position: absolute;
         left: 0;
         top: 0;
+
         width: 100%;
-        margin: 0;
+        margin: 1px;
         padding: 0;
         border: none;
         box-shadow: none;
     }
-} */
+}

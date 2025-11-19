@@ -12,7 +12,7 @@ class CustomerFinancialLedgerWidget extends Widget
 
     public ?Customer $record = null;
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     public ?string $startDate = null;
     public ?string $endDate = null;
@@ -29,23 +29,18 @@ class CustomerFinancialLedgerWidget extends Widget
         $this->startDate = $start;
         $this->endDate = $end;
 
-        $this->emitSelf('refreshWidget'); // لو حابب تعيد تحميل الداتا
+        $this->emitSelf('$refresh');
     }
 
     public function getLedger(): array
     {
-        $customer = $this->record;
-        if (!$customer) return [];
-
-        $ledgerItems = $customer->financialLedgerFromTo($this->startDate, $this->endDate);
-
-        $balance = $ledgerItems[0]['balance'] ?? 0; // الرصيد الافتتاحي
-
-        $rows = [];
-        foreach ($ledgerItems as $item) {
-            $rows[] = $item;
+        if (!$this->record) {
+            return [];
         }
 
-        return $rows;
+        // استخدام الدالة الجديدة
+        $ledgerItems = $this->record->financialLedger($this->startDate, $this->endDate);
+
+        return $ledgerItems->toArray();
     }
 }

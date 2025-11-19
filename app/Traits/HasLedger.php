@@ -65,7 +65,7 @@ trait HasLedger
 
         // 🔹 معالجة التحركات بعد startDate
         foreach ($relations as $relation => $props) {
-            $transactions[$relation]->each(function ($item) use ($ledger, $props, $startDate) {
+            $transactions[$relation]->each(function ($item) use ($ledger, $props, $startDate, $relation) {
                 if ($startDate && $item->created_at < $startDate) return;
 
                 $ledger->push([

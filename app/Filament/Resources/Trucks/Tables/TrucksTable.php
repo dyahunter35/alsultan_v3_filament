@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Trucks\Tables;
 
 use App\Enums\Country;
 use App\Enums\TruckType;
+use App\Filament\Pages\Reports\TruckReport;
 use App\Models\Truck;
 use Filament\Actions;
 use Filament\Tables;
@@ -91,6 +92,7 @@ class TrucksTable
 
             ])
             ->recordActions([
+                Actions\Action::make('report')->action(fn(Truck $record) => redirect(TruckReport::getUrl(['truckId' => $record->id]))),
                 Actions\ViewAction::make(),
                 Actions\EditAction::make(),
             ])

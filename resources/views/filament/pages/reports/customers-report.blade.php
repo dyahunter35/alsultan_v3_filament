@@ -133,38 +133,14 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="no-print" style="margin-top:20px; text-align:center;">
-                    <button onclick="window.print()">طباعة التقرير</button>
-                </div>
             @else
                 <div class="p-6 text-center text-gray-500">
                     لا توجد بيانات لعرضها.
                 </div>
         @endif
     </div>
-    <style>
-        @media print {
-            body * {
-                visibility: hidden;
-            }
+    <div class="my-7" style="text-align:center;">
+        <x-filament::button icon='heroicon-o-printer' onclick="window.print()">طباعة التقرير</x-filament::button>
+    </div>
 
-
-
-            #report-content,
-            #report-content * {
-                visibility: visible;
-            }
-
-            #report-content {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                margin: 0;
-                padding: 0;
-                border: none;
-                box-shadow: none;
-            }
-        }
-    </style>
 </div>

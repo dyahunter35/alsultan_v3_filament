@@ -33,6 +33,7 @@ class SupplyingForm
                             ->required()
                             ->searchable()
                             ->default(fn() => request()->get('customer_id', null)),
+
                         Select::make('representative_id')
                             ->relationship('representative', 'name')
                             ->preload()

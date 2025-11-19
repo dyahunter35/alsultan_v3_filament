@@ -70,6 +70,8 @@ class UserResource extends Resource
                             ->label(__('user.fields.name.label'))
                             ->placeholder(__('user.fields.name.placeholder'))
                             ->required()
+                            ->afterStateUpdated(fn(?Model $record) => $record)
+
                             ->maxLength(255),
                         TextInput::make('email')
                             ->label(__('user.fields.email.label'))

@@ -215,7 +215,7 @@ class CurrencyTransactionResource extends Resource
                         $set('total', ($amount * $price));
                     }
                 )
-                ->visible(fn(callable $get) => in_array($get('type'), [CurrencyType::CompanyExpense]))
+                ->visible(fn(callable $get) => in_array($get('type'), [CurrencyType::CompanyExpense, CurrencyType::Convert]))
                 ->default(1),
 
             DecimalInput::make('total')

@@ -4,9 +4,9 @@ return [
         'plural' => 'سجلات العملات',
         'single' => 'معاملة مالية',
     ],
-   
+
     'fields' => [
-       
+
         'code' => [
             'label' => 'العملة',
             'placeholder' => 'ادخل الرمز',
@@ -48,4 +48,9 @@ return [
         'edit' => 'تعديل',
         'delete' => 'حذف',
     ],
+    'widgets' => [
+        'state' => [
+            'label' => 'حسابات العملة'
+        ]
+    ]
 ];

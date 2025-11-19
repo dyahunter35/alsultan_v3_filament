@@ -8,6 +8,7 @@ use App\Enums\ExpenseGroup;
 use App\Enums\ExpenseType;
 use App\Traits\HasCurrencyFinancial;
 use App\Traits\HasCustomerFinancialReport;
+use App\Traits\HasCustomerFinancials;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,10 +28,11 @@ class Customer extends Model implements HasMedia
 
     use SoftDeletes;
     use InteractsWithMedia;
-    use HasFinancialRelations;
+    // use HasFinancialRelations;
     //use HasCustomerFinancialReport;
     use HasLedger;
     use HasCurrencyFinancial;
+    use HasCustomerFinancials;
 
     protected $guarded = [];
 
@@ -49,28 +51,5 @@ class Customer extends Model implements HasMedia
 
         $permanentLabel = $this->permanent?->getLabel() ?? '';
         return ($this->permanent == ExpenseGroup::SALE) ? $value : $value . ($permanentLabel ? " ($permanentLabel)" : '');
-    }
-
-    /** 🔸 المصروفات التي دفعها */
-    public function expensesAsPayer(): MorphMany
-    {
-        return $this->morphMany(Expense::class, 'payer');
-    }
-
-    /** 🔸 المصروفات التي استلمها */
-    public function expensesAsBeneficiary(): MorphMany
-    {
-        return $this->morphMany(Expense::class, 'beneficiary');
-    }
-
-    /** 🔸 التوريدات التي نفذها */
-    public function supplyings()
-    {
-        return $this->hasMany(Supplying::class);
-    }
-
-    public function sales()
-    {
-        return $this->hasMany(Order::class, 'customer_id');
     }
 }
