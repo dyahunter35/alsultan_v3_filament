@@ -17,7 +17,6 @@ class Company extends Model
 
     protected $guarded = [];
 
-
     protected $casts = [
         'default_currency' => CurrencyOption::class,
         'type' => CompanyType::class

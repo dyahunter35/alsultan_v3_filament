@@ -59,4 +59,6 @@
             </div>
         </div>
     </x-filament::section>
+    <x-print-button />
+
 </x-filament-panels::page>

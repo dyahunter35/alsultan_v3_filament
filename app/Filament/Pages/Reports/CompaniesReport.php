@@ -26,17 +26,17 @@ class CompaniesReport extends Page
     public function loadData(): void
     {
         $this->companies = Company::with(['currencyTransactions' => function ($q) {
-            $q->where('currency_id', $this->sudaneseCurrencyId);
+            //$q->where('currency_id', $this->sudaneseCurrencyId);
         }])->get()->map(function ($company) {
             // 🔹 إجمالي المدفوعات (إرسال)
             $paid = $company->currencyTransactions
                 ->where('type', CurrencyType::SEND->value)
-                ->sum('amount');
+                ->sum('total');
 
             // 🔹 مصروفات الشركة (CompanyExpense)
             $companyExpense = $company->currencyTransactions
                 ->where('type', CurrencyType::CompanyExpense->value)
-                ->sum('amount');
+                ->sum('total');
 
             // 🔹 التحويلات بالعملة السودانية (Convert)
             $converted = $company->currencyTransactions

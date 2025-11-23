@@ -23,11 +23,15 @@ class CurrencySummaryReport extends Page implements Forms\Contracts\HasForms
     protected string $view = 'filament.pages.reports.currency-summary-report';
 
     public $ledger;
+
+    #[Url()]
     public $type = 'customers';
     public $currencies;
 
     public $total = [];
     public $total_converted = 0;
+
+    public $companies = [];
 
     // الإجمالي الكلي لكل عملة على حدة
     public $currencyTotals = [];
@@ -39,6 +43,30 @@ class CurrencySummaryReport extends Page implements Forms\Contracts\HasForms
     #[Url(except: '')]
     public ?string $date = null;
 
+    /* public function loadData()
+    {
+        $this->companies = Company::query()
+            ->withSum('expensesAsBeneficiary', 'total_amount')
+            ->withSum('expensesAsPayer', 'total_amount')
+            ->withSum('currencyTransactions', 'amount')
+            ->get()
+            ->map(function ($company) {
+                $received = $company->expenses_as_beneficiary_sum_total_amount ?? 0;
+                $paid = $company->expenses_as_payer_sum_total_amount ?? 0;
+                $converted = $company->currency_transactions_sum_amount ?? 0;
+                $final_balance = $received - $paid + $converted;
+
+                return [
+                    'id' => $company->id,
+                    'name' => $company->name,
+                    'received' => $received,
+                    'paid' => $paid,
+                    'converted' => $converted,
+                    'final_balance' => $final_balance,
+                ];
+            });
+    }
+ */
     public function mount()
     {
         // تهيئة التاريخ الافتراضي
@@ -46,6 +74,7 @@ class CurrencySummaryReport extends Page implements Forms\Contracts\HasForms
             $this->date = now()->format('Y-m-d');
         }
 
+        $this->companies = Company::get();
         $this->currencies = Currency::get();
         if (empty($this->keys)) {
             // القيمة الافتراضية للوحدة الأساسية (SDG)

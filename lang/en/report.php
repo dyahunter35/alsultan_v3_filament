@@ -37,4 +37,9 @@ return [
         'icon' => 'heroicon-m-truck',
         'sort' => 5,
     ],
+    'journal_entries_report' => [
+        'heading' => 'Journal Entries Report',
+        'icon' => 'heroicon-m-book-open',
+        'sort' => 6,
+    ],
 ];

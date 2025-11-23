@@ -133,14 +133,14 @@
                         </tbody>
                     </table>
                 </div>
-            @else
-                <div class="p-6 text-center text-gray-500">
-                    لا توجد بيانات لعرضها.
-                </div>
+            </div>
+        @else
+            <div class="p-6 text-center text-gray-500">
+                لا توجد بيانات لعرضها.
+            </div>
         @endif
     </div>
-    <div class="my-7" style="text-align:center;">
-        <x-filament::button icon='heroicon-o-printer' onclick="window.print()">طباعة التقرير</x-filament::button>
-    </div>
+
+    <x-print-button />
 
 </div>
