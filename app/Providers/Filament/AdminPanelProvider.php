@@ -75,8 +75,8 @@ class AdminPanelProvider extends PanelProvider
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
             ->pages([
                 MainDashboard::class,
-                BranchReport::class,
-                ProductStockReport::class
+                //BranchReport::class,
+                //ProductStockReport::class
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([

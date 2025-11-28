@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Orders\RelationManagers;
 
+use App\Filament\Pages\Concerns\HasRelationManager;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class OrderLogsRelationManager extends RelationManager
 {
+    use HasRelationManager;
     protected static string $relationship = 'orderLogs';
 
     public function form(Schema $schema): Schema

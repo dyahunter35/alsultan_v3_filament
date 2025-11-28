@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Orders\Pages;
 use Filament\Actions\ViewAction;
 use Filament\Actions\DeleteAction;
 use App\Enums\OrderStatus;
+use App\Enums\StockCase;
 use App\Filament\Resources\Orders\OrderResource;
 use App\Models\Product;
 use App\Services\InventoryService;
@@ -57,72 +58,81 @@ class EditOrder extends EditRecord
         $currentBranch = Filament::getTenant();
         $currentUser = auth()->user();
 
-        // Get the new state of items from the form data
-        // With ->relationship(), Filament prepares the data for the relation.
-        $newItemsData = $data['items'] ?? [];
+        $newItemsData = collect($data['items'] ?? []);
 
         return DB::transaction(function () use ($record, $data, $newItemsData, $inventoryService, $currentBranch, $currentUser) {
 
-            // Get the original items before any changes
-            $originalItems = $record->items()->get();
+            // جلب المنتجات القديمة
+            $originalItems = $record->items()->get()->keyBy('product_id');
 
-            // --- 1. Restock original items ---
-            foreach ($originalItems as $item) {
-                $product = Product::find($item->product_id);
+            // تحديث الطلب بواسطة Filament
+            $record->update($data);
+            $record->refresh();
+
+            // جلب المنتجات الجديدة من قاعدة البيانات
+            $newItems = $record->items()->get()->keyBy('product_id');
+
+            // معالجة فروقات الكميات
+            foreach ($newItems as $productId => $newItem) {
+
+                $oldQty = $originalItems[$productId]->qty ?? 0;
+                $newQty = $newItem->qty;
+
+                // لو الكمية ما اتغيرت → تجاهل
+                if ($oldQty == $newQty) {
+                    continue;
+                }
+
+                $product = Product::find($productId);
+
+                // 1. رجع الكمية القديمة فقط لو كانت موجودة
+                if ($oldQty > 0) {
+                    $inventoryService->addStockForBranch(
+                        $product,
+                        $currentBranch,
+                        $oldQty,
+                        StockCase::Increase,
+                        "Order Update #{$record->number}",
+                        $currentUser
+                    );
+                }
+
+                // 2. خصم الكمية الجديدة فقط
+                if ($newQty > 0) {
+                    $inventoryService->deductStockForBranch(
+                        $product,
+                        $currentBranch,
+                        $newQty,
+
+                        "Order Update #{$record->number}",
+                        $currentUser
+                    );
+                }
+            }
+
+            // 3. المنتجات التي تم حذفها من الطلب فقط → رجّع كمياتها
+            $deletedProducts = $originalItems->keys()->diff($newItems->keys());
+
+            foreach ($deletedProducts as $deletedProductId) {
+                $oldQty = $originalItems[$deletedProductId]->qty;
+                $product = Product::find($deletedProductId);
+
                 $inventoryService->addStockForBranch(
                     $product,
                     $currentBranch,
-                    $item->qty,
-                    "Order Update #{$record->number}",
-                    $currentUser
-                );
-            }
-
-            if (($record->total != $data['total'])) {
-                $data['status'] = OrderStatus::Processing;
-            }
-
-            // --- 2. Update the main order and its related items ---
-            // Filament's default update process will handle creating, updating,
-            // and deleting the related 'items' records automatically.
-            $record->update($data);
-
-            // --- 3. Deduct stock for the new set of items ---
-            // We need to refresh the record to get the newly saved items
-            $record->refresh();
-            $newItemsFromDB = $record->items;
-
-            if ($newItemsFromDB->isEmpty()) {
-                Notification::make()->title(__('order.actions.create.notifications.at_least_one'))->warning()->send();
-                //throw new Halt();
-            }
-
-            foreach ($newItemsFromDB as $newItem) {
-                $product = Product::find($newItem->product_id);
-                /* if (!$inventoryService->isAvailableInBranch($product, $currentBranch, $newItem->qty)) {
-                    Notification::make()
-                        ->title(__('order.actions.create.notifications.stock.title'))
-                        ->body(__('order.actions.create.notifications.stock.message', ['product' => $product->name]))
-                        ->danger()
-                        ->send();
-                    throw new Halt('Stock not available, transaction rolled back.');
-                } */
-
-                $inventoryService->deductStockForBranch(
-                    $product,
-                    $currentBranch,
-                    $newItem->qty,
-                    "Order Update #{$record->number}",
+                    $oldQty,
+                    StockCase::Increase,
+                    "Order Item Removed #{$record->number}",
                     $currentUser
                 );
             }
 
             $inventoryService->updateAllBranches();
 
-            // --- 4. Add an update log ---
+            // سجل تحديث الطلب
             $record->orderLogs()->create([
-                'log' => "Invoice updated By: " . $currentUser->name,
-                'type' => 'updated'
+                'log'  => "Invoice updated By: " . $currentUser->name,
+                'type' => 'updated',
             ]);
 
             return $record;

@@ -12,6 +12,7 @@ use Filament\Actions\DeleteBulkAction;
 use App\Enums\OrderStatus;
 use App\Enums\Payment;
 use App\Filament\Forms\Components\DecimalInput;
+use App\Filament\Pages\Concerns\HasRelationManager;
 use App\Models\Order;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -25,26 +26,13 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class OrderMetasRelationManager extends RelationManager
 {
+    use HasRelationManager;
     protected static string $relationship = 'orderMetas';
-    protected static ?string $title = 'Payments';
 
-    public static function getTitle(Model $ownerRecord, string $pageClass): string
-    {
-        return trans('filament-invoices::messages.invoices.payments.title');
-    }
-
-    public static function getLabel(): ?string
-    {
-        return trans('filament-invoices::messages.invoices.payments.title');
-    }
-
-    public static function getModelLabel(): ?string
-    {
-        return trans('filament-invoices::messages.invoices.payments.single');
-    }
 
     public function table(Table $table): Table
     {
+        static::translateConfigureTable();
         return $table
             ->defaultSort('created_at', 'desc')
             ->modifyQueryUsing(function (Builder $query) {
@@ -52,12 +40,10 @@ class OrderMetasRelationManager extends RelationManager
             })
             ->columns([
                 TextColumn::make('created_at')
-                    ->label(trans('filament-invoices::messages.invoices.payments.columns.created_at'))
                     ->dateTime()
                     ->sortable(),
 
                 TextColumn::make('value')
-                    ->label(trans('filament-invoices::messages.invoices.payments.columns.amount'))
                     ->money(locale: 'en')
                     ->badge()
                     ->color('success')
@@ -98,8 +84,7 @@ class OrderMetasRelationManager extends RelationManager
                             ->label(__('order.fields.payment_method.label'))
                             ->options(Payment::toArray())
                             ->default('cash')
-                            ->required()
-                            ,
+                            ->required(),
                         TextInput::make('amount')
                             ->label(__('order.fields.amount.label'))
                             ->required()

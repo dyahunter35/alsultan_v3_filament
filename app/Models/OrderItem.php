@@ -14,9 +14,6 @@ class OrderItem extends Model
     /** @return BelongsTo<Product,self> */
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class)
-            ->whereHas('branches', function ($query) {
-                $query->where('branches.id', Filament::getTenant()->id);
-            });
+        return $this->belongsTo(Product::class);
     }
 }

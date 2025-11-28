@@ -64,7 +64,7 @@ class Order extends Model
         return $this->hasMany(OrderLog::class);
     }
 
-    /** @return BelongsTo<Customer,self> */
+    /** @return BelongsTo<User,self> */
     public function caused(): BelongsTo
     {
         return $this->belongsTo(User::class, 'caused_by');
@@ -129,7 +129,7 @@ class Order extends Model
         $branch_id = Filament::getTenant()->id;
 
         $lastInvoice = self::whereYear('created_at', $year)
-            ->where('branch_id', $branch_id )
+            ->where('branch_id', $branch_id)
             ->whereMonth('created_at', $month)
             ->orderBy('id', 'desc')
             ->withoutGlobalScope(SoftDeletingScope::class)
@@ -143,6 +143,6 @@ class Order extends Model
             $nextNumber = $lastNumber + 1;
         }
 
-        return $prefix .str_pad($branch_id, 2, '0', STR_PAD_LEFT).'-'. $year . $month . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return $prefix . str_pad($branch_id, 2, '0', STR_PAD_LEFT) . '-' . $year . $month . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 }

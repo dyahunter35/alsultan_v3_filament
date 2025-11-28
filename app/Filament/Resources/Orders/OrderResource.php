@@ -242,7 +242,7 @@ class OrderResource extends Resource
                     }),
             ])
             ->recordActions([
-                Action::make('pay')
+                /*Action::make('pay')
                     ->visible(fn($record) => $record->total != $record->paid || $record->status === OrderStatus::Processing || $record->status === OrderStatus::New)
                     ->requiresConfirmation()
                     ->icon('heroicon-o-credit-card')
@@ -304,7 +304,7 @@ class OrderResource extends Resource
                             ->body(__('order.actions.pay.notification.body'))
                             ->success()
                             ->send();
-                    }),
+                    }),*/
                 ViewAction::make(),
                 EditAction::make()
                     ->visible(fn($record) => !$record->deleted_at),
@@ -344,7 +344,7 @@ class OrderResource extends Resource
     public static function getRelations(): array
     {
         return [
-            OrderMetasRelationManager::class,
+            // OrderMetasRelationManager::class,
             OrderLogsRelationManager::class,
         ];
     }
@@ -568,7 +568,7 @@ class OrderResource extends Resource
             $itemDiscount = (float)($item['sub_discount'] ?? 0);
 
             $subTotal = max(0, ($unitPrice - $itemDiscount)) * $quantity;
-            $item['sub_total'] = self::truncate_float( $subTotal,2);
+            $item['sub_total'] = self::truncate_float($subTotal, 2);
             return $item;
         });
 
@@ -581,7 +581,7 @@ class OrderResource extends Resource
         $shipping = (float)($get('shipping') ?? 0);
         $installation = (float)($get('install') ?? 0);
 
-        $set('discount', self::truncate_float( $totalDiscount,2));
+        $set('discount', self::truncate_float($totalDiscount, 2));
         $set('total', self::truncate_float($totalItemsPrice + $installation + $shipping, 2));
     }
 

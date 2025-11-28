@@ -9,6 +9,13 @@ use UnitEnum;
 
 trait HasReport
 {
+
+    public function getReportParameters(): array
+    {
+        return [];
+    }
+
+
     /**
      * إرجاع المفتاح الفريد للتقرير من اسم الكلاس
      */
@@ -50,8 +57,15 @@ trait HasReport
     public function getHeading(): string | Htmlable
     {
         $data = static::getReportData();
-        return $data['heading'] ?? $this->getTitle();
+        $params = $this->getReportParameters();
+
+        if (isset($data['heading'])) {
+            return __($data['heading'], $params);
+        }
+
+        return __($this->getTitle(), $params);
     }
+
 
     /**
      * الأيقونة الخاصة بالتقرير
@@ -69,7 +83,7 @@ trait HasReport
     public static function getNavigationLabel(): string
     {
         $data = static::getReportData();
-
+        //dd($data);
         return $data['heading'] ?? str(class_basename(static::class))
             ->kebab()
             ->replace('-', ' ')
@@ -81,9 +95,15 @@ trait HasReport
      */
     public function getTitle(): string | Htmlable
     {
-        return str(class_basename(static::class))
+        $data = static::getReportData();
+        $params = $this->getReportParameters();
+
+        $title = $data['heading']
+            ?? str(class_basename(static::class))
             ->kebab()
             ->replace('-', ' ')
             ->ucwords();
+
+        return __($title, $params);
     }
 }

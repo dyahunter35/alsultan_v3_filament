@@ -42,4 +42,22 @@ return [
         'icon' => 'heroicon-m-book-open',
         'sort' => 6,
     ],
+
+    'product_branch_stock_report' => [
+        'heading' => 'تقرير مخزن :b',
+        'icon' => 'heroicon-m-archive-box',
+
+        'sort' => 6,
+
+    ],
+    'product_stock_report' => [
+        'heading' => 'تقرير جميع المخازن',
+        'icon' => 'heroicon-m-archive-box',
+        'sort' => 6,
+    ],
+    'orders_report' => [
+        'heading' => 'تقرير المبيعات',
+        'icon' => 'heroicon-m-clipboard-document-list',
+        'sort' => 7,
+    ],
 ];

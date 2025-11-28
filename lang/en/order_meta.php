@@ -1,0 +1,47 @@
+<?php
+return [
+    'label' => [
+        'plural' => 'Payments',
+        'single' => 'Payment',
+    ],
+
+    'fields' => [
+
+        'name' => [
+            'label' => 'Document Name',
+            'placeholder' => 'Enter document name',
+        ],
+        'issuance_date' => [
+            'label' => 'Issuance Date',
+            'placeholder' => 'Enter issuance date',
+        ],
+        'type' => [
+            'label' => 'Document Type',
+            'placeholder' => 'Enter document type',
+        ],
+
+        'file' => [
+            'label' => 'File',
+            'placeholder' => 'Upload file',
+        ],
+        'note' => [
+            'label' => 'Notes',
+            'placeholder' => 'Enter notes',
+        ],
+        'created_at' => [
+            'label' => 'Created At',
+        ],
+        'updated_at' => [
+            'label' => 'Updated At',
+        ],
+    ],
+    'filters' => [
+        'issuance_date' => [
+            'label' => 'Filter by Issuance Date',
+        ],
+    ],
+    'actions' => [
+        'edit' => 'تعديل',
+        'delete' => 'حذف',
+    ],
+];
