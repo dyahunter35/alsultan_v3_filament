@@ -6,12 +6,19 @@ use App\Filament\Pages\Concerns\HasReport;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\StockHistories\StockHistoryResource;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
-use Filament\Pages\Page;
+use Filament\Resources\Pages\Page;
 
 class SingleStockReport extends Page
 {
     use InteractsWithRecord;
     use HasReport;
+
+    public function getReportParameters(): array
+    {
+        return [
+            'p' => $this->record->name ?? '',
+        ];
+    }
 
     protected static string $resource = ProductResource::class;
 

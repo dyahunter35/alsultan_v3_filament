@@ -66,4 +66,8 @@ return [
         'icon' => 'heroicon-m-clipboard-document-list',
         'sort' => 7,
     ],
+    'single_stock_report' => [
+        'heading' => 'Product Stock For :p',
+        'icon' => 'heroicon-m-archive-box',
+    ]
 ];

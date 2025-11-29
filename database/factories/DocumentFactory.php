@@ -12,9 +12,9 @@ class DocumentFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->sentence(2),
-            'type' => $this->faker->randomElement(['PDF','Word','Excel']),
-            'note' => $this->faker->optional()->text(50),
+            'name' => $this->faker->realTextBetween(10, 30),
+            'type' => $this->faker->randomElement(['PDF', 'Word', 'Excel']),
+            'note' => $this->faker->optional()->realTextBetween(10, 50),
             'file_type' => $this->faker->fileExtension(),
             'issuance_date' => $this->faker->date(),
         ];

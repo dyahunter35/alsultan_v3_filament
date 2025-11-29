@@ -32,7 +32,7 @@ trait HasReport
         $key = static::getReportKey();
 
         $reports = trans('report');
-
+        dd($reports);
         if (is_array($reports) && isset($reports[$key])) {
             return $reports[$key];
         }
@@ -96,7 +96,7 @@ trait HasReport
     public function getTitle(): string | Htmlable
     {
         $data = static::getReportData();
-        $params = $this->getReportParameters();
+        $params = $this->getReportParameters() ?? [];
 
         $title = $data['heading']
             ?? str(class_basename(static::class))
@@ -104,6 +104,6 @@ trait HasReport
             ->replace('-', ' ')
             ->ucwords();
 
-        return __($title, $params);
+        return $title;
     }
 }

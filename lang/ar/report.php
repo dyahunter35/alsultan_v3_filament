@@ -60,4 +60,8 @@ return [
         'icon' => 'heroicon-m-clipboard-document-list',
         'sort' => 7,
     ],
+    'single_stock_report' => [
+        'heading' => 'مخزون المنتج :p',
+        'icon' => 'heroicon-m-archive-box',
+    ]
 ];

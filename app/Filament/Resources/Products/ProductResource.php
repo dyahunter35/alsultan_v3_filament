@@ -327,7 +327,7 @@ class ProductResource extends Resource
             'index' => ListProducts::route('/'),
             'create' => CreateProduct::route('/create'),
             'edit' => EditProduct::route('/{record}/edit'),
-            //'stock' => SingleStockReport::route('/{record}/stock-report'),
+            'stock' => SingleStockReport::route('/{record}/stock-report'),
         ];
     }
 }
