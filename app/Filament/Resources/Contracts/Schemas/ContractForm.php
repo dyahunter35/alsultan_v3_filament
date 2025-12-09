@@ -112,7 +112,9 @@ class ContractForm
 
                                 // Forms\Components\TextInput::make('name')->label('Document Name'),
                                 SpatieMediaLibraryFileUpload::make('file')
-                                    ->collection('contract_docs'),
+                                    ->collection('contract_docs')
+                                    ->multiple()
+                                    ->columnSpan(2),
                                 Forms\Components\Textarea::make('description')->rows(2),
                             ])
                             ->columns(2)
