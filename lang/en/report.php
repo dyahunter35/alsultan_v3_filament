@@ -69,5 +69,10 @@ return [
     'single_stock_report' => [
         'heading' => 'Product Stock For :p',
         'icon' => 'heroicon-m-archive-box',
-    ]
+    ],
+    'companies_details' => [
+        'heading' => 'Company Details Report',
+        'icon' => 'heroicon-m-building-office',
+        'sort' => 8,
+    ],
 ];

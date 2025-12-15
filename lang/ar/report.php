@@ -63,5 +63,10 @@ return [
     'single_stock_report' => [
         'heading' => 'مخزون المنتج :p',
         'icon' => 'heroicon-m-archive-box',
-    ]
+    ],
+    'companies_details' => [
+        'heading' => 'تقرير تفاصيل الشركة',
+        'icon' => 'heroicon-m-building-office',
+        'sort' => 8,
+    ],
 ];
