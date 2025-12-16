@@ -1,56 +1,42 @@
 <?php
 return [
-    'label' => [
-        'plural' => 'Courrency Histories',
-        'single' => 'financial transaction',
+    'navigation' => [
+        'group' => 'Finance',
+        'label' => 'Currencies',
+        'plural_label' => 'Currencies',
+        'model_label' => 'Currency',
+        'icon' => 'heroicon-m-wallet',
     ],
-
+    'breadcrumbs' => [
+        'index' => 'Currencies',
+        'create' => 'Add Currency',
+        'edit' => 'Edit Currency',
+    ],
     'fields' => [
 
+        'name' => [
+            'label' => 'Name',
+            'placeholder' => '',
+        ],
         'code' => [
-            'label' => 'Currency Code',
-            'placeholder' => 'Enter code',
+            'label' => 'Code',
+            'placeholder' => 'SDG',
         ],
-        'user' => [
-            'label' => 'Currency User',
-            'placeholder' => 'Enter currency user',
-            'default' => 'Direct Payment',
+        'symbol' => [
+            'label' => 'Symbol',
+            'placeholder' => '$',
         ],
-        'causer' => [
-            'label' => 'Causer',
-            'placeholder' => 'Enter causer',
-        ],
-        'rate' => [
-            'label' => 'Rate',
-            'placeholder' => 'Enter rate',
-        ],
-        'balance' => [
-            'label' => 'Balance',
-            'placeholder' => 'Enter balance',
-        ],
-        'note' => [
-            'label' => 'Note',
-            'placeholder' => 'Enter note',
+        'exchange_rate' => [
+            'label' => 'Exchange Rate',
+            'placeholder' => '',
         ],
         'created_at' => [
             'label' => 'Created At',
+            'placeholder' => '',
         ],
         'updated_at' => [
             'label' => 'Updated At',
+            'placeholder' => '',
         ],
     ],
-    'filters' => [
-        'issuance_date' => [
-            'label' => 'Filter by Issuance Date',
-        ],
-    ],
-    'actions' => [
-        'edit' => 'تعديل',
-        'delete' => 'حذف',
-    ],
-    'widgets' => [
-        'state' => [
-            'label' => 'Currency Financial'
-        ]
-    ]
 ];

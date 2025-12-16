@@ -2,131 +2,129 @@
 
 $commonFields = include __DIR__ . '/partials/expense_fields.php';
 
-
 return [
     'navigation' => [
-        'group' => 'المالية',
-        'label' => 'المنصرفات',
-        'plural_label' => 'المنصرفات',
-        'model_label' => 'منصرف',
+        'group' => 'Finance',
+        'label' => 'Expenses',
+        'plural_label' => 'Expenses',
+        'model_label' => 'Expense',
         'icon' => 'heroicon-m-currency-dollar',
     ],
     'breadcrumbs' => [
-        'index' => 'المنصرفات',
-        'create' => 'إضافة منصرف',
-        'edit' => 'تعديل المنصرف',
+        'index' => 'Expenses',
+        'create' => 'Add Expense',
+        'edit' => 'Edit Expense',
     ],
 
     'expenses_list' => [
         'navigation' => [
-            'heading' => 'المنصرفات',
-
+            'heading' => 'Expenses',
             'icon' => 'heroicon-m-currency-dollar',
         ],
 
         'fields' => array_merge($commonFields, [
             'amount' => [
-                'label' => 'الكميات',
+                'label' => 'Quantity',
             ],
             'unit_price' => [
-                'label' => 'السعر',
-                'placeholder' => 'أدخل السعر',
+                'label' => 'Price',
+                'placeholder' => 'Enter price',
             ],
         ]),
     ],
 
     'currency_expense' => [
         'navigation' => [
-            'heading' => 'منصرفات العملات',
-            'model_label' => 'منصرف عملة',
+            'heading' => 'Currency Expenses',
+            'model_label' => 'Currency Expense',
             'icon' => 'heroicon-m-currency-dollar',
         ],
         'fields' => array_merge($commonFields, [
             'amount' => [
-                'label' => 'الكميات',
+                'label' => 'Quantity',
             ],
             'beneficiary' => [
-                'label' => 'عميل العملة',
+                'label' => 'Currency Client',
             ],
             'unit_price' => [
-                'label' => 'السعر',
-                'placeholder' => 'أدخل السعر',
+                'label' => 'Price',
+                'placeholder' => 'Enter price',
             ],
         ]),
     ],
 
     'store_expense' =>  [
         'navigation' => [
-            'heading' => 'منصرفات مخازن',
-            'model_label' => 'منصرف مخازن',
+            'heading' => 'Store Expenses',
+            'model_label' => 'Store Expense',
             'icon' => 'heroicon-m-currency-dollar',
         ],
         'fields' => array_merge($commonFields, [
             'amount' => [
-                'label' => 'الكميات',
+                'label' => 'Quantity',
             ],
             'unit_price' => [
-                'label' => 'السعر',
-                'placeholder' => 'أدخل السعر',
+                'label' => 'Price',
+                'placeholder' => 'Enter price',
             ],
         ]),
     ],
 
     'financial_expense' =>  [
         'navigation' => [
-            'heading' => 'معاملات مالية',
-            'model_label' => 'معاملة مالية',
+            'heading' => 'Financial Transactions',
+            'model_label' => 'Financial Transaction',
             'icon' => 'heroicon-m-currency-dollar',
         ],
         'fields' => array_merge($commonFields, [
             'amount' => [
-                'label' => 'الكميات',
+                'label' => 'Quantity',
             ],
             'unit_price' => [
-                'label' => 'السعر',
-                'placeholder' => 'أدخل السعر',
+                'label' => 'Price',
+                'placeholder' => 'Enter price',
             ],
         ]),
     ],
 
     'custom_expense' =>  [
         'navigation' => [
-            'heading' => 'جمارك',
-            'model_label' => 'معاملة جمارك',
+            'heading' => 'Customs',
+            'model_label' => 'Customs Transaction',
             'icon' => 'heroicon-m-truck',
         ],
         'label' => [
-            'plural' => 'الجمارك',
-            'single' => 'جمارك',
+            'plural' => 'Customs',
+            'single' => 'Customs',
         ],
         'fields' => array_merge($commonFields, [
             'amount' => [
-                'label' => 'عدد العربات',
+                'label' => 'Number of Vehicles',
             ],
             'unit_price' => [
-                'label' => 'سعر العربة',
-                'placeholder' => 'أدخل السعر',
+                'label' => 'Vehicle Price',
+                'placeholder' => 'Enter price',
             ],
         ]),
     ],
 
     'tax_expense' =>  [
         'navigation' => [
-            'heading' => 'ضرائب',
-            'model_label' => 'معاملة ضرائب',
+            'heading' => 'Taxes',
+            'model_label' => 'Tax Transaction',
             'icon' => 'heroicon-m-currency-dollar',
         ],
         'label' => [
-            'plural' => 'الضرائب',
-            'single' => 'ضريبة',
+            'plural' => 'Taxes',
+            'single' => 'Tax',
         ],
         'fields' => array_merge($commonFields, [
             'amount' => [
-                'label' => 'عدد العربات',
+                'label' => 'Number of Vehicles',
             ],
             'unit_price' => [
-                'label' => 'سعر العربة',
-                'placeholder' => 'أدخل السعر',
+                'label' => 'Vehicle Price',
+                'placeholder' => 'Enter price',
             ],
         ]),
     ],

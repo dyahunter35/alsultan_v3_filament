@@ -1,56 +1,40 @@
 <?php
 return [
-    'label' => [
-        'plural' => 'سجلات العملات',
-        'single' => 'معاملة مالية',
+    'navigation' => [
+        'group' => 'المالية',
+        'label' => 'العملات',
+        'plural_label' => 'العملات',
+        'model_label' => 'عملة',
     ],
-
+    'breadcrumbs' => [
+        'index' => 'العملات',
+        'create' => 'إضافة عملة',
+        'edit' => 'تعديل العملة',
+    ],
     'fields' => [
-
+        'name' => [
+            'label' => 'الاسم',
+            'placeholder' => '',
+        ],
         'code' => [
-            'label' => 'العملة',
-            'placeholder' => 'ادخل الرمز',
+            'label' => 'الرمز',
+            'placeholder' => 'SDG',
         ],
-        'user' => [
-            'label' => 'المستخدم',
-            'placeholder' => 'ادخل اسم المستخدم',
-            'default' => 'دفع مباشر',
+        'symbol' => [
+            'label' => 'العلامة',
+            'placeholder' => '$',
         ],
-        'causer' => [
-            'label' => 'المنفذ',
-            'placeholder' => 'ادخل اسم المنفذ',
-        ],
-        'rate' => [
+        'exchange_rate' => [
             'label' => 'سعر الصرف',
-            'placeholder' => 'ادخل سعر الصرف',
-        ],
-        'balance' => [
-            'label' => 'الرصيد',
-            'placeholder' => 'ادخل الرصيد',
-        ],
-        'note' => [
-            'label' => 'ملاحظة',
-            'placeholder' => 'ادخل ملاحظة',
+            'placeholder' => '',
         ],
         'created_at' => [
             'label' => 'تاريخ الإنشاء',
+            'placeholder' => '',
         ],
         'updated_at' => [
-            'label' => 'تاريخ التحديث',
+            'label' => 'آخر تحديث',
+            'placeholder' => '',
         ],
     ],
-    'filters' => [
-        'issuance_date' => [
-            'label' => 'فلترة حسب تاريخ الإصدار',
-        ],
-    ],
-    'actions' => [
-        'edit' => 'تعديل',
-        'delete' => 'حذف',
-    ],
-    'widgets' => [
-        'state' => [
-            'label' => 'حسابات العملة'
-        ]
-    ]
 ];

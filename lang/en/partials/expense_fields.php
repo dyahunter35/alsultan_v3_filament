@@ -1,51 +1,51 @@
 <?php
 return [
     'id' => [
-        'label' => 'المعرف',
+        'label' => 'ID',
     ],
     'type' => [
-        'label' => 'نوع المنصرف',
+        'label' => 'Expense Type',
     ],
     'payer' => [
-        'label' => 'من',
+        'label' => 'From',
     ],
     'beneficiary' => [
-        'label' => 'المستفيد',
+        'label' => 'Beneficiary',
     ],
     'representative' => [
-        'label' => 'المندوب',
+        'label' => 'Representative',
     ],
     'branch' => [
-        'label' => 'المخزن',
-        'placeholder' => 'اختر المخزن',
+        'label' => 'Store',
+        'placeholder' => 'Select store',
     ],
     'truck' => [
-        'label' => 'الشاحنة',
+        'label' => 'Truck',
         'placeholder' => '',
     ],
     'payment_method' => [
-        'label' => 'وسيلة الدفع',
-        'placeholder' => 'اختر وسيلة الدفع',
+        'label' => 'Payment Method',
+        'placeholder' => 'Select payment method',
     ],
     'payed_serial' => [
-        'label' => 'رقم الإشعار',
-        'placeholder' => 'أدخل رقم الإشعار',
+        'label' => 'Notice Number',
+        'placeholder' => 'Enter notice number',
     ],
     'statement' => [
-        'label' => 'الوصف / الملاحظات',
-        'placeholder' => 'أدخل الملاحظات',
+        'label' => 'Description / Notes',
+        'placeholder' => 'Enter notes',
     ],
     'is_paid' => [
-        'label' => 'نوع الدفع',
+        'label' => 'Payment Type',
     ],
     'total_amount' => [
-        'label' => 'الإجمالي',
+        'label' => 'Total',
     ],
     'remaining_amount' => [
-        'label' => 'المتبقي',
+        'label' => 'Remaining',
     ],
     'created_at' => [
-        'label' => 'التاريخ',
-        'placeholder' => 'اختر التاريخ',
+        'label' => 'Date',
+        'placeholder' => 'Select date',
     ],
 ];
