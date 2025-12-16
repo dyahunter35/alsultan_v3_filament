@@ -7,6 +7,7 @@ use App\Filament\Resources\Trucks\Pages\CreateTruck;
 use App\Filament\Resources\Trucks\Pages\EditTruck;
 use App\Filament\Resources\Trucks\Pages\ListTrucks;
 use App\Filament\Resources\Trucks\Pages\ViewTruck;
+use App\Filament\Resources\Trucks\RelationManagers\CargosRelationManager;
 use App\Filament\Resources\Trucks\RelationManagers\CustomExpensesRelationManager;
 use App\Filament\Resources\Trucks\RelationManagers\DocumentsRelationManager;
 use App\Filament\Resources\Trucks\RelationManagers\TaxExpensesRelationManager;
@@ -51,6 +52,7 @@ class TruckResource extends Resource
     public static function getRelations(): array
     {
         return [
+            CargosRelationManager::class,
             DocumentsRelationManager::class,
             TaxExpensesRelationManager::class,
             CustomExpensesRelationManager::class

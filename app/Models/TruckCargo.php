@@ -11,13 +11,14 @@ class TruckCargo extends Model
 
     protected $fillable = [
         'id',
+        'product_id',
         'truck_id',
-        'details_id',
+        'size',
         'quantity',
         'real_quantity',
         'weight',
         'unit_id',
-        'cateogrie_id',
+        'unit_quantity',
         'note'
     ];
 
