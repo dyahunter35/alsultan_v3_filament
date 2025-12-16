@@ -6,6 +6,7 @@ use App\Enums\Country;
 use App\Enums\TruckState;
 use App\Enums\TruckType;
 use App\Filament\Forms\Components\DecimalInput;
+use App\Models\Branch;
 use App\Models\Port;
 use Carbon\Carbon;
 use Filament\Forms;
@@ -124,7 +125,8 @@ class TruckForm
 
                 Forms\Components\Select::make('branch_to')
                     ->label(__('truck.fields.to.label'))
-                    ->relationship('toBranch', 'name')
+                    ->options(Branch::pluck('name', 'id'))
+
                     ->searchable()
                     ->preload(),
 

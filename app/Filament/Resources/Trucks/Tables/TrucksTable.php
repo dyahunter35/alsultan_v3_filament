@@ -230,7 +230,6 @@ class TrucksTable
                         // تحديث حالة الشاحنة
                         $record->update([
                             'truck_status' => TruckState::reach,
-
                             'arrive_date' => $data['arrive_date']
                         ]);
 
@@ -238,7 +237,9 @@ class TrucksTable
                             ->title('تمت عملية الجرد ونقل البضائع للمخزن بنجاح')
                             ->success()
                             ->send();
-                    }),
+                    })
+                    ->visible(fn(Truck $record) => in_array($record->truck_status, [TruckState::OnWay])),
+
 
                 Actions\ViewAction::make(),
                 Actions\EditAction::make(),
