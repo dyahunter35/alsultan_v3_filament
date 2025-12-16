@@ -1,15 +1,18 @@
-<x-filament-panels::page>
-    <x-filament::section>
+<x-filament-panels::page id="report-content">
+    <x-filament::section style="no-print">
+
         <div class="flex items-center justify-between">
-            <div class="w-48">
-                <label for="company-select" class="block mb-1 text-sm font-medium text-gray-700">اختر شركة</label>
-                <select id="company-select" wire:model.live="companyId" wire:change="loadData"
-                    class="block w-full transition duration-75 border-gray-300 rounded-lg shadow-sm focus:border-primary-500 focus:ring-primary-500 disabled:opacity-70 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:border-primary-500 dark:focus:ring-primary-500">
+
+            <x-filament::input.wrapper>
+                <x-filament::input.select :searchale wire:model.live="companyId" wire:change="loadData">
+
                     @foreach ($companies as $c)
                         <option value="{{ $c->id }}">{{ $c->name }}</option>
                     @endforeach
-                </select>
-            </div>
+                </x-filament::input.select>
+            </x-filament::input.wrapper>
+
+
 
         </div>
     </x-filament::section>
@@ -107,7 +110,8 @@
                         <tr>
                             <td class="px-4 py-3 text-right">{{ $t['id'] }}</td>
                             <td class="px-4 py-3 text-right">{{ $t['date'] }}</td>
-                            <td class="px-4 py-3 text-right">{{ $t['type'] }}</td>
+                            <td class="px-4 py-3 text-right">
+                                {{ $t['type']->getLabel() }}</td>
                             <td class="px-4 py-3 text-right">{{ number_format($t['total'], 2) }}</td>
                             <td class="px-4 py-3 text-right">{{ $t['currency'] ?? '-' }}</td>
                             <td class="px-4 py-3 text-left">{{ $t['note'] ?? '-' }}</td>

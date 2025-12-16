@@ -1,5 +1,5 @@
 <x-filament-panels::page>
-    <x-filament::section>
+    <x-filament::section id="report-content">
         <div class="flex items-center justify-between">
             <div>
                 <h1 class="text-xl font-bold">تقرير مالي شامل - الشركات</h1>

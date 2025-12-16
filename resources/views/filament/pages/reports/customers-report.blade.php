@@ -68,7 +68,7 @@
             }
         </style>
     </head>
-    <div class="mt-6 space-y-6 content">
+    <div class="mt-6 space-y-6 content" id="report-content">
         {{-- 🔹 الفلاتر --}}
         <div class="p-4 bg-white shadow-sm dark:bg-gray-800 rounded-xl">
             {{ $this->form }}
