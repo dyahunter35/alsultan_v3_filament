@@ -71,6 +71,8 @@ return [
     'expense_group' => [
         'sale' => 'Sales',
         'debtors' => 'Creditors',
+        'currency' => 'Salaries and Wages',
+        'store' => 'Freight Expenses',
         'customs' => 'Customs',
         'certificates' => 'Import Certificates',
         'tax' => 'Taxes',

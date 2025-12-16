@@ -65,11 +65,14 @@ return [
     'currency_type' => [
         'send' => 'ارسال الي',
         'convert' => 'تحويل عملة داخلي',
-        'company' => 'منصرف. شركة',
+        'company' => 'منصرف شركة',
     ],
+
     'expense_group' => [
         'sale' => 'مبيعات',
         'debtors' => 'الدائنون',
+        'currency' => 'مرتبات وأجور',
+        'store' => 'مصروفات ترحيل',
         'customs' => 'جمارك',
         'certificates' => 'شهادات وارد',
         'tax' => 'ضرائب',
