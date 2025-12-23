@@ -39,6 +39,7 @@ class TaxExpensesRelationManager extends RelationManager
 
     public function form(Schema $schema): Schema
     {
+        self::translateConfigureForm();
         return $schema
             ->components(
                 TaxExpense::expenseForm($this->ownerRecord->id)

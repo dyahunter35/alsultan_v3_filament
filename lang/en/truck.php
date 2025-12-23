@@ -146,6 +146,18 @@ return [
     'actions' => [
         'create' => [
             'label' => 'Add Truck',
-        ]
+        ],
+        'reload_cargo' => [
+            'label' => 'Reload Cargo',
+            'icon' => 'heroicon-m-arrow-up-tray',
+            'message' => 'Are you sure you want to reload the cargo for this truck? This action will reset the truck status and related details.',
+        ],
+        'unload_cargo' => [
+            'label' => 'Unload to Warehouse',
+        ],
+        'report' => [
+            'label' => 'Report',
+            'icon' => 'heroicon-m-document-text'
+        ],
     ]
 ];

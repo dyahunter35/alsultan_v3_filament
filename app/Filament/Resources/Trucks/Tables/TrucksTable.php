@@ -40,10 +40,10 @@ class TrucksTable
                     ->getStateUsing(fn($record) =>  $record->driver_name . '<br>' . $record->driver_phone)->html()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('car_number')
+                Tables\Columns\TextColumn::make('car_details')
                     ->getStateUsing(fn($record) =>  $record->truck_model . '<br>' . $record->car_number)->html()
-
                     ->searchable(),
+
                 Tables\Columns\TextColumn::make('pack_date')
                     ->date()
                     ->sortable(),
@@ -106,9 +106,35 @@ class TrucksTable
 
             ])
             ->recordActions([
-                Actions\Action::make('report')->action(fn(Truck $record) => redirect(TruckReport::getUrl(['truckId' => $record->id]))),
+                Actions\Action::make('report')
+                    ->label(__('truck.actions.report.label'))
+                    ->icon(__('truck.actions.report.icon'))
+                    ->action(fn(Truck $record) => redirect(TruckReport::getUrl(['truckId' => $record->id]))),
+
+                Actions\Action::make('reload_cargo')
+                    ->requiresConfirmation()
+                    ->modalDescription(__('truck.actions.reload_cargo.message'))
+                    ->label(__('truck.actions.reload_cargo.label'))
+                    ->icon('heroicon-m-truck')
+                    ->color('danger')
+                    ->action(function (Truck $record) {
+                        // إعادة تعيين حالة الشاحنة إلى "في الطريق"
+
+                        $record->stockHistory()->delete();
+
+                        $record->update([
+                            'is_converted' => 0,
+                        ]);
+
+                        Notification::make()
+                            ->title('تمت إعادة تحميل الحمولة بنجاح')
+                            ->success()
+                            ->send();
+                    })->visible(fn(Truck $record) => $record->is_converted),
+
                 Actions\Action::make('unload_cargo')
-                    ->label('تنزيل للمخزن')
+                    ->label(__('truck.actions.unload_cargo.label'))
+                    ->label(__('truck.actions.unload_cargo.label'))
                     ->icon('heroicon-m-arrow-down-tray')
                     ->color('success')
                     // 1. تعبئة النموذج بالبيانات الموجودة مسبقاً في الشاحنة
@@ -230,7 +256,8 @@ class TrucksTable
                         // تحديث حالة الشاحنة
                         $record->update([
                             'truck_status' => TruckState::reach,
-                            'arrive_date' => $data['arrive_date']
+                            'arrive_date' => $data['arrive_date'],
+                            'is_converted' => 1,
                         ]);
 
                         Notification::make()
@@ -238,7 +265,7 @@ class TrucksTable
                             ->success()
                             ->send();
                     })
-                    ->visible(fn(Truck $record) => in_array($record->truck_status, [TruckState::OnWay])),
+                    ->visible(fn(Truck $record) => !$record->is_converted),
 
 
                 Actions\ViewAction::make(),

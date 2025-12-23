@@ -15,15 +15,22 @@ return [
     'representative' => [
         'label' => 'المندوب',
     ],
+    'truck' => [
+        'label' => 'الشاحنة',
+        'placeholder' => 'اختر الشاحنة',
+    ],
+    'total_amount' => [
+        'label' => 'المبلغ الإجمالي',
+    ],
     'branch' => [
         'label' => 'المخزن',
         'placeholder' => 'اختر المخزن',
     ],
-    'payed_method' => [
+    'payment_method' => [
         'label' => 'وسيلة الدفع',
         'placeholder' => 'اختر وسيلة الدفع',
     ],
-    'payed_serial' => [
+    'payment_reference' => [
         'label' => 'رقم الإشعار',
         'placeholder' => 'أدخل رقم الإشعار',
     ],

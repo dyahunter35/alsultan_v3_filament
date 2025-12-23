@@ -213,7 +213,7 @@ class TaxExpense extends Page implements HasActions, HasTable
                         Forms\Components\Hidden::make('beneficiary_type'), */
 
                         Forms\Components\Select::make('branch_id')
-                            ->label(__('المخزن'))
+                            ->label(__(self::getLocalePath() . '.fields.branch.label'))
                             ->relationship('branch', 'name') // يفترض وجود علاقة 'store' في موديل Expense
                             ->required()
                             ->default(fn() => Filament::getTenant()->id),
@@ -254,6 +254,7 @@ class TaxExpense extends Page implements HasActions, HasTable
                             ->required(), */
 
                         DecimalInput::make('total_amount')
+                            ->label(__(self::getLocalePath() . '.fields.total_amount.label'))
                             ->live(onBlur: true),
 
                         // 11. الملاحظات
@@ -270,18 +271,18 @@ class TaxExpense extends Page implements HasActions, HasTable
                     Section::make()->schema([
                         // 7. وسيلة الدفع
                         Forms\Components\Select::make('payment_method')
-                            ->label(__('وسيلة الدفع'))
+                            ->label(__(self::getLocalePath() . '.fields.payment_method.label'))
                             ->options(\App\Enums\PaymentOptions::class),
 
                         // 8. رقم الإشعار/الإيصال
                         Forms\Components\TextInput::make('payment_reference')
-                            ->label(__('رقم الإشعار/الإيصال'))
+                            ->label(__(self::getLocalePath() . '.fields.payment_reference.label'))
                             ->numeric()
                             ->nullable(),
 
                         // 9. حالة الدفع (عاجل/مؤجل)
                         Forms\Components\Select::make('is_paid')
-                            ->label(__('حالة الدفع'))
+                            ->label(__(self::getLocalePath() . '.fields.is_paid.label'))
                             ->options([1 => 'مدفوع (عاجل)', 0 => 'غير مدفوع (مؤجل)'])
                             ->default(1),
 

@@ -15,6 +15,13 @@ return [
     'representative' => [
         'label' => 'Representative',
     ],
+    'truck' => [
+        'label' => 'Truck',
+        'placeholder' => 'Select truck',
+    ],
+    'total_amount' => [
+        'label' => 'Total Amount',
+    ],
     'branch' => [
         'label' => 'Store',
         'placeholder' => 'Select store',
@@ -27,7 +34,7 @@ return [
         'label' => 'Payment Method',
         'placeholder' => 'Select payment method',
     ],
-    'payed_serial' => [
+    'payment_reference' => [
         'label' => 'Notice Number',
         'placeholder' => 'Enter notice number',
     ],

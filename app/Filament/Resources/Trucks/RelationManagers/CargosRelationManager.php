@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Trucks\RelationManagers;
 use App\Enums\TruckType;
 use App\Filament\Forms\Components\DecimalInput;
 use App\Filament\Pages\Concerns\HasRelationManager;
+use App\Models\Product;
 use Filament\Actions\AssociateAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -39,8 +40,17 @@ class CargosRelationManager extends RelationManager
                     ->default(TruckType::Outer->value),
 
                 Select::make('product_id')
-                    ->relationship('product', 'name')
-                    ->preload()
+                    ->options(
+                        Product::get()
+                            ->mapWithKeys(fn(Product $product) => [
+                                $product->id => sprintf(
+                                    '%s - %s (%s) ',
+                                    $product->name,
+                                    $product->category?->name,
+                                    $product->unit?->name
+                                )
+                            ])
+                    )->preload()
                     ->searchable()
                     ->required(),
 

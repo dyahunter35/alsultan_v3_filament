@@ -1,4 +1,7 @@
 <?php
+
+$commonFields = include __DIR__ . '/partials/expense_fields.php';
+
 return [
     'navigation' => [
         'group' => 'المالية',
@@ -12,94 +15,117 @@ return [
         'create' => 'إضافة منصرف',
         'edit' => 'تعديل منصرف',
     ],
-    'tabs' => [
-        'currency' => [
-            'label' => 'العملة / التحويل',
-            'icon' => 'heroicon-o-user',
+
+    'expenses_list' => [
+        'navigation' => [
+            'heading' => 'المنصرفات',
+            'icon' => 'heroicon-m-currency-dollar',
         ],
-        'store' => 'منصرفات المخازن',
-        'financial' => 'المعاملات المالية',
-        'customs' => 'الجمارك',
-        'papers' => 'شهادات الوارد',
-        'tax' => 'الضرائب',
-        'government' => 'الرسوم الحكومية',
-    ],
-    'fields' => [
-        'exp_type' => [
-            'label' => 'نوع المنصرف',
-            'placeholder' => 'اختر نوع المنصرف',
-        ],
-        'user_id' => [
-            'label' => 'عميل العملة',
-            'placeholder' => 'اختر العميل',
-        ],
-        'from_id' => [
-            'label' => 'من',
-            'placeholder' => 'اختر المصدر',
-        ],
-        'rep_id' => [
-            'label' => 'المندوب',
-            'placeholder' => 'اختر المندوب',
-        ],
-        'payed_method' => [
-            'label' => 'طريقة الدفع',
-            'placeholder' => 'اختر طريقة الدفع',
-        ],
-        'payed_serial' => [
-            'label' => 'رقم الإشعار',
-            'placeholder' => 'أدخل رقم الإشعار',
-        ],
-        'quantity' => [
-            'label' => 'المبلغ',
-            'placeholder' => 'أدخل المبلغ',
-        ],
-        'price' => [
-            'label' => 'السعر',
-            'placeholder' => 'أدخل السعر',
-        ],
-        'formatted_quantity' => [
-            'label' => 'المبلغ كتابةً',
-        ],
-        'statement' => [
-            'label' => 'الوصف / الملاحظات',
-            'placeholder' => 'أدخل الملاحظات',
-        ],
-        'payed' => [
-            'label' => 'نوع الدفع',
-            'options' => [
-                'urgent' => 'عاجل',
-                'delayed' => 'مؤجل',
+
+        'fields' => array_merge($commonFields, [
+            'amount' => [
+                'label' => 'الكمية',
             ],
+            'unit_price' => [
+                'label' => 'السعر',
+                'placeholder' => 'أدخل السعر',
+            ],
+        ]),
+    ],
+
+    'currency_expense' => [
+        'navigation' => [
+            'heading' => 'منصرفات العملات',
+            'model_label' => 'منصرف عملة',
+            'icon' => 'heroicon-m-currency-dollar',
         ],
-        'store_id' => [
-            'label' => 'المخزن',
-            'placeholder' => 'اختر المخزن',
+        'fields' => array_merge($commonFields, [
+            'amount' => [
+                'label' => 'الكمية',
+            ],
+            'beneficiary' => [
+                'label' => 'عميل العملة',
+            ],
+            'unit_price' => [
+                'label' => 'السعر',
+                'placeholder' => 'أدخل السعر',
+            ],
+        ]),
+    ],
+
+    'store_expense' =>  [
+        'navigation' => [
+            'heading' => 'منصرفات المخازن',
+            'model_label' => 'منصرف مخزن',
+            'icon' => 'heroicon-m-currency-dollar',
         ],
-        'total' => [
-            'label' => 'الإجمالي',
+        'fields' => array_merge($commonFields, [
+            'amount' => [
+                'label' => 'الكمية',
+            ],
+            'unit_price' => [
+                'label' => 'السعر',
+                'placeholder' => 'أدخل السعر',
+            ],
+        ]),
+    ],
+
+    'financial_expense' =>  [
+        'navigation' => [
+            'heading' => 'المعاملات المالية',
+            'model_label' => 'معاملة مالية',
+            'icon' => 'heroicon-m-currency-dollar',
         ],
-        'total_price' => [
-            'label' => 'الرصيد المتبقي',
+        'fields' => array_merge($commonFields, [
+            'amount' => [
+                'label' => 'الكمية',
+            ],
+            'unit_price' => [
+                'label' => 'السعر',
+                'placeholder' => 'أدخل السعر',
+            ],
+        ]),
+    ],
+
+    'custom_expense' =>  [
+        'navigation' => [
+            'heading' => 'الجمارك',
+            'model_label' => 'معاملة جمارك',
+            'icon' => 'heroicon-m-truck',
         ],
-        'tax_number' => [
-            'label' => 'رقم الضريبة',
-            'placeholder' => 'أدخل رقم الضريبة',
+        'label' => [
+            'plural' => 'الجمارك',
+            'single' => 'جمارك',
         ],
-        'tax_amount' => [
-            'label' => 'قيمة الضريبة',
-            'placeholder' => 'أدخل قيمة الضريبة',
+        'fields' => array_merge($commonFields, [
+            'amount' => [
+                'label' => 'عدد العربات',
+            ],
+            'unit_price' => [
+                'label' => 'سعر العربة',
+                'placeholder' => 'أدخل السعر',
+            ],
+        ]),
+    ],
+
+    'tax_expense' =>  [
+        'navigation' => [
+            'heading' => 'الضرائب',
+            'model_label' => 'معاملة ضريبية',
+            'icon' => 'heroicon-m-currency-dollar',
         ],
-        'gov_fee_type' => [
-            'label' => 'نوع الرسوم',
-            'placeholder' => 'أدخل نوع الرسوم',
+        'label' => [
+            'plural' => 'الضرائب',
+            'single' => 'ضريبة',
         ],
-        'gov_fee_amount' => [
-            'label' => 'قيمة الرسوم',
-            'placeholder' => 'أدخل قيمة الرسوم',
-        ],
-        'created_at' => [
-            'label' => 'التاريخ',
-            'placeholder' => 'اختر التاريخ',
-        ],
+        'fields' => array_merge($commonFields, [
+            'amount' => [
+                'label' => 'عدد العربات',
+            ],
+            'unit_price' => [
+                'label' => 'سعر العربة',
+                'placeholder' => 'أدخل السعر',
+            ],
+        ]),
     ],
 ];

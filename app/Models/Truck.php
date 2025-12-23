@@ -43,13 +43,13 @@ class Truck extends Model implements HasMedia
         return $query->where('type', 2);
     }
 
-
     public function scopeFromBy(Builder $query, Model $from): Builder
     {
         return $query
             ->where('from_type', $from->getMorphClass())
             ->where('from_id', $from->getKey());
     }
+
     public function scopeOut($query)
     {
         return $query->where('type', 1);
@@ -136,6 +136,12 @@ class Truck extends Model implements HasMedia
     {
         return $this->hasMany(Expense::class);
     }
+
+    public function stockHistory()
+    {
+        return $this->hasMany(StockHistory::class, 'truck_id');
+    }
+
 
     public function taxExpenses()
     {

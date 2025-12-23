@@ -34,6 +34,11 @@ class Product extends Model implements HasMedia
         return $this->belongsTo(Category::class);
     }
 
+    /** @return BelonngsTo<Unit> */
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
+    }
     public function branches(): BelongsToMany
     {
         return $this->belongsToMany(Branch::class)
@@ -96,6 +101,6 @@ class Product extends Model implements HasMedia
 
     public function currentBranch()
     {
-        return $this->branches()->where('branch_id',Filament::getTenant()->id)->first();
+        return $this->branches()->where('branch_id', Filament::getTenant()->id)->first();
     }
 }
