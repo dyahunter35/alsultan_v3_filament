@@ -10,6 +10,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Pages\Page;
 use Filament\Resources\Concerns\HasTabs;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -75,11 +76,6 @@ class ExpensesList extends Page implements HasTable
                     ->color('success')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('remaining_amount')
-                    ->formatStateUsing(fn($state) => number_format($state))
-                    ->color('danger')
-                    ->sortable(),
-
                 Tables\Columns\IconColumn::make('is_paid')
                     ->boolean()
                     ->trueIcon('heroicon-s-check-circle')
@@ -90,7 +86,38 @@ class ExpensesList extends Page implements HasTable
                 Tables\Columns\TextColumn::make('payment_method')
                     ->badge(),
             ])
-            ->filters([])
+            ->filters([
+                Tables\Filters\SelectFilter::make('expense_type_id')
+                    ->label(__('expense.filters.type.label'))
+                    ->relationship('type', 'label'),
+                /*Tables\Filters\SelectFilter::make('beneficiary_id')
+                    ->label(__('expense.filters.beneficiary.label'))
+                    ->relationship('beneficiary', 'name'),
+                Tables\Filters\SelectFilter::make('payer_id')
+                    ->label(__('expense.filters.payer.label'))
+                    ->relationship('payer', 'name'), */
+                Tables\Filters\Filter::make('created_at')
+                    ->label(__('expense.filters.created_at.label'))
+                    ->schema([
+                        DatePicker::make('from')
+                            ->label(__('expense.filters.created_at.fields.from.label')),
+                        DatePicker::make('to')
+                            ->label(__('expense.filters.created_at.fields.to.label')),
+                    ])
+                    ->query(function ($query, array $data) {
+                        return $query
+                            ->when(
+                                $data['from'],
+                                fn($query, $date) =>
+                                $query->whereDate('created_at', '>=', $date)
+                            )
+                            ->when(
+                                $data['to'],
+                                fn($query, $date) =>
+                                $query->whereDate('created_at', '<=', $date)
+                            );
+                    }),
+            ])
             ->recordActions([
                 //ViewAction::make(),
                 //EditAction::make(),

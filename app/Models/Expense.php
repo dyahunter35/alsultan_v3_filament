@@ -42,32 +42,36 @@ class Expense extends Model
             } elseif ($expense->custom_expense_type) {
                 $expense->expense_type_id = null;
             }
-        });
+        });*/
 
         static::created(function ($expense) {
-            if ($expense->payer_type === 'App\Models\Customer') {
+            /* if ($expense->payer_type === 'App\Models\Customer') {
                 app('App\Services\CustomerService')->updateCustomerBalance($expense->payer_id);
             }
             if ($expense->beneficiary_type === 'App\Models\Customer') {
                 app('App\Services\CustomerService')->updateCustomerBalance($expense->beneficiary_id);
-            }
+            } */
+            $expense->total_amount = $expense->amount * $expense->unit_price;
+            $expense->saveQuietly();
         });
         static::updated(function ($expense) {
-            if ($expense->payer_type === 'App\Models\Customer') {
+            /* if ($expense->payer_type === 'App\Models\Customer') {
                 app('App\Services\CustomerService')->updateCustomerBalance($expense->payer_id);
             }
             if ($expense->beneficiary_type === 'App\Models\Customer') {
                 app('App\Services\CustomerService')->updateCustomerBalance($expense->beneficiary_id);
-            }
+            } */
+            $expense->total_amount = $expense->amount * $expense->unit_price;
+            $expense->saveQuietly();
         });
         static::deleted(function ($expense) {
-            if ($expense->payer_type === 'App\Models\Customer') {
+            /* if ($expense->payer_type === 'App\Models\Customer') {
                 app('App\Services\CustomerService')->updateCustomerBalance($expense->payer_id);
             }
             if ($expense->beneficiary_type === 'App\Models\Customer') {
                 app('App\Services\CustomerService')->updateCustomerBalance($expense->beneficiary_id);
-            }
-        }); */
+            } */
+        });
     }
 
     public function beneficiary()

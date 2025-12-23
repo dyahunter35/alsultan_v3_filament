@@ -136,8 +136,10 @@ class StoreExpense extends Page implements HasActions, HasTable
             ->toolbarActions([
                 CreateAction::make()
                     ->schema($this->expenseForm())
-                    ->preserveFormDataWhenCreatingAnother(fn(array $data): array => $data)
-
+                    ->preserveFormDataWhenCreatingAnother(
+                        fn(array $data): array =>
+                        \Illuminate\Support\Arr::except($data, ['payment_reference', 'total_amount'])
+                    )
 
             ]);
     }
@@ -223,7 +225,9 @@ class StoreExpense extends Page implements HasActions, HasTable
                             ->required(), */
 
                         DecimalInput::make('total_amount')
-                            ->live(onBlur: true),
+                            ->million()
+                            ->label(__(self::getLocalePath() . '.fields.total_amount.label'))
+                            ->required(),
 
                         // 11. الملاحظات
                         Forms\Components\Textarea::make('notes')

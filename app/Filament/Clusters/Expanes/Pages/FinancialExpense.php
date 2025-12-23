@@ -44,6 +44,7 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Component;
+use Mockery\Matcher\Not;
 
 class FinancialExpense extends Page implements HasActions, HasTable
 {
@@ -105,7 +106,7 @@ class FinancialExpense extends Page implements HasActions, HasTable
                 // Tables\Columns\TextColumn::make('branch.name')
                 //     ->searchable(),
 
-                //Tables\Columns\TextColumn::make('amount'),
+                Tables\Columns\TextColumn::make('amount'),
                 //Tables\Columns\TextColumn::make('unit_price'),
                 Tables\Columns\TextColumn::make('total_amount'),
                 Tables\Columns\IconColumn::make('is_paid')
@@ -136,7 +137,10 @@ class FinancialExpense extends Page implements HasActions, HasTable
             ->toolbarActions([
                 CreateAction::make()
                     ->schema($this->expenseForm())
-                    ->preserveFormDataWhenCreatingAnother(fn(array $data): array => $data)
+                    ->preserveFormDataWhenCreatingAnother(
+                        fn(array $data): array =>
+                        \Illuminate\Support\Arr::except($data, ['payment_reference', 'total_amount'])
+                    )
             ]);
     }
 
@@ -225,23 +229,11 @@ class FinancialExpense extends Page implements HasActions, HasTable
                             ->rows(2)
                             ->columnSpanFull() // يجعل حقل الملاحظات يأخذ عرض العمودين كاملاً
                             ->nullable(),
-                        Hidden::make('amount')
-                            ->label(__('الكمية'))
-                            ->default(1)
-                            ->required(),
 
                         // 6. سعر الوحدة / unit_price
-                        DecimalInput::make('total_amount')
+                        DecimalInput::make('amount')
                             ->label(__('المبلغ المراد تحويله'))
-                            ->numeric()
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(
-                                function ($set, $get, $state) {
-                                    $price = $get('unit_price') ?? 1;
-                                    $amount = 1;
-                                    $set('total_amount', ($amount * $price));
-                                }
-                            )
+                            ->million()
                             ->required(),
 
                         // 9. حالة الدفع (عاجل/مؤجل)

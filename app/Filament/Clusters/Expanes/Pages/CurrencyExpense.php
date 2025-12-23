@@ -136,7 +136,10 @@ class CurrencyExpense extends Page implements HasActions, HasTable
             ->toolbarActions([
                 CreateAction::make()
                     ->schema($this->expenseForm())
-                    ->preserveFormDataWhenCreatingAnother(fn(array $data): array => $data)
+                    ->preserveFormDataWhenCreatingAnother(
+                        fn(array $data): array =>
+                        \Illuminate\Support\Arr::except($data, ['payment_reference', 'total_amount'])
+                    )
             ]);
     }
 
@@ -217,29 +220,10 @@ class CurrencyExpense extends Page implements HasActions, HasTable
                             ->label(__('تاريخ العملية'))
                             ->default(now()),
 
-                        Forms\Components\Textarea::make('notes')
-                            ->label(__('ملاحظات'))
-
-                            ->rows(2)
-                            ->columnSpanFull() // يجعل حقل الملاحظات يأخذ عرض العمودين كاملاً
-                            ->nullable(),
-                        Hidden::make('amount')
-                            ->label(__('الكمية'))
-                            ->default(1)
-                            ->required(),
-
                         // 6. سعر الوحدة / unit_price
                         DecimalInput::make('total_amount')
                             ->label(__('المبلغ المراد تحويله'))
-                            ->numeric()
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(
-                                function ($set, $get, $state) {
-                                    $price = $get('unit_price') ?? 1;
-                                    $amount = 1;
-                                    $set('total_amount', ($amount * $price));
-                                }
-                            )
+                            ->million()
                             ->required(),
 
                         // 9. حالة الدفع (عاجل/مؤجل)
@@ -248,6 +232,11 @@ class CurrencyExpense extends Page implements HasActions, HasTable
                             ->options([1 => 'مدفوع (عاجل)', 0 => 'غير مدفوع (مؤجل)'])
                             ->default(1),
 
+                        Forms\Components\Textarea::make('notes')
+                            ->label(__('ملاحظات'))
+                            ->rows(2)
+                            ->columnSpanFull() // يجعل حقل الملاحظات يأخذ عرض العمودين كاملاً
+                            ->nullable(),
                     ])
                         ->columnSpan(2)
                         ->columns(2)

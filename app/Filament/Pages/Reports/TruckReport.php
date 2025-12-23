@@ -9,7 +9,6 @@ use Filament\Forms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Livewire\Attributes\Url;
-use Illuminate\Support\Facades\DB;
 
 class TruckReport extends Page implements HasForms
 {

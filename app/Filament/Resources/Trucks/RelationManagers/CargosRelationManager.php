@@ -63,16 +63,17 @@ class CargosRelationManager extends RelationManager
                     ->numeric(),
                 DecimalInput::make('quantity')
                     ->required()
-                    ->live(onBlur: true)
-                    ->numeric(),
+                    ->live(onBlur: true),
 
                 DecimalInput::make('weight')
-                    ->numeric()
                     ->live(onBlur: true)
                     ->default(null),
 
                 DecimalInput::make('unit_price')
-                    ->numeric()
+                    ->live(onBlur: true)
+                    ->default(null),
+
+                DecimalInput::make('ton_weight')
                     ->live(onBlur: true)
                     ->default(null),
 

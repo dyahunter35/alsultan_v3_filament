@@ -88,8 +88,10 @@ class TaxExpense extends Page implements HasActions, HasTable
             ->toolbarActions([
                 CreateAction::make()
                     ->schema($this->expenseForm())
-                    ->preserveFormDataWhenCreatingAnother(fn(array $data): array => $data)
-
+                    ->preserveFormDataWhenCreatingAnother(
+                        fn(array $data): array =>
+                        \Illuminate\Support\Arr::except($data, ['payment_reference', 'total_amount'])
+                    )
             ]);
     }
 
@@ -255,7 +257,8 @@ class TaxExpense extends Page implements HasActions, HasTable
 
                         DecimalInput::make('total_amount')
                             ->label(__(self::getLocalePath() . '.fields.total_amount.label'))
-                            ->live(onBlur: true),
+                            ->million()
+                            ->required(),
 
                         // 11. الملاحظات
                         Forms\Components\Textarea::make('notes')

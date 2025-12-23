@@ -242,7 +242,7 @@ class OrderResource extends Resource
                     }),
             ])
             ->recordActions([
-                /*Action::make('pay')
+                /* Action::make('pay')
                     ->visible(fn($record) => $record->total != $record->paid || $record->status === OrderStatus::Processing || $record->status === OrderStatus::New)
                     ->requiresConfirmation()
                     ->icon('heroicon-o-credit-card')
@@ -304,7 +304,8 @@ class OrderResource extends Resource
                             ->body(__('order.actions.pay.notification.body'))
                             ->success()
                             ->send();
-                    }),*/
+                    }), */
+
                 ViewAction::make(),
                 EditAction::make()
                     ->visible(fn($record) => !$record->deleted_at),
@@ -562,24 +563,31 @@ class OrderResource extends Resource
 
     public static function calculate(Get $get, Set $set): void
     {
-        $items = collect($get('items') ?? [])->map(function ($item) {
-            $quantity = (float)($item['qty'] ?? 1);
-            $unitPrice = (float)($item['price'] ?? 0);
-            $itemDiscount = (float)($item['sub_discount'] ?? 0);
+        // دالة داخلية مساعدة لتنظيف الأرقام من الفواصل
+        $parseNumber = fn($value) => (float) str_replace(',', '', $value ?? 0);
+
+        $items = collect($get('items') ?? [])->map(function ($item) use ($parseNumber) {
+            // تنظيف المدخلات قبل الحساب
+            $quantity = $parseNumber($item['qty'] ?? 1);
+            $unitPrice = $parseNumber($item['price'] ?? 0);
+            $itemDiscount = $parseNumber($item['sub_discount'] ?? 0);
 
             $subTotal = max(0, ($unitPrice - $itemDiscount)) * $quantity;
+
+            // حفظ المجموع الفرعي (سيقوم الـ DecimalInput في Repeater بتنسيقه تلقائياً)
             $item['sub_total'] = self::truncate_float($subTotal, 2);
             return $item;
         });
 
-        // Update the repeater items
+        // تحديث عناصر الـ repeater
         $set('items', $items->toArray());
 
-        $totalDiscount = $items->sum(fn($item) => (float)($item['sub_discount'] ?? 0) * (float)($item['qty'] ?? 1));
+        // حساب الإجماليات مع التنظيف أيضاً
+        $totalDiscount = $items->sum(fn($item) => $parseNumber($item['sub_discount'] ?? 0) * $parseNumber($item['qty'] ?? 1));
         $totalItemsPrice = $items->sum('sub_total');
 
-        $shipping = (float)($get('shipping') ?? 0);
-        $installation = (float)($get('install') ?? 0);
+        $shipping = $parseNumber($get('shipping'));
+        $installation = $parseNumber($get('install'));
 
         $set('discount', self::truncate_float($totalDiscount, 2));
         $set('total', self::truncate_float($totalItemsPrice + $installation + $shipping, 2));
@@ -589,5 +597,10 @@ class OrderResource extends Resource
     {
         $factor = pow(10, $precision);
         return floor($number * $factor) / $factor;
+    }
+
+    public static function pureFloat(string $number): float
+    {
+        return (float) str_replace(',', '', $number) ?? 0;
     }
 }

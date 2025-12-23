@@ -20,7 +20,7 @@ return new class extends Migration
 
             $table->enum('type', TruckType::getKeys())->comment("local , outer");
 
-            $table->string('size')->nullable();
+            $table->string('size')->nullable()->comment('مقاسات المنتج');
 
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
 
@@ -28,7 +28,7 @@ return new class extends Migration
 
             $table->double('quantity')->comment('الكميات بالطرد');
 
-            $table->double('real_quantity')->nullable();
+            $table->double('real_quantity')->nullable()->comment('الكمية الفعلية عند الاستلام');
 
             $table->double('weight')->nullable();
 

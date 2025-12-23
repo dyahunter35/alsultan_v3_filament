@@ -119,7 +119,6 @@ class TrucksTable
                     ->color('danger')
                     ->action(function (Truck $record) {
                         // إعادة تعيين حالة الشاحنة إلى "في الطريق"
-
                         $record->stockHistory()->delete();
 
                         $record->update([
