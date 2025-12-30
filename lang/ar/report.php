@@ -69,4 +69,9 @@ return [
         'icon' => 'heroicon-m-building-office',
         'sort' => 8,
     ],
+    'product_pricing' => [
+        'heading' => 'تقرير تسعير منتجات الشحن',
+        'icon' => 'heroicon-o-currency-dollar',
+        'sort' => 9,
+    ],
 ];

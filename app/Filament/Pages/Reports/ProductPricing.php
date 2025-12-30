@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages\Reports;
 
+use App\Filament\Pages\Concerns\HasReport;
 use App\Models\Truck;
 use App\Models\Company;
 use Filament\Pages\Page;
@@ -15,6 +16,7 @@ use Illuminate\Support\Collection;
 class ProductPricing extends Page implements HasForms
 {
     use InteractsWithForms;
+    use HasReport;
 
     protected static ?string $title = 'تسعير المنتجات (بيان الشحنة والشركات)';
     protected string $view = 'filament.pages.reports.product-pricing';
@@ -88,7 +90,7 @@ class ProductPricing extends Page implements HasForms
         foreach ($trucks->filter() as $truck) {
             foreach ($truck->cargos as $cargo) {
                 if (!isset($this->profit_percents[$cargo->id])) {
-                    $this->profit_percents[$cargo->id] = 4; // النسبة الافتراضية
+                    $this->profit_percents[$cargo->id] = 1; // النسبة الافتراضية
                 }
             }
         }

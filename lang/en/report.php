@@ -75,4 +75,9 @@ return [
         'icon' => 'heroicon-m-building-office',
         'sort' => 8,
     ],
+    'product_pricing' => [
+        'heading' => 'Cargo Product Pricing Report',
+        'icon' => 'heroicon-o-currency-dollar',
+        'sort' => 9,
+    ],
 ];
