@@ -38,10 +38,7 @@ class CurrencyResource extends Resource
                 TextInput::make('symbol')
                     ->default(null),
                 DecimalInput::make('exchange_rate')
-                    ->required()
-                    ->live(onBlur: true)
-                    ->numeric()
-                    ->default(1.0),
+                    ->default(1),
             ]);
     }
 
