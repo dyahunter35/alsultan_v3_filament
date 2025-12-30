@@ -1,6 +1,6 @@
 <x-filament-panels::page>
 
-    <div class="space-y-6">
+    <div class="space-y-6" id="report-content">
 
         <h2 class="text-2xl font-bold text-gray-800">تقرير المبيعات اليومي</h2>
 
@@ -80,5 +80,6 @@
         </div>
 
     </div>
+    <x-print-button />
 
 </x-filament-panels::page>

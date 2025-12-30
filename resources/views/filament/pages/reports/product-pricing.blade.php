@@ -145,6 +145,7 @@
                 </div>
             @endforeach
         </div>
+        <x-print-button />
     @else
         <div class="p-20 text-center bg-white border-2 border-gray-300 border-dashed shadow rounded-xl">
             <h3 class="text-xl font-bold text-gray-400">الرجاء اختيار شاحنة أو شركة من القائمة أعلاه لعرض بيانات التسعير
