@@ -133,7 +133,7 @@ class ProductPricing extends Page implements HasForms
             $item_transport_cost = $total_transport * $weight_ratio;
             $total_cost = $base_total_egp + $item_customs_cost + $item_transport_cost;
 
-            $profit_percent = (float) ($this->profit_percents[$item->id] ?? 4);
+            $profit_percent = (float) ($this->profit_percents[$item->id] ?? 1);
             $profit_value = $total_cost * ($profit_percent / 100);
 
             $selling_egp = $total_cost + $profit_value;
