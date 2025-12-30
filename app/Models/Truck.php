@@ -129,9 +129,13 @@ class Truck extends Model implements HasMedia
 
     public function company()
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class, 'company_id');
     }
 
+    public function contractor()
+    {
+        return $this->belongsTo(Company::class, 'contractor_id');
+    }
     public function expenses()
     {
         return $this->hasMany(Expense::class);
@@ -217,6 +221,19 @@ class Truck extends Model implements HasMedia
     {
         return Attribute::make(
             get: fn() => $this->cargos()->sum('weight'),
+            //set: fn (string $value) => strtolower($value),
+        );
+    }
+
+    protected function truckFareSum(): Attribute
+    {
+        $nolon = (float) $this->truck_fare ?? 0;
+        $extraDaysCost = (float) $this->delay_value ?? 0;
+        $totalExpenses = $nolon + $extraDaysCost;
+
+
+        return Attribute::make(
+            get: fn() => $totalExpenses,
             //set: fn (string $value) => strtolower($value),
         );
     }

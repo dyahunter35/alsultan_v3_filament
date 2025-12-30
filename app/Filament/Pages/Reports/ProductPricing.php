@@ -3,80 +3,148 @@
 namespace App\Filament\Pages\Reports;
 
 use App\Models\Truck;
+use App\Models\Company;
 use Filament\Pages\Page;
+use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Schemas;
+use Livewire\Attributes\Url;
+use Illuminate\Support\Collection;
 
 class ProductPricing extends Page implements HasForms
 {
     use InteractsWithForms;
 
-    protected static ?string $title = 'تسعير المنتجات (بيان الشحنة)';
+    protected static ?string $title = 'تسعير المنتجات (بيان الشحنة والشركات)';
     protected string $view = 'filament.pages.reports.product-pricing';
 
+    #[Url('truck')]
     public $truck_id;
 
-    // المدخلات العامة
-    public $exchange_rate = 52.4;
-    public $customs_sdg = 17093746;
-    public $transport_cost = 71000;
+    #[Url('company')]
+    public $company_id;
 
-    // تم التغيير: مصفوفة لتخزين نسبة الربح لكل منتج بناءً على الـ ID الخاص به
-    // Format: [cargo_id => percentage]
+    // المعادل العام (سعر الصرف) - يؤثر على الجميع
+    public $exchange_rate = 52.4;
+
+    // مصفوفة نسب الأرباح مرتبطة بـ ID الشحنة (cargo_id)
     public $profit_percents = [];
+
+    protected function getFormSchema(): array
+    {
+        return [
+            Schemas\Components\Section::make('خيارات العرض')
+                ->schema([
+                    Schemas\Components\Grid::make(3)->schema([
+                        Forms\Components\Select::make('truck_id')
+                            ->label('عرض شاحنة محددة')
+                            ->options(Truck::query()->latest()->get()->mapWithKeys(fn($t) => [$t->id => "($t->id) {$t->driver_name}"]))
+                            ->searchable()
+                            ->reactive()
+                            ->afterStateUpdated(fn() => $this->company_id = null),
+
+                        Forms\Components\Select::make('company_id')
+                            ->label('عرض تقرير شركة (جميع شاحناتها)')
+                            ->options(Company::all()->pluck('name', 'id'))
+                            ->searchable()
+                            ->reactive()
+                            ->afterStateUpdated(fn() => $this->truck_id = null),
+
+                        Forms\Components\TextInput::make('exchange_rate')
+                            ->label('سعر الصرف')
+                            ->numeric()
+                            ->step(0.01)
+                            ->reactive(),
+                    ]),
+                ])->collapsible(),
+        ];
+    }
 
     public function mount()
     {
-        $this->truck_id = request()->query('truck_id') ?? Truck::first()?->id;
+        $this->loadInitialData();
+    }
 
-        // تعبئة نسب الأرباح الافتراضية (4%) لكل الأصناف عند التحميل
+    public function updated($propertyName)
+    {
+        if ($propertyName === 'truck_id' || $propertyName === 'company_id') {
+            $this->loadInitialData();
+        }
+    }
+
+    protected function loadInitialData()
+    {
+        $trucks = collect();
         if ($this->truck_id) {
-            $truck = Truck::with('cargos')->find($this->truck_id);
-            if ($truck) {
-                foreach ($truck->cargos as $cargo) {
-                    $this->profit_percents[$cargo->id] = 4; // القيمة الافتراضية
+            $trucks->push(Truck::with('cargos')->find($this->truck_id));
+        } elseif ($this->company_id) {
+            $company = Company::with(['trucksAsCompany.cargos', 'trucksAsContractor.cargos'])->find($this->company_id);
+            if ($company) {
+                $trucks = $company->trucksAsCompany->merge($company->trucksAsContractor);
+            }
+        }
+
+        foreach ($trucks->filter() as $truck) {
+            foreach ($truck->cargos as $cargo) {
+                if (!isset($this->profit_percents[$cargo->id])) {
+                    $this->profit_percents[$cargo->id] = 4; // النسبة الافتراضية
                 }
             }
         }
     }
 
-    public function getReportDataProperty()
+    public function getReportDataProperty(): ?Collection
     {
-        $truck = Truck::with('cargos.product')->find($this->truck_id);
+        $trucksList = collect();
 
-        if (!$truck) return null;
+        if ($this->truck_id) {
+            $truck = Truck::with(['cargos.product', 'expenses'])->find($this->truck_id);
+            if ($truck) $trucksList->push($truck);
+        } elseif ($this->company_id) {
+            $company = Company::find($this->company_id);
+            if ($company) {
+                $trucksList = $company->trucksAsCompany()->with(['cargos.product', 'expenses'])->get()
+                    ->merge($company->trucksAsContractor()->with(['cargos.product', 'expenses'])->get());
+            }
+        }
 
+        if ($trucksList->isEmpty()) return null;
+
+        return $trucksList->map(fn($truck) => $this->calculateTruckData($truck));
+    }
+
+    private function calculateTruckData($truck)
+    {
+        $exchange = (float) $this->exchange_rate ?: 1;
+        $total_customs_sdg = $truck->expenses->sum('total_amount');
+        $total_transport = $truck->truck_fare_sum;
+
+        $customs_egp = $total_customs_sdg / $exchange;
         $cargos = $truck->cargos;
-
-        // الحسابات العامة
         $total_weight_tons = $cargos->sum(fn($item) => ($item->quantity * $item->unit_quantity) / 1000);
-        $customs_egp = $this->exchange_rate > 0 ? ($this->customs_sdg / $this->exchange_rate) : 0;
 
-        $rows = $cargos->map(function ($item, $index) use ($total_weight_tons, $customs_egp) {
-
+        $rows = $cargos->map(function ($item, $index) use ($total_weight_tons, $customs_egp, $total_transport, $exchange) {
             $weight_ton = ($item->quantity * $item->unit_quantity) / 1000;
             $weight_ratio = $total_weight_tons > 0 ? ($weight_ton / $total_weight_tons) : 0;
-            $base_total_egp = $weight_ton * $item->unit_price;
 
+            $base_total_egp = $weight_ton * $item->unit_price;
             $item_customs_cost = $customs_egp * $weight_ratio;
-            $item_transport_cost = $this->transport_cost * $weight_ratio;
+            $item_transport_cost = $total_transport * $weight_ratio;
             $total_cost = $base_total_egp + $item_customs_cost + $item_transport_cost;
 
-            // جلب نسبة الربح الخاصة بهذا الصف من المصفوفة، أو استخدام 0 إذا لم توجد
-            $current_profit_percent = (float) ($this->profit_percents[$item->id] ?? 0);
+            $profit_percent = (float) ($this->profit_percents[$item->id] ?? 4);
+            $profit_value = $total_cost * ($profit_percent / 100);
 
-            // حساب الأرباح بناءً على النسبة الخاصة بهذا الصف
-            $profit_value = $total_cost * ($current_profit_percent / 100);
-
-            $selling_price_egp_total = $total_cost + $profit_value;
-            $package_price_egp = $item->quantity > 0 ? ($selling_price_egp_total / $item->quantity) : 0;
-            $package_price_sdg = $package_price_egp * $this->exchange_rate;
-            $ton_price_sdg = $weight_ton > 0 ? (($selling_price_egp_total * $this->exchange_rate) / $weight_ton) : 0;
+            $selling_egp = $total_cost + $profit_value;
+            $package_egp = $item->quantity > 0 ? ($selling_egp / $item->quantity) : 0;
+            $package_sdg = $package_egp * $exchange;
+            $ton_sdg = $weight_ton > 0 ? (($selling_egp * $exchange) / $weight_ton) : 0;
 
             return (object) [
-                'cargo_id' => $item->id, // مهم جداً للربط في العرض
+                'cargo_id' => $item->id,
                 'index' => $index + 1,
-                'product_name' => $item->product->name ?? 'منتج',
+                'product_name' => $item->product->name ?? 'منتج غير معروف',
                 'size' => $item->size,
                 'unit_weight' => $item->unit_quantity,
                 'quantity' => $item->quantity,
@@ -86,29 +154,29 @@ class ProductPricing extends Page implements HasForms
                 'transport_cost' => $item_transport_cost,
                 'customs_cost' => $item_customs_cost,
                 'total_cost' => $total_cost,
-                'profit_percent' => $current_profit_percent, // النسبة الحالية
+                'profit_percent' => $profit_percent,
                 'profit_value' => $profit_value,
-                'selling_price_egp' => $selling_price_egp_total,
-                'package_price_egp' => $package_price_egp,
-                'package_price_sdg' => $package_price_sdg,
-                'ton_price_sdg' => $ton_price_sdg,
+                'selling_price_egp' => $selling_egp,
+                'package_price_egp' => $package_egp,
+                'package_price_sdg' => $package_sdg,
+                'ton_price_sdg' => $ton_sdg,
             ];
         });
 
         return [
             'truck' => $truck,
             'rows' => $rows,
+            'customs_egp_total' => $customs_egp,
             'totals' => [
-                'weight' => $total_weight_tons,
                 'quantity' => $cargos->sum('quantity'),
+                'weight' => $total_weight_tons,
                 'base_egp' => $rows->sum('base_total_egp'),
                 'transport' => $rows->sum('transport_cost'),
                 'customs' => $rows->sum('customs_cost'),
                 'total_cost' => $rows->sum('total_cost'),
                 'profit' => $rows->sum('profit_value'),
                 'selling_egp' => $rows->sum('selling_price_egp'),
-            ],
-            'customs_egp_total' => $customs_egp
+            ]
         ];
     }
 }
