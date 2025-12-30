@@ -30,10 +30,10 @@ return new class extends Migration
             $table->string('currency');
 
             $table->double('total')->default(0);
-            $table->double('discount')->default(0);
-            $table->double('shipping')->default(0);
-            $table->double('install')->default(0);
-            $table->double('paid')->default(0);
+            $table->double('discount')->nullable()->default(0);
+            $table->double('shipping')->nullable()->default(0);
+            $table->double('install')->nullable()->default(0);
+            $table->double('paid')->nullable()->default(0);
 
             $table->string('shipping_method')->nullable();
             $table->text('notes')->nullable();

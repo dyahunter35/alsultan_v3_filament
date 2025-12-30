@@ -135,4 +135,9 @@ class OrderMetasRelationManager extends RelationManager
                 ]),
             ]);
     }
+
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return $ownerRecord->is_guest;
+    }
 }

@@ -31,6 +31,7 @@ class ViewOrder extends ViewRecord
 
             EditAction::make()->icon('heroicon-o-pencil'),
             DeleteAction::make()->icon('heroicon-o-trash'),
+
             Action::make('print')
                 ->label(trans('order.actions.print.label'))
                 ->icon('heroicon-o-printer')

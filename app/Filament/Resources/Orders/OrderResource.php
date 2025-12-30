@@ -242,7 +242,7 @@ class OrderResource extends Resource
                     }),
             ])
             ->recordActions([
-                /* Action::make('pay')
+                Action::make('pay')
                     ->visible(fn($record) => $record->total != $record->paid || $record->status === OrderStatus::Processing || $record->status === OrderStatus::New)
                     ->requiresConfirmation()
                     ->icon('heroicon-o-credit-card')
@@ -251,6 +251,7 @@ class OrderResource extends Resource
                     ->tooltip(__('order.actions.pay.label'))
                     ->iconButton()
                     ->color('info')
+                    ->visible(fn($record) => $record->is_guest)
                     ->fillForm(fn($record) => [
                         'total' => $record->total,
                         'paid' => $record->paid,
@@ -304,7 +305,7 @@ class OrderResource extends Resource
                             ->body(__('order.actions.pay.notification.body'))
                             ->success()
                             ->send();
-                    }), */
+                    }),
 
                 ViewAction::make(),
                 EditAction::make()
@@ -345,7 +346,7 @@ class OrderResource extends Resource
     public static function getRelations(): array
     {
         return [
-            // OrderMetasRelationManager::class,
+            OrderMetasRelationManager::class,
             OrderLogsRelationManager::class,
         ];
     }
@@ -416,7 +417,7 @@ class OrderResource extends Resource
             ToggleButtons::make('is_guest')
                 ->label(__('order.fields.is_guest.label'))
                 ->live()
-                ->default(true)
+                ->default(false)
                 ->inline()
                 ->grouped()
                 ->boolean(),
@@ -463,6 +464,7 @@ class OrderResource extends Resource
                         ->tel()
                         ->prefix('+'),
                 ])->columns(3)
+                ->columnSpanFull()
                 ->visible(fn(Get $get) => $get('is_guest')),
         ];
     }

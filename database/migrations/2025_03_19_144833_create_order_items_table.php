@@ -20,7 +20,7 @@ return new class extends Migration
                 $table->foreignId('order_id')->nullable()->constrained()->cascadeOnDelete();
                 $table->double('qty')->default(1)->nullable();
                 $table->double('price')->default(0);
-                $table->double('sub_discount')->default(0);
+                $table->double('sub_discount')->nullable()->default(0);
                 $table->double('sub_total')->default(0);
                 $table->text('description')->nullable();
                 $table->timestamps();
