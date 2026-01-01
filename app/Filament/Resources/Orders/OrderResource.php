@@ -43,11 +43,15 @@ use App\Filament\Resources\Orders\Widgets\OrderStats;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Scopes\IsVisibleScope;
+use DeepCopy\TypeFilter\Date\DatePeriodFilter;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Repeater;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -55,6 +59,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\On;
+use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 
 class OrderResource extends Resource
 {
@@ -158,6 +163,7 @@ class OrderResource extends Resource
                     ->label(__('order.fields.created_at.label'))
                     ->date()
                     ->toggleable(),
+
                 TextColumn::make('number')
                     ->label(__('order.fields.number.label'))
                     ->searchable()
@@ -169,6 +175,7 @@ class OrderResource extends Resource
                     ->formatStateUsing(fn($state, $record) => ($record->is_guest) ? $state . '  ' . __('customer.guest_suffix') : $state)
                     ->sortable()
                     ->toggleable(),
+
                 TextColumn::make('status')
                     ->label(__('order.fields.status.label'))
                     ->badge(),
@@ -176,6 +183,7 @@ class OrderResource extends Resource
                     ->label(__('order.fields.currency.label'))
                     ->searchable()
                     ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->toggleable(),
 
                 TextColumn::make('total')
@@ -190,6 +198,11 @@ class OrderResource extends Resource
                             ->formatStateUsing(fn($state) => (string)number_format($state, 2)),
                     ]),
 
+                IconColumn::make('is_guest')
+                    ->label(__('order.fields.is_guest.filter'))
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('paid')
                     ->label(__('order.fields.paid.label'))
                     ->searchable()
@@ -200,7 +213,7 @@ class OrderResource extends Resource
                         Sum::make()
                             ->money()
                             ->formatStateUsing(fn($state) => (string)number_format($state, 2)),
-                    ]),
+                    ])->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('shipping')
                     ->label(__('order.fields.shipping.label'))
@@ -218,6 +231,12 @@ class OrderResource extends Resource
 
             ])
             ->filters([
+                DateRangeFilter::make('created_at'),
+                TernaryFilter::make('is_guest')
+                    ->trueLabel(__('order.fields.is_guest.filter'))
+                    ->falseLabel(__('order.fields.customer.label'))
+                    ->label(__('order.fields.is_guest.filter')),
+
                 TrashedFilter::make()
                     ->visible(auth()->user()->can('restore_order')),
                 Filter::make('created_at')

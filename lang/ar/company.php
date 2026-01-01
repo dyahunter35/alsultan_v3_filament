@@ -14,12 +14,12 @@ return [
         'create' => 'إضافة شركة',
         'edit' => 'تعديل شركة',
     ],
-    'sections'=>[
-        'company_details'=> [
-            'label'=>'تفاصيل الشركة',
+    'sections' => [
+        'company_details' => [
+            'label' => 'تفاصيل الشركة',
             'description' => 'معلومات عامة عن الشركة',
             'icon' => 'heroicon-o-building-office-2',
-        ] ,
+        ],
 
     ],
     'fields' => [
@@ -30,9 +30,8 @@ return [
             'icon' => 'heroicon-o-user',
             //'prefix' => 'اسم ',
             //'suffix' => 'الشركة',
-
         ],
-        'default_currency' => [
+        'currency' => [
             'label' => 'العملة الافتراضية',
         ],
         'location' => [

@@ -87,7 +87,7 @@ class Truck extends Model implements HasMedia
 
     public function toBranch()
     {
-        return $this->hasOne(\App\Models\Branch::class, 'id', "to");
+        return $this->hasOne(\App\Models\Branch::class, 'id', "branch_to");
     }
 
     public function companyId()

@@ -36,6 +36,7 @@ return [
         'is_guest' => [
             'label' => 'Is this a guest customer?',
             'placeholder' => '',
+            'filter' => 'Guest'
         ],
 
 
@@ -162,7 +163,7 @@ return [
         ]
     ],
     'actions' => [
-        'print'=>[
+        'print' => [
             'label' => 'Print'
         ],
         'reset' => [
@@ -222,8 +223,8 @@ return [
             'today' => 'Today',
             'subtotal' => 'Before Discount',
             'customer' => 'Customer Details',
-            'signature'=>'Signature',
-            'balance_due'=>'Balance Due',
+            'signature' => 'Signature',
+            'balance_due' => 'Balance Due',
         ]
     ]
 ];

@@ -6,6 +6,10 @@ return [
         'plural_label' => 'Trucks',
         'model_label' => 'Truck',
         'icon' => 'heroicon-m-truck',
+        'inner' => [
+            'plural_label' => 'Inner Trucks',
+            'model_label' => 'Inner Truck',
+        ]
     ],
     'breadcrumbs' => [
         'index' => 'Trucks',
@@ -58,8 +62,12 @@ return [
             'placeholder' => 'Enter company ID',
         ],
         'to' => [
-            'label' => 'Warehouse',
+            'label' => 'To Warehouse',
             'placeholder' => 'Enter destination',
+        ],
+        'from_branch' => [
+            'label' => 'From Branch',
+            'placeholder' => 'Enter source branch',
         ],
         'from' => [
             'label' => 'Port',

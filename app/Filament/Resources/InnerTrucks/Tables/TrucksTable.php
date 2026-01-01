@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Trucks\Tables;
+namespace App\Filament\Resources\InnerTrucks\Tables;
 
 use App\Enums\Country;
 use App\Enums\StockCase;
@@ -33,7 +33,7 @@ class TrucksTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->query(Truck::where('type', TruckType::Outer))
+            ->query(Truck::where('type', TruckType::Local))
             ->columns([
 
                 Tables\Columns\TextColumn::make('driver_name')
@@ -51,21 +51,10 @@ class TrucksTable
                 Tables\Columns\TextColumn::make('truck_status')
                     ->badge()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('total_amount')
-                    ->badge()
-                    ->sortable()
-                    ->summarize([
-                        Tables\Columns\Summarizers\Sum::make()
-                            ->money(),
-                    ]),
-                Tables\Columns\TextColumn::make('contractorInfo.name')
-                    ->label(__('truck.fields.contractor_id.label'))
-                    ->searchable(),
 
-                Tables\Columns\TextColumn::make('companyId.name')
-                    ->numeric()
-                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('from.name')
+                    ->label(__('truck.fields.from_branch.label'))
                     ->badge()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('toBranch.name')
@@ -146,7 +135,7 @@ class TrucksTable
                                 'real_quantity' => $cargo->real_quantity, // في حال تم إدخالها سابقاً
                             ];
                         })->toArray(),
-                        'brunch_id' => $record->branch_to,
+                        'branch_to' => $record->branch_to,
                         'arrive_date' => $record->arrive_date,
                     ])
                     // 2. تصميم النافذة (Modal)
@@ -155,13 +144,16 @@ class TrucksTable
                         Grid::make(2)
                             ->schema([
 
-                                Select::make('brunch_id')
+                                Select::make('branch_to')
                                     ->label('المخزن الوجهة')
-                                    ->options(Branch::pluck('name', 'id'))
-                                    ->required(),
+                                    ->options(function (Truck $record) {
+                                        // جلب جميع المخازن ماعدا المخزن الذي خرجت منه الشاحنة
+                                        return Branch::query()
+                                            ->where('id', '!=', $record->from_id) // استبدل branch_from بالاسم الصحيح للحقل في جدولك
+                                            ->pluck('name', 'id');
+                                    })->required(),
 
                                 DatePicker::make('arrive_date')
-
                                     ->required(),
                                 Repeater::make('cargos')
                                     ->label('قائمة البضائع على الشاحنة')
@@ -199,13 +191,16 @@ class TrucksTable
                     ])
                     // 3. معالجة البيانات بعد الضغط على زر الحفظ
                     ->action(function (array $data, Truck $record) {
-
                         $inventoryService = app(InventoryService::class);
-                        $targetBranch = Branch::find($data['brunch_id']);
+
+                        // المخزن المصدر (من بيانات الشاحنة) والمخزن الهدف (من النموذج)
+                        $sourceBranch = Branch::find($record->from_id); // تأكد من اسم الحقل في جدول الشاحنات
+                        $targetBranch = Branch::find($data['branch_to']);
+
                         $causer = auth()->user();
 
-                        if (!$targetBranch) {
-                            Notification::make()->title('خطأ: لم يتم تحديد المخزن.')->danger()->send();
+                        if (!$sourceBranch || !$targetBranch) {
+                            Notification::make()->title('خطأ في تحديد المخازن')->danger()->send();
                             return;
                         }
 
@@ -214,54 +209,41 @@ class TrucksTable
                             $expectedQty = (float)$item['quantity'];
                             $realQtyInput = (float)$item['real_quantity'];
 
-                            // تحديد الكمية النهائية التي ستدخل المخزن
-                            // (إذا كان real_quantity غير فارغ و أكبر من 0، استخدمه، وإلا استخدم الكمية المسجلة)
                             $quantityToMove = ($realQtyInput > 0) ? $realQtyInput : $expectedQty;
 
-                            if ($quantityToMove <= 0) {
-                                continue;
-                            }
+                            if ($quantityToMove <= 0) continue;
 
-                            // تحديث سجل الـ truck_cargos بالكمية الفعلية المدخلة
-                            $cargoModel = TruckCargo::find($item['id']);
-                            if ($cargoModel) {
-                                $cargoModel->update(['real_quantity' => $realQtyInput]);
-                            }
-
-                            // استدعاء خدمة المخزون لنقل الكمية
                             $product = Product::find($productId);
 
                             if ($product) {
                                 try {
-                                    $inventoryService->addStockForBranch(
+                                    // تنفيذ عملية التحويل المزدوجة
+                                    $inventoryService->transferStock(
                                         product: $product,
-                                        branch: $targetBranch,
+                                        fromBranch: $sourceBranch,
+                                        toBranch: $targetBranch,
                                         quantity: $quantityToMove,
-                                        type: StockCase::Increase,
-                                        notes: "وصول شحنة رقم #{$record->id} إلى {$targetBranch->name}",
+                                        notes: "تحويل بضاعة عبر شاحنة رقم #{$record->id}",
                                         causer: $causer,
                                         truck: $record
                                     );
+
+                                    // تحديث الكمية الفعلية في سجل الشحنة
+                                    TruckCargo::find($item['id'])?->update(['real_quantity' => $quantityToMove]);
                                 } catch (Exception $e) {
-                                    Notification::make()
-                                        ->title("فشل نقل المنتج {$product->name}")
-                                        ->body("الرجاء التحقق من سجل الأخطاء.")
-                                        ->danger()
-                                        ->send();
+                                    Notification::make()->title("خطأ أثناء تحويل {$product->name}")->danger()->send();
                                 }
                             }
                         }
-                        // تحديث حالة الشاحنة
+
+                        // تحديث حالة الشاحنة لتصبح "وصلت" ومحولة
                         $record->update([
                             'truck_status' => TruckState::reach,
                             'arrive_date' => $data['arrive_date'],
                             'is_converted' => 1,
                         ]);
 
-                        Notification::make()
-                            ->title('تمت عملية الجرد ونقل البضائع للمخزن بنجاح')
-                            ->success()
-                            ->send();
+                        Notification::make()->title('تم تحويل البضائع بين المخازن بنجاح')->success()->send();
                     })
                     ->visible(fn(Truck $record) => !$record->is_converted),
 

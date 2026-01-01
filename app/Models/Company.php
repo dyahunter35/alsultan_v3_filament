@@ -32,6 +32,10 @@ class Company extends Model
         return $query->where('type', CompanyType::Contractor->value);
     }
 
+    public function currency()
+    {
+        return $this->belongsTo(Currency::class);
+    }
     // Trucks where this company is the "company"
     public function trucksAsCompany()
     {

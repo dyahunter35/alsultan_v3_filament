@@ -59,7 +59,7 @@ class InventoryService
             $newQty = $currentQty + $quantity;
 
             // إنشاء سجل التاريخ
-            $history = StockHistory::create([
+            $history = StockHistory::withoutGlobalScopes()->create([
                 'product_id' => $product->id,
                 'branch_id' => $branch->id,
                 'type' => $type->value ?? 'increase',
@@ -85,9 +85,9 @@ class InventoryService
      *
      * ملاحظة: يسمح بخروج رصيد سالب (حسب رغبتك) — لا يقوم بالـ throw عند الوصول لسالب.
      */
-    public function deductStockForBranch(Product $product, Branch $branch, int $quantity, ?string $notes = 'Sale', ?User $causer = null): StockHistory
+    public function deductStockForBranch(Product $product, Branch $branch, int $quantity, ?string $notes = 'Sale',  ?User $causer = null, ?Truck $truck = null): StockHistory
     {
-        return DB::transaction(function () use ($product, $branch, $quantity, $notes, $causer) {
+        return DB::transaction(function () use ($product, $branch, $quantity, $notes, $causer, $truck) {
             // Lock or create pivot row
             $pivotRow = DB::table('branch_product')
                 ->where('product_id', $product->id)
@@ -123,6 +123,7 @@ class InventoryService
                 'type' => 'decrease',
                 'quantity_change' => $quantity,
                 'new_quantity' => $newQty,
+                'truck_id' => $truck?->id ?? null,
                 'notes' => $notes,
                 'user_id' => $causer?->id,
             ]);
@@ -179,5 +180,35 @@ class InventoryService
             ),
             'updated_at' => now()
         ]);
+    }
+
+    /**
+     * تحويل مخزون من فرع إلى فرع آخر
+     */
+    public function transferStock(Product $product, Branch $fromBranch, Branch $toBranch, float $quantity, ?string $notes = null, ?User $causer = null, ?Truck $truck = null)
+    {
+        return DB::transaction(function () use ($product, $fromBranch, $toBranch, $quantity, $notes, $causer, $truck) {
+
+            // 1. خصم من المخزن المصدر
+            $this->deductStockForBranch(
+                product: $product,
+                branch: $fromBranch,
+                quantity: $quantity,
+                notes: "تحويل صادر: " . ($notes ?? "إلى " . $toBranch->name),
+                causer: $causer,
+                truck: $truck
+            );
+
+            // 2. إضافة إلى المخزن الهدف
+            $this->addStockForBranch(
+                product: $product,
+                branch: $toBranch,
+                quantity: $quantity,
+                type: StockCase::Increase,
+                notes: "تحويل وارد: " . ($notes ?? "من " . $fromBranch->name),
+                causer: $causer,
+                truck: $truck
+            );
+        });
     }
 }

@@ -21,7 +21,7 @@ return [
             'label' => 'Company Name',
             'placeholder' => 'Enter company name',
         ],
-        'default_currency' => [
+        'currency' => [
             'label' => 'Default Currency',
         ],
         'location' => [

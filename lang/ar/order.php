@@ -37,6 +37,8 @@ return [
         'is_guest' => [
             'label' => 'هل هذا عميل زائر؟',
             'placeholder' => '',
+            'filter' => 'زائر'
+
         ],
         'number' => [
             'label' => 'رقم الطلب',
@@ -157,7 +159,7 @@ return [
         ]
     ],
     'actions' => [
-        'print'=>[
+        'print' => [
             'label' => 'طباعة'
         ],
         'reset' => [

@@ -21,7 +21,7 @@ class CompaniesTable
                     ->searchable(),
                 TextColumn::make('type')
                     ->badge(),
-                TextColumn::make('default_currency')
+                TextColumn::make('currency.name')
                     ->badge()
                     ->searchable(),
 

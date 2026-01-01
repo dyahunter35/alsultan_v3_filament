@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Trucks\RelationManagers;
+namespace App\Filament\Resources\InnerTrucks\RelationManagers;
 
 use App\Enums\TruckType;
 use App\Filament\Forms\Components\DecimalInput;
@@ -37,7 +37,7 @@ class CargosRelationManager extends RelationManager
                     ->required(), */
 
                 Hidden::make('type')
-                    ->default(TruckType::Outer->value),
+                    ->default(TruckType::Local->value),
 
                 Select::make('product_id')
                     ->options(
@@ -54,46 +54,8 @@ class CargosRelationManager extends RelationManager
                     ->searchable()
                     ->required(),
 
-                TextInput::make('size')
-                    ->default(null),
-                DecimalInput::make('unit_quantity')
-                    ->required()
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(function ($get, $set) {
-                        $unitQuantity = (float) str_replace(',', '', $get('unit_quantity') ?? 1); // وزن الوحدة (مثلاً 50 كجم)
-                        $quantity = (float) str_replace(',', '', $get('quantity') ?? 1); // الكمية (مثلاً 200 جوال)
-
-                        // الحسبة الافتراضية: (الكمية × وزن الوحدة) / 1000 للحصول على الأطنان
-                        $tonWeight = ($quantity * $unitQuantity) / 1000000;
-
-                        // تحديث الحقل في الواجهة
-                        $set('ton_weight', number_format($tonWeight, 2, '.', ''));
-                    }),
                 DecimalInput::make('quantity')
                     ->required(),
-
-                DecimalInput::make('weight')
-                    ->default(null)
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(function ($get, $set) {
-                        $unitQuantity = (float) str_replace(',', '', $get('unit_quantity') ?? 1); // وزن الوحدة (مثلاً 50 كجم)
-                        $quantity = (float) str_replace(',', '', $get('quantity') ?? 1); // الكمية (مثلاً 200 جوال)
-
-                        // الحسبة الافتراضية: (الكمية × وزن الوحدة) / 1000 للحصول على الأطنان
-                        $tonWeight = ($quantity * $unitQuantity) / 1000000;
-
-                        // تحديث الحقل في الواجهة
-                        $set('ton_weight', number_format($tonWeight, 2, '.', ''));
-                    }),
-
-                DecimalInput::make('ton_weight')
-                    ->default(null),
-
-                DecimalInput::make('unit_price')
-                    ->live(onBlur: true)
-                    ->default(null),
-
-
 
                 TextInput::make('note')
                     ->default(null),
@@ -122,16 +84,7 @@ class CargosRelationManager extends RelationManager
                 TextColumn::make('real_quantity')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('weight')
-                    ->numeric()
-                    ->sortable(),
 
-                TextColumn::make('size')
-                    ->searchable(),
-
-                TextColumn::make('unit_price')
-                    ->numeric()
-                    ->sortable(),
                 TextColumn::make('note')
                     ->searchable(),
                 TextColumn::make('created_at')

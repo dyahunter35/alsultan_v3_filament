@@ -5,6 +5,10 @@ return [
         'label' => 'الشاحنات',
         'plural_label' => 'الشاحنات',
         'model_label' => 'شاحنة',
+        'inner' => [
+            'plural_label' => 'الشاحنات الداخلية',
+            'model_label' => 'شاحنة داخلية',
+        ],
     ],
     'breadcrumbs' => [
         'index' => 'الشاحنات',
@@ -60,8 +64,12 @@ return [
             'placeholder' => 'ادخل معرف الشركة',
         ],
         'to' => [
-            'label' => 'المخزن',
+            'label' => 'الي مخزن',
             'placeholder' => 'ادخل الوجهة',
+        ],
+        'from_branch' => [
+            'label' => 'من مخزن',
+            'placeholder' => 'ادخل نوع المصدر ',
         ],
         'from' => [
             'label' => 'المعبر',

@@ -10,9 +10,46 @@
         {{-- المعادل العام --}}
 
         <div id='report-content'>
+            <x-filament::section class="mb-4">
+                <header class="clearfix">
+                    <div id="logo" style="text-align:center; margin-top:10px;">
+                        <img width="80" src="{{ asset('asset/logo.png') }}" alt="logo" class="mx-auto" />
+                        <h2 class="text-bold">{{ __('app.name') }}</h2>
+                        <h3>{{ __('app.address') }}</h3>
+                    </div>
+
+                    <div class="border row" style="border:1px dashed #999; padding:6px;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <div>
+                                <div>📍 <b>اسم الشركة:</b> {{ $_company?->name ?? '-' }}</div>
+                            </div>
+                            <div style="text-align:left;">
+                                <div><b>تاريخ التقرير:</b> {{ now()->format('Y/m/d') }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <dl class="grid grid-cols-3 gap-4 my-2 text-center text-l md:grid-cols-3">
+                    <div>
+                        <dt class="font-bold text-gray-600">العملة الافتراضية</dt>
+                        <dd>{{ $currency_name ?? '' }}</dd>
+                    </div>
+                    <div>
+                        <dt class="font-bold text-gray-600">الموديل</dt>
+                        {{-- <dd>{{ $truck->truck_model }}</dd> --}}
+                    </div>
+
+                    <div>
+                        <dt class="font-bold text-gray-600">تكلفة العطلات</dt>
+                        {{-- <dd>{{ number_format($truck->delay_value, 2) }}</dd> --}}
+                    </div>
+
+                </dl>
+            </x-filament::section>
+
             @foreach ($reports as $data)
-                <div class="p-6 mb-10 bg-white border border-gray-200 rounded-lg shadow-md break-after-page"
-                    dir="rtl">
+                <div class="p-6 mb-10 bg-white border border-gray-200 rounded-lg shadow-md" dir="rtl">
 
                     {{-- هيدر الشاحنة --}}
                     <div class="flex items-center justify-between pb-4 mb-6 border-b-2 border-gray-100">
@@ -21,7 +58,10 @@
                                 {{ $data['truck']->id }}</h2>
                             <p class="mt-1 font-bold text-gray-600">السائق: {{ $data['truck']->driver_name }} | رقم
                                 اللوحة:
-                                {{ $data['truck']->car_number }}</p>
+                                {{ $data['truck']->car_number }}
+                                | تاريخ الشحنة
+                                :
+                                {{ $data['truck']->created_at->format('Y-m-d') }}</p>
                         </div>
                         {{-- <div class="grid grid-cols-2 gap-4 text-xs">
                         <div class="p-2 border rounded bg-gray-50">
@@ -45,7 +85,8 @@
                                     <th colspan="2" class="p-1 border border-gray-400">الكميات</th>
                                     <th colspan="2" class="p-1 border border-gray-400">السعر الأساسي</th>
                                     <th colspan="3" class="p-1 border border-gray-400">التكاليف المضافة</th>
-                                    <th colspan="3" class="p-1 border border-gray-400">المالية (بالمصري)</th>
+                                    <th colspan="3" class="p-1 border border-gray-400">المالية
+                                        ({{ $currency_name }})</th>
                                     <th colspan="2" class="p-1 border border-gray-400">سعر الطرد</th>
                                     <th colspan="2" class="p-1 border border-gray-400">السوداني</th>
                                 </tr>
@@ -59,7 +100,7 @@
                                     <th class="p-1 border border-gray-400">سعر الطن</th>
                                     <th class="p-1 border border-gray-400">المجموع</th>
                                     <th class="p-1 border border-gray-400">الترحيل</th>
-                                    <th class="p-1 border border-gray-400">الجمارك</th>
+                                    <th class="p-1 border border-gray-400">المنصرفات</th>
                                     <th class="p-1 bg-yellow-100 border border-gray-400">التكلفة</th>
                                     <th class="w-16 p-1 bg-blue-100 border border-gray-400">الربح %</th>
                                     <th class="p-1 border border-gray-400">قيمة الربح</th>
@@ -164,7 +205,7 @@
             }
 
             .break-after-page {
-                page-break-after: always;
+                /* page-break-after: always; */
             }
 
             body {

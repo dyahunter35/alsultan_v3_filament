@@ -5,6 +5,9 @@
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
 
+@import "../../../../vendor/malzariey/filament-daterangepicker-filter/resources/css/filament-daterangepicker.css";
+@source '../../../../vendor/malzariey/filament-daterangepicker-filter/resources/*/**';
+
 @plugin "daisyui";
 
 @media print {

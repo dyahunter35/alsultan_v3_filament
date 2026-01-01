@@ -28,10 +28,13 @@ class CompanyForm
                             ->required(),
                         Select::make('default_currency')
                             ->nullable()
-                            ->options(CurrencyOption::class),
+                            ->options(CurrencyOption::class)
+                            ->visible(false),
+                        Select::make('currency_id')
+                            ->relationship('currency', 'name')
+                            ->preload()
                     ]),
 
             ]);
     }
-    
 }

@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Filament\Resources\Trucks;
+namespace App\Filament\Resources\InnerTrucks;
 
 use App\Filament\Pages\Concerns\HasResource;
-use App\Filament\Resources\Trucks\Pages\CreateTruck;
-use App\Filament\Resources\Trucks\Pages\EditTruck;
-use App\Filament\Resources\Trucks\Pages\ListTrucks;
-use App\Filament\Resources\Trucks\Pages\ViewTruck;
-use App\Filament\Resources\Trucks\RelationManagers\CargosRelationManager;
-use App\Filament\Resources\Trucks\RelationManagers\CustomExpensesRelationManager;
-use App\Filament\Resources\Trucks\RelationManagers\DocumentsRelationManager;
-use App\Filament\Resources\Trucks\RelationManagers\TaxExpensesRelationManager;
-use App\Filament\Resources\Trucks\Schemas\TruckForm;
-use App\Filament\Resources\Trucks\Schemas\TruckInfolist;
-use App\Filament\Resources\Trucks\Tables\TrucksTable;
+use App\Filament\Resources\InnerTrucks\Pages\CreateTruck;
+use App\Filament\Resources\InnerTrucks\Pages\EditTruck;
+use App\Filament\Resources\InnerTrucks\Pages\ListTrucks;
+use App\Filament\Resources\InnerTrucks\Pages\ViewTruck;
+use App\Filament\Resources\InnerTrucks\RelationManagers\CargosRelationManager;
+use App\Filament\Resources\InnerTrucks\RelationManagers\CustomExpensesRelationManager;
+use App\Filament\Resources\InnerTrucks\RelationManagers\DocumentsRelationManager;
+use App\Filament\Resources\InnerTrucks\RelationManagers\TaxExpensesRelationManager;
+use App\Filament\Resources\InnerTrucks\Schemas\TruckForm;
+use App\Filament\Resources\InnerTrucks\Schemas\TruckInfolist;
+use App\Filament\Resources\InnerTrucks\Tables\TrucksTable;
 use App\Models\Truck;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -21,7 +21,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class TruckResource extends Resource
+class InnerTruckResource extends Resource
 {
     use HasResource;
 
@@ -30,6 +30,24 @@ class TruckResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'driver_name';
+
+    public static function getLocalePath(): string
+    {
+        return 'truck';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return static::getLocale('navigation.inner.plural_label') ?? parent::getPluralModelLabel();
+    }
+
+    /**
+     * Get model label with translation
+     */
+    public static function getModelLabel(): string
+    {
+        return static::getLocale('navigation.inner.model_label') ?? parent::getModelLabel();
+    }
 
     public static function form(Schema $schema): Schema
     {

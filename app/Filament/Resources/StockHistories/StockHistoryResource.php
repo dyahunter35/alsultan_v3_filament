@@ -33,7 +33,7 @@ class StockHistoryResource extends Resource
 
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static bool $isScopedToTenant = true;
+    // protected static bool $isScopedToTenant = true;
 
     protected static ?int $navigationSort = 5;
 
@@ -107,7 +107,7 @@ class StockHistoryResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->query(self::getEloquentQuery())
+            ->query(self::getEloquentQuery()->where('branch_id', Filament::getTenant()->id))
             ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('id')

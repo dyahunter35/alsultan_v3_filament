@@ -10,15 +10,16 @@ class TruckCargo extends Model
     use HasFactory;
 
     protected $fillable = [
-        'id',
-        'product_id',
         'truck_id',
+        'type',
         'size',
+        'product_id',
+        'unit_quantity',
         'quantity',
         'real_quantity',
         'weight',
-        'unit_id',
-        'unit_quantity',
+        'unit_price',
+        'ton_weight',
         'note'
     ];
 
