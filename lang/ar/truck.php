@@ -19,6 +19,7 @@ return [
     'sections' => [
         'driver_info' => 'بيانات السائق',
         'contract_info' => 'بيانات التعاقد',
+        'branch_info' => 'بيانات المخازن',
         'status_info' => 'بيانات حاله الشحنة',
         'financial_info' => 'التفاصيل المالية',
     ],

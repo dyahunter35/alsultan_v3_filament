@@ -2,13 +2,13 @@
 
 @import "@fortawesome/fontawesome-free/css/all.min.css";
 
+@plugin "daisyui";
+
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
 
 @import "../../../../vendor/malzariey/filament-daterangepicker-filter/resources/css/filament-daterangepicker.css";
-@source '../../../../vendor/malzariey/filament-daterangepicker-filter/resources/*/**';
-
-@plugin "daisyui";
+@source '../../../../vendor/malzariey/filament-daterangepicker-filter/resource**';
 
 @media print {
     body * {

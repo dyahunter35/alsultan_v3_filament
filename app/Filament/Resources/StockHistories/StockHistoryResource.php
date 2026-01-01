@@ -21,6 +21,7 @@ use App\Models\Product;
 use App\Models\StockHistory;
 use Filament\Facades\Filament;
 use Filament\Forms;
+use Filament\Forms\Components\Hidden;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -68,7 +69,10 @@ class StockHistoryResource extends Resource
 
                         Select::make('product_id')
                             ->label(__('stock_history.fields.product_id.label'))
-                            ->options(Product::whereHas('branches', fn($query) => $query->where('branches.id', Filament::getTenant()->id))
+                            ->options(Product::whereHas(
+                                'branches',
+                                fn($query) => $query->where('branches.id', Filament::getTenant()->id)
+                            )
                                 ->get()
                                 ->mapWithKeys(fn(Product $product) => [
                                     $product->id => sprintf(
@@ -81,11 +85,13 @@ class StockHistoryResource extends Resource
                             ->preload()
                             ->searchable()
                             ->required(),
+
                         Select::make('type')
                             ->label(__('stock_history.fields.type.label'))
                             ->required()
                             ->options(StockCase::class)
                             ->default(StockCase::Increase),
+
                         TextInput::make('quantity_change')
                             ->label(__('stock_history.fields.quantity_change.label'))
                             ->placeholder(__('stock_history.fields.quantity_change.placeholder'))
@@ -96,6 +102,9 @@ class StockHistoryResource extends Resource
                             ->label(__('stock_history.fields.notes.label'))
                             ->placeholder(__('stock_history.fields.quantity_change.placeholder'))
                             ->columnSpanFull(),
+
+                        Hidden::make('branch_id')
+                            ->default(Filament::getTenant()->id)
 
                     ])
                     ->columns(2)

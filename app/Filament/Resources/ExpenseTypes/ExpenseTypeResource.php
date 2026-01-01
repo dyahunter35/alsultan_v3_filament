@@ -17,6 +17,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class ExpenseTypeResource extends Resource
@@ -34,10 +35,15 @@ class ExpenseTypeResource extends Resource
         self::translateConfigureForm();
         return $schema
             ->components([
-                TextInput::make('key')
-                    ->required(),
                 TextInput::make('label')
+                    ->required()
+                    ->live()
+                    ->afterStateUpdated(fn($state, $set) => $set('key', \Str::slug($state))),
+                TextInput::make('key')
+                    ->readOnly()
+                    ->suffixIcon(Heroicon::Key)
                     ->required(),
+
                 Select::make('group')
                     ->options(ExpenseGroup::class)
                     ->default(null),
@@ -51,17 +57,18 @@ class ExpenseTypeResource extends Resource
         return $table
             ->recordTitleAttribute('label')
             ->columns([
-                TextColumn::make('key')
-                    ->searchable(),
+
                 TextColumn::make('label')
                     ->searchable(),
+
+                TextColumn::make('key')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('group')
                     ->badge()
                     ->searchable(),
-                TextColumn::make('icon')
-                    ->searchable(),
-                TextColumn::make('color')
-                    ->searchable(),
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -72,7 +79,8 @@ class ExpenseTypeResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('group')
+                    ->options(ExpenseGroup::class)
             ])
             ->recordActions([
                 EditAction::make(),

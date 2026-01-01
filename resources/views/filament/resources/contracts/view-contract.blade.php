@@ -13,7 +13,7 @@
         <div class="p-8 md:p-12">
             <!-- Header Section -->
             <div
-                class="flex flex-col items-start justify-between pb-8 mb-10 border-b border-gray-100 md:flex-row md:items-center">
+                class="flex flex-row items-start justify-between pb-8 mb-10 border-b border-gray-100 md:flex-row md:items-center">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-900">{{ $contract->company->name }}</h1>
                     <h2 class="mt-2 text-xl font-medium text-primary-600">{{ $contract->title }}</h2>
@@ -73,20 +73,20 @@
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th scope="col"
-                                        class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                                        class="py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-6">
                                         {{ __('contract.fields.items.fields.description.label') }}</th>
                                     <th scope="col"
-                                        class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                        class="px-3 py-3.5 text-center text-sm font-semibold text-gray-900">
                                         {{ __('contract.fields.items.fields.quantity.label') }}</th>
                                     <th scope="col"
-                                        class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                        class="px-3 py-3.5 text-center text-sm font-semibold text-gray-900">
                                         {{ __('contract.fields.items.fields.unit_price.label') }}</th>
                                     <th scope="col"
-                                        class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                        class="px-3 py-3.5 text-center text-sm font-semibold text-gray-900">
                                         {{ __('contract.fields.items.fields.total_price.label') }}</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
+                            <tbody class="text-center bg-white divide-y divide-gray-200">
                                 @foreach ($contract->items as $item)
                                     <tr>
                                         <td
@@ -226,7 +226,7 @@
             </div>
 
             <!-- Signature Section -->
-            <div class="grid grid-cols-1 gap-12 mt-16 md:grid-cols-2 break-inside-avoid">
+            <div class="grid grid-cols-2 gap-12 mt-16 md:grid-cols-2 break-inside-avoid">
                 <div class="text-center">
                     <p class="mb-16 text-sm font-semibold text-gray-500 uppercase">
                         {{ __('contract.signature.authorized') }}</p>

@@ -45,6 +45,67 @@
                 </dl>
             </x-filament::section>
 
+
+            {{-- تكلفة الجرام --}}
+
+
+            {{-- تفاصيل المنتجات --}}
+            <x-filament::section>
+                <x-slot name="heading">تفاصيل البضائع</x-slot>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm border border-gray-200">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="p-2 border">#</th>
+                                <th class="p-2 border">اسم المنتج</th>
+                                <th class="p-2 border">الوزن (جم)</th>
+                                <th class="p-2 border">الوزن (طن)</th>
+                                <th class="p-2 border">الكمية بالطرد</th>
+                                <th class="p-2 border">الكميه الفعليه</th>
+                                <th class="p-2 border">الفرق</th>
+                                <th class="p-2 border">ملاحظة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($rows as $i => $row)
+                                <tr>
+                                    <td class="p-2 border">{{ $i + 1 }}</td>
+                                    <td class="p-2 border">{{ $row['product_name'] }}</td>
+                                    <td class="p-2 border">{{ number_format($row['weight_grams'], 2) }}</td>
+                                    <td class="p-2 border">{{ number_format($row['weight_ton'], 2) }}</td>
+                                    <td class="p-2 border">{{ number_format($row['quantity'], 2) }}</td>
+                                    <td class="p-2 border">{{ number_format($row['real_quantity'], 2) }}</td>
+                                    <td class="p-2 border" style="color :{{ $row['dif'] >= 0 ? 'green' : 'red' }}">
+                                        {{ number_format($row['dif'], 2) }}</td>
+                                    <td class="p-2 border">{{ $row['note'] }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="p-4 text-center text-gray-500">لا توجد بيانات</td>
+                                </tr>
+                            @endforelse
+                            <tr class="font-semibold bg-gray-50">
+                                <td colspan="2" class="p-2 text-right border">الإجمالي</td>
+                                <td class="p-2 border" colspan="1">
+                                    {{ number_format(array_sum(array_column($rows, 'weight_grams')), 2) }}
+                                </td>
+                                <td class="p-2 border" colspan="1">
+                                    {{ number_format(array_sum(array_column($rows, 'weight_ton')), 2) }}
+                                </td>
+                                <td class="p-2 border" colspan="1">
+                                    {{ number_format(array_sum(array_column($rows, 'quantity')), 2) }}
+                                </td>
+                                <td class="p-2 border" colspan="1">
+                                    {{ number_format(array_sum(array_column($rows, 'real_quantity')), 2) }}
+                                </td>
+                                <td class="p-2 border" colspan="2"></td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </x-filament::section>
+
             {{-- المنصرفات --}}
             <x-filament::section>
                 <x-slot name="heading">المنصرفات</x-slot>
@@ -78,62 +139,6 @@
                         </tr>
                     </tbody>
                 </table>
-            </x-filament::section>
-
-            {{-- تكلفة الجرام --}}
-            <div class="p-4 mt-4 mb-4 border border-blue-200 rounded-lg bg-blue-50">
-                <span class="font-semibold text-blue-800">تكلفة الجرام الواحد:</span>
-                <strong>{{ number_format($costPerGram, 6) }}</strong>
-            </div>
-
-            {{-- تفاصيل المنتجات --}}
-            <x-filament::section>
-                <x-slot name="heading">تفاصيل البضائع</x-slot>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm border border-gray-200">
-                        <thead class="bg-gray-100">
-                            <tr>
-                                <th class="p-2 border">#</th>
-                                <th class="p-2 border">اسم المنتج</th>
-                                <th class="p-2 border">الوزن (جم)</th>
-                                <th class="p-2 border">الكمية</th>
-                                <th class="p-2 border">ملاحظة</th>
-                                <th class="p-2 border">نسبة الوزن</th>
-                                <th class="p-2 border">التكلفة الإجمالية</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($rows as $i => $row)
-                                <tr>
-                                    <td class="p-2 border">{{ $i + 1 }}</td>
-                                    <td class="p-2 border">{{ $row['product_name'] }}</td>
-                                    <td class="p-2 border">{{ number_format($row['weight_grams'], 2) }}</td>
-                                    <td class="p-2 border">{{ number_format($row['quantity'], 2) }}</td>
-                                    <td class="p-2 border">{{ $row['note'] }}</td>
-                                    <td class="p-2 border">{{ $row['cost_per_gram'] }}</td>
-                                    <td class="p-2 border">{{ number_format($row['total_cost'], 2) }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="p-4 text-center text-gray-500">لا توجد بيانات</td>
-                                </tr>
-                            @endforelse
-                            <tr class="font-semibold bg-gray-50">
-                                <td colspan="2" class="p-2 text-right border">الإجمالي</td>
-                                <td class="p-2 border" colspan="1">
-                                    {{ number_format(array_sum(array_column($rows, 'weight_grams')), 2) }}
-                                </td>
-                                <td class="p-2 border" colspan="1">
-                                    {{ number_format(array_sum(array_column($rows, 'quantity')), 2) }}
-                                </td>
-                                <td class="p-2 border" colspan="2"></td>
-                                <td class="p-2 border" colspan="1">
-                                    {{ number_format(array_sum(array_column($rows, 'total_cost')), 2) }}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
             </x-filament::section>
 
             {{-- الحسابات النهائية --}}

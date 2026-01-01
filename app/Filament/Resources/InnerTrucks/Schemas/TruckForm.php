@@ -13,6 +13,7 @@ use Filament\Schemas;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Support\Icons\Heroicon;
 
 class TruckForm
 {
@@ -44,6 +45,7 @@ class TruckForm
     protected static function driverSection(): Schemas\Components\Section
     {
         return Schemas\Components\Section::make(__('truck.sections.driver_info'))
+            ->icon(Heroicon::Truck)
             ->schema([
                 Forms\Components\TextInput::make('driver_name')
                     ->label(__('truck.fields.driver_name.label'))
@@ -89,7 +91,8 @@ class TruckForm
      */
     protected static function contractSection(): Schemas\Components\Section
     {
-        return Schemas\Components\Section::make(__('truck.sections.contract_info'))
+        return Schemas\Components\Section::make(__('truck.sections.branch_info'))
+            ->icon(Heroicon::BuildingStorefront)
             ->columns(2)
             ->schema([
 

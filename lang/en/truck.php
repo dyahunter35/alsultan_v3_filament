@@ -20,6 +20,7 @@ return [
     'sections' => [
         'driver_info' => 'Driver Information',
         'contract_info' => 'Contract Details',
+        'branch_info' => 'Warehouses',
         'status_info' => 'Shipment Status',
         'financial_info' => 'Financial Details',
     ],
