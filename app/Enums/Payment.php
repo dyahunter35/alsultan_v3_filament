@@ -19,7 +19,7 @@ enum Payment: string implements HasColor, HasIcon, HasLabel
         return __('order.fields.payment_method.options.'.$this->value);
     }
 
-    public function getColor(): string | array | null
+    public function getColor(): string|array|null
     {
         return match ($this) {
             self::Cash => 'info',

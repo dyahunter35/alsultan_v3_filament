@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Filament\Resources\ExpenseTypes;
+namespace App\Filament\Clusters\Expanes\Resources\ExpenseTypes;
 
 use App\Enums\ExpenseGroup;
+use App\Filament\Clusters\Expanes\ExpanesCluster;
+use App\Filament\Clusters\Expanes\Resources\ExpenseTypes\Pages\ManageExpenseTypes;
 use App\Filament\Pages\Concerns\HasResource;
-use App\Filament\Resources\ExpenseTypes\Pages\ManageExpenseTypes;
 use App\Models\ExpenseType;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -28,17 +29,27 @@ class ExpenseTypeResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $cluster = ExpanesCluster::class;
+
     protected static ?string $recordTitleAttribute = 'label';
+
+    protected static ?int $navigationSort = 101;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return null;
+    }
 
     public static function form(Schema $schema): Schema
     {
         self::translateConfigureForm();
+
         return $schema
             ->components([
                 TextInput::make('label')
                     ->required()
                     ->live()
-                    ->afterStateUpdated(fn($state, $set) => $set('key', \Str::slug($state))),
+                    ->afterStateUpdated(fn ($state, $set) => $set('key', \Str::slug($state))),
                 TextInput::make('key')
                     ->readOnly()
                     ->suffixIcon(Heroicon::Key)
@@ -54,6 +65,7 @@ class ExpenseTypeResource extends Resource
     public static function table(Table $table): Table
     {
         self::translateConfigureTable();
+
         return $table
             ->recordTitleAttribute('label')
             ->columns([
@@ -80,7 +92,7 @@ class ExpenseTypeResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('group')
-                    ->options(ExpenseGroup::class)
+                    ->options(ExpenseGroup::class),
             ])
             ->recordActions([
                 EditAction::make(),

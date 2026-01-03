@@ -12,7 +12,7 @@ class CurrencyWidget extends StatsOverviewWidget
 {
     public ?Model $record = null;
 
-    protected int | array | null $columns = [
+    protected int|array|null $columns = [
         'md' => 3,
         'xl' => 5,
     ];

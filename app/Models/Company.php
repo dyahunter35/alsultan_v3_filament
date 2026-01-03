@@ -8,18 +8,17 @@ use App\Traits\HasCurrencyFinancial;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Company extends Model
 {
-    use HasFactory;
     use HasCurrencyFinancial;
+    use HasFactory;
 
     protected $guarded = [];
 
     protected $casts = [
         'default_currency' => CurrencyOption::class,
-        'type' => CompanyType::class
+        'type' => CompanyType::class,
     ];
 
     public function scopeCompany($query)
@@ -36,6 +35,7 @@ class Company extends Model
     {
         return $this->belongsTo(Currency::class);
     }
+
     // Trucks where this company is the "company"
     public function trucksAsCompany()
     {
@@ -52,6 +52,7 @@ class Company extends Model
     {
         return $this->morphMany(CurrencyTransaction::class, 'party');
     }
+
     public function expenses()
     {
         // through trucks
@@ -62,7 +63,7 @@ class Company extends Model
     {
         return Attribute::make(
             // get: fn(string $value) => $this->trucks(),
-            //set: fn (string $value) => strtolower($value),
+            // set: fn (string $value) => strtolower($value),
         );
     }
 }

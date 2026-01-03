@@ -1,4 +1,5 @@
 <?php
+
 return [
     'navigation' => [
         'group' => 'Product Management',
@@ -6,7 +7,7 @@ return [
         'plural_label' => 'Units',
         'model_label' => 'Unit',
         'icon' => 'heroicon-m-building-office-2',
-        'sort' => 7
+        'sort' => 7,
     ],
     'breadcrumbs' => [
         'index' => 'Units',

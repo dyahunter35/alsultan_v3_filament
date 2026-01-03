@@ -2,9 +2,9 @@
 
 namespace App\Filament\Pages\Concerns;
 
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Lang;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Str;
 
 trait HasRelationManager
 {
@@ -14,6 +14,7 @@ trait HasRelationManager
     {
         return Str::of(class_basename(static::class))->snake()->value();
     }
+
     public static function getLocalePath(): string
     {
         if (isset(static::$localePath)) {
@@ -23,15 +24,15 @@ trait HasRelationManager
         }
     }
 
-    public static function getLocale($key): string | null
+    public static function getLocale($key): ?string
     {
         $locale_path = static::getLocalePath();
 
-        if (!$locale_path) {
+        if (! $locale_path) {
             return null;
         }
 
-        if (Lang::has($key = $locale_path . '.' . $key, app()->getLocale())) {
+        if (Lang::has($key = $locale_path.'.'.$key, app()->getLocale())) {
             return __($key);
         }
 

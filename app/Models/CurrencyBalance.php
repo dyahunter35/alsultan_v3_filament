@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 use App\Enums\CurrencyType;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class CurrencyBalance extends Model
 {
@@ -14,7 +14,7 @@ class CurrencyBalance extends Model
         'owner_type',
         'currency_id',
         'amount',
-        'total_in_sdg'
+        'total_in_sdg',
     ];
 
     public function currency()
@@ -33,7 +33,6 @@ class CurrencyBalance extends Model
         $this->save();
     }
 
-
     public static function refreshAllBalances()
     {
         // هذه الدالة ستحسب الرصيد الإجمالي التراكمي (باستخدام اليوم الحالي كـ cutOffDate)
@@ -43,9 +42,8 @@ class CurrencyBalance extends Model
     /**
      * يحسب ويحدث الأرصدة الصافية للمالكين المحددين (أو جميعهم) حتى تاريخ معين.
      *
-     * @param array $owners قائمة بالمالكين المطلوب تحديثهم: [[$ownerType, $ownerId], ...]
-     * @param \Illuminate\Support\Carbon $date التاريخ الذي سيتم استخدامه كحد أقصى للحركات
-     * @return void
+     * @param  array  $owners  قائمة بالمالكين المطلوب تحديثهم: [[$ownerType, $ownerId], ...]
+     * @param  \Illuminate\Support\Carbon  $date  التاريخ الذي سيتم استخدامه كحد أقصى للحركات
      */
     public static function refreshBalances(array $owners = [], ?Carbon $date = null): void
     {
@@ -84,9 +82,9 @@ class CurrencyBalance extends Model
                 'c.exchange_rate',
                 DB::raw("
                     CASE
-                        WHEN ct.type = '" . CurrencyType::SEND->value . "' THEN -ct.amount
-                        WHEN ct.type = '" . CurrencyType::Convert->value . "' THEN ct.amount
-                        WHEN ct.type = '" . CurrencyType::CompanyExpense->value . "' THEN -ct.amount
+                        WHEN ct.type = '".CurrencyType::SEND->value."' THEN -ct.amount
+                        WHEN ct.type = '".CurrencyType::Convert->value."' THEN ct.amount
+                        WHEN ct.type = '".CurrencyType::CompanyExpense->value."' THEN -ct.amount
                         ELSE 0
                     END as net_amount
                 ")
@@ -95,7 +93,6 @@ class CurrencyBalance extends Model
             ->whereNotNull('ct.payer_type')
             // 🚨 شرط التاريخ الجديد 🚨
             ->where('ct.created_at', '<=', $cutOffDate);
-
 
         $applyOwnerFilter($payerBalances);
 
@@ -114,7 +111,6 @@ class CurrencyBalance extends Model
             // 🚨 شرط التاريخ الجديد 🚨
             ->where('ct.created_at', '<=', $cutOffDate);
 
-
         $applyOwnerFilter($partyBalances);
 
         // 3️⃣ دمج النتائج
@@ -126,8 +122,8 @@ class CurrencyBalance extends Model
         $grouped = [];
         // ... (بقية منطق التجميع والتحديث كما هو)
         foreach ($allBalances as $row) {
-            $key = $row->owner_type . ':' . $row->owner_id . ':' . $row->currency_id;
-            if (!isset($grouped[$key])) {
+            $key = $row->owner_type.':'.$row->owner_id.':'.$row->currency_id;
+            if (! isset($grouped[$key])) {
                 $grouped[$key] = [
                     'owner_id' => $row->owner_id,
                     'owner_type' => $row->owner_type,

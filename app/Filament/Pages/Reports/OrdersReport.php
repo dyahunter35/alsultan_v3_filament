@@ -14,16 +14,21 @@ class OrdersReport extends Page
 
     protected string $view = 'filament.pages.reports.orders-report';
 
+    protected static ?int $navigationSort = 38;
+
     #[Url()]
     public $date;
+
     public $summary = [];
+
     public $orders = [];
 
     public function mount()
     {
-        //dd(static::getReportData(), self::getReportKey());
-        if (empty($this->date))
+        // dd(static::getReportData(), self::getReportKey());
+        if (empty($this->date)) {
             $this->date = now()->format('Y-m-d');
+        }
         $this->loadData();
     }
 

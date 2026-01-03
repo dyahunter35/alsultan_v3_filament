@@ -1,11 +1,12 @@
 <?php
+
 return [
     'navigation' => [
         'group' => 'إدارة المستخدمين',
         'label' => 'الفروع',
         'plural_label' => 'الفروع',
         'model_label' => 'فرع',
-        'sort' => 4
+        'sort' => 4,
     ],
     'breadcrumbs' => [
         'index' => 'الفروع',

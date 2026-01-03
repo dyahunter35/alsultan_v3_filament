@@ -2,27 +2,26 @@
 
 namespace App\Filament\Resources\Products\RelationManagers;
 
-use Filament\Schemas\Schema;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Hidden;
-use Filament\Tables\Columns\TextColumn;
+use App\Enums\StockCase;
+use App\Services\InventoryService;
+use Exception;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use App\Enums\StockCase;
-use Filament\Forms;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Schema;
+use Filament\Support\Exceptions\Halt; // <-- استيراد الكلاس
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
-use App\Services\InventoryService; // <-- استيراد الكلاس
-use Exception;
-use Filament\Facades\Filament;
-use Filament\Notifications\Notification;
-use Filament\Support\Exceptions\Halt;
 use Illuminate\Support\Facades\Auth;
 
 class HistoryRelationManager extends RelationManager
@@ -31,8 +30,9 @@ class HistoryRelationManager extends RelationManager
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        $quantity = (auth()->user()->hasAnyRole(['مندوب', 'super_admin'])) ? ' (' . $ownerRecord->total_stock  . ')' : '';
-        return __('stock_history.label.plural') . $quantity;
+        $quantity = (auth()->user()->hasAnyRole(['مندوب', 'super_admin'])) ? ' ('.$ownerRecord->total_stock.')' : '';
+
+        return __('stock_history.label.plural').$quantity;
     }
 
     protected static function getPluralRecordLabel(): ?string
@@ -66,7 +66,7 @@ class HistoryRelationManager extends RelationManager
                     ->columnSpanFull(),
 
                 Hidden::make('branch_id')
-                    ->default(Filament::getTenant()->id)
+                    ->default(Filament::getTenant()->id),
 
             ]);
     }
@@ -104,9 +104,9 @@ class HistoryRelationManager extends RelationManager
             ->headerActions([
                 // This uses the form defined above to create a new record
                 CreateAction::make()
-                    ->visible(fn() => $this->ownerRecord->branches()->where('branch_id', Filament::getTenant()->id)->exists())
+                    ->visible(fn () => $this->ownerRecord->branches()->where('branch_id', Filament::getTenant()->id)->exists())
                     ->using(function (array $data, RelationManager $livewire): Model {
-                        $inventoryService = new InventoryService();
+                        $inventoryService = new InventoryService;
                         $product = $livewire->getOwnerRecord();
                         $branch = Filament::getTenant(); // افتراض أنك تعمل داخل tenant
                         $user = Auth::user();
@@ -136,14 +136,14 @@ class HistoryRelationManager extends RelationManager
                                     ->danger()
                                     ->send();
 
-                                throw new Halt();
+                                throw new Halt;
                             }
                         }
                     }),
             ])
             ->recordActions([
                 // You can add actions like Edit or Delete if needed
-                //Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
                 DeleteAction::make(),
             ])
             ->toolbarActions([

@@ -2,9 +2,8 @@
 
 namespace App\Filament\Resources\Products\Pages;
 
-use Filament\Actions\DeleteAction;
 use App\Filament\Resources\Products\ProductResource;
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditProduct extends EditRecord
@@ -13,7 +12,7 @@ class EditProduct extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-       // dd($data);
+        // dd($data);
         return $data;
     }
 

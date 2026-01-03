@@ -1,4 +1,5 @@
 <?php
+
 return [
     'navigation' => [
         'group' => 'Truck Management',
@@ -9,7 +10,7 @@ return [
         'inner' => [
             'plural_label' => 'Inner Trucks',
             'model_label' => 'Inner Truck',
-        ]
+        ],
     ],
     'breadcrumbs' => [
         'index' => 'Trucks',
@@ -166,7 +167,7 @@ return [
         ],
         'report' => [
             'label' => 'Report',
-            'icon' => 'heroicon-m-document-text'
+            'icon' => 'heroicon-m-document-text',
         ],
-    ]
+    ],
 ];

@@ -31,9 +31,10 @@ class Contract extends Model
 
     protected $casts = [
         'effective_date' => 'date',
-        'status' => ContractStatus::class
+        'status' => ContractStatus::class,
 
     ];
+
     protected static function booted(): void
     {
         // This event fires AFTER a new StockHistory record is created.
@@ -78,6 +79,6 @@ class Contract extends Model
             $nextNumber = $lastNumber + 1;
         }
 
-        return $prefix . $year . $month . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return $prefix.$year.$month.'-'.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 }

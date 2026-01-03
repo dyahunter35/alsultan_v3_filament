@@ -3,52 +3,48 @@
 namespace App\Filament\Resources\Customers;
 
 use App\Enums\ExpenseGroup;
-use App\Enums\ExpenseType;
 use App\Filament\Pages\Concerns\HasResource;
 use App\Filament\Pages\Reports\CustomersReport;
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\RestoreAction;
-use Filament\Actions\ForceDeleteAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use App\Filament\Resources\Customers\Pages\ListCustomers;
 use App\Filament\Resources\Customers\Pages\CreateCustomer;
 use App\Filament\Resources\Customers\Pages\EditCustomer;
-use App\Filament\Resources\CustomerResource\Pages;
-use App\Filament\Resources\CustomerResource\RelationManagers;
+use App\Filament\Resources\Customers\Pages\ListCustomers;
 use App\Models\Customer;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
-use Filament\Facades\Filament;
-use Filament\Forms;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Components\TextInput;
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CustomerResource extends Resource
 {
     use HasResource;
+
     protected static ?string $model = Customer::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-m-user';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-m-user';
+
     protected static ?int $navigationSort = 2;
+
     public static function form(Schema $schema): Schema
     {
         static::translateConfigureForm();
+
         return $schema
             ->components([
                 Section::make()
@@ -67,7 +63,7 @@ class CustomerResource extends Resource
 
                         Select::make('permanent')
                             ->options(ExpenseGroup::class)
-                            ->default(ExpenseGroup::SALE->value)
+                            ->default(ExpenseGroup::SALE->value),
 
                     ])->columnSpan(2)
                     ->columns(2),
@@ -83,6 +79,7 @@ class CustomerResource extends Resource
     public static function table(Table $table): Table
     {
         static::translateConfigureTable();
+
         return $table
             ->columns([
                 SpatieMediaLibraryImageColumn::make('photo')
@@ -125,16 +122,16 @@ class CustomerResource extends Resource
 
                 EditAction::make(),
                 DeleteAction::make()
-                    ->visible(fn($record) => !$record->deleted_at),
+                    ->visible(fn ($record) => ! $record->deleted_at),
                 RestoreAction::make()
-                    ->visible(fn($record) => $record->deleted_at),
+                    ->visible(fn ($record) => $record->deleted_at),
                 ForceDeleteAction::make()
-                    ->visible(fn($record) => $record->deleted_at),
+                    ->visible(fn ($record) => $record->deleted_at),
 
                 ActionGroup::make([
                     Action::make('report')
                         ->label(__('customer.reports.ledger.title'))
-                        ->url(fn(Customer $record): string => CustomersReport::getUrl(['customerId' => $record->id]))
+                        ->url(fn (Customer $record): string => CustomersReport::getUrl(['customerId' => $record->id]))
                         ->openUrlInNewTab(),
                 ]),
 
@@ -152,6 +149,7 @@ class CustomerResource extends Resource
             //
         ];
     }
+
     public static function getNavigationBadge(): ?string
     {
         /** @var class-string<Model> $modelClass */
@@ -159,6 +157,7 @@ class CustomerResource extends Resource
 
         return (string) Customer::count();
     }
+
     public static function getPages(): array
     {
         return [

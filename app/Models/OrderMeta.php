@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\Order;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property integer $id
- * @property integer $invoice_id
+ * @property int $id
+ * @property int $invoice_id
  * @property string $key
  * @property mixed $value
  * @property string $type
@@ -29,12 +28,12 @@ class OrderMeta extends Model
         'type',
         'group',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     protected $casts = [
         'value' => 'json',
-       // 'group' => Payment::class,
+        // 'group' => Payment::class,
     ];
 
     /**

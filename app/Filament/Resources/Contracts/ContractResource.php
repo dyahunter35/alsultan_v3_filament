@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class ContractResource extends Resource
 {
     use HasResource;
+
     protected static ?string $model = Contract::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
@@ -34,6 +35,7 @@ class ContractResource extends Resource
     public static function form(Schema $schema): Schema
     {
         static::translateConfigureForm();
+
         return ContractForm::configure($schema);
     }
 
@@ -46,6 +48,7 @@ class ContractResource extends Resource
     public static function table(Table $table): Table
     {
         static::translateConfigureTable();
+
         return ContractsTable::configure($table);
     }
 

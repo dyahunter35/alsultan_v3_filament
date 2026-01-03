@@ -10,9 +10,9 @@ use App\Models\Port;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Schemas;
-use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 
 class TruckForm
 {
@@ -34,7 +34,7 @@ class TruckForm
 
                     self::financialSection(),
                     self::statusSection(),
-                ])->columnSpan(1)
+                ])->columnSpan(1),
         ])->columns(3);
     }
 
@@ -53,8 +53,8 @@ class TruckForm
                 Forms\Components\TextInput::make('driver_phone')
                     ->label(__('truck.fields.driver_phone.label'))
                     ->tel()
-                    ->prefix("+")
-                    ->placeholder("999999999")
+                    ->prefix('+')
+                    ->placeholder('999999999')
                     ->required()
                     ->maxLength(190),
 
@@ -73,12 +73,12 @@ class TruckForm
                     ->label(__('truck.fields.pack_date.label'))
                     ->required()
                     ->live(onBlur: true)
-                    ->afterStateUpdated(fn($get, $set) => self::calculateForm($get, $set)),
+                    ->afterStateUpdated(fn ($get, $set) => self::calculateForm($get, $set)),
 
                 Forms\Components\DatePicker::make('arrive_date')
                     ->label(__('truck.fields.arrive_date.label'))
                     ->live(onBlur: true)
-                    ->afterStateUpdated(fn($get, $set) => self::calculateForm($get, $set)),
+                    ->afterStateUpdated(fn ($get, $set) => self::calculateForm($get, $set)),
 
                 Forms\Components\TextInput::make('truck_model')
                     ->label(__('truck.fields.truck_model.label'))
@@ -99,14 +99,14 @@ class TruckForm
                     ->label(__('truck.fields.contractor_id.label'))
                     ->relationship('contractorInfo', 'name')
                     ->searchable()
-                    ->default(fn() => request()->get('contractor_id')) // <-- pre-fill
+                    ->default(fn () => request()->get('contractor_id')) // <-- pre-fill
                     ->preload(),
 
                 Forms\Components\Select::make('company_id')
                     ->label(__('truck.fields.company_id.label'))
                     ->relationship('companyId', 'name')
                     ->searchable()
-                    ->default(fn() => request()->get('company_id')) // <-- pre-fill
+                    ->default(fn () => request()->get('company_id')) // <-- pre-fill
                     ->preload(),
 
                 Forms\Components\Hidden::make('type')
@@ -154,42 +154,42 @@ class TruckForm
                         ->minValue(0)
                         ->required()
                         ->live(onBlur: true)
-                        ->afterStateUpdated(fn($get, $set) => self::calculateForm($get, $set)),
+                        ->afterStateUpdated(fn ($get, $set) => self::calculateForm($get, $set)),
 
                     Forms\Components\TextInput::make('delay_day_value')
                         ->label(__('truck.fields.delay_day_value.label'))
                         ->numeric()
                         ->required()
                         ->live(onBlur: true)
-                        ->afterStateUpdated(fn($get, $set) => self::calculateForm($get, $set))
+                        ->afterStateUpdated(fn ($get, $set) => self::calculateForm($get, $set))
                         ->suffix('SDG')
-                        ->hint(fn($state) => number_format($state ?? 0)),
+                        ->hint(fn ($state) => number_format($state ?? 0)),
 
                     Forms\Components\TextInput::make('trip_days')
                         ->label(__('truck.fields.trip_days.label'))
                         ->numeric()
                         ->readOnly()
-                        ->visible(fn($get) => self::hasValidDates($get)),
+                        ->visible(fn ($get) => self::hasValidDates($get)),
 
                     Forms\Components\TextInput::make('diff_trip')
                         ->label(__('truck.fields.diff_trip.label'))
                         ->numeric()
                         ->readOnly()
-                        ->visible(fn($get) => ($get('diff_trip') ?? 0) > 0),
+                        ->visible(fn ($get) => ($get('diff_trip') ?? 0) > 0),
                 ]),
 
                 Schemas\Components\Grid::make(2)->schema([
                     Forms\Components\TextInput::make('delay_value')
                         ->label(__('truck.fields.delay_value.label'))
                         ->numeric()
-                        ->visible(fn($get) => ($get('diff_trip') ?? 0) > 0)
-                        ->hint(fn($state) => number_format($state ?? 0)),
+                        ->visible(fn ($get) => ($get('diff_trip') ?? 0) > 0)
+                        ->hint(fn ($state) => number_format($state ?? 0)),
 
                     DecimalInput::make('truck_fare')
                         ->label(__('truck.fields.truck_fare.label'))
                         ->required()
                         ->live(onBlur: true)
-                        ->afterStateUpdated(fn($get, $set) => self::calculateTotal($get, $set)),
+                        ->afterStateUpdated(fn ($get, $set) => self::calculateTotal($get, $set)),
                 ]),
 
                 Forms\Components\TextInput::make('total_amount')
@@ -197,7 +197,7 @@ class TruckForm
                     ->numeric()
                     ->readOnly()
                     ->suffix('SDG')
-                    ->helperText(fn($state) => number_format($state ?? 0)),
+                    ->helperText(fn ($state) => number_format($state ?? 0)),
             ]);
     }
 
@@ -226,7 +226,7 @@ class TruckForm
      */
     protected static function hasValidDates(Get $get): bool
     {
-        return !is_null($get('pack_date')) && !is_null($get('arrive_date'));
+        return ! is_null($get('pack_date')) && ! is_null($get('arrive_date'));
     }
 
     /**
@@ -234,13 +234,16 @@ class TruckForm
      */
     public static function calculateForm(Get $get, Set $set): void
     {
-        if (!self::hasValidDates($get)) return;
+        if (! self::hasValidDates($get)) {
+            return;
+        }
 
         $from = Carbon::parse($get('pack_date'));
         $to = Carbon::parse($get('arrive_date'));
 
         if ($to->lessThan($from)) {
             $set('arrive_date', $get('pack_date'));
+
             return;
         }
 

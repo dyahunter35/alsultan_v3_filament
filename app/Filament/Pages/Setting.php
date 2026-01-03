@@ -2,15 +2,13 @@
 
 namespace App\Filament\Pages;
 
-use Filament\Schemas\Schema;
-use App\Settings\GeneralSetting;
 use App\Settings\GeneralSettings;
-use Filament\Forms;
 use Filament\Pages\SettingsPage;
+use Filament\Schemas\Schema;
 
 class Setting extends SettingsPage
 {
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-cog-6-tooth';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cog-6-tooth';
 
     protected static string $settings = GeneralSettings::class;
 

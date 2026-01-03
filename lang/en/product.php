@@ -6,7 +6,7 @@ return [
         'label' => 'Product',
         'plural_label' => 'Products',
         'model_label' => 'Product',
-        'sort' => 8
+        'sort' => 8,
     ],
     'breadcrumbs' => [
         'index' => 'Products',
@@ -156,10 +156,10 @@ return [
     ],
     'actions' => [
         'report' => [
-            'label' => 'Branches Quantity Report'
+            'label' => 'Branches Quantity Report',
         ],
         'branch_report' => [
-            'label' => 'Branch Report'
+            'label' => 'Branch Report',
         ],
         'print' => [
             'label' => 'Print Report',

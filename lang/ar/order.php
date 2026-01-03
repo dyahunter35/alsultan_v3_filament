@@ -31,13 +31,13 @@ return [
         ],
         'totals' => [
             'label' => 'إجماليات الطلب',
-        ]
+        ],
     ],
     'fields' => [
         'is_guest' => [
             'label' => 'هل هذا عميل زائر؟',
             'placeholder' => '',
-            'filter' => 'زائر'
+            'filter' => 'زائر',
 
         ],
         'number' => [
@@ -73,7 +73,7 @@ return [
                 'delivered' => 'تم التوصيل',
                 'installed' => 'تم التركيب',
                 'cancelled' => 'ملغي',
-            ]
+            ],
         ],
         'currency' => [
             'label' => 'العملة',
@@ -155,12 +155,12 @@ return [
             ],
         ],
         'amount' => [
-            'label' => 'المبلغ'
-        ]
+            'label' => 'المبلغ',
+        ],
     ],
     'actions' => [
         'print' => [
-            'label' => 'طباعة'
+            'label' => 'طباعة',
         ],
         'reset' => [
             'label' => 'إعادة تعيين',
@@ -179,8 +179,8 @@ return [
                 'stock' => [
                     'title' => 'خطأ في المخزون',
                     'message' => 'الكمية المطلوبة للمنتج `:product` غير متوفرة.',
-                ]
-            ]
+                ],
+            ],
         ],
         'delete' => [
             'notification' => 'مهلاً، لا تكن لئيماً، اترك بعض السجلات ليلعب بها الآخرون!',
@@ -220,6 +220,6 @@ return [
             'customer' => 'بيانات العميل',
             'signature' => 'التوقيع',
             'balance_due' => 'الرصيد المستحق',
-        ]
-    ]
+        ],
+    ],
 ];

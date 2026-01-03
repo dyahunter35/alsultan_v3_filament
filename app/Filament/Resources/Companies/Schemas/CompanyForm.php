@@ -8,7 +8,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 
 class CompanyForm
 {
@@ -32,7 +31,7 @@ class CompanyForm
                             ->visible(false),
                         Select::make('currency_id')
                             ->relationship('currency', 'name')
-                            ->preload()
+                            ->preload(),
                     ]),
 
             ]);

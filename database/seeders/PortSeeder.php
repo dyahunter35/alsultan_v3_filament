@@ -2,15 +2,15 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Port;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 class PortSeeder extends Seeder
 {
     public function run(): void
     {
-        //Port::factory()->count(5)->create();
+        // Port::factory()->count(5)->create();
         DB::table('ports')->insert([
             [
                 'name' => 'أرقين',

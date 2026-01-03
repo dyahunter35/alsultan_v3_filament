@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Customers\Widgets;
 
 use App\Models\Customer;
 use Filament\Widgets\Widget;
-use Illuminate\Support\Carbon;
 
 class CustomerFinancialLedgerWidget extends Widget
 {
@@ -15,6 +14,7 @@ class CustomerFinancialLedgerWidget extends Widget
     protected int|string|array $columnSpan = 'full';
 
     public ?string $startDate = null;
+
     public ?string $endDate = null;
 
     protected function getListeners(): array
@@ -34,7 +34,7 @@ class CustomerFinancialLedgerWidget extends Widget
 
     public function getLedger(): array
     {
-        if (!$this->record) {
+        if (! $this->record) {
             return [];
         }
 

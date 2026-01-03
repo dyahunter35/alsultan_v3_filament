@@ -2,27 +2,24 @@
 
 namespace App\Filament\Resources\StockHistories\Pages;
 
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
+use App\Enums\StockCase;
 use App\Filament\Resources\StockHistories\StockHistoryResource;
 use App\Models\Product;
 use App\Services\InventoryService;
-use Filament\Forms;
-use Filament\Resources\Pages\CreateRecord;
-use Filament\Notifications\Notification;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Exception;
-use App\Enums\StockCase;
 use Filament\Facades\Filament;
-use Illuminate\Database\Eloquent\Model; // تأكد من استيراد هذا الكلاس
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Filament\Resources\Pages\CreateRecord;
+use Filament\Schemas\Components\Section;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth; // تأكد من استيراد هذا الكلاس
 
 class CreateStockHistory extends CreateRecord
 {
     protected static string $resource = StockHistoryResource::class;
-
 
     /* protected function getFormSchema(): array
     {
@@ -122,7 +119,7 @@ class CreateStockHistory extends CreateRecord
     {
         \Log::info('handleRecordCreation start', $data);
 
-        $inventoryService = new InventoryService();
+        $inventoryService = new InventoryService;
         $branch = Filament::getTenant();
         $user = Auth::user();
         $product = Product::find($data['product_id']);
@@ -131,7 +128,7 @@ class CreateStockHistory extends CreateRecord
         \Log::info('User', [$user]);
         \Log::info('Product', [$product]);
 
-        if (!$product) {
+        if (! $product) {
             \Log::error('المنتج غير موجود');
             throw new \Exception('المنتج غير موجود');
         }
@@ -140,16 +137,19 @@ class CreateStockHistory extends CreateRecord
             if ($data['type'] === StockCase::Increase || $data['type'] === StockCase::Initial) {
                 $result = $inventoryService->addStockForBranch($product, $branch, $data['quantity_change'], $data['type'], $data['notes'] ?? null, $user);
                 \Log::info('Result from addStockForBranch', [$result]);
+
                 return $result;
             } else {
                 $result = $inventoryService->deductStockForBranch($product, $branch, $data['quantity_change'], $data['notes'] ?? null, $user);
                 \Log::info('Result from deductStockForBranch', [$result]);
+
                 return $result;
             }
         } catch (\Exception $e) {
-            \Log::error('Exception in handleRecordCreation: ' . $e->getMessage());
+            \Log::error('Exception in handleRecordCreation: '.$e->getMessage());
             throw $e;
         }
+
         return $result->fresh();
     }
 

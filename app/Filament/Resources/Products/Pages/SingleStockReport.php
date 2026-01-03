@@ -4,14 +4,13 @@ namespace App\Filament\Resources\Products\Pages;
 
 use App\Filament\Pages\Concerns\HasReport;
 use App\Filament\Resources\Products\ProductResource;
-use App\Filament\Resources\StockHistories\StockHistoryResource;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\Page;
 
 class SingleStockReport extends Page
 {
-    use InteractsWithRecord;
     use HasReport;
+    use InteractsWithRecord;
 
     public function getReportParameters(): array
     {

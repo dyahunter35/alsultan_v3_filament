@@ -10,7 +10,6 @@ use Filament\Resources\Pages\ViewRecord;
 
 class ViewCompany extends ViewRecord
 {
-
     protected static string $resource = CompanyResource::class;
 
     protected string $view = 'filament.resources.companies.pages.companies-view';
@@ -18,20 +17,18 @@ class ViewCompany extends ViewRecord
     protected function getHeaderWidgets(): array
     {
         return [
-            //Widgets\Companystate::make(['record', $this->record]),
+            // Widgets\Companystate::make(['record', $this->record]),
             Widgets\CompanyFinanceOverview::class,
             Widgets\CurrencyWidget::class,
         ];
     }
-
-
 
     protected function getHeaderActions(): array
     {
         return [
             EditAction::make(),
             Action::make('report')
-                ->label(__('company.action.print_report'))
+                ->label(__('company.action.print_report')),
         ];
     }
 }

@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Contracts\Schemas;
 
 use App\Filament\Forms\Components\DecimalInput;
-use Filament\Schemas;
 use Filament\Forms;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Schemas;
 use Filament\Schemas\Schema;
 
 class ContractForm
@@ -92,12 +92,10 @@ class ContractForm
                                     ->reactive()
                                     ->suffix('$'),
 
-
                             ])
-                            ->columns(2)
+                            ->columns(2),
                     ])
                     ->columnSpan(2),
-
 
                 Schemas\Components\Section::make('documents')
                     ->schema([
@@ -119,7 +117,7 @@ class ContractForm
                             ])
                             ->columns(2)
                             ->collapsible()
-                            //->orderable('issuance_date')
+                            // ->orderable('issuance_date')
                             ->createItemButtonLabel('Add Document'),
                     ])
                     ->columnSpan(2),
@@ -135,7 +133,7 @@ class ContractForm
                     ->columnSpan(2),
             ])->columns([
                 'lg' => 3,
-                'sm' => 2
+                'sm' => 2,
             ]);
     }
 }

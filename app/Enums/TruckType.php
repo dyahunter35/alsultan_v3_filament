@@ -2,13 +2,12 @@
 
 namespace App\Enums;
 
-use Filament\Support\Contracts\HasLabel;
+use App\Traits\EnumsKeys;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
-use App\Traits\EnumsKeys;
-use Filament\Support\Contracts;
+use Filament\Support\Contracts\HasLabel;
 
-enum TruckType: string implements HasLabel, HasColor, HasIcon
+enum TruckType: string implements HasColor, HasIcon, HasLabel
 {
     use EnumsKeys;
     case Local = 'local';

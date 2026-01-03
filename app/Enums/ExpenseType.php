@@ -3,8 +3,6 @@
 namespace App\Enums;
 
 use App\Traits\EnumsKeys;
-use Attribute;
-use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
@@ -80,7 +78,7 @@ enum ExpenseType: string implements HasIcon, HasLabel
 
     public function getIcon(): ?string
     {
-        return 'heroicon-m-user';/* match ($this) {
+        return 'heroicon-m-user'; /* match ($this) {
             self::SALE => 'fa fa-user',
             self::DEBTORS => 'fa fa-dollar-sign',
             self::TRANSPORT => 'fa fa-truck',

@@ -14,12 +14,13 @@ class CategoryFactory extends Factory
     {
         $name = $this->faker->unique()->words(2, true);
         $description = $this->faker->optional()->sentence();
+
         return [
             'name' => $name,
-            'slug' => Str::slug($name) . '-' . Str::random(4),
+            'slug' => Str::slug($name).'-'.Str::random(4),
             'description' => $description,
-            'seo_title'=>$name,
-            'seo_description'=>$description,
+            'seo_title' => $name,
+            'seo_description' => $description,
         ];
     }
 }

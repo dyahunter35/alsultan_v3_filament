@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ContractItemFactory extends Factory
 {
-
     protected $model = ContractItem::class;
 
     public function definition()

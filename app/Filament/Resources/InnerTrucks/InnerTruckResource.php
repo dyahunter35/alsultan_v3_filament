@@ -31,6 +31,8 @@ class InnerTruckResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'driver_name';
 
+    protected static ?int $navigationSort = 15;
+
     public static function getLocalePath(): string
     {
         return 'truck';
@@ -52,18 +54,21 @@ class InnerTruckResource extends Resource
     public static function form(Schema $schema): Schema
     {
         static::translateConfigureForm();
+
         return TruckForm::configure($schema);
     }
 
     public static function infolist(Schema $schema): Schema
     {
         static::translateConfigureInfolist();
+
         return TruckInfolist::configure($schema);
     }
 
     public static function table(Table $table): Table
     {
         static::translateConfigureTable();
+
         return TrucksTable::configure($table);
     }
 
@@ -73,7 +78,7 @@ class InnerTruckResource extends Resource
             CargosRelationManager::class,
             DocumentsRelationManager::class,
             TaxExpensesRelationManager::class,
-            CustomExpensesRelationManager::class
+            CustomExpensesRelationManager::class,
         ];
     }
 

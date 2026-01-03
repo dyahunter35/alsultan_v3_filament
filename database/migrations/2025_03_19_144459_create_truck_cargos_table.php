@@ -18,7 +18,7 @@ return new class extends Migration
 
             $table->foreignId('truck_id')->constrained()->cascadeOnDelete();
 
-            $table->enum('type', TruckType::getKeys())->comment("local , outer");
+            $table->enum('type', TruckType::getKeys())->comment('local , outer');
 
             $table->string('size')->nullable()->comment('مقاسات المنتج');
 

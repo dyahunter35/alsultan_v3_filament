@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class ExpenseType extends Model
 {
     protected $guarded = [];
+
     protected $casts = [
         'group' => \App\Enums\ExpenseGroup::class,
     ];
-
 
     public function expenses()
     {

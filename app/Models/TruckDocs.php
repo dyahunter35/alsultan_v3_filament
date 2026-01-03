@@ -31,7 +31,6 @@ class TruckDocs extends Model implements HasMedia
         $this->addMediaConversion('pdf-thumbnail')
             ->width(150)
             ->height(150)
-            ->pdfPageNumber(1)
-           ; // Convert the thumbnail to a JPG
+            ->pdfPageNumber(1); // Convert the thumbnail to a JPG
     }
 }

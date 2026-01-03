@@ -25,11 +25,13 @@ use Filament\Tables\Table;
 class CargosRelationManager extends RelationManager
 {
     use HasRelationManager;
+
     protected static string $relationship = 'cargos';
 
     public function form(Schema $schema): Schema
     {
         self::translateConfigureForm();
+
         return $schema
             ->components([
                 /* Select::make('type')
@@ -42,13 +44,13 @@ class CargosRelationManager extends RelationManager
                 Select::make('product_id')
                     ->options(
                         Product::get()
-                            ->mapWithKeys(fn(Product $product) => [
+                            ->mapWithKeys(fn (Product $product) => [
                                 $product->id => sprintf(
                                     '%s - %s (%s) ',
                                     $product->name,
                                     $product->category?->name,
                                     $product->unit?->name
-                                )
+                                ),
                             ])
                     )->preload()
                     ->searchable()
@@ -93,8 +95,6 @@ class CargosRelationManager extends RelationManager
                     ->live(onBlur: true)
                     ->default(null),
 
-
-
                 TextInput::make('note')
                     ->default(null),
 
@@ -104,6 +104,7 @@ class CargosRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         self::translateConfigureTable();
+
         return $table
             ->recordTitleAttribute('product_id')
             ->columns([

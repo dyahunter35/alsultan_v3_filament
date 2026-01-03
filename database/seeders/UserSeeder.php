@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Branch;
+use App\Models\Role;
 use App\Models\Store;
 use App\Models\User;
-use App\Models\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -20,14 +19,14 @@ class UserSeeder extends Seeder
     {
         // Create a user for each store
         $user = User::create([
-            'name' =>  'Super Admin',
+            'name' => 'Super Admin',
             'email' => strtolower('dyahunter35@gmail.com'),
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
 
         $rep = User::create([
-            'name' =>  'Sales Representative',
+            'name' => 'Sales Representative',
             'email' => strtolower('rep@test.com'),
             'password' => Hash::make('password'),
             'email_verified_at' => now(),

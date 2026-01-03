@@ -5,7 +5,6 @@ namespace App\Filament\Pages\Dashboard\Widgets;
 use App\Models\Vendor;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Facades\DB;
 
 class MonthlyVendorTrendsChart extends ChartWidget
 {
@@ -17,7 +16,7 @@ class MonthlyVendorTrendsChart extends ChartWidget
         $query = Vendor::query();
 
         // If not admin, only show vendors associated with the user
-        if (!$user->hasRole('super_admin') && !$user->is_admin) {
+        if (! $user->hasRole('super_admin') && ! $user->is_admin) {
             $query->whereHas('users', function ($q) use ($user) {
                 $q->where('users.id', $user->id);
             });
@@ -54,7 +53,7 @@ class MonthlyVendorTrendsChart extends ChartWidget
 
         // Sort by month chronologically
         krsort($monthlyData);
-        
+
         return [
             'datasets' => [
                 [

@@ -7,7 +7,7 @@ use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
-enum CurrencyType: string implements HasLabel, HasIcon, HasColor
+enum CurrencyType: string implements HasColor, HasIcon, HasLabel
 {
     use EnumsKeys;
 
@@ -17,7 +17,7 @@ enum CurrencyType: string implements HasLabel, HasIcon, HasColor
 
     public function getLabel(): ?string
     {
-        return __('enums.currency_type.' . $this->value);
+        return __('enums.currency_type.'.$this->value);
     }
 
     public function getIcon(): ?string

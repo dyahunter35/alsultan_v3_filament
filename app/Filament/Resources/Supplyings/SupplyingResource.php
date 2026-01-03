@@ -9,7 +9,6 @@ use App\Filament\Resources\Supplyings\Pages\ListSupplyings;
 use App\Filament\Resources\Supplyings\Schemas\SupplyingForm;
 use App\Filament\Resources\Supplyings\Tables\SupplyingsTable;
 use App\Models\Supplying;
-use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -17,11 +16,11 @@ use Filament\Tables\Table;
 
 class SupplyingResource extends Resource
 {
-
     use HasResource;
 
     protected static ?string $model = Supplying::class;
-    protected static string | \BackedEnum | null $navigationIcon = Heroicon::CurrencyDollar;
+
+    protected static string|\BackedEnum|null $navigationIcon = Heroicon::CurrencyDollar;
 
     protected static ?int $navigationSort = 3;
 
@@ -30,12 +29,14 @@ class SupplyingResource extends Resource
     public static function form(Schema $schema): Schema
     {
         self::translateConfigureForm();
+
         return SupplyingForm::configure($schema);
     }
 
     public static function table(Table $table): Table
     {
         self::translateConfigureTable();
+
         return SupplyingsTable::configure($table);
     }
 

@@ -6,7 +6,7 @@ return [
         'label' => 'Contract',
         'plural_label' => 'Contracts',
         'model_label' => 'Contract',
-        'icon' => 'heroicon-m-document-duplicate'
+        'icon' => 'heroicon-m-document-duplicate',
     ],
 
     'breadcrumbs' => [
@@ -45,7 +45,7 @@ return [
         'duration_months' => [
             'label' => 'Duration (Months)',
             'placeholder' => 'Enter contract duration in months',
-            'unit' => 'month'
+            'unit' => 'month',
         ],
         'total_amount' => [
             'label' => 'Total Amount',

@@ -2,12 +2,7 @@
 
 namespace App\Filament\Pages\Concerns;
 
-use Filament\Resources\Form;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use Filament\Resources\Table;
-use Filament\Tables;
-use Filament\Forms;
 
 trait HasPage
 {
@@ -18,15 +13,15 @@ trait HasPage
         if (isset(static::$resource::$localePath)) {
             return static::$localePath;
         } else {
-            return 'locale/' . Str::of(class_basename(static::$resource::getModel()))->snake();
+            return 'locale/'.Str::of(class_basename(static::$resource::getModel()))->snake();
         }
     }
 
-    public static function getLocale($key): string | null
+    public static function getLocale($key): ?string
     {
         $localePath = static::getLocalePath();
 
-        if (trans()->has($locale = $localePath . '.' . $key, [], app()->getLocale())) {
+        if (trans()->has($locale = $localePath.'.'.$key, [], app()->getLocale())) {
             return trans($locale);
         }
 

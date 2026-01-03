@@ -37,7 +37,7 @@ class OrderStats extends BaseWidget
             Stat::make('Orders', $query->count())
                 ->chart(
                     $orderData
-                        ->map(fn(TrendValue $value) => $value->aggregate)
+                        ->map(fn (TrendValue $value) => $value->aggregate)
                         ->toArray()
                 )
                 ->color('success')

@@ -1,11 +1,12 @@
 <?php
+
 return [
     'navigation' => [
         'group' => 'إدارة المستخدمين',
         'label' => 'المستخدمين',
         'plural_label' => 'المستخدمين',
         'model_label' => 'مستخدم',
-        'ssort' => 1
+        'ssort' => 1,
     ],
     'breadcrumbs' => [
         'index' => 'المستخدمين',

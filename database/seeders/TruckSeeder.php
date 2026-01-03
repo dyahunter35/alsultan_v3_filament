@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Truck;
+use Illuminate\Database\Seeder;
 
 class TruckSeeder extends Seeder
 {

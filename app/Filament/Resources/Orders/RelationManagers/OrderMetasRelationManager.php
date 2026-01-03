@@ -2,37 +2,34 @@
 
 namespace App\Filament\Resources\Orders\RelationManagers;
 
-use Filament\Tables\Columns\TextColumn;
-use Filament\Actions\Action;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Actions\EditAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use App\Enums\OrderStatus;
 use App\Enums\Payment;
 use App\Filament\Forms\Components\DecimalInput;
 use App\Filament\Pages\Concerns\HasRelationManager;
 use App\Models\Order;
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class OrderMetasRelationManager extends RelationManager
 {
     use HasRelationManager;
-    protected static string $relationship = 'orderMetas';
 
+    protected static string $relationship = 'orderMetas';
 
     public function table(Table $table): Table
     {
         static::translateConfigureTable();
+
         return $table
             ->defaultSort('created_at', 'desc')
             ->modifyQueryUsing(function (Builder $query) {
@@ -48,12 +45,12 @@ class OrderMetasRelationManager extends RelationManager
                     ->badge()
                     ->color('success')
                     ->numeric()
-                    ->formatStateUsing(fn($state) => (string)number_format($state, 2))
+                    ->formatStateUsing(fn ($state) => (string) number_format($state, 2))
                     ->sortable(),
 
                 TextColumn::make('group')
-                    ->formatStateUsing(fn($state) => Payment::tryFrom($state)->getLabel() ?? $state)
-                    ->badge()
+                    ->formatStateUsing(fn ($state) => Payment::tryFrom($state)->getLabel() ?? $state)
+                    ->badge(),
 
             ])
             ->filters([
@@ -65,9 +62,9 @@ class OrderMetasRelationManager extends RelationManager
                     ->modalHeading(__('order.actions.pay.modal.heading'))
                     ->tooltip(__('order.actions.pay.label'))
                     ->color('info')
-                    ->visible(fn() => ($this->ownerRecord->total != $this->ownerRecord->paid) || $this->ownerRecord->status === OrderStatus::Processing || $this->ownerRecord->status === OrderStatus::New)
+                    ->visible(fn () => ($this->ownerRecord->total != $this->ownerRecord->paid) || $this->ownerRecord->status === OrderStatus::Processing || $this->ownerRecord->status === OrderStatus::New)
                     ->requiresConfirmation()
-                    ->fillForm(fn() => [
+                    ->fillForm(fn () => [
                         'total' => $this->ownerRecord->total,
                         'paid' => $this->ownerRecord->paid,
                         'amount' => $this->ownerRecord->total - $this->ownerRecord->paid,
@@ -89,32 +86,32 @@ class OrderMetasRelationManager extends RelationManager
                             ->label(__('order.fields.amount.label'))
                             ->required()
                             ->live(onBlur: true)
-                            ->hint(fn($state) => number_format($state))
+                            ->hint(fn ($state) => number_format($state))
                             ->hintColor('info')
                             ->numeric()
                             ->maxValue($this->ownerRecord->total - $this->ownerRecord->paid)
-                            ->rules(['regex:/^-?\d+(\.\d{1,2})?$/'])
+                            ->rules(['regex:/^-?\d+(\.\d{1,2})?$/']),
                     ])
                     ->action(function (array $data, Order $ownerRecord) {
 
                         $this->ownerRecord->update([
-                            'paid' => $this->ownerRecord->paid + $data['amount']
+                            'paid' => $this->ownerRecord->paid + $data['amount'],
                         ]);
 
                         $this->ownerRecord->orderMetas()->create([
                             'key' => 'payments',
                             'group' => $data['payment_method'],
-                            'value' => $data['amount']
+                            'value' => $data['amount'],
                         ]);
 
                         $this->ownerRecord->orderLogs()->create([
-                            'log' => 'Paid ' . number_format($data['amount'], 2) . ' ' . $this->ownerRecord->currency . ' By: ' . auth()->user()->name,
+                            'log' => 'Paid '.number_format($data['amount'], 2).' '.$this->ownerRecord->currency.' By: '.auth()->user()->name,
                             'type' => 'payment',
                         ]);
 
                         if ($this->ownerRecord->total === $this->ownerRecord->paid) {
                             $this->ownerRecord->update([
-                                'status' => OrderStatus::Payed
+                                'status' => OrderStatus::Payed,
                             ]);
                         }
 
@@ -123,6 +120,7 @@ class OrderMetasRelationManager extends RelationManager
                             ->body(trans('filament-invoices::messages.invoices.actions.pay.notification.body'))
                             ->success()
                             ->send();
+
                         return redirect(request()->header('Referer'));
                     }),
             ]) // <-- التصحيح الأول: تم إغلاق ->headerActions هنا

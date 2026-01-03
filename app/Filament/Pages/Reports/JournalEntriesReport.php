@@ -3,13 +3,12 @@
 namespace App\Filament\Pages\Reports;
 
 use App\Filament\Pages\Concerns\HasReport;
-use Filament\Pages\Page;
-use Filament\Forms;
+use App\Models\CurrencyTransaction;
 use App\Models\Expense;
 use App\Models\Order;
 use App\Models\Supplying;
-use App\Models\CurrencyTransaction;
 use Carbon\Carbon;
+use Filament\Pages\Page;
 use Livewire\Attributes\Url;
 
 class JournalEntriesReport extends Page
@@ -18,14 +17,18 @@ class JournalEntriesReport extends Page
 
     protected string $view = 'filament.pages.reports.journal-entries';
 
+    protected static ?int $navigationSort = 35;
+
     #[Url()]
     public $date;
+
     public $include_previous = true; // toggle button default = yes
 
     public function mount()
     {
-        if (! $this->date)
+        if (! $this->date) {
             $this->date = now()->toDateString();
+        }
     }
 
     /** 🔵 الرصيد المرحل قبل اليوم */
@@ -63,7 +66,7 @@ class JournalEntriesReport extends Page
         $supplyings = Supplying::whereDate('created_at', $day)->sum('total_amount');
         $currency = CurrencyTransaction::whereDate('created_at', $day)->sum('amount');
 
-        return ($sales) - ($expenses + $supplyings + $currency);
+        return $sales - ($expenses + $supplyings + $currency);
     }
 
     /** 🔵 الصافي النهائي بناءً على التوجّل */
@@ -92,7 +95,7 @@ class JournalEntriesReport extends Page
             CurrencyTransaction::selectRaw("'تحويل' AS type, note AS notes, amount AS debit, 0 AS credit, created_at")
                 ->whereDate('created_at', $day),
         ])
-            ->flatMap(fn($query) => $query->get())
+            ->flatMap(fn ($query) => $query->get())
             ->sortBy('created_at')
             ->values();
     }

@@ -6,29 +6,33 @@ use App\Filament\Pages\Concerns\HasReport;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Customer;
+use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Grid;
-use Filament\Forms;
-use Filament\Forms\Concerns\InteractsWithForms;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Attributes\Url;
-use Filament\Forms\Components\DatePicker;
-use Carbon\Carbon;
 
 class CurrencySummaryReport extends Page implements Forms\Contracts\HasForms
 {
     use HasReport;
 
+    protected static ?int $navigationSort = 32;
+
     use InteractsWithForms;
+
     protected string $view = 'filament.pages.reports.currency-summary-report';
 
     public $ledger;
 
     #[Url()]
     public $type = 'customers';
+
     public $currencies;
 
     public $total = [];
+
     public $total_converted = 0;
 
     public $companies = [];
@@ -104,8 +108,9 @@ class CurrencySummaryReport extends Page implements Forms\Contracts\HasForms
 
     public function loadLedger($type = 'customers'): void
     {
-        if (!$type) {
+        if (! $type) {
             $this->ledger = collect();
+
             return;
         }
 
@@ -143,6 +148,7 @@ class CurrencySummaryReport extends Page implements Forms\Contracts\HasForms
             // التعامل مع الدولار (USD) كعملة مرجعية أجنبية
             if ($currencyCode == 'USD') {
                 $this->total[$user->id] += $accountBalance;
+
                 continue;
             }
 
@@ -184,6 +190,7 @@ class CurrencySummaryReport extends Page implements Forms\Contracts\HasForms
                 $this->total_converted += $this->total[$user->id] ?? 0;
             }
         }
+
         return $this->total_converted;
     }
 
@@ -218,6 +225,7 @@ class CurrencySummaryReport extends Page implements Forms\Contracts\HasForms
         if ($account == 0) {
             return 0;
         }
+
         return $account / $rate;
     }
 
@@ -230,7 +238,7 @@ class CurrencySummaryReport extends Page implements Forms\Contracts\HasForms
                         ->label('عرض')
                         ->options([
                             'customers' => __('customer.navigation.plural_label'),
-                            'companies' => __('company.navigation.plural_label')
+                            'companies' => __('company.navigation.plural_label'),
                         ])
                         ->searchable()
                         ->reactive(),
@@ -242,7 +250,7 @@ class CurrencySummaryReport extends Page implements Forms\Contracts\HasForms
                         ->reactive()
                         ->required()
                         ->columnSpan(2),
-                ])
+                ]),
         ];
     }
 }

@@ -2,12 +2,12 @@
 
 namespace App\Filament\Pages\Concerns;
 
-use Filament\Forms;
 use App\Models\Workflow;
-use Illuminate\Support\Carbon;
-use Filament\Pages\Actions\Action;
-use Illuminate\Support\Facades\DB;
+use Filament\Forms;
 use Filament\Notifications\Notification;
+use Filament\Pages\Actions\Action;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 trait HasRequestPage
 {
@@ -67,9 +67,10 @@ trait HasRequestPage
             ->action(function (): void {
                 $check_requests_status = $this->record->requestForms()->where('isdeleted', 0)->get()
                     ->map(function ($request) {
-                        if (!$request->isComplete()) {
+                        if (! $request->isComplete()) {
                             return $request;
-                        };
+                        }
+
                         return null;
                     })
                     ->filter();
@@ -84,7 +85,7 @@ trait HasRequestPage
                 }
 
                 $this->changeStatus(status: 'closed');
-                return;
+
             })
             ->color('success');
     }
@@ -113,14 +114,14 @@ trait HasRequestPage
         if (in_array($this->record->status, ['stopped'])) {
             return [
                 $this->getWorkingAction(),
-                $this->getClosedAction()
+                $this->getClosedAction(),
             ];
         }
 
         if (in_array($this->record->status, ['working'])) {
             return [
                 $this->getSteppedAction(),
-                $this->getClosedAction()
+                $this->getClosedAction(),
             ];
         }
 
@@ -135,13 +136,15 @@ trait HasRequestPage
 
     protected function changeStatus($status): void
     {
-        if (!auth()->user()->can('Change Works Status')) {
+        if (! auth()->user()->can('Change Works Status')) {
             $this->notify('warning', __('locale/layout.permission.messages.not_have_permission'));
+
             return;
         }
 
-        if (!in_array($status, ['working', 'stopped', 'closed'])) {
+        if (! in_array($status, ['working', 'stopped', 'closed'])) {
             $this->notify('warning', __('locale/layout.system.messages.error'));
+
             return;
         }
 
@@ -166,11 +169,13 @@ trait HasRequestPage
             $this->emitSelf('refreshViewConstruction');
 
             $this->emit('refreshWorkRequestList');
+
             return;
         } else {
             DB::rollBack();
 
             $this->notify('warning', __('locale/layout.system.messages.error'));
+
             return;
         }
     }

@@ -3,19 +3,19 @@
 namespace App\Filament\Pages\Concerns;
 
 use Filament\Tables;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 trait HasTableLayoutResource
 {
     protected static function getTableLayout(): ?string
     {
-        return  null;
+        return null;
     }
 
     protected static function getDefaultTableLayout(): ?string
     {
-        return  'table';
+        return 'table';
     }
 
     protected static function getLayoutColumns(): array
@@ -28,7 +28,7 @@ trait HasTableLayoutResource
             return static::getTableLayoutColumns();
         }
 
-        return  static::getGridLayoutColumn();
+        return static::getGridLayoutColumn();
     }
 
     protected static function getContentGrid(): ?array
@@ -55,7 +55,7 @@ trait HasTableLayoutResource
 
     public static function getLayoutHeaderActions(): array
     {
-        if(static::getTableLayout()){
+        if (static::getTableLayout()) {
             return [];
         }
 

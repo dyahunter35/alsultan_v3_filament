@@ -42,7 +42,7 @@ return [
                 'increase' => 'Increase (Add Stock)',
                 'decrease' => 'Decrease (Remove Stock)',
                 'initial' => 'Equalize Stock',
-            ]
+            ],
         ],
         'created_at' => [
             'label' => 'Date',
@@ -51,6 +51,5 @@ return [
             'label' => 'Updated At',
         ],
     ],
-
 
 ];

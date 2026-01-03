@@ -3,9 +3,9 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\File;
 
 class MakeTableTranslation extends Command
 {
@@ -21,8 +21,9 @@ class MakeTableTranslation extends Command
         $baseLang = $this->option('lang');
         $targetLangs = ['en', 'ar']; // اللغات اللي نريد إنشاءها
 
-        if (!Schema::hasTable($table)) {
+        if (! Schema::hasTable($table)) {
             $this->error("Table {$table} does not exist!");
+
             return 1;
         }
 
@@ -43,7 +44,7 @@ class MakeTableTranslation extends Command
 
             $content = "<?php\nreturn [\n";
             $content .= "    'navigation' => [\n";
-            $content .= "        'group' => '" . ($lang === 'ar' ? $pluralName : Str::title(str_replace('_', ' ', Str::plural($table)))) . "',\n";
+            $content .= "        'group' => '".($lang === 'ar' ? $pluralName : Str::title(str_replace('_', ' ', Str::plural($table))))."',\n";
             $content .= "        'label' => '$pluralName',\n";
             $content .= "        'plural_label' => '$pluralName',\n";
             $content .= "        'model_label' => '$className',\n";

@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\Orders\Widgets;
 
 use App\Models\Order;
-use Filament\Widgets\ChartWidget;
 use Carbon\Carbon;
+use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
 
 class Chart extends ChartWidget
@@ -15,9 +15,9 @@ class Chart extends ChartWidget
     protected function getData(): array
     {
         $data = Order::select(
-                DB::raw('DATE(created_at) as date'),
-                DB::raw('SUM(total) as aggregate')
-            )
+            DB::raw('DATE(created_at) as date'),
+            DB::raw('SUM(total) as aggregate')
+        )
             ->whereBetween('created_at', [Carbon::now()->subDays(30), Carbon::now()])
             ->groupBy('date')
             ->orderBy('date', 'ASC')

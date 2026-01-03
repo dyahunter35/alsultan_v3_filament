@@ -27,22 +27,22 @@ trait EnumsKeys
 
     public static function getKeyValueArray(): array
     {
-        return array_map(fn($case) => [
+        return array_map(fn ($case) => [
             'key' => $case->value,
-            'label' => $case->getLabel()?? $case->value,
+            'label' => $case->getLabel() ?? $case->value,
         ], self::cases());
     }
 
-    //get All Labels
+    // get All Labels
     public static function getLabels(): array
     {
-        return array_map(fn($case) => $case->getLabel(), self::cases());
+        return array_map(fn ($case) => $case->getLabel(), self::cases());
     }
 
     public static function getAllLabels(): array
     {
-        return array_combine(array_map(fn($enum) => $enum->name, self::cases()),
-            array_map(fn($enum) => $enum->getLabel(), self::cases()));
+        return array_combine(array_map(fn ($enum) => $enum->name, self::cases()),
+            array_map(fn ($enum) => $enum->getLabel(), self::cases()));
     }
 
     public static function getString(): string
@@ -50,8 +50,7 @@ trait EnumsKeys
         return implode(',', self::getKeys());
     }
 
-
-    /// Grouped
+    // / Grouped
     public static function getGrouped(): array
     {
         $grouped = [];
@@ -60,9 +59,9 @@ trait EnumsKeys
             $reflection = new \ReflectionEnumUnitCase(self::class, $case->name);
             $attributes = $reflection->getAttributes(Group::class);
 
-            if (!empty($attributes)) {
-                $groupName =  $attributes[0]->newInstance()->group;
-                //$groupName = (app()->getLocale() == 'ar') ? $groupName : 'aaaaa';
+            if (! empty($attributes)) {
+                $groupName = $attributes[0]->newInstance()->group;
+                // $groupName = (app()->getLocale() == 'ar') ? $groupName : 'aaaaa';
                 $grouped[$groupName][$case->value] = $case->getLabel();
             }
         }
@@ -78,16 +77,18 @@ trait EnumsKeys
             $reflection = new \ReflectionEnumUnitCase(self::class, $case->name);
             $attributes = $reflection->getAttributes(Group::class);
 
-            if (!empty($attributes)) {
-                $groupName =  $attributes[0]->newInstance()->group;
-                if($groupName == $group)
-                //$groupName = (app()->getLocale() == 'ar') ? $groupName : 'aaaaa';
-                $grouped[]=$case->value ;
+            if (! empty($attributes)) {
+                $groupName = $attributes[0]->newInstance()->group;
+                if ($groupName == $group) {
+                    // $groupName = (app()->getLocale() == 'ar') ? $groupName : 'aaaaa';
+                    $grouped[] = $case->value;
+                }
             }
         }
 
         return $grouped;
     }
+
     public static function getGroupList(string $group): array
     {
         $grouped = [];
@@ -96,11 +97,12 @@ trait EnumsKeys
             $reflection = new \ReflectionEnumUnitCase(self::class, $case->name);
             $attributes = $reflection->getAttributes(Group::class);
 
-            if (!empty($attributes)) {
-                $groupName =  $attributes[0]->newInstance()->group;
-                if($groupName == $group)
-                //$groupName = (app()->getLocale() == 'ar') ? $groupName : 'aaaaa';
-                $grouped[$case->value]= $case->getLabel() ;
+            if (! empty($attributes)) {
+                $groupName = $attributes[0]->newInstance()->group;
+                if ($groupName == $group) {
+                    // $groupName = (app()->getLocale() == 'ar') ? $groupName : 'aaaaa';
+                    $grouped[$case->value] = $case->getLabel();
+                }
             }
         }
 

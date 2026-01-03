@@ -38,7 +38,6 @@ trait HasCustomerFinancials
         return $this->hasMany(Supplying::class, 'customer_id');
     }
 
-
     /* -----------------------------------------
      | الحسابات المالية
      |------------------------------------------*/
@@ -67,7 +66,6 @@ trait HasCustomerFinancials
         return (float) $this->suppLyings()->sum('total_amount');
     }
 
-
     /* -----------------------------------------
      | صافي حساب العميل مع الشركة
      |------------------------------------------*/
@@ -84,7 +82,6 @@ trait HasCustomerFinancials
             - ($this->total_paid + $this->total_supplyings);
     }
 
-
     /* -----------------------------------------
      | جميع عمليات العميل مجمعة
      |------------------------------------------*/
@@ -93,9 +90,9 @@ trait HasCustomerFinancials
     {
         return collect([
             'beneficiary_expenses' => $this->expensesAsBeneficiary()->get(),
-            'payer_expenses'       => $this->expensesAsPayer()->get(),
-            'orders'               => $this->sales()->get(),
-            'supplyings'           => $this->supplyings()->get(),
+            'payer_expenses' => $this->expensesAsPayer()->get(),
+            'orders' => $this->sales()->get(),
+            'supplyings' => $this->supplyings()->get(),
         ]);
     }
 }

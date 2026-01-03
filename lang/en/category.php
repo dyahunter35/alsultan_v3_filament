@@ -1,11 +1,12 @@
 <?php
+
 return [
     'navigation' => [
         'group' => 'Product Management',
         'label' => 'Categories',
         'plural_label' => 'Categories',
         'model_label' => 'Category',
-        'sort' => 6
+        'sort' => 6,
     ],
     'breadcrumbs' => [
         'index' => 'Categories',

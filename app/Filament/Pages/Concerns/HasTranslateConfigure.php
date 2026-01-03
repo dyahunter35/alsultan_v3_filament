@@ -4,19 +4,16 @@ namespace App\Filament\Pages\Concerns;
 
 use Filament\Forms;
 use Filament\Forms\Components\Field;
-use Filament\Tables;
-use Illuminate\Support\Str;
-use Filament\Infolists;
-use ReflectionClass;
-use ReflectionProperty;
-use Filament\Forms\Components\Wizard\Step;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Wizard\Step;
 use Filament\Infolists\Components\Entry;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Wizard\Step as WizardStep;
+use Filament\Tables;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Str;
 
 trait HasTranslateConfigure
 {
@@ -24,14 +21,15 @@ trait HasTranslateConfigure
 
     /**
      * Get a direct translation or generate one automatically from the component properties
-     * @param string $key The translation key
-     * @param array $replacements Optional parameter replacements
+     *
+     * @param  string  $key  The translation key
+     * @param  array  $replacements  Optional parameter replacements
      * @return string|null The translated string or null
      */
     public static function getSmartTranslation(string $key, array $replacements = []): ?string
     {
         $locale_path = static::getLocalePath();
-        $fullKey = $locale_path . '.' . $key;
+        $fullKey = $locale_path.'.'.$key;
 
         // Check if translation already exists in language file
         if (Lang::has($fullKey, app()->getLocale())) {
@@ -46,7 +44,7 @@ trait HasTranslateConfigure
      */
     protected static function cacheTranslations(string $locale_path): void
     {
-        if (!empty(static::$cachedTranslations[$locale_path])) {
+        if (! empty(static::$cachedTranslations[$locale_path])) {
             return;
         }
 
@@ -67,12 +65,12 @@ trait HasTranslateConfigure
                 $heading = $component->getHeading();
                 if ($heading) {
                     $cleanHeading = (string) str($heading)->snake();
-                    if ($localeHeading = static::getSmartTranslation('fields.' . $cleanHeading . '.label')) {
+                    if ($localeHeading = static::getSmartTranslation('fields.'.$cleanHeading.'.label')) {
                         $component->heading($localeHeading);
                     }
 
                     // Also look for a description
-                    if (method_exists($component, 'getDescription') && $description = static::getSmartTranslation('form.' . $cleanHeading . '.description')) {
+                    if (method_exists($component, 'getDescription') && $description = static::getSmartTranslation('form.'.$cleanHeading.'.description')) {
                         $component->description($description);
                     }
                 }
@@ -83,12 +81,12 @@ trait HasTranslateConfigure
                 $label = $component->getLabel();
                 if ($label) {
                     $cleanLabel = (string) str($label)->snake();
-                    if ($localeLabel = static::getSmartTranslation('fields.' . $cleanLabel . '.label')) {
+                    if ($localeLabel = static::getSmartTranslation('fields.'.$cleanLabel.'.label')) {
                         $component->label($localeLabel);
                     }
 
                     // Also look for a description
-                    if (method_exists($component, 'getDescription') && $description = static::getSmartTranslation('fields.' . $cleanLabel . '.description')) {
+                    if (method_exists($component, 'getDescription') && $description = static::getSmartTranslation('fields.'.$cleanLabel.'.description')) {
                         $component->description($description);
                     }
                 }
@@ -108,24 +106,24 @@ trait HasTranslateConfigure
                     ->snake();
 
                 if (method_exists($component, 'label')) {
-                    if ($localeLabel = static::getSmartTranslation('fields.' . $label . '.label')) {
+                    if ($localeLabel = static::getSmartTranslation('fields.'.$label.'.label')) {
                         $component->label($localeLabel);
                     }
                 }
 
-                if (method_exists($component, 'icon') && $icon = static::getSmartTranslation('fields.' . $label . '.icon')) {
+                if (method_exists($component, 'icon') && $icon = static::getSmartTranslation('fields.'.$label.'.icon')) {
                     $component->icon($icon);
                 }
 
-                if (method_exists($component, 'helperText') && $locale_helper_text = static::getSmartTranslation('fields.' . $label . '.helper_text')) {
+                if (method_exists($component, 'helperText') && $locale_helper_text = static::getSmartTranslation('fields.'.$label.'.helper_text')) {
                     $component->helperText($locale_helper_text);
                 }
 
-                if (method_exists($component, 'prefix') && $locale_prefix = static::getSmartTranslation('fields.' . $label . '.prefix')) {
+                if (method_exists($component, 'prefix') && $locale_prefix = static::getSmartTranslation('fields.'.$label.'.prefix')) {
                     $component->prefix($locale_prefix);
                 }
 
-                if (method_exists($component, 'suffix') && $locale_suffix = static::getSmartTranslation('fields.' . $label . '.suffix')) {
+                if (method_exists($component, 'suffix') && $locale_suffix = static::getSmartTranslation('fields.'.$label.'.suffix')) {
                     $component->suffix($locale_suffix);
                 }
 
@@ -136,7 +134,7 @@ trait HasTranslateConfigure
                         $translatedOptions = [];
                         foreach ($options as $key => $value) {
                             // Attempt to translate each option
-                            $optionKey = 'fields.' . $label . '.options.' . Str::slug((string)$key, '_');
+                            $optionKey = 'fields.'.$label.'.options.'.Str::slug((string) $key, '_');
                             $translatedOptions[$key] = static::getSmartTranslation($optionKey) ?? $value;
                         }
                         $component->options($translatedOptions);
@@ -153,7 +151,6 @@ trait HasTranslateConfigure
         });
     }
 
-
     public static function translateConfigureForm(): void
     {
         static::cacheTranslations(static::getLocalePath());
@@ -167,21 +164,20 @@ trait HasTranslateConfigure
                 $heading = $component->getHeading();
                 if ($heading) {
                     $cleanHeading = (string) str($heading)->snake();
-                    if ($localeHeading = static::getSmartTranslation('sections.' . $cleanHeading . '.label')) {
+                    if ($localeHeading = static::getSmartTranslation('sections.'.$cleanHeading.'.label')) {
                         $component->heading($localeHeading);
                     }
 
                     // Also look for a description
-                    if (method_exists($component, 'getDescription') && $description = static::getSmartTranslation('sections.' . $cleanHeading . '.description')) {
+                    if (method_exists($component, 'getDescription') && $description = static::getSmartTranslation('sections.'.$cleanHeading.'.description')) {
                         $component->description($description);
                     }
 
-                    if (method_exists($component, 'getIcon') && $icon = static::getSmartTranslation('sections.' . $cleanHeading . '.icon')) {
+                    if (method_exists($component, 'getIcon') && $icon = static::getSmartTranslation('sections.'.$cleanHeading.'.icon')) {
                         $component->icon($icon);
                     }
                 }
             }
-
 
             // Repeter
             // Handle Repeater Components and nested fields
@@ -189,16 +185,16 @@ trait HasTranslateConfigure
                 $repeaterLabel = $component->getLabel();
                 if ($repeaterLabel) {
                     $cleanRepeater = (string) str($repeaterLabel)->snake();
-                    //dd($cleanRepeater);
-                    if ($localeRepeaterLabel = static::getSmartTranslation('fields.' . $cleanRepeater . '.label')) {
+                    // dd($cleanRepeater);
+                    if ($localeRepeaterLabel = static::getSmartTranslation('fields.'.$cleanRepeater.'.label')) {
                         $component->label($localeRepeaterLabel);
                     }
 
-                    if ($localeRepeaterDesc = static::getSmartTranslation('fields.' . $cleanRepeater . '.description')) {
+                    if ($localeRepeaterDesc = static::getSmartTranslation('fields.'.$cleanRepeater.'.description')) {
                         $component->description($localeRepeaterDesc);
                     }
                 }
-                //dd($component->getChildComponents());
+                // dd($component->getChildComponents());
                 // Loop over nested fields inside the repeater
                 /*  foreach ($component->getItems() as $nestedField) {
                     if ($nestedField instanceof \Filament\Forms\Components\Field) {
@@ -236,12 +232,12 @@ trait HasTranslateConfigure
                 $label = $component->getLabel();
                 if ($label) {
                     $cleanLabel = (string) str($label)->snake();
-                    if ($localeLabel = static::getSmartTranslation('fields.' . $cleanLabel . '.label')) {
+                    if ($localeLabel = static::getSmartTranslation('fields.'.$cleanLabel.'.label')) {
                         $component->label($localeLabel);
                     }
 
                     // Also look for a description
-                    if (method_exists($component, 'getDescription') && $description = static::getSmartTranslation('fields.' . $cleanLabel . '.description')) {
+                    if (method_exists($component, 'getDescription') && $description = static::getSmartTranslation('fields.'.$cleanLabel.'.description')) {
                         $component->description($description);
                     }
                 }
@@ -252,15 +248,15 @@ trait HasTranslateConfigure
                 $label = $component->getLabel();
                 if ($label) {
                     $cleanLabel = (string) str($label)->snake();
-                    if ($localeLabel = static::getSmartTranslation('tabs.' . $cleanLabel . '.label')) {
+                    if ($localeLabel = static::getSmartTranslation('tabs.'.$cleanLabel.'.label')) {
                         $component->label($localeLabel);
                     }
 
                     // Also look for a description
-                    if (method_exists($component, 'getDescription') && $description = static::getSmartTranslation('tabs.' . $cleanLabel . '.description')) {
+                    if (method_exists($component, 'getDescription') && $description = static::getSmartTranslation('tabs.'.$cleanLabel.'.description')) {
                         $component->description($description);
                     }
-                    if (method_exists($component, 'getIcon') && $icon = static::getSmartTranslation('tabs.' . $cleanLabel . '.icon')) {
+                    if (method_exists($component, 'getIcon') && $icon = static::getSmartTranslation('tabs.'.$cleanLabel.'.icon')) {
                         $component->icon($icon);
                     }
                 }
@@ -280,28 +276,28 @@ trait HasTranslateConfigure
                     ->snake();
 
                 if (method_exists($component, 'label')) {
-                    if ($localeLabel = static::getSmartTranslation('fields.' . $label . '.label')) {
+                    if ($localeLabel = static::getSmartTranslation('fields.'.$label.'.label')) {
                         $component->label($localeLabel);
                     }
                 }
 
-                if (method_exists($component, 'description') && $locale_description = static::getSmartTranslation('fields.' . $label . '.description')) {
+                if (method_exists($component, 'description') && $locale_description = static::getSmartTranslation('fields.'.$label.'.description')) {
                     $component->description($locale_description);
                 }
 
-                if (method_exists($component, 'placeholder') && $locale_placeholder = static::getSmartTranslation('fields.' . $label . '.placeholder')) {
+                if (method_exists($component, 'placeholder') && $locale_placeholder = static::getSmartTranslation('fields.'.$label.'.placeholder')) {
                     $component->placeholder($locale_placeholder);
                 }
 
-                if (method_exists($component, 'helperText') && $locale_helper_text = static::getSmartTranslation('fields.' . $label . '.helper_text')) {
+                if (method_exists($component, 'helperText') && $locale_helper_text = static::getSmartTranslation('fields.'.$label.'.helper_text')) {
                     $component->helperText($locale_helper_text);
                 }
 
-                if (method_exists($component, 'prefix') && $locale_prefix = static::getSmartTranslation('fields.' . $label . '.prefix')) {
+                if (method_exists($component, 'prefix') && $locale_prefix = static::getSmartTranslation('fields.'.$label.'.prefix')) {
                     $component->prefix($locale_prefix);
                 }
 
-                if (method_exists($component, 'suffix') && $locale_suffix = static::getSmartTranslation('fields.' . $label . '.suffix')) {
+                if (method_exists($component, 'suffix') && $locale_suffix = static::getSmartTranslation('fields.'.$label.'.suffix')) {
                     $component->suffix($locale_suffix);
                 }
 
@@ -312,7 +308,7 @@ trait HasTranslateConfigure
                         $translatedOptions = [];
                         foreach ($options as $key => $value) {
                             // Attempt to translate each option
-                            $optionKey = 'fields.' . $label . '.options.' . Str::slug((string)$key, '_');
+                            $optionKey = 'fields.'.$label.'.options.'.Str::slug((string) $key, '_');
                             $translatedOptions[$key] = static::getSmartTranslation($optionKey) ?? $value;
                         }
                         $component->options($translatedOptions);
@@ -341,16 +337,16 @@ trait HasTranslateConfigure
                 ->snake();
 
             if (method_exists($component, 'label')) {
-                if ($localeLabel = static::getSmartTranslation('fields.' . $label . '.label')) {
+                if ($localeLabel = static::getSmartTranslation('fields.'.$label.'.label')) {
                     $component->label($localeLabel);
                 }
             }
 
-            if (method_exists($component, 'description') && $locale_description = static::getSmartTranslation('fields.' . $label . '.description')) {
+            if (method_exists($component, 'description') && $locale_description = static::getSmartTranslation('fields.'.$label.'.description')) {
                 $component->description($locale_description);
             }
 
-            if (method_exists($component, 'prefix') && $locale_prefix = static::getSmartTranslation('fields.' . $label . '.prefix')) {
+            if (method_exists($component, 'prefix') && $locale_prefix = static::getSmartTranslation('fields.'.$label.'.prefix')) {
                 $component->prefix($locale_prefix);
             }
         });
@@ -361,15 +357,15 @@ trait HasTranslateConfigure
         $name = $formComponent->getName();
 
         return [
-            Forms\Components\Tabs::make($name . '_tab')
+            Forms\Components\Tabs::make($name.'_tab')
                 ->tabs(
-                    collect($languages)->map(fn($language) => Forms\Components\Tabs\Tab::make($language . 'tabs')
-                        ->label(__('language.' . $language))
+                    collect($languages)->map(fn ($language) => Forms\Components\Tabs\Tab::make($language.'tabs')
+                        ->label(__('language.'.$language))
                         ->schema([
-                            (clone $formComponent)->name($name . '.' . $language)
-                                ->statePath($name . '.' . $language)
+                            (clone $formComponent)->name($name.'.'.$language)
+                                ->statePath($name.'.'.$language),
                         ]))->toArray()
-                )
+                ),
         ];
     }
 

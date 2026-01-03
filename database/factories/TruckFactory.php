@@ -3,15 +3,15 @@
 namespace Database\Factories;
 
 use App\Enums\Country;
-use App\Models\Truck;
-use App\Models\Company;
-use App\Models\Port;
+use App\Enums\TruckState;
+use App\Enums\TruckType;
 use App\Models\Branch;
 use App\Models\Category;
-use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Enums\TruckType;
-use App\Enums\TruckState;
+use App\Models\Company;
+use App\Models\Port;
+use App\Models\Truck;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class TruckFactory extends Factory
 {
@@ -20,7 +20,7 @@ class TruckFactory extends Factory
     public function definition(): array
     {
         $packDate = $this->faker->dateTimeBetween('-30 days', 'now');
-        $arriveDate = (clone $packDate)->modify('+' . $this->faker->numberBetween(0, 10) . ' days');
+        $arriveDate = (clone $packDate)->modify('+'.$this->faker->numberBetween(0, 10).' days');
 
         $tripDays = $packDate->diff($arriveDate)->days + 1;
         $agreedDuration = $this->faker->numberBetween(1, 7);
@@ -43,9 +43,9 @@ class TruckFactory extends Factory
 
             // polymorphic from (use Port here)
             'from_type' => Port::class,
-            'from_id' =>  Port::inRandomOrder()->first()?->id,
+            'from_id' => Port::inRandomOrder()->first()?->id,
 
-            'branch_to' =>  Branch::inRandomOrder()->first()?->id,
+            'branch_to' => Branch::inRandomOrder()->first()?->id,
 
             'truck_status' => TruckState::OnWay->value ?? 'onway',
             'type' => TruckType::Outer->value ?? 'outer',

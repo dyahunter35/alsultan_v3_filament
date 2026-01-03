@@ -2,41 +2,37 @@
 
 namespace App\Filament\Resources\StockHistories;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Actions\EditAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use App\Filament\Resources\StockHistories\Pages\ListStockHistories;
+use App\Enums\StockCase;
 use App\Filament\Resources\StockHistories\Pages\CreateStockHistory;
 use App\Filament\Resources\StockHistories\Pages\EditStockHistory;
-use App\Enums\StockCase;
-use App\Filament\Resources\StockHistoryResource\Pages;
-use App\Filament\Resources\StockHistoryResource\RelationManagers;
+use App\Filament\Resources\StockHistories\Pages\ListStockHistories;
 use App\Models\Product;
 use App\Models\StockHistory;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
-use Filament\Forms;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class StockHistoryResource extends Resource
 {
     use \App\Filament\Pages\Concerns\HasResource;
+
     protected static ?string $model = StockHistory::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     // protected static bool $isScopedToTenant = true;
     protected static ?int $navigationSort = 8;
+
     // --- NAVIGATION ---
     public static function getModelLabel(): string
     {
@@ -58,7 +54,6 @@ class StockHistoryResource extends Resource
         return __('product.navigation.group');
     }
 
-
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -70,16 +65,16 @@ class StockHistoryResource extends Resource
                             ->label(__('stock_history.fields.product_id.label'))
                             ->options(Product::whereHas(
                                 'branches',
-                                fn($query) => $query->where('branches.id', Filament::getTenant()->id)
+                                fn ($query) => $query->where('branches.id', Filament::getTenant()->id)
                             )
                                 ->get()
-                                ->mapWithKeys(fn(Product $product) => [
+                                ->mapWithKeys(fn (Product $product) => [
                                     $product->id => sprintf(
                                         '%s - %s [%s]',
                                         $product->name,
                                         $product->category?->name,
                                         $product->stock_for_current_branch
-                                    )
+                                    ),
                                 ]))
                             ->preload()
                             ->searchable()
@@ -103,11 +98,11 @@ class StockHistoryResource extends Resource
                             ->columnSpanFull(),
 
                         Hidden::make('branch_id')
-                            ->default(Filament::getTenant()->id)
+                            ->default(Filament::getTenant()->id),
 
                     ])
                     ->columns(2)
-                    ->columnSpan(2)
+                    ->columnSpan(2),
 
             ])->columns(3);
     }
@@ -132,7 +127,7 @@ class StockHistoryResource extends Resource
                     ->searchable(),
                 TextColumn::make('quantity_change')
                     ->label(__('stock_history.fields.quantity_change.label'))
-                    ->formatStateUsing(fn(string $state): string => number_format($state))
+                    ->formatStateUsing(fn (string $state): string => number_format($state))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('notes')

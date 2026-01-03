@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -15,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         return;
-        if (!Schema::hasTable('invoices')){
+        if (! Schema::hasTable('invoices')) {
             Schema::create('invoices', function (Blueprint $table) {
                 $table->id();
 
@@ -24,39 +23,39 @@ return new class extends Migration
                 $table->morphs('for');
                 $table->morphs('from');
 
-                //Link
+                // Link
                 $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
                 $table->unsignedBigInteger('branch_id')->nullable();
                 $table->foreignId('category_id')->nullable()->constrained('types')->onDelete('cascade');
 
-                //Customer Info
+                // Customer Info
                 $table->string('name');
                 $table->string('phone')->nullable();
                 $table->string('address')->nullable();
                 $table->string('type')->default('push')->nullable();
 
-                //Status
+                // Status
                 $table->string('status')->default('pending')->nullable();
 
-                //Amounts
+                // Amounts
                 $table->double('total')->default(0);
                 $table->double('discount')->default(0);
                 $table->double('shipping')->default(0);
                 $table->double('vat')->default(0);
                 $table->double('paid')->default(0);
 
-                //Dates
+                // Dates
                 $table->date('date')->nullable();
                 $table->date('due_date')->nullable();
 
-                //Options
+                // Options
                 $table->boolean('is_activated')->default(0)->nullable();
                 $table->boolean('is_offer')->default(0)->nullable();
                 $table->boolean('insert_in_to_inventory')->default(0)->nullable();
                 $table->boolean('send_email')->default(0)->nullable();
 
-                //Bank Account
-                //$table->foreignId('currency_id')->nullable()->constrained('currencies');
+                // Bank Account
+                // $table->foreignId('currency_id')->nullable()->constrained('currencies');
                 $table->boolean('is_bank_transfer')->default(false)->nullable();
                 $table->string('bank_account')->nullable();
                 $table->string('bank_account_owner')->nullable();
@@ -68,7 +67,7 @@ return new class extends Migration
                 $table->string('bank_city')->nullable();
                 $table->string('bank_country')->nullable();
 
-                //Has Note
+                // Has Note
                 $table->text('notes')->nullable();
                 $table->timestamps();
                 $table->softDeletes();

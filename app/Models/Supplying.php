@@ -35,7 +35,7 @@ class Supplying extends Model
         'paid_amount' => 'double',
         'total_amount' => 'double',
         'payment_reference' => 'string',
-        'payment_method' => PaymentOptions::class
+        'payment_method' => PaymentOptions::class,
     ];
 
     protected static function boot()
@@ -47,8 +47,9 @@ class Supplying extends Model
             if (auth()->check()) {
                 $supplying->created_by = auth()->id();
             }
-            if ($supplying->is_completed)
+            if ($supplying->is_completed) {
                 $supplying->paid_amount = $supplying->total_amount;
+            }
         });
         static::created(function ($supplying) {
             app('App\Services\CustomerService')->updateCustomerBalance(Customer::find($supplying->customer_id));

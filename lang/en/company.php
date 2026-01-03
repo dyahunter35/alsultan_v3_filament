@@ -1,11 +1,12 @@
 <?php
+
 return [
     'navigation' => [
         'group' => 'Company Management',
         'label' => 'Companies',
         'plural_label' => 'Companies',
         'model_label' => 'Company',
-        'icon' => 'heroicon-m-building-office-2'
+        'icon' => 'heroicon-m-building-office-2',
     ],
     'breadcrumbs' => [
         'index' => 'Companies',
@@ -31,5 +32,5 @@ return [
         'type' => [
             'label' => 'Account Type',
         ],
-    ]
+    ],
 ];

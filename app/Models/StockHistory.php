@@ -3,9 +3,7 @@
 namespace App\Models;
 
 use App\Enums\StockCase;
-use App\Models\Pivots\BranchProduct;
 use App\Services\InventoryService;
-use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -23,12 +21,12 @@ class StockHistory extends Model
     ];
 
     protected $casts = [
-        'type' => StockCase::class
+        'type' => StockCase::class,
     ];
+
     /**
      * The "booted" method of the model.
      */
-
     protected static function booted(): void
     {
         // 🟢 When a stock history record is created

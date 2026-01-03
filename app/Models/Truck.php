@@ -6,31 +6,29 @@ use App\Enums\Country;
 use App\Enums\ExpenseGroup;
 use App\Enums\TruckState;
 use App\Enums\TruckType;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Truck extends Model implements HasMedia
 {
+    use HasFactory;
     use InteractsWithMedia;
     use SoftDeletes;
-
-    use HasFactory;
 
     protected $guarded = [];
 
     protected $casts = [
         'truck_status' => TruckState::class,
-        //'arrive_date' =>  Carbon::class,
+        // 'arrive_date' =>  Carbon::class,
         'type' => TruckType::class,
-        'country' => Country::class
+        'country' => Country::class,
     ];
 
     public function scopeConverte($query)
@@ -62,7 +60,7 @@ class Truck extends Model implements HasMedia
 
     public function cargos()
     {
-        return $this->hasMany(\App\Models\TruckCargo::class, "truck_id", 'id')->orderBy('id', 'DESC');
+        return $this->hasMany(\App\Models\TruckCargo::class, 'truck_id', 'id')->orderBy('id', 'DESC');
     }
 
     public function documents()
@@ -72,7 +70,7 @@ class Truck extends Model implements HasMedia
 
     public function trans()
     {
-        return $this->hasMany(\App\Models\StoreTransaction::class, "truck_id", 'id')->orderBy('id', 'DESC');
+        return $this->hasMany(\App\Models\StoreTransaction::class, 'truck_id', 'id')->orderBy('id', 'DESC');
     }
 
     public function category()
@@ -82,12 +80,12 @@ class Truck extends Model implements HasMedia
 
     public function notes()
     {
-        return $this->hasMany(\App\Models\TruckNote::class, "truck_id", 'id')->orderBy('id', 'DESC');
+        return $this->hasMany(\App\Models\TruckNote::class, 'truck_id', 'id')->orderBy('id', 'DESC');
     }
 
     public function toBranch()
     {
-        return $this->hasOne(\App\Models\Branch::class, 'id', "branch_to");
+        return $this->hasOne(\App\Models\Branch::class, 'id', 'branch_to');
     }
 
     public function companyId()
@@ -99,7 +97,6 @@ class Truck extends Model implements HasMedia
     {
         return $this->belongsTo(\App\Models\Company::class, 'contractor_id');
     }
-
 
     public function isConverted(): bool
     {
@@ -126,7 +123,6 @@ class Truck extends Model implements HasMedia
         $this->is_converted = true;
     }
 
-
     public function company()
     {
         return $this->belongsTo(Company::class, 'company_id');
@@ -136,6 +132,7 @@ class Truck extends Model implements HasMedia
     {
         return $this->belongsTo(Company::class, 'contractor_id');
     }
+
     public function expenses()
     {
         return $this->hasMany(Expense::class);
@@ -145,7 +142,6 @@ class Truck extends Model implements HasMedia
     {
         return $this->hasMany(StockHistory::class, 'truck_id');
     }
-
 
     public function taxExpenses()
     {
@@ -220,8 +216,8 @@ class Truck extends Model implements HasMedia
     protected function totalWeight(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->cargos()->sum('weight'),
-            //set: fn (string $value) => strtolower($value),
+            get: fn () => $this->cargos()->sum('weight'),
+            // set: fn (string $value) => strtolower($value),
         );
     }
 
@@ -231,10 +227,9 @@ class Truck extends Model implements HasMedia
         $extraDaysCost = (float) $this->delay_value ?? 0;
         $totalExpenses = $nolon + $extraDaysCost;
 
-
         return Attribute::make(
-            get: fn() => $totalExpenses,
-            //set: fn (string $value) => strtolower($value),
+            get: fn () => $totalExpenses,
+            // set: fn (string $value) => strtolower($value),
         );
     }
 }

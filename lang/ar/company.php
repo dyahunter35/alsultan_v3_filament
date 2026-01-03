@@ -28,8 +28,8 @@ return [
             'label' => 'اسم الشركة',
             'placeholder' => 'ادخل اسم الشركة',
             'icon' => 'heroicon-o-user',
-            //'prefix' => 'اسم ',
-            //'suffix' => 'الشركة',
+            // 'prefix' => 'اسم ',
+            // 'suffix' => 'الشركة',
         ],
         'currency' => [
             'label' => 'العملة الافتراضية',
@@ -50,5 +50,5 @@ return [
             'label' => 'تاريخ التحديث',
             'icon' => 'heroicon-o-calendar',
         ],
-    ]
+    ],
 ];

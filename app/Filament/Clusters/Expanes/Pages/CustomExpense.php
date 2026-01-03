@@ -18,28 +18,24 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ReplicateAction;
 use Filament\Actions\RestoreAction;
-use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Tables;
-use Filament\Tables\Concerns\InteractsWithTable;
-use Filament\Tables\Contracts\HasTable;
-use Filament\Tables\Table;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Support\Icons\Heroicon;
+use Filament\Tables;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\TrashedFilter;
+use Filament\Tables\Table;
 use Illuminate\Support\Str;
-
 
 class CustomExpense extends Page implements HasActions, HasTable
 {
     // الجمارك
     use HasSinglePage;
-
     use InteractsWithActions;
     use InteractsWithTable;
 
@@ -47,21 +43,22 @@ class CustomExpense extends Page implements HasActions, HasTable
 
     protected static ?string $cluster = ExpanesCluster::class;
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 106;
 
     public static function getLocalePath(): string
     {
-        return 'expense.' . static::className();
+        return 'expense.'.static::className();
     }
 
     public function table(Table $table): Table
     {
         self::translateConfigureTable();
+
         // dd(ExpansesType::getGroupName('store'));
         return $table
             ->query(Expense::types(ExpenseGroup::CUSTOMS))
             ->defaultSort('id', 'desc')
-            ->modelLabel(__('expense.' . static::className() . '.navigation.model_label'))
+            ->modelLabel(__('expense.'.static::className().'.navigation.model_label'))
             ->columns(
                 self::expenseTableColumns()
             )
@@ -81,22 +78,23 @@ class CustomExpense extends Page implements HasActions, HasTable
                 DeleteAction::make()
                     ->requiresConfirmation(),
                 RestoreAction::make()
-                    ->visible(fn($record) => $record->deleted_at),
+                    ->visible(fn ($record) => $record->deleted_at),
                 ForceDeleteAction::make()
-                    ->visible(fn($record) => $record->deleted_at),
+                    ->visible(fn ($record) => $record->deleted_at),
             ])
             ->toolbarActions([
                 CreateAction::make()
                     ->schema($this->expenseForm())
                     ->preserveFormDataWhenCreatingAnother(
-                        fn(array $data): array =>
-                        \Illuminate\Support\Arr::except($data, ['payment_reference', 'total_amount'])
-                    )
+                        fn (array $data): array => \Illuminate\Support\Arr::except($data, ['payment_reference', 'total_amount'])
+                    ),
             ]);
     }
+
     public static function expenseTableColumns(): array
     {
         self::translateConfigureTable();
+
         return [
             Tables\Columns\TextColumn::make('created_at')
                 ->dateTime()
@@ -104,23 +102,20 @@ class CustomExpense extends Page implements HasActions, HasTable
 
             Tables\Columns\TextColumn::make('type.label')
                 ->formatStateUsing(
-                    fn($state, $record) =>
-                    $record->expense_type_id
+                    fn ($state, $record) => $record->expense_type_id
                         ? $record->type->label
                         : $record->custom_expense_type
                 )
                 ->badge(),
 
             Tables\Columns\TextColumn::make('payer.name')
-                ->formatStateUsing(fn($record) => optional($record->payer)->name)
+                ->formatStateUsing(fn ($record) => optional($record->payer)->name)
                 ->searchable(),
 
             /* Tables\Columns\TextColumn::make('beneficiary.name')
                     ->label('الحساب المستفيد')
                     ->formatStateUsing(fn($record) => optional($record->beneficiary)->name)
                     ->searchable(), */
-
-
 
             Tables\Columns\TextColumn::make('truck.driver_name'),
 
@@ -141,7 +136,7 @@ class CustomExpense extends Page implements HasActions, HasTable
                     Section::make()->schema([
                         // 1. القيمة المخفية لنوع المصروف (Fixed for this page)
                         Forms\Components\Select::make('expense_type_id')
-                            ->label(__(self::getLocalePath() . '.fields.type.label'))
+                            ->label(__(self::getLocalePath().'.fields.type.label'))
                             ->live()
                             ->options(ExpenseType::where('group', ExpenseGroup::CUSTOMS)->pluck('label', 'id'))
                             ->required()
@@ -152,7 +147,7 @@ class CustomExpense extends Page implements HasActions, HasTable
                                         TextInput::make('label')
                                             ->label(__('expense_type.fields.label.label'))
                                             ->live(onBlur: true)
-                                            ->afterStateUpdated(fn($set, $state) => $set('key', Str::slug($state)))
+                                            ->afterStateUpdated(fn ($set, $state) => $set('key', Str::slug($state)))
                                             ->required(),
 
                                         TextInput::make('key')
@@ -163,7 +158,7 @@ class CustomExpense extends Page implements HasActions, HasTable
                                         Hidden::make('group')
                                             ->label(__('expense_type.fields.group.label'))
                                             ->default(ExpenseGroup::CUSTOMS->value),
-                                    ])
+                                    ]),
 
                             ])
                             ->createOptionUsing(function ($data, $set) {
@@ -173,16 +168,15 @@ class CustomExpense extends Page implements HasActions, HasTable
                                     ->send();
                             })
                             ->reactive()
-                            ->createOptionAction(fn(Action $action) => $action
+                            ->createOptionAction(fn (Action $action) => $action
                                 ->modalHeading(__('customer.actions.create.modal.heading'))
                                 ->modalSubmitActionLabel(__('customer.actions.create.modal.submit'))
                                 ->modalWidth('lg'))
                             ->columnSpanFull(),
 
-
                         // 3. الحساب الدافع (الدفع من حساب)
                         MorphSelect::make('payer_select')
-                            ->label(__(self::getLocalePath() . '.fields.payer.label'))
+                            ->label(__(self::getLocalePath().'.fields.payer.label'))
                             ->models([
                                 'user' => \App\Models\User::class,
                                 'customer' => \App\Models\Customer::class,
@@ -207,7 +201,7 @@ class CustomExpense extends Page implements HasActions, HasTable
 
                         Forms\Components\Select::make('truck_id')
                             ->relationship('truck', 'driver_name') // يفترض وجود علاقة 'store' في موديل Expense
-                            ->label(__(self::getLocalePath() . '.fields.truck.label'))
+                            ->label(__(self::getLocalePath().'.fields.truck.label'))
                             ->default($truckId)
                             ->required(),
 
@@ -240,7 +234,7 @@ class CustomExpense extends Page implements HasActions, HasTable
 
                         DecimalInput::make('total_amount')
                             ->million()
-                            ->label(__(self::getLocalePath() . '.fields.total_amount.label'))
+                            ->label(__(self::getLocalePath().'.fields.total_amount.label'))
                             ->required(),
 
                         // 11. الملاحظات
@@ -278,8 +272,8 @@ class CustomExpense extends Page implements HasActions, HasTable
                             ->default(now()),
                     ])
                         ->columnSpan(2)
-                        ->columns(2)
-                ])
+                        ->columns(2),
+                ]),
 
         ];
     }

@@ -36,7 +36,7 @@ class CreateContract extends CreateRecord
             // توليد ملفات عشوائية
             'documents' => Document::factory()->count(2)
 
-                ->state(fn() => [
+                ->state(fn () => [
                     'documentable_id' => null,
                     'documentable_type' => Contract::class,
                 ])->make()->toArray(),

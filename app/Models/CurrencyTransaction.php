@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class CurrencyTransaction extends Model
 {
     use SoftDeletes;
+
     //
     protected $fillable = [
         'currency_id',
@@ -21,7 +22,7 @@ class CurrencyTransaction extends Model
         'total',
         'note',
         'type',
-        'rate'
+        'rate',
     ];
 
     protected $casts = [
@@ -35,7 +36,7 @@ class CurrencyTransaction extends Model
                 [$tx->payer_type, $tx->payer_id],
                 [$tx->party_type, $tx->party_id],
             ]);
-            //\App\Models\Customer::
+            // \App\Models\Customer::
         });
 
         static::updated(function (self $tx) {
@@ -49,7 +50,6 @@ class CurrencyTransaction extends Model
             ]);
         });
     }
-
 
     /*  protected static function booted(): void
     {

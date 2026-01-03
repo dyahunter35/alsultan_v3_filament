@@ -2,14 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Enums\PaymentOptions;
+use App\Models\Customer;
+use App\Models\ExpenseType as ModelsExpenseType;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use App\Models\User;
-use App\Models\Customer;
-use App\Enums\ExpenseType;
-use App\Enums\PaymentMethod;
-use App\Enums\PaymentOptions;
-use App\Models\ExpenseType as ModelsExpenseType;
 
 class ExpenseSeeder extends Seeder
 {
@@ -21,6 +19,7 @@ class ExpenseSeeder extends Seeder
 
         if ($users->isEmpty() || $customers->isEmpty()) {
             $this->command->warn('⚠️ ما في بيانات كفاية في users أو customers لإضافة المصروفات.');
+
             return;
         }
 

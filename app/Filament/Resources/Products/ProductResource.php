@@ -2,46 +2,42 @@
 
 namespace App\Filament\Resources\Products;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Group;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Utilities\Set;
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
-use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Enums\FiltersLayout;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteBulkAction;
-use App\Filament\Resources\Products\Pages\ListProducts;
 use App\Filament\Resources\Products\Pages\CreateProduct;
 use App\Filament\Resources\Products\Pages\EditProduct;
-use App\Filament\Resources\Products\Pages\ProductStockReport;
-use App\Filament\Resources\Products\Pages\BranchReport;
-use App\Filament\Resources\ProductResource\Pages;
+use App\Filament\Resources\Products\Pages\ListProducts;
 use App\Filament\Resources\Products\Pages\SingleStockReport;
 use App\Filament\Resources\Products\RelationManagers\HistoryRelationManager;
 use App\Models\Product;
 use App\Models\Scopes\IsVisibleScope;
 use Filament\Actions\Action;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Filters\QueryBuilder\Constraints\BooleanConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\NumberConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
-use Illuminate\Database\Eloquent\Model;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
 class ProductResource extends Resource
@@ -54,7 +50,7 @@ class ProductResource extends Resource
 
     protected static ?int $navigationSort = 7;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-bolt';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-bolt';
 
     protected static bool $isScopedToTenant = false;
 
@@ -99,7 +95,7 @@ class ProductResource extends Resource
                                     ->placeholder(__('product.fields.name.placeholder'))
                                     ->required()
                                     ->live(onBlur: true)
-                                    ->afterStateUpdated(fn(string $operation, $state, Set $set) => $set('slug', Str::slug($state))),
+                                    ->afterStateUpdated(fn (string $operation, $state, Set $set) => $set('slug', Str::slug($state))),
 
                                 TextInput::make('slug')
                                     ->label(__('product.fields.slug.label'))
@@ -135,7 +131,6 @@ class ProductResource extends Resource
                                             ->numeric()
                                             ->rules(['integer', 'min:0'])
                                             ->required(),
-
 
                                     ])
                                     ->columnSpan(1),
@@ -256,15 +251,15 @@ class ProductResource extends Resource
                     ->label(__('product.columns.all_branches_quantity.label'))
                     ->searchable()
                     ->sortable()
-                    ->color(fn($record) => $record->total_stock > $record->security_stock ? 'success' : 'danger')
-                    ->visible(fn() => !auth()->user()->hasRole('بائع'))
+                    ->color(fn ($record) => $record->total_stock > $record->security_stock ? 'success' : 'danger')
+                    ->visible(fn () => ! auth()->user()->hasRole('بائع'))
                     ->toggleable(),
 
                 TextColumn::make('branches.name')
                     ->label(__('product.columns.branch.label'))
                     ->searchable()
                     ->badge()
-                    ->visible(fn() => !auth()->user()->hasRole('بائع'))
+                    ->visible(fn () => ! auth()->user()->hasRole('بائع'))
                     ->sortable(),
 
                 TextColumn::make('published_at')
@@ -279,18 +274,18 @@ class ProductResource extends Resource
                     ->constraints([
                         TextConstraint::make('name')->label(__('product.filters.constraints.name')),
                         TextConstraint::make('slug')->label(__('product.filters.constraints.slug')),
-                        //TextConstraint::make('sku')->label(__('product.filters.constraints.sku')),
-                        //TextConstraint::make('barcode')->label(__('product.filters.constraints.barcode')),
+                        // TextConstraint::make('sku')->label(__('product.filters.constraints.sku')),
+                        // TextConstraint::make('barcode')->label(__('product.filters.constraints.barcode')),
                         TextConstraint::make('description')->label(__('product.filters.constraints.description')),
-                        //NumberConstraint::make('old_price')->label(__('product.filters.constraints.old_price')),
+                        // NumberConstraint::make('old_price')->label(__('product.filters.constraints.old_price')),
                         NumberConstraint::make('price')->label(__('product.filters.constraints.price')),
                         // NumberConstraint::make('cost')->label(__('product.filters.constraints.cost')),
                         NumberConstraint::make('security_stock')->label(__('product.filters.constraints.security_stock')),
                         BooleanConstraint::make('is_visible')->label(__('product.filters.constraints.is_visible')),
                         // BooleanConstraint::make('featured')->label(__('product.filters.constraints.featured')),
-                        //BooleanConstraint::make('backorder')->label(__('product.filters.constraints.backorder')),
-                        //BooleanConstraint::make('requires_shipping')->label(__('product.filters.constraints.requires_shipping')),
-                        //DateConstraint::make('published_at')->label(__('product.filters.constraints.published_at')),
+                        // BooleanConstraint::make('backorder')->label(__('product.filters.constraints.backorder')),
+                        // BooleanConstraint::make('requires_shipping')->label(__('product.filters.constraints.requires_shipping')),
+                        // DateConstraint::make('published_at')->label(__('product.filters.constraints.published_at')),
                     ])
                     ->constraintPickerColumns(2),
             ], layout: FiltersLayout::Modal)
@@ -300,7 +295,7 @@ class ProductResource extends Resource
                 Action::make('stock')
                     ->label(__('product.actions.stock.label'))
                     ->icon('heroicon-o-chart-bar')
-                    ->url(fn(Product $record) => ProductResource::getUrl('stock', ['record' => $record]))
+                    ->url(fn (Product $record) => ProductResource::getUrl('stock', ['record' => $record]))
                     ->openUrlInNewTab()
                     ->color('secondary'),
             ])
@@ -315,11 +310,10 @@ class ProductResource extends Resource
             ]);
     }
 
-
     public static function getRelations(): array
     {
         return [
-            HistoryRelationManager::class
+            HistoryRelationManager::class,
         ];
     }
 

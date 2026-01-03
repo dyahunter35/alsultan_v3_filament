@@ -6,7 +6,7 @@ return [
         'label' => 'المنتج',
         'plural_label' => 'المنتجات',
         'model_label' => 'منتج',
-        'sort' => 8
+        'sort' => 8,
     ],
     'breadcrumbs' => [
         'index' => 'المنتجات',
@@ -156,12 +156,11 @@ return [
     ],
     'actions' => [
         'report' => [
-            'label' => 'تقرير كل الفروع'
+            'label' => 'تقرير كل الفروع',
         ],
         'branch_report' => [
-            'label' => 'تقرير هذا الفرع'
+            'label' => 'تقرير هذا الفرع',
         ],
-
 
         'print' => [
             'label' => 'طباعة التقرير',

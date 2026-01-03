@@ -44,7 +44,6 @@ trait HasFinancials
         return $this->hasMany(Order::class, 'representative_id');
     }
 
-
     /* -----------------------------------------
      | حسابات المندوب
      |------------------------------------------*/
@@ -69,7 +68,6 @@ trait HasFinancials
         return (float) $this->ordersAsRepresentative()->sum('total');
     }
 
-
     /* -----------------------------------------
      | صافي حساب المندوب
      |------------------------------------------*/
@@ -80,7 +78,6 @@ trait HasFinancials
             - ($this->total_paid + $this->total_supplyings);
     }
 
-
     /* -----------------------------------------
      | جميع عمليات المندوب مجمعة
      |------------------------------------------*/
@@ -88,11 +85,11 @@ trait HasFinancials
     public function getRepresentativeOperationsAttribute()
     {
         return collect([
-            'beneficiary_expenses'    => $this->expensesAsBeneficiary()->get(),
-            'payer_expenses'          => $this->expensesAsPayer()->get(),
+            'beneficiary_expenses' => $this->expensesAsBeneficiary()->get(),
+            'payer_expenses' => $this->expensesAsPayer()->get(),
             'representative_expenses' => $this->expensesAsRepresentative()->get(),
-            'supplyings'              => $this->supplyingsAsRepresentative()->get(),
-            'orders'                  => $this->ordersAsRepresentative()->get(),
+            'supplyings' => $this->supplyingsAsRepresentative()->get(),
+            'orders' => $this->ordersAsRepresentative()->get(),
         ]);
     }
 }

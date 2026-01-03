@@ -4,9 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Branch;
 use App\Models\User;
-use App\Models\Role;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class BranchSeeder extends Seeder
 {

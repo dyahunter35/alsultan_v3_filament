@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Unit;
-use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -22,7 +22,7 @@ class ProductFactory extends Factory
             'category_id' => Category::factory(),
             'unit_id' => Unit::factory(),
             'name' => $name,
-            'slug' => Str::slug($name) . '-' . Str::random(4),
+            'slug' => Str::slug($name).'-'.Str::random(4),
             'sku' => strtoupper(Str::random(8)),
             'barcode' => $this->faker->ean13(),
             'description' => $this->faker->optional()->paragraph(),

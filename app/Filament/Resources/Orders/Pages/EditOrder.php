@@ -2,20 +2,16 @@
 
 namespace App\Filament\Resources\Orders\Pages;
 
-use Filament\Actions\ViewAction;
-use Filament\Actions\DeleteAction;
-use App\Enums\OrderStatus;
 use App\Enums\StockCase;
 use App\Filament\Resources\Orders\OrderResource;
 use App\Models\Product;
 use App\Services\InventoryService;
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
-use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Filament\Support\Exceptions\Halt;
 
 class EditOrder extends EditRecord
 {
@@ -54,13 +50,13 @@ class EditOrder extends EditRecord
      */
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        $inventoryService = new InventoryService();
+        $inventoryService = new InventoryService;
         $currentBranch = Filament::getTenant();
         $currentUser = auth()->user();
 
         $newItemsData = collect($data['items'] ?? []);
 
-        return DB::transaction(function () use ($record, $data, $newItemsData, $inventoryService, $currentBranch, $currentUser) {
+        return DB::transaction(function () use ($record, $data, $inventoryService, $currentBranch, $currentUser) {
 
             // جلب المنتجات القديمة
             $originalItems = $record->items()->get()->keyBy('product_id');
@@ -131,7 +127,7 @@ class EditOrder extends EditRecord
 
             // سجل تحديث الطلب
             $record->orderLogs()->create([
-                'log'  => "Invoice updated By: " . $currentUser->name,
+                'log' => 'Invoice updated By: '.$currentUser->name,
                 'type' => 'updated',
             ]);
 

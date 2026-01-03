@@ -72,7 +72,7 @@ class CheckStockLevels extends Command
             Product::whereIn('id', $lowStockProducts->pluck('id'))
                 ->update(['low_stock_notified_at' => now()]);
 
-            Log::info("Low stock notifications sent for Product IDs: " . $lowStockProducts->pluck('id')->implode(', '));
+            Log::info('Low stock notifications sent for Product IDs: '.$lowStockProducts->pluck('id')->implode(', '));
         } else {
             $this->info('No new low-stock products found.');
         }
@@ -90,6 +90,7 @@ class CheckStockLevels extends Command
         }
 
         $this->info('Stock level check complete.');
+
         return self::SUCCESS;
     }
 }

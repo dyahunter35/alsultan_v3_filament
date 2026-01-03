@@ -31,21 +31,26 @@ class TruckResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'driver_name';
 
+    protected static ?int $navigationSort = 12;
+
     public static function form(Schema $schema): Schema
     {
         static::translateConfigureForm();
+
         return TruckForm::configure($schema);
     }
 
     public static function infolist(Schema $schema): Schema
     {
         static::translateConfigureInfolist();
+
         return TruckInfolist::configure($schema);
     }
 
     public static function table(Table $table): Table
     {
         static::translateConfigureTable();
+
         return TrucksTable::configure($table);
     }
 
@@ -55,7 +60,7 @@ class TruckResource extends Resource
             CargosRelationManager::class,
             DocumentsRelationManager::class,
             TaxExpensesRelationManager::class,
-            CustomExpensesRelationManager::class
+            CustomExpensesRelationManager::class,
         ];
     }
 
@@ -64,7 +69,7 @@ class TruckResource extends Resource
         return [
             'index' => ListTrucks::route('/'),
             'create' => CreateTruck::route('/create'),
-            //'view' => ViewTruck::route('/{record}'),
+            // 'view' => ViewTruck::route('/{record}'),
             'edit' => EditTruck::route('/{record}/edit'),
         ];
     }

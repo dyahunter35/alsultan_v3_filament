@@ -33,18 +33,21 @@ class DecimalInput extends TextInput
             // 2. عند الحفظ في القاعدة: اضرب في مليون
             $this->dehydrateStateUsing(function ($state) {
                 $value = (float) str_replace(',', '', $state);
+
                 return blank($state) ? null : $value * 1000000;
             });
 
             // 3. إظهار القيمة الفعلية (القيمة المضروبة) في الـ hint
             $this->hint(function ($state) {
-                if (blank($state)) return null;
+                if (blank($state)) {
+                    return null;
+                }
 
                 // تنظيف القيمة من الفواصل لإجراء العملية الحسابية
                 $cleanValue = (float) str_replace(',', '', $state);
                 $actualValue = $cleanValue * 1000000;
 
-                return 'القيمة الفعلية: ' . number_format($actualValue);
+                return 'القيمة الفعلية: '.number_format($actualValue);
             });
 
             $this->hintColor('info');

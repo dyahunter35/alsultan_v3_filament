@@ -2,18 +2,17 @@
 
 namespace App\Filament\Pages\Dashboard\Widgets;
 
-use Filament\Tables\Columns\TextColumn;
-use Filament\Actions\Action;
 use App\Models\VendorFile;
 use Carbon\Carbon;
-use Filament\Tables;
+use Filament\Actions\Action;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
-use Illuminate\Database\Eloquent\Builder;
 
 class ExpiringDocumentsWidget extends BaseWidget
 {
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
+
     protected static ?int $sort = 3;
 
     public function table(Table $table): Table
@@ -42,7 +41,8 @@ class ExpiringDocumentsWidget extends BaseWidget
                     ->sortable()
                     ->formatStateUsing(function ($state) {
                         $daysLeft = Carbon::parse($state)->diffInDays(now());
-                        return Carbon::parse($state)->format('Y-m-d') . ' (' . __('dashboard.stats.days_left', ['days' => $daysLeft]) . ')';
+
+                        return Carbon::parse($state)->format('Y-m-d').' ('.__('dashboard.stats.days_left', ['days' => $daysLeft]).')';
                     }),
                 TextColumn::make('status')
                     ->label(__('dashboard.table.status'))

@@ -14,10 +14,9 @@ class ViewTruck extends ViewRecord
     protected function getHeaderWidgets(): array
     {
         return [
-            //TruckFinanceOverview::class,
+            // TruckFinanceOverview::class,
         ];
     }
-
 
     protected function getHeaderActions(): array
     {

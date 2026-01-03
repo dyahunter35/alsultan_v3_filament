@@ -37,7 +37,7 @@ class UserFinanceOverview extends StatsOverviewWidget
                 ->description('المبيعات'),
 
             Stat::make('Net Balance', number_format($user->net_balance, 2))
-                ->color(fn() => ($user->net_balance > 0) ? 'danger' : 'success')
+                ->color(fn () => ($user->net_balance > 0) ? 'danger' : 'success')
                 ->description('الصافي النهائي'),
         ];
     }

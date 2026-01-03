@@ -6,7 +6,7 @@ return [
         'label' => 'التوريدات',
         'plural_label' => 'التوريدات المالية',
         'model_label' => 'توريدة',
-        'search_key' => 'التوريدة'
+        'search_key' => 'التوريدة',
     ],
     'breadcrumbs' => [
         'index' => 'الموردين',
@@ -59,6 +59,6 @@ return [
         'creator' => [
             'label' => 'تم الإنشاء بواسطة',
             'placeholder' => '',
-        ]
+        ],
     ],
 ];

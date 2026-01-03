@@ -15,7 +15,10 @@ class CompaniesReport extends Page
     protected string $view = 'filament.pages.reports.companies-report';
 
     public $companies;
+
     public $sudaneseCurrencyId;
+
+    protected static ?int $navigationSort = 33;
 
     public function mount()
     {

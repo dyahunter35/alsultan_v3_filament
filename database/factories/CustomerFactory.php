@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Enums\ExpenseType;
-use App\Models\Branch;
 use App\Models\Customer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

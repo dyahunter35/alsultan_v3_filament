@@ -5,7 +5,6 @@ namespace App\Filament\Resources\CurrencyTransactions;
 use App\Enums\CurrencyType;
 use App\Enums\ExpenseGroup;
 use App\Filament\Forms\Components\DecimalInput;
-use App\Filament\Forms\Components\MorphField;
 use App\Filament\Forms\Components\MorphSelect;
 use App\Filament\Pages\Concerns\HasResource;
 use App\Filament\Resources\CurrencyTransactions\Pages\ManageCurrencyTransactions;
@@ -38,13 +37,17 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class CurrencyTransactionResource extends Resource
 {
     use HasResource;
+
     protected static ?string $model = CurrencyTransaction::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::ArrowTopRightOnSquare;
+
+    protected static ?int $navigationSort = 13;
 
     public static function form(Schema $schema): Schema
     {
         self::translateConfigureForm();
+
         return $schema
             ->components(self::formSchema());
     }
@@ -52,6 +55,7 @@ class CurrencyTransactionResource extends Resource
     public static function table(Table $table): Table
     {
         self::translateConfigureTable();
+
         return $table
             ->columns([
                 TextColumn::make('created_at')
@@ -98,7 +102,7 @@ class CurrencyTransactionResource extends Resource
             ->filters([
                 TrashedFilter::make(),
                 SelectFilter::make('type')
-                    ->options(CurrencyType::class)
+                    ->options(CurrencyType::class),
             ])
             ->recordActions([
                 EditAction::make(),
@@ -137,27 +141,27 @@ class CurrencyTransactionResource extends Resource
                 ->label('Currencies')
                 ->view('filament.resources.customers.forms.customer-currencies-table')
                 ->reactive()
-                ->hidden(fn(callable $get) => empty($get('payer_currencies')))
+                ->hidden(fn (callable $get) => empty($get('payer_currencies')))
                 ->columnSpanFull(),
 
             Select::make('payer_id')
                 ->options(
-                    fn($get) => ($get('type') != CurrencyType::CompanyExpense) ?
+                    fn ($get) => ($get('type') != CurrencyType::CompanyExpense) ?
                         \App\Models\Customer::select('name', 'id', 'balance')->where('permanent', ExpenseGroup::DEBTORS->value)->get()
-                        ->mapWithKeys(fn(\App\Models\Customer $customer) => [
-                            $customer->id => sprintf(
-                                '%s (%s SDG)',
-                                $customer->name,
-                                number_format($customer->balance, 2)
-                            )
-                        ]) : Company::select('name', 'id', 'type')->get()
-                        ->mapWithKeys(fn(\App\Models\Company $company) => [
-                            $company->id => sprintf(
-                                '%s ( %s )',
-                                $company->name,
-                                ($company->type?->getLabel())
-                            )
-                        ])
+                            ->mapWithKeys(fn (\App\Models\Customer $customer) => [
+                                $customer->id => sprintf(
+                                    '%s (%s SDG)',
+                                    $customer->name,
+                                    number_format($customer->balance, 2)
+                                ),
+                            ]) : Company::select('name', 'id', 'type')->get()
+                            ->mapWithKeys(fn (\App\Models\Company $company) => [
+                                $company->id => sprintf(
+                                    '%s ( %s )',
+                                    $company->name,
+                                    ($company->type?->getLabel())
+                                ),
+                            ])
 
                 )
                 ->reactive()
@@ -169,7 +173,6 @@ class CurrencyTransactionResource extends Resource
                     $set('payer_currencies', $currencies);
                 }),
 
-
             Hidden::make('payer_type')
                 ->default(\App\Models\Customer::class)
                 ->required(),
@@ -177,16 +180,15 @@ class CurrencyTransactionResource extends Resource
             MorphSelect::make('party')
                 ->models([
                     'company' => \App\Models\Company::class,
-                    'customer' => fn() => \App\Models\Customer::where('permanent', ExpenseGroup::DEBTORS->value)->get(),
+                    'customer' => fn () => \App\Models\Customer::where('permanent', ExpenseGroup::DEBTORS->value)->get(),
                 ])
                 ->live()
-                ->hidden(fn(callable $get) => in_array($get('type'), [CurrencyType::Convert, CurrencyType::CompanyExpense])),
+                ->hidden(fn (callable $get) => in_array($get('type'), [CurrencyType::Convert, CurrencyType::CompanyExpense])),
             Hidden::make('party_type')
-                ->hidden(fn(callable $get) => in_array($get('type'), [CurrencyType::Convert, CurrencyType::CompanyExpense])),
+                ->hidden(fn (callable $get) => in_array($get('type'), [CurrencyType::Convert, CurrencyType::CompanyExpense])),
 
             Hidden::make('party_id')
-                ->hidden(fn(callable $get) => in_array($get('type'), [CurrencyType::Convert, CurrencyType::CompanyExpense])),
-
+                ->hidden(fn (callable $get) => in_array($get('type'), [CurrencyType::Convert, CurrencyType::CompanyExpense])),
 
             Select::make('currency_id')
                 ->relationship('currency', 'name')
@@ -196,7 +198,7 @@ class CurrencyTransactionResource extends Resource
                 ->live(onBlur: true)
                 ->afterStateUpdated(
                     function ($set, $get, $state) {
-                        //dd($get('type'));
+                        // dd($get('type'));
                         $price = $get('rate') ?? 1;
                         $amount = $get('amount') ?? 0;
                         $set('total', ($amount * $price));
@@ -215,14 +217,13 @@ class CurrencyTransactionResource extends Resource
                         $set('total', ($amount * $price));
                     }
                 )
-                ->visible(fn(callable $get) => in_array($get('type'), [CurrencyType::CompanyExpense, CurrencyType::Convert]))
+                ->visible(fn (callable $get) => in_array($get('type'), [CurrencyType::CompanyExpense, CurrencyType::Convert]))
                 ->default(1),
 
             DecimalInput::make('total')
                 ->required()
                 ->readOnly()
                 ->numeric(),
-
 
             TextInput::make('note')
                 ->default(null),

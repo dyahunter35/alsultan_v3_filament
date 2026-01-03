@@ -4,16 +4,18 @@ namespace App\Filament\Pages\Reports;
 
 use App\Filament\Pages\Concerns\HasReport;
 use App\Models\Truck;
-use Filament\Pages\Page;
 use Filament\Forms;
-use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Pages\Page;
 use Livewire\Attributes\Url;
 
 class TruckReport extends Page implements HasForms
 {
     use HasReport;
     use InteractsWithForms;
+
+    protected static ?int $navigationSort = 36;
 
     // protected static ?string $navigationIcon = 'heroicon-o-truck';
     // protected static ?string $navigationLabel = 'تقرير الشاحنة';
@@ -39,18 +41,18 @@ class TruckReport extends Page implements HasForms
             Forms\Components\Select::make('truckId')
                 ->label('اختر الشاحنة')
                 ->options(Truck::query()->get()
-                    ->mapWithKeys(fn(Truck $truck) => [
+                    ->mapWithKeys(fn (Truck $truck) => [
                         $truck->id => sprintf(
                             '(%s) %s - %s',
                             $truck->id,
                             $truck->driver_name,
                             $truck->from?->name,
 
-                        )
+                        ),
                     ]))
                 ->searchable()
                 ->reactive()
-                ->afterStateUpdated(fn($state) => $this->loadForTruck($state)),
+                ->afterStateUpdated(fn ($state) => $this->loadForTruck($state)),
         ];
     }
 

@@ -1,12 +1,13 @@
 <?php
+
 return [
     'label' => [
         'plural' => 'Notes',
         'single' => 'note',
     ],
-   
+
     'fields' => [
-       
+
         'note' => [
             'label' => 'note',
             'placeholder' => 'Enter note',

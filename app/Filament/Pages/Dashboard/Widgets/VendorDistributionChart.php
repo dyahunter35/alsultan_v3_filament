@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 class VendorDistributionChart extends ChartWidget
 {
     protected ?string $heading = 'Vendor Distribution by City';
+
     protected static ?int $sort = 2;
 
     protected function getData(): array
@@ -17,7 +18,7 @@ class VendorDistributionChart extends ChartWidget
         $query = Vendor::query();
 
         // If not admin, only show vendors associated with the user
-        if (!$user->hasRole('super_admin') && !$user->is_admin) {
+        if (! $user->hasRole('super_admin') && ! $user->is_admin) {
             $query->whereHas('users', function ($q) use ($user) {
                 $q->where('users.id', $user->id);
             });

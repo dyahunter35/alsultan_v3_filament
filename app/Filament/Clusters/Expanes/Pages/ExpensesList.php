@@ -3,7 +3,6 @@
 namespace App\Filament\Clusters\Expanes\Pages;
 
 use App\Filament\Clusters\Expanes\ExpanesCluster;
-use App\Filament\Pages\Concerns\HasPage;
 use App\Filament\Pages\Concerns\HasSinglePage;
 use App\Models\Expense;
 use Filament\Actions\BulkActionGroup;
@@ -13,7 +12,6 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Pages\Page;
 use Filament\Resources\Concerns\HasTabs;
-use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -21,23 +19,25 @@ use Filament\Tables\Table;
 
 class ExpensesList extends Page implements HasTable
 {
+    use HasSinglePage;
     use HasTabs;
     use InteractsWithTable;
-    use HasSinglePage;
+
     protected string $view = 'filament.clusters.expanes.pages.expenses-list';
 
     protected static ?string $cluster = ExpanesCluster::class;
 
-    protected static ?int $navigationSort = 0;
+    protected static ?int $navigationSort = 100;
 
     public static function getLocalePath(): string
     {
-        return 'expense.' . static::className();
+        return 'expense.'.static::className();
     }
 
     public function table(Table $table): Table
     {
         static::translateConfigureTable();
+
         return $table
             ->query(Expense::query())
             ->columns([
@@ -47,13 +47,11 @@ class ExpensesList extends Page implements HasTable
 
                 Tables\Columns\TextColumn::make('type.label')
                     ->formatStateUsing(
-                        fn($state, $record) =>
-                        $record->expense_type_id
+                        fn ($state, $record) => $record->expense_type_id
                             ? $record->type->label
                             : $record->custom_expense_type
                     )
                     ->badge(),
-
 
                 Tables\Columns\TextColumn::make('beneficiary.name')
                     ->searchable()
@@ -64,15 +62,15 @@ class ExpensesList extends Page implements HasTable
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('amount')
-                    ->formatStateUsing(fn($state) => number_format($state))
+                    ->formatStateUsing(fn ($state) => number_format($state))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('unit_price')
-                    ->formatStateUsing(fn($state) => number_format($state, 2))
+                    ->formatStateUsing(fn ($state) => number_format($state, 2))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('total_amount')
-                    ->formatStateUsing(fn($state) => number_format($state))
+                    ->formatStateUsing(fn ($state) => number_format($state))
                     ->color('success')
                     ->sortable(),
 
@@ -108,19 +106,17 @@ class ExpensesList extends Page implements HasTable
                         return $query
                             ->when(
                                 $data['from'],
-                                fn($query, $date) =>
-                                $query->whereDate('created_at', '>=', $date)
+                                fn ($query, $date) => $query->whereDate('created_at', '>=', $date)
                             )
                             ->when(
                                 $data['to'],
-                                fn($query, $date) =>
-                                $query->whereDate('created_at', '<=', $date)
+                                fn ($query, $date) => $query->whereDate('created_at', '<=', $date)
                             );
                     }),
             ])
             ->recordActions([
-                //ViewAction::make(),
-                //EditAction::make(),
+                // ViewAction::make(),
+                // EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

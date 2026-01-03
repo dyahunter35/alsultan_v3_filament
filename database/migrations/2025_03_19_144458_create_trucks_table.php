@@ -7,7 +7,6 @@ use App\Models\Category;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use SebastianBergmann\Type\TrueType;
 
 return new class extends Migration
 {
@@ -18,10 +17,10 @@ return new class extends Migration
     {
         Schema::create('trucks', function (Blueprint $table) {
             $table->id();
-            $table->string('driver_name')->comment("اسم السائق");
-            $table->string('driver_phone')->comment("رقم الهاتف");
-            $table->string('car_number')->comment("رقم العربة");
-            $table->date('pack_date')->comment("تاريخ التعبئة");
+            $table->string('driver_name')->comment('اسم السائق');
+            $table->string('driver_phone')->comment('رقم الهاتف');
+            $table->string('car_number')->comment('رقم العربة');
+            $table->date('pack_date')->comment('تاريخ التعبئة');
 
             $table->foreignIdFor(\App\Models\Company::class)
                 ->nullable()
@@ -35,12 +34,12 @@ return new class extends Migration
 
             $table->nullableMorphs('from', 'from');
 
-            $table->foreignIdFor(Branch::class, 'branch_to')->comment("الفرع");
+            $table->foreignIdFor(Branch::class, 'branch_to')->comment('الفرع');
 
-            $table->date('arrive_date')->nullable()->comment("تاريخ الوصول");
-            $table->enum('truck_status', TruckState::getKeys())->comment("١ -خارجي , ٢ - داخلي");
+            $table->date('arrive_date')->nullable()->comment('تاريخ الوصول');
+            $table->enum('truck_status', TruckState::getKeys())->comment('١ -خارجي , ٢ - داخلي');
             $table->enum('type', TruckType::getKeys());
-            $table->boolean('is_converted')->comment("1 -تم التحويل , 0 - لم يتم")->default(0);
+            $table->boolean('is_converted')->comment('1 -تم التحويل , 0 - لم يتم')->default(0);
             $table->string('note')->nullable();
 
             $table->foreignIdFor(Category::class, 'category_id');
@@ -52,10 +51,10 @@ return new class extends Migration
             $table->integer('trip_days')->comment('ايام الرحلة')->nullable();
             $table->integer('diff_trip')->comment('الفرق بين الايام')->nullable();
             $table->integer('agreed_duration')->comment('الايام المتفق عليها')->nullable();
-            $table->integer('delay_day_value')->comment("قيمة يوم التاخير")->nullable();
-            $table->integer('truck_fare')->comment("اجرة الشاحنة - النولون")->nullable();
-            $table->integer('delay_value')->comment("قيمة الععطلات")->nullable();
-            $table->integer('total_amount')->comment("المجموع الكلي")->nullable();
+            $table->integer('delay_day_value')->comment('قيمة يوم التاخير')->nullable();
+            $table->integer('truck_fare')->comment('اجرة الشاحنة - النولون')->nullable();
+            $table->integer('delay_value')->comment('قيمة الععطلات')->nullable();
+            $table->integer('total_amount')->comment('المجموع الكلي')->nullable();
 
             $table->softDeletes();
             $table->timestamps();

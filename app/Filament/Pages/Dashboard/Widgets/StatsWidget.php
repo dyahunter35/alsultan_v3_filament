@@ -2,17 +2,12 @@
 
 namespace App\Filament\Pages\Dashboard\Widgets;
 
-use App\Enums\AccountStatus;
 use App\Enums\OrderStatus;
-use App\Models\Order;
-use App\Models\Vendor;
 use App\Models\VendorFile;
-use Carbon\Carbon;
 use Filament\Facades\Filament;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Card;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Support\Facades\DB;
 
 class StatsWidget extends BaseWidget
 {
@@ -67,7 +62,7 @@ class StatsWidget extends BaseWidget
                 ->color('warning'),
 
             Stat::make(__('New Vendors'), $newOrdersThisMonth)
-                ->description($percentageChange . '% ' . __('From Last Month'))
+                ->description($percentageChange.'% '.__('From Last Month'))
                 ->descriptionIcon($changeIcon)
                 ->color($changeColor),
 

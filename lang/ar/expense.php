@@ -1,6 +1,6 @@
 <?php
 
-$commonFields = include __DIR__ . '/partials/expense_fields.php';
+$commonFields = include __DIR__.'/partials/expense_fields.php';
 
 return [
     'navigation' => [
@@ -53,7 +53,7 @@ return [
         ]),
     ],
 
-    'store_expense' =>  [
+    'store_expense' => [
         'navigation' => [
             'heading' => 'منصرفات المخازن',
             'model_label' => 'منصرف مخزن',
@@ -70,7 +70,7 @@ return [
         ]),
     ],
 
-    'financial_expense' =>  [
+    'financial_expense' => [
         'navigation' => [
             'heading' => 'المعاملات المالية',
             'model_label' => 'معاملة مالية',
@@ -87,7 +87,7 @@ return [
         ]),
     ],
 
-    'custom_expense' =>  [
+    'custom_expense' => [
         'navigation' => [
             'heading' => 'الجمارك',
             'model_label' => 'معاملة جمارك',
@@ -108,7 +108,7 @@ return [
         ]),
     ],
 
-    'tax_expense' =>  [
+    'tax_expense' => [
         'navigation' => [
             'heading' => 'الضرائب',
             'model_label' => 'معاملة ضريبية',

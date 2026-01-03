@@ -21,7 +21,7 @@ enum PaymentOptions: string implements HasLabel
 
     public function getLabel(): string
     {
-        return __('enums.payment_option.' . $this->value);
+        return __('enums.payment_option.'.$this->value);
     }
 
     public function color(): string

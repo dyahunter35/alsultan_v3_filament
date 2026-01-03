@@ -2,22 +2,21 @@
 
 namespace App\Filament\Pages\Tenancy;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
 use App\Models\Branch;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Pages\Tenancy\EditTenantProfile;
-use Filament\Pages\Tenancy\RegisterTenant;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class EditBranch extends EditTenantProfile
 {
-    //use HasPageShield;
+    // use HasPageShield;
 
     public static function getLabel(): string
     {
@@ -43,16 +42,14 @@ class EditBranch extends EditTenantProfile
                         ->relationship('users', 'name')
                         ->multiple()
                         ->preload(),
-                ])->columnSpan(1)
+                ])->columnSpan(1),
             ])
-            ->columns(2)
-        ;
+            ->columns(2);
     }
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         $record->update($data);
-
 
         return $record;
     }
@@ -78,6 +75,7 @@ class EditBranch extends EditTenantProfile
         // Return true only if the user's email matches the specific email
         return $user && $user->email === 'dyahunter35@gmail.com';
     }
+
     public static function canView(Model $tenant): bool
     {
         // Get the authenticated user
@@ -86,8 +84,4 @@ class EditBranch extends EditTenantProfile
         // Return true only if the user's email matches the specific email
         return $user && $user->email === 'dyahunter35@gmail.com';
     }
-
-
-
-
 }

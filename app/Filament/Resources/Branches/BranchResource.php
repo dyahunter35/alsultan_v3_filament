@@ -3,41 +3,37 @@
 namespace App\Filament\Resources\Branches;
 
 use App\Filament\Pages\Concerns\HasResource;
-use Filament\Schemas\Schema;
-use Filament\Forms\Components\TextInput;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Actions\EditAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use App\Filament\Resources\Branches\Pages\ListBranches;
 use App\Filament\Resources\Branches\Pages\CreateBranch;
 use App\Filament\Resources\Branches\Pages\EditBranch;
-use App\Filament\Resources\BranchResource\Pages;
-use App\Filament\Resources\BranchResource\RelationManagers;
+use App\Filament\Resources\Branches\Pages\ListBranches;
 use App\Models\Branch;
-use Filament\Forms;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 
 class BranchResource extends Resource
 {
     use HasResource;
+
     protected static ?string $model = Branch::class;
 
     protected static ?int $navigationSort = 3;
 
-    protected static string | \BackedEnum | null $navigationIcon = Heroicon::Wallet;
+    protected static string|\BackedEnum|null $navigationIcon = Heroicon::Wallet;
 
     public static function form(Schema $schema): Schema
     {
         static::translateConfigureForm();
+
         return $schema
             ->components([
                 Section::make()
@@ -45,7 +41,7 @@ class BranchResource extends Resource
                         TextInput::make('name')
                             ->required()
                             ->live(onBlur: true)
-                            ->afterStateUpdated(fn($state, $set) => $set('slug', Str::slug($state)))
+                            ->afterStateUpdated(fn ($state, $set) => $set('slug', Str::slug($state)))
                             ->maxLength(255),
                         TextInput::make('slug')
                             ->required()
@@ -61,7 +57,7 @@ class BranchResource extends Resource
                             ->multiple()
                             ->preload(),
                     ])
-                    ->columnSpan(1)
+                    ->columnSpan(1),
 
             ])->columns(3);
     }
@@ -69,6 +65,7 @@ class BranchResource extends Resource
     public static function table(Table $table): Table
     {
         static::translateConfigureTable();
+
         return $table
             ->columns([
                 TextColumn::make('name')

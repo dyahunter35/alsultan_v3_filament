@@ -9,9 +9,8 @@ class ExpenseTypesSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('expense_types')->insert(array(
-            0 =>
-            array(
+        DB::table('expense_types')->insert([
+            0 => [
                 'id' => 1,
                 'key' => 'sale',
                 'label' => 'مبيعات',
@@ -20,9 +19,8 @@ class ExpenseTypesSeeder extends Seeder
                 'color' => 'success',
                 'created_at' => '2025-10-20 09:51:21',
                 'updated_at' => '2025-10-20 09:51:21',
-            ),
-            1 =>
-            array(
+            ],
+            1 => [
                 'id' => 2,
                 'key' => 'debtors',
                 'label' => 'الدائنون',
@@ -31,9 +29,8 @@ class ExpenseTypesSeeder extends Seeder
                 'color' => 'success',
                 'created_at' => '2025-10-20 09:51:21',
                 'updated_at' => '2025-10-20 09:51:21',
-            ),
-            2 =>
-            array(
+            ],
+            2 => [
                 'id' => 3,
                 'key' => 'salaries',
                 'label' => 'مرتبات وأجور',
@@ -42,9 +39,8 @@ class ExpenseTypesSeeder extends Seeder
                 'color' => 'success',
                 'created_at' => '2025-10-20 09:51:21',
                 'updated_at' => '2025-10-20 09:51:21',
-            ),
-            3 =>
-            array(
+            ],
+            3 => [
                 'id' => 4,
                 'key' => 'advances',
                 'label' => 'سلفيات',
@@ -53,9 +49,8 @@ class ExpenseTypesSeeder extends Seeder
                 'color' => 'success',
                 'created_at' => '2025-10-20 09:51:21',
                 'updated_at' => '2025-10-20 09:51:21',
-            ),
-            4 =>
-            array(
+            ],
+            4 => [
                 'id' => 5,
                 'key' => 'rep_transfer',
                 'label' => 'تحويل مالي للمندوب',
@@ -64,9 +59,8 @@ class ExpenseTypesSeeder extends Seeder
                 'color' => 'success',
                 'created_at' => '2025-10-20 09:51:21',
                 'updated_at' => '2025-10-20 09:51:21',
-            ),
-            5 =>
-            array(
+            ],
+            5 => [
                 'id' => 6,
                 'key' => 'transport',
                 'label' => 'منصرفات ترحيل',
@@ -75,9 +69,8 @@ class ExpenseTypesSeeder extends Seeder
                 'color' => 'success',
                 'created_at' => '2025-10-20 09:51:21',
                 'updated_at' => '2025-10-20 09:51:21',
-            ),
-            6 =>
-            array(
+            ],
+            6 => [
                 'id' => 7,
                 'key' => 'food',
                 'label' => 'منصرفات ميز',
@@ -86,9 +79,8 @@ class ExpenseTypesSeeder extends Seeder
                 'color' => 'success',
                 'created_at' => '2025-10-20 09:51:21',
                 'updated_at' => '2025-10-20 09:51:21',
-            ),
-            7 =>
-            array(
+            ],
+            7 => [
                 'id' => 8,
                 'key' => 'carrier',
                 'label' => 'عتالة',
@@ -97,9 +89,8 @@ class ExpenseTypesSeeder extends Seeder
                 'color' => 'success',
                 'created_at' => '2025-10-20 09:51:21',
                 'updated_at' => '2025-10-20 09:51:21',
-            ),
-            8 =>
-            array(
+            ],
+            8 => [
                 'id' => 9,
                 'key' => 'rent',
                 'label' => 'إيجارات',
@@ -108,9 +99,8 @@ class ExpenseTypesSeeder extends Seeder
                 'color' => 'success',
                 'created_at' => '2025-10-20 09:51:21',
                 'updated_at' => '2025-10-20 09:51:21',
-            ),
-            9 =>
-            array(
+            ],
+            9 => [
                 'id' => 10,
                 'key' => 'customs',
                 'label' => 'جمارك',
@@ -119,9 +109,8 @@ class ExpenseTypesSeeder extends Seeder
                 'color' => 'success',
                 'created_at' => '2025-10-20 09:51:21',
                 'updated_at' => '2025-10-20 09:51:21',
-            ),
-            10 =>
-            array(
+            ],
+            10 => [
                 'id' => 11,
                 'key' => 'certificates',
                 'label' => 'شهادات وارد',
@@ -130,9 +119,8 @@ class ExpenseTypesSeeder extends Seeder
                 'color' => 'success',
                 'created_at' => '2025-10-20 09:51:21',
                 'updated_at' => '2025-10-20 09:51:21',
-            ),
-            11 =>
-            array(
+            ],
+            11 => [
                 'id' => 12,
                 'key' => 'tax',
                 'label' => 'ضرائب',
@@ -141,9 +129,8 @@ class ExpenseTypesSeeder extends Seeder
                 'color' => 'success',
                 'created_at' => '2025-10-20 09:51:21',
                 'updated_at' => '2025-10-20 09:51:21',
-            ),
-            12 =>
-            array(
+            ],
+            12 => [
                 'id' => 13,
                 'key' => 'government_fees',
                 'label' => 'رسوم حكومية',
@@ -152,7 +139,7 @@ class ExpenseTypesSeeder extends Seeder
                 'color' => 'success',
                 'created_at' => '2025-10-20 09:51:21',
                 'updated_at' => '2025-10-20 09:51:21',
-            ),
-        ));
+            ],
+        ]);
     }
 }

@@ -2,15 +2,14 @@
 
 namespace App\Filament\Resources\Orders\Pages;
 
-use Filament\Actions\CreateAction;
-use Filament\Schemas\Components\Tabs\Tab;
 use App\Enums\OrderStatus;
 use App\Filament\Resources\Orders\OrderResource;
 use App\Models\Order;
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Facades\Filament;
 use Filament\Pages\Concerns\ExposesTableToWidgets;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 
 class ListOrders extends ListRecords
@@ -60,19 +59,19 @@ class ListOrders extends ListRecords
 
         return [
             null => Tab::make('All')->label(__('order.fields.status.options.all')),
-            'new' => Tab::make()->query(fn($query) => $query->where('status', 'new'))
+            'new' => Tab::make()->query(fn ($query) => $query->where('status', 'new'))
                 ->label(__('order.fields.status.options.new'))
                 ->icon('heroicon-o-plus'),
-            'processing' => Tab::make()->query(fn($query) => $query->where('status', 'processing'))
+            'processing' => Tab::make()->query(fn ($query) => $query->where('status', 'processing'))
                 ->label(__('order.fields.status.options.processing'))
                 ->icon('heroicon-o-cog'),
-            'payed' => Tab::make()->query(fn($query) => $query->where('status', 'payed'))
+            'payed' => Tab::make()->query(fn ($query) => $query->where('status', 'payed'))
                 ->label(__('order.fields.status.options.payed')),
-            'installed' => Tab::make()->query(fn($query) => $query->where('status', 'installed'))
+            'installed' => Tab::make()->query(fn ($query) => $query->where('status', 'installed'))
                 ->label(__('order.fields.status.options.installed')),
-            'delivered' => Tab::make()->query(fn($query) => $query->where('status', 'delivered'))
+            'delivered' => Tab::make()->query(fn ($query) => $query->where('status', 'delivered'))
                 ->label(__('order.fields.status.options.delivered')),
-            'cancelled' => Tab::make()->query(fn($query) => $query->where('status', 'cancelled'))
+            'cancelled' => Tab::make()->query(fn ($query) => $query->where('status', 'cancelled'))
                 ->label(__('order.fields.status.options.cancelled')),
         ];
     }

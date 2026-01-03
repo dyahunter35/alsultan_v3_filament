@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\ExpenseTypes\Pages;
+namespace App\Filament\Clusters\Expanes\Resources\ExpenseTypes\Pages;
 
-use App\Filament\Resources\ExpenseTypes\ExpenseTypeResource;
+use App\Filament\Clusters\Expanes\Resources\ExpenseTypes\ExpenseTypeResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ManageRecords;
 

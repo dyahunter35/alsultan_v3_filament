@@ -2,7 +2,6 @@
 
 namespace App\Filament\Clusters\Expanes;
 
-use App\Filament\Pages\Concerns\HasPage;
 use App\Filament\Pages\Concerns\HasSinglePage;
 use BackedEnum;
 use Filament\Clusters\Cluster;
@@ -11,8 +10,9 @@ use Filament\Support\Icons\Heroicon;
 
 class ExpanesCluster extends Cluster
 {
-
     use HasSinglePage;
+
+    protected static ?int $navigationSort = 11;
 
     public static function getLocalePath(): string
     {

@@ -5,12 +5,12 @@ namespace App\Models;
 use App\Models\Pivots\BranchProduct;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Branch extends Model
 {
-        use HasFactory;
+    use HasFactory;
 
     protected $fillable = [
         'name',
@@ -25,9 +25,9 @@ class Branch extends Model
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class)
-                ->using(BranchProduct::class)
-                ->withPivot('total_quantity')
-                ->withTimestamps();
+            ->using(BranchProduct::class)
+            ->withPivot('total_quantity')
+            ->withTimestamps();
 
     }
 
@@ -50,7 +50,6 @@ class Branch extends Model
     {
         return $this->hasMany(StockHistory::class);
     }
-
 
     public function stockHistories(): HasMany
     {

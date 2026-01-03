@@ -3,24 +3,27 @@
 namespace App\Filament\Pages\Reports;
 
 use App\Filament\Pages\Concerns\HasReport;
-use App\Models\Truck;
 use App\Models\Company;
-use Filament\Pages\Page;
+use App\Models\Truck;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Pages\Page;
 use Filament\Schemas;
-use Livewire\Attributes\Url;
-use Illuminate\Support\Collection;
-use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use Livewire\Attributes\Url;
+use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
 
 class ProductPricing extends Page implements HasForms
 {
-    use InteractsWithForms;
     use HasReport;
+    use InteractsWithForms;
+
+    protected static ?int $navigationSort = 37;
 
     protected static ?string $title = 'تسعير المنتجات (بيان الشحنة والشركات)';
+
     protected string $view = 'filament.pages.reports.product-pricing';
 
     #[Url('truck')]
@@ -35,10 +38,12 @@ class ProductPricing extends Page implements HasForms
     public $date_range;
 
     public $exchange_rate = 52.4;
+
     public $currency_name;
 
     // مصفوفة نسب الأرباح مرتبطة بـ ID الشحنة (cargo_id)
     public $profit_percents = [];
+
     public $profit_percent = 1;
 
     protected function getFormSchema(): array
@@ -49,17 +54,17 @@ class ProductPricing extends Page implements HasForms
                     Schemas\Components\Grid::make(4)->schema([
                         Forms\Components\Select::make('truck_id')
                             ->label('عرض شاحنة محددة')
-                            ->options(Truck::query()->latest()->get()->mapWithKeys(fn($t) => [$t->id => "($t->id) {$t->driver_name}"]))
+                            ->options(Truck::query()->latest()->get()->mapWithKeys(fn ($t) => [$t->id => "($t->id) {$t->driver_name}"]))
                             ->searchable()
                             ->reactive()
-                            ->afterStateUpdated(fn() => $this->company_id = null),
+                            ->afterStateUpdated(fn () => $this->company_id = null),
 
                         Forms\Components\Select::make('company_id')
                             ->label('عرض تقرير شركة (جميع شاحناتها)')
                             ->options(Company::all()->pluck('name', 'id'))
                             ->searchable()
                             ->reactive()
-                            ->afterStateUpdated(fn() => $this->truck_id = null),
+                            ->afterStateUpdated(fn () => $this->truck_id = null),
 
                         Forms\Components\TextInput::make('exchange_rate')
                             ->label('سعر الصرف')
@@ -69,7 +74,7 @@ class ProductPricing extends Page implements HasForms
 
                         DateRangePicker::make('date_range')
                             ->label('النطاق الزمني')
-                            ->visible(fn() => $this->company_id)
+                            ->visible(fn () => $this->company_id)
                             ->disableClear(false)
                             ->live()
                             // التعديل الثاني: استخدام منطق afterStateUpdated بدقة أكبر
@@ -104,16 +109,20 @@ class ProductPricing extends Page implements HasForms
      */
     protected function prepareDateFilter(): ?\Closure
     {
-        if (!$this->date_range) return null;
+        if (! $this->date_range) {
+            return null;
+        }
 
         $dates = explode(' - ', $this->date_range);
-        if (count($dates) !== 2) return null;
+        if (count($dates) !== 2) {
+            return null;
+        }
 
         try {
             $fromDate = Carbon::createFromFormat('d/m/Y', trim($dates[0]))->startOfDay();
             $toDate = Carbon::createFromFormat('d/m/Y', trim($dates[1]))->endOfDay();
 
-            return fn($query) => $query->whereBetween('created_at', [$fromDate, $toDate]);
+            return fn ($query) => $query->whereBetween('created_at', [$fromDate, $toDate]);
         } catch (\Exception $e) {
             return null;
         }
@@ -152,7 +161,7 @@ class ProductPricing extends Page implements HasForms
 
         foreach ($trucks->filter() as $truck) {
             foreach ($truck->cargos as $cargo) {
-                if (!isset($this->profit_percents[$cargo->id])) {
+                if (! isset($this->profit_percents[$cargo->id])) {
                     $this->profit_percents[$cargo->id] = $this->profit_percent;
                 }
             }
@@ -166,7 +175,9 @@ class ProductPricing extends Page implements HasForms
 
         if ($this->truck_id) {
             $truck = Truck::with(['cargos.product', 'expenses'])->find($this->truck_id);
-            if ($truck) $trucksList->push($truck);
+            if ($truck) {
+                $trucksList->push($truck);
+            }
         } elseif ($this->company_id) {
             $company = Company::find($this->company_id);
             if ($company) {
@@ -184,9 +195,11 @@ class ProductPricing extends Page implements HasForms
             }
         }
 
-        if ($trucksList->isEmpty()) return null;
+        if ($trucksList->isEmpty()) {
+            return null;
+        }
 
-        return $trucksList->map(fn($truck) => $this->calculateTruckData($truck));
+        return $trucksList->map(fn ($truck) => $this->calculateTruckData($truck));
     }
 
     /*  private function calculateTruckData($truck)
@@ -255,7 +268,6 @@ class ProductPricing extends Page implements HasForms
         ];
     } */
 
-
     private function calculateTruckData($truck)
     {
         $exchange = (float) $this->exchange_rate ?: 1;
@@ -268,8 +280,7 @@ class ProductPricing extends Page implements HasForms
         // 1. تعديل حساب إجمالي الأطنان للشاحنة
         // نستخدم ton_weight إذا وجد، وإلا نحسبه من الكمية والوزن الوحدوي
         $total_weight_tons = $cargos->sum(
-            fn($item) =>
-            $item->ton_weight > 0 ? $item->ton_weight : ($item->quantity * $item->unit_quantity) / 1000
+            fn ($item) => $item->ton_weight > 0 ? $item->ton_weight : ($item->quantity * $item->unit_quantity) / 1000
         );
 
         $rows = $cargos->map(function ($item, $index) use ($total_weight_tons, $customs_egp, $total_transport, $exchange) {
@@ -327,7 +338,7 @@ class ProductPricing extends Page implements HasForms
                 'total_cost' => $rows->sum('total_cost'),
                 'profit' => $rows->sum('profit_value'),
                 'selling_egp' => $rows->sum('selling_price_egp'),
-            ]
+            ],
         ];
     }
 }

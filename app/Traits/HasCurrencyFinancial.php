@@ -15,6 +15,7 @@ trait HasCurrencyFinancial
         return $this->morphMany(\App\Models\CurrencyTransaction::class, 'party')
             ->where('type', CurrencyType::Convert);
     }
+
     public function currencyBalance()
     {
         return $this->morphMany(\App\Models\CurrencyBalance::class, 'owner');

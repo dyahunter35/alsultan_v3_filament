@@ -2,14 +2,16 @@
 
 namespace App\Filament\Forms\Components;
 
-use Filament\Forms\Components\Select;
 use Closure;
+use Filament\Forms\Components\Select;
 use Illuminate\Database\Eloquent\Builder;
 
 class MorphSelect extends Select
 {
     protected ?string $idField = null;
+
     protected ?string $typeField = null;
+
     protected array|Closure $models = [];
 
     public function setMorphFields(string $idField, string $typeField): static
@@ -23,6 +25,7 @@ class MorphSelect extends Select
     public function models(array|Closure $models): static
     {
         $this->models = $models;
+
         return $this;
     }
 
@@ -39,7 +42,7 @@ class MorphSelect extends Select
 
         // Hydrate state من id & type عند التحديث
         $this->afterStateHydrated(function (MorphSelect $component, $state, callable $get) {
-            if (!$state) {
+            if (! $state) {
                 $id = $get($this->getIdField());
                 $type = $get($this->getTypeField());
 
@@ -64,9 +67,10 @@ class MorphSelect extends Select
             }
         });
 
-
         $this->afterStateUpdated(function ($state, callable $set) {
-            if (!$state) return;
+            if (! $state) {
+                return;
+            }
 
             foreach ($this->getModels() as $prefix => $class) {
                 // لو Class عبارة عن Closure
@@ -100,8 +104,12 @@ class MorphSelect extends Select
         $name = $this->getName();
         $base = str_ends_with($name, '_select') ? substr($name, 0, -7) : $name;
 
-        if (!$this->idField) $this->idField = "{$base}_id";
-        if (!$this->typeField) $this->typeField = "{$base}_type";
+        if (! $this->idField) {
+            $this->idField = "{$base}_id";
+        }
+        if (! $this->typeField) {
+            $this->typeField = "{$base}_type";
+        }
     }
 
     protected function setUpOptions(): void
@@ -128,7 +136,8 @@ class MorphSelect extends Select
                     }
 
                     $icon = $prefix !== 'customer' ? '👤 ' : '💼 ';
-                    return ["{$prefix}_{$record->id}" => $icon . $label];
+
+                    return ["{$prefix}_{$record->id}" => $icon.$label];
                 })->toArray();
 
                 $options = array_merge($options, $mapped);
@@ -152,8 +161,11 @@ class MorphSelect extends Select
     {
         $models = $this->getModels();
         foreach ($models as $prefix => $class) {
-            if ($class === $type) return $prefix;
+            if ($class === $type) {
+                return $prefix;
+            }
         }
+
         return '';
     }
 }

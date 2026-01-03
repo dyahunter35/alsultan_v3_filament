@@ -22,7 +22,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Grid;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Malzariey\FilamentDaterangepickerFilter\Enums\OpenDirection;
@@ -37,11 +36,11 @@ class TrucksTable
             ->columns([
 
                 Tables\Columns\TextColumn::make('driver_name')
-                    ->getStateUsing(fn($record) =>  $record->driver_name . '<br>' . $record->driver_phone)->html()
+                    ->getStateUsing(fn ($record) => $record->driver_name.'<br>'.$record->driver_phone)->html()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('car_details')
-                    ->getStateUsing(fn($record) =>  $record->truck_model . '<br>' . $record->car_number)->html()
+                    ->getStateUsing(fn ($record) => $record->truck_model.'<br>'.$record->car_number)->html()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('pack_date')
@@ -109,7 +108,7 @@ class TrucksTable
                 Actions\Action::make('report')
                     ->label(__('truck.actions.report.label'))
                     ->icon(__('truck.actions.report.icon'))
-                    ->action(fn(Truck $record) => redirect(TruckReport::getUrl(['truckId' => $record->id]))),
+                    ->action(fn (Truck $record) => redirect(TruckReport::getUrl(['truckId' => $record->id]))),
 
                 Actions\Action::make('reload_cargo')
                     ->requiresConfirmation()
@@ -129,7 +128,7 @@ class TrucksTable
                             ->title('تمت إعادة تحميل الحمولة بنجاح')
                             ->success()
                             ->send();
-                    })->visible(fn(Truck $record) => $record->is_converted),
+                    })->visible(fn (Truck $record) => $record->is_converted),
 
                 Actions\Action::make('unload_cargo')
                     ->label(__('truck.actions.unload_cargo.label'))
@@ -137,7 +136,7 @@ class TrucksTable
                     ->icon('heroicon-m-arrow-down-tray')
                     ->color('success')
                     // 1. تعبئة النموذج بالبيانات الموجودة مسبقاً في الشاحنة
-                    ->fillForm(fn(Truck $record): array => [
+                    ->fillForm(fn (Truck $record): array => [
                         'cargos' => $record->cargos->map(function ($cargo) {
                             return [
                                 'id' => $cargo->id,
@@ -193,8 +192,8 @@ class TrucksTable
                                         // حقل مخفي لتمرير الـ ID الخاص بالبضاعة
                                         Hidden::make('id'),
                                     ])
-                                    ->columns(3) // تنسيق العرض في 3 أعمدة
-                            ])
+                                    ->columns(3), // تنسيق العرض في 3 أعمدة
+                            ]),
 
                     ])
                     // 3. معالجة البيانات بعد الضغط على زر الحفظ
@@ -204,15 +203,16 @@ class TrucksTable
                         $targetBranch = Branch::find($data['brunch_id']);
                         $causer = auth()->user();
 
-                        if (!$targetBranch) {
+                        if (! $targetBranch) {
                             Notification::make()->title('خطأ: لم يتم تحديد المخزن.')->danger()->send();
+
                             return;
                         }
 
                         foreach ($data['cargos'] as $item) {
                             $productId = $item['product_id'];
-                            $expectedQty = (float)$item['quantity'];
-                            $realQtyInput = (float)$item['real_quantity'];
+                            $expectedQty = (float) $item['quantity'];
+                            $realQtyInput = (float) $item['real_quantity'];
 
                             // تحديد الكمية النهائية التي ستدخل المخزن
                             // (إذا كان real_quantity غير فارغ و أكبر من 0، استخدمه، وإلا استخدم الكمية المسجلة)
@@ -245,7 +245,7 @@ class TrucksTable
                                 } catch (Exception $e) {
                                     Notification::make()
                                         ->title("فشل نقل المنتج {$product->name}")
-                                        ->body("الرجاء التحقق من سجل الأخطاء.")
+                                        ->body('الرجاء التحقق من سجل الأخطاء.')
                                         ->danger()
                                         ->send();
                                 }
@@ -263,8 +263,7 @@ class TrucksTable
                             ->success()
                             ->send();
                     })
-                    ->visible(fn(Truck $record) => !$record->is_converted),
-
+                    ->visible(fn (Truck $record) => ! $record->is_converted),
 
                 Actions\ViewAction::make(),
                 Actions\EditAction::make(),

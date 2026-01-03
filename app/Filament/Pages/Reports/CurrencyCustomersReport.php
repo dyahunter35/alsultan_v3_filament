@@ -4,7 +4,6 @@ namespace App\Filament\Pages\Reports;
 
 use App\Enums\ExpenseGroup;
 use App\Filament\Pages\Concerns\HasReport;
-use App\Filament\Pages\Concerns\HasSinglePage;
 use App\Models\Customer;
 use App\Services\CustomerService;
 use Filament\Forms;
@@ -16,10 +15,12 @@ use Livewire\Attributes\Url;
 
 class CurrencyCustomersReport extends Page implements Forms\Contracts\HasForms
 {
-    use HasReport;
     use Forms\Concerns\InteractsWithForms;
+    use HasReport;
 
-    protected  string $view = 'filament.pages.reports.customers-report';
+    protected static ?int $navigationSort = 31;
+
+    protected string $view = 'filament.pages.reports.customers-report';
 
     #[Url]
     public ?int $customerId = null;
@@ -34,14 +35,13 @@ class CurrencyCustomersReport extends Page implements Forms\Contracts\HasForms
 
     public ?Collection $ledger = null;
 
-    public function getTitle(): string | Htmlable
+    public function getTitle(): string|Htmlable
     {
-        //dd(self::getLocalePath());
+        // dd(self::getLocalePath());
         return $this->customer
             ? __('customer.reports.ledger.title_for', ['customer' => $this->customer->name])
             : __('customer.reports.ledger.title');
     }
-
 
     public function mount(): void
     {
@@ -65,16 +65,18 @@ class CurrencyCustomersReport extends Page implements Forms\Contracts\HasForms
 
     public function loadLedger(): void
     {
-        if (!$this->customerId) {
+        if (! $this->customerId) {
             $this->ledger = collect();
+
             return;
         }
 
         $customer = Customer::find($this->customerId);
         $this->customer = $customer;
-        if (!$customer) {
+        if (! $customer) {
             $this->customer = null;
             $this->ledger = collect();
+
             return;
         }
 
@@ -92,18 +94,18 @@ class CurrencyCustomersReport extends Page implements Forms\Contracts\HasForms
                         ->options(Customer::per(ExpenseGroup::DEBTORS)->pluck('name', 'id'))
                         ->searchable()
                         ->reactive()
-                        ->afterStateUpdated(fn() => $this->loadLedger()),
+                        ->afterStateUpdated(fn () => $this->loadLedger()),
 
                     Forms\Components\DatePicker::make('startDate')
                         ->label('من تاريخ')
                         ->reactive()
-                        ->afterStateUpdated(fn() => $this->loadLedger()),
+                        ->afterStateUpdated(fn () => $this->loadLedger()),
 
                     Forms\Components\DatePicker::make('endDate')
                         ->label('إلى تاريخ')
                         ->reactive()
-                        ->afterStateUpdated(fn() => $this->loadLedger()),
-                ])
+                        ->afterStateUpdated(fn () => $this->loadLedger()),
+                ]),
         ];
     }
 }

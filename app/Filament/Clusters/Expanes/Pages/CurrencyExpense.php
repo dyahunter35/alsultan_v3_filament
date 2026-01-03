@@ -5,9 +5,7 @@ namespace App\Filament\Clusters\Expanes\Pages;
 use App\Enums\ExpenseGroup;
 use App\Filament\Clusters\Expanes\ExpanesCluster;
 use App\Filament\Forms\Components\DecimalInput;
-use App\Filament\Forms\Components\MorphField;
 use App\Filament\Forms\Components\MorphSelect;
-use App\Filament\Pages\Concerns\HasPage;
 use App\Filament\Pages\Concerns\HasSinglePage;
 use App\Models\Expense;
 use App\Models\ExpenseType;
@@ -22,33 +20,23 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ReplicateAction;
 use Filament\Actions\RestoreAction;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
-use Filament\Schemas\Concerns\InteractsWithSchemas;
-use Filament\Schemas\Contracts\HasSchemas;
-use Filament\Schemas\Schema;
-use Filament\Tables;
-use Filament\Tables\Concerns\InteractsWithTable;
-use Filament\Tables\Contracts\HasTable;
-use Filament\Tables\Table;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Form;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Support\Exceptions\Halt;
+use Filament\Tables;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\TrashedFilter;
-use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Model;
-use Livewire\Component;
+use Filament\Tables\Table;
 
 class CurrencyExpense extends Page implements HasActions, HasTable
 {
     use HasSinglePage;
-
     use InteractsWithActions;
     use InteractsWithTable;
 
@@ -56,21 +44,22 @@ class CurrencyExpense extends Page implements HasActions, HasTable
 
     protected static ?string $cluster = ExpanesCluster::class;
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 102;
 
     public static function getLocalePath(): string
     {
-        return 'expense.' . static::className();
+        return 'expense.'.static::className();
     }
 
     public function table(Table $table): Table
     {
         self::translateConfigureTable();
         self::translateConfigureForm();
+
         return $table
             ->query(Expense::types('debtors'))
             ->defaultSort('id', 'desc')
-            ->modelLabel(__('expense.' . static::className() . '.navigation.model_label'))
+            ->modelLabel(__('expense.'.static::className().'.navigation.model_label'))
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->sortable(),
@@ -81,8 +70,7 @@ class CurrencyExpense extends Page implements HasActions, HasTable
 
                 Tables\Columns\TextColumn::make('type.label')
                     ->formatStateUsing(
-                        fn($state, $record) =>
-                        $record->expense_type_id
+                        fn ($state, $record) => $record->expense_type_id
                             ? $record->type->label
                             : $record->custom_expense_type
                     )
@@ -100,17 +88,16 @@ class CurrencyExpense extends Page implements HasActions, HasTable
                     // ->formatStateUsing(fn($record) => optional($record->beneficiary)->name)
                     ->searchable(),
 
-                //Tables\Columns\TextColumn::make('amount'),
+                // Tables\Columns\TextColumn::make('amount'),
 
                 // Tables\Columns\TextColumn::make('branch.name')
                 //     ->searchable(),
 
-                //Tables\Columns\TextColumn::make('amount'),
-                //Tables\Columns\TextColumn::make('unit_price'),
+                // Tables\Columns\TextColumn::make('amount'),
+                // Tables\Columns\TextColumn::make('unit_price'),
                 Tables\Columns\TextColumn::make('total_amount'),
                 Tables\Columns\IconColumn::make('is_paid')
                     ->boolean(),
-
 
             ])
             ->filters([
@@ -129,23 +116,23 @@ class CurrencyExpense extends Page implements HasActions, HasTable
                 DeleteAction::make()
                     ->requiresConfirmation(),
                 RestoreAction::make()
-                    ->visible(fn($record) => $record->deleted_at),
+                    ->visible(fn ($record) => $record->deleted_at),
                 ForceDeleteAction::make()
-                    ->visible(fn($record) => $record->deleted_at),
+                    ->visible(fn ($record) => $record->deleted_at),
             ])
             ->toolbarActions([
                 CreateAction::make()
                     ->schema($this->expenseForm())
                     ->preserveFormDataWhenCreatingAnother(
-                        fn(array $data): array =>
-                        \Illuminate\Support\Arr::except($data, ['payment_reference', 'total_amount'])
-                    )
+                        fn (array $data): array => \Illuminate\Support\Arr::except($data, ['payment_reference', 'total_amount'])
+                    ),
             ]);
     }
 
     public static function expenseForm()
     {
         $type = ExpenseType::where('group', 'debtors');
+
         return [
             Grid::make()
                 ->columns(2)
@@ -163,10 +150,10 @@ class CurrencyExpense extends Page implements HasActions, HasTable
                             ->columnSpanFull(),
 
                         MorphSelect::make('beneficiary_select')
-                            ->label(__(self::getLocalePath() . '.fields.beneficiary.label'))
+                            ->label(__(self::getLocalePath().'.fields.beneficiary.label'))
                             ->models([
-                                //'user' => \App\Models\Company::class,
-                                'customer' => fn() => \App\Models\Customer::per(ExpenseGroup::DEBTORS->value)->get(),
+                                // 'user' => \App\Models\Company::class,
+                                'customer' => fn () => \App\Models\Customer::per(ExpenseGroup::DEBTORS->value)->get(),
                             ])
                             ->preload()
                             ->required(),
@@ -188,14 +175,12 @@ class CurrencyExpense extends Page implements HasActions, HasTable
 
                         // 2. الحساب المستفيد (إلى) - يفترض أنه حساب يتعلق بالمخزن
 
-
                         Select::make('representative_id')
                             ->label(__('المندوب'))
                             ->options(User::sales())
                             ->preload()
                             ->searchable()
                             ->nullable(),
-
 
                         // 7. وسيلة الدفع
                         Forms\Components\Select::make('payment_method')
@@ -239,8 +224,8 @@ class CurrencyExpense extends Page implements HasActions, HasTable
                             ->nullable(),
                     ])
                         ->columnSpan(2)
-                        ->columns(2)
-                ])
+                        ->columns(2),
+                ]),
 
         ];
     }

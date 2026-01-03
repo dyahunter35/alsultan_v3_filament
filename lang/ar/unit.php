@@ -1,11 +1,12 @@
 <?php
+
 return [
     'navigation' => [
         'group' => 'إدارة المنتجات',
         'label' => 'الوحدات',
         'plural_label' => 'الوحدات',
         'model_label' => 'وحدة',
-        'sort' => 7
+        'sort' => 7,
     ],
     'breadcrumbs' => [
         'index' => 'الوحدات',
@@ -28,7 +29,7 @@ return [
         'updated_at' => [
             'label' => 'آخر تعديل',
             'placeholder' => '',
-        ]
-    ]
+        ],
+    ],
 
 ];

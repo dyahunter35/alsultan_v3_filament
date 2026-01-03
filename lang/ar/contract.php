@@ -43,7 +43,7 @@ return [
         'duration_months' => [
             'label' => 'المدة (بالأشهر)',
             'placeholder' => 'أدخل مدة العقد بالأشهر',
-            'unit' => 'شهر'
+            'unit' => 'شهر',
 
         ],
         'total_amount' => [

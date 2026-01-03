@@ -4,16 +4,16 @@ namespace App\Filament\Forms\Components;
 
 use Closure;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Component;
 use Filament\Schemas\Components\Fieldset;
 use Illuminate\Contracts\Support\Htmlable;
 
 class MorphField extends Fieldset
 {
     protected string $baseName;
+
     protected array $models = [];
 
-    public static function make(string | Htmlable | Closure | null $label = null): static
+    public static function make(string|Htmlable|Closure|null $label = null): static
     {
         $static = new static($label);
         $static->baseName = $label;
@@ -24,6 +24,7 @@ class MorphField extends Fieldset
     public function models(array $models): static
     {
         $this->models = $models;
+
         return $this;
     }
 

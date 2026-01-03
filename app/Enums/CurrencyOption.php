@@ -3,12 +3,12 @@
 namespace App\Enums;
 
 use App\Traits\EnumsKeys;
-use Filament\Support\Contracts\HasLabel;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasDescription;
 use Filament\Support\Contracts\HasIcon;
+use Filament\Support\Contracts\HasLabel;
 
-enum CurrencyOption: string implements HasLabel, HasColor, HasDescription, HasIcon
+enum CurrencyOption: string implements HasColor, HasDescription, HasIcon, HasLabel
 {
     use EnumsKeys;
 
@@ -26,13 +26,14 @@ enum CurrencyOption: string implements HasLabel, HasColor, HasDescription, HasIc
 
     public function getLabel(): ?string
     {
-        return __('enums.currency_option.' . $this->name . '.label');
+        return __('enums.currency_option.'.$this->name.'.label');
     }
 
     public function getDescription(): ?string
     {
-        return __('enums.currency_option.' . $this->name . '.description');
+        return __('enums.currency_option.'.$this->name.'.description');
     }
+
     public function getIcon(): ?string
     {
         return match ($this) {

@@ -8,7 +8,6 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -18,7 +17,6 @@ class SupplyingForm
 {
     public static function configure(Schema $schema): Schema
     {
-
 
         return $schema
             ->columns(3)
@@ -32,14 +30,14 @@ class SupplyingForm
                             ->preload()
                             ->required()
                             ->searchable()
-                            ->default(fn() => request()->get('customer_id', null)),
+                            ->default(fn () => request()->get('customer_id', null)),
 
                         Select::make('representative_id')
                             ->relationship('representative', 'name')
                             ->preload()
                             ->required()
                             ->searchable()
-                            ->default(fn() => request()->get('rep_id', null)),
+                            ->default(fn () => request()->get('rep_id', null)),
 
                         Select::make('payment_method')
                             ->options(PaymentOptions::class)
@@ -56,7 +54,7 @@ class SupplyingForm
                             ->million(),
 
                         DecimalInput::make('paid_amount')
-                            ->required(fn(?Model $record) => $record != null),
+                            ->required(fn (?Model $record) => $record != null),
 
                     ]),
                 Section::make()
@@ -74,7 +72,7 @@ class SupplyingForm
                             ->default(now()),
                     ]),
                 Hidden::make('created_by')
-                    ->default(fn() => auth()->user()->id),
+                    ->default(fn () => auth()->user()->id),
             ]);
     }
 }

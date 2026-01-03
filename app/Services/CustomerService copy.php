@@ -16,7 +16,7 @@ class CustomerService
         $ledger = collect();
 
         $startDate = $startDate ? Carbon::parse($startDate)->startOfDay() : null;
-        $endDate   = $endDate ? Carbon::parse($endDate)->endOfDay() : null;
+        $endDate = $endDate ? Carbon::parse($endDate)->endOfDay() : null;
 
         // ✅ الرصيد المرحل قبل startDate
         $openingBalance = $this->calculateOpeningBalance($customer, $startDate);
@@ -31,18 +31,18 @@ class CustomerService
         ]);
 
         // ✅ نحدد الفترة المطلوبة:
-        if ($startDate && !$endDate) {
+        if ($startDate && ! $endDate) {
             // في حالة تحديد startDate فقط ⇒ نجيب اليوم المحدد فقط
             $rangeStart = $startDate;
-            $rangeEnd   = $startDate->copy()->endOfDay();
+            $rangeEnd = $startDate->copy()->endOfDay();
         } elseif ($startDate && $endDate) {
             // في حالة تحديد تاريخين ⇒ نجيب المدى بينهما
             $rangeStart = $startDate;
-            $rangeEnd   = $endDate;
+            $rangeEnd = $endDate;
         } else {
             // بدون تواريخ ⇒ كل السجل
             $rangeStart = null;
-            $rangeEnd   = null;
+            $rangeEnd = null;
         }
 
         // 🔹 كل الحركات المالية
@@ -51,10 +51,10 @@ class CustomerService
         // مصروفات دافع
         $transactions = $transactions->merge(
             $customer->expensesAsPayer()
-                ->when($rangeStart, fn($q) => $q->where('created_at', '>=', $rangeStart))
-                ->when($rangeEnd, fn($q) => $q->where('created_at', '<=', $rangeEnd))
+                ->when($rangeStart, fn ($q) => $q->where('created_at', '>=', $rangeStart))
+                ->when($rangeEnd, fn ($q) => $q->where('created_at', '<=', $rangeEnd))
                 ->get()
-                ->map(fn($e) => [
+                ->map(fn ($e) => [
                     'type' => 'expense_paid',
                     'date' => $e->created_at?->format('Y-m-d'),
                     'description' => 'دفع مصروف',
@@ -66,10 +66,10 @@ class CustomerService
         // مصروفات مستلمة
         $transactions = $transactions->merge(
             $customer->expensesAsBeneficiary()
-                ->when($rangeStart, fn($q) => $q->where('created_at', '>=', $rangeStart))
-                ->when($rangeEnd, fn($q) => $q->where('created_at', '<=', $rangeEnd))
+                ->when($rangeStart, fn ($q) => $q->where('created_at', '>=', $rangeStart))
+                ->when($rangeEnd, fn ($q) => $q->where('created_at', '<=', $rangeEnd))
                 ->get()
-                ->map(fn($e) => [
+                ->map(fn ($e) => [
                     'type' => 'expense_received',
                     'date' => $e->created_at?->format('Y-m-d'),
                     'description' => 'استلام مصروف',
@@ -81,10 +81,10 @@ class CustomerService
         // التوريدات
         $transactions = $transactions->merge(
             $customer->supplyings()
-                ->when($rangeStart, fn($q) => $q->where('created_at', '>=', $rangeStart))
-                ->when($rangeEnd, fn($q) => $q->where('created_at', '<=', $rangeEnd))
+                ->when($rangeStart, fn ($q) => $q->where('created_at', '>=', $rangeStart))
+                ->when($rangeEnd, fn ($q) => $q->where('created_at', '<=', $rangeEnd))
                 ->get()
-                ->map(fn($s) => [
+                ->map(fn ($s) => [
                     'type' => 'supplying',
                     'date' => $s->created_at?->format('Y-m-d'),
                     'description' => 'توريد',
@@ -96,10 +96,10 @@ class CustomerService
         // المبيعات
         $transactions = $transactions->merge(
             $customer->sales()
-                ->when($rangeStart, fn($q) => $q->where('created_at', '>=', $rangeStart))
-                ->when($rangeEnd, fn($q) => $q->where('created_at', '<=', $rangeEnd))
+                ->when($rangeStart, fn ($q) => $q->where('created_at', '>=', $rangeStart))
+                ->when($rangeEnd, fn ($q) => $q->where('created_at', '<=', $rangeEnd))
                 ->get()
-                ->map(fn($o) => [
+                ->map(fn ($o) => [
                     'type' => 'sale',
                     'date' => $o->created_at?->format('Y-m-d'),
                     'description' => 'بيع',
@@ -127,7 +127,9 @@ class CustomerService
      */
     public function calculateOpeningBalance(Customer $customer, ?string $startDate): float
     {
-        if (!$startDate) return 0;
+        if (! $startDate) {
+            return 0;
+        }
 
         $date = Carbon::parse($startDate)->startOfDay();
         $balance = 0;
@@ -157,6 +159,6 @@ class CustomerService
 
     public function updateCustomersBalance(): void
     {
-        Customer::all()->each(fn($c) => $this->updateCustomerBalance($c));
+        Customer::all()->each(fn ($c) => $this->updateCustomerBalance($c));
     }
 }

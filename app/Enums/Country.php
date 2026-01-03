@@ -3,10 +3,10 @@
 namespace App\Enums;
 
 use App\Traits\EnumsKeys;
-use Filament\Support\Contracts\HasLabel;
 use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasLabel;
 
-enum Country: string implements HasLabel, HasColor
+enum Country: string implements HasColor, HasLabel
 {
     use EnumsKeys;
     case Egypt = 'egypt';
@@ -19,7 +19,7 @@ enum Country: string implements HasLabel, HasColor
         return __('enums.country.'.$this->value);
     }
 
-    public function getColor(): string | array | null
+    public function getColor(): string|array|null
     {
         return match ($this) {
             self::Egypt => 'primary',

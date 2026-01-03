@@ -1,4 +1,5 @@
 <?php
+
 return [
     'navigation' => [
         'group' => 'Shop',
@@ -30,15 +31,14 @@ return [
 
         'totals' => [
             'label' => 'Order Totals',
-        ]
+        ],
     ],
     'fields' => [
         'is_guest' => [
             'label' => 'Is this a guest customer?',
             'placeholder' => '',
-            'filter' => 'Guest'
+            'filter' => 'Guest',
         ],
-
 
         'number' => [
             'label' => 'Order Number',
@@ -73,7 +73,7 @@ return [
                 'delivered' => 'Delivered',
                 'installed' => 'Installed',
                 'cancelled' => 'Cancelled',
-            ]
+            ],
         ],
         'currency' => [
             'label' => 'Currency',
@@ -159,12 +159,12 @@ return [
             ],
         ],
         'amount' => [
-            'label' => 'Amount'
-        ]
+            'label' => 'Amount',
+        ],
     ],
     'actions' => [
         'print' => [
-            'label' => 'Print'
+            'label' => 'Print',
         ],
         'reset' => [
             'label' => 'Reset',
@@ -182,9 +182,9 @@ return [
                 'at_least_one' => 'Order must have at least one item.',
                 'stock' => [
                     'title' => 'Stock Error',
-                    'message' => 'The requested quantity for `:product` is not available.'
-                ]
-            ]
+                    'message' => 'The requested quantity for `:product` is not available.',
+                ],
+            ],
         ],
         'delete' => [
             'notification' => 'Now, now, don\'t be cheeky, leave some records for others to play with!',
@@ -225,6 +225,6 @@ return [
             'customer' => 'Customer Details',
             'signature' => 'Signature',
             'balance_due' => 'Balance Due',
-        ]
-    ]
+        ],
+    ],
 ];

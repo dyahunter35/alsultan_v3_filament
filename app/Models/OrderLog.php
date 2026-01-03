@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\Order;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property integer $id
- * @property integer $invoice_id
+ * @property int $id
+ * @property int $invoice_id
  * @property json $log
  * @property string $type
  * @property string $created_at
@@ -25,7 +24,7 @@ class OrderLog extends Model
         'log',
         'type',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     protected $casts = [

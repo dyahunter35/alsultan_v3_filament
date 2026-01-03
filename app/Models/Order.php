@@ -34,7 +34,7 @@ class Order extends Model
         'caused_by',
         'branch_id',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     protected $casts = [
@@ -97,11 +97,6 @@ class Order extends Model
         return $this->hasMany(OrderMeta::class);
     }
 
-    /**
-     * @param string $key
-     * @param string|array|object|null $value
-     * @return Model|string|array|null
-     */
     public function meta(string $key, string|array|object|null $value = null): Model|string|null|array
     {
         if ($value !== null) {
@@ -143,6 +138,6 @@ class Order extends Model
             $nextNumber = $lastNumber + 1;
         }
 
-        return $prefix . str_pad($branch_id, 2, '0', STR_PAD_LEFT) . '-' . $year . $month . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return $prefix.str_pad($branch_id, 2, '0', STR_PAD_LEFT).'-'.$year.$month.'-'.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 }

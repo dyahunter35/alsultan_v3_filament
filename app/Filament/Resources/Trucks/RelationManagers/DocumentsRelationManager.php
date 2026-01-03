@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Trucks\RelationManagers;
 
 use App\Filament\Pages\Concerns\HasRelationManager;
-use Filament\Actions\AttachAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -17,14 +16,12 @@ use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms;
-use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\SpatieMediaLibraryImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas;
 use Filament\Schemas\Schema;
 use Filament\Tables;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -34,11 +31,13 @@ use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 class DocumentsRelationManager extends RelationManager
 {
     use HasRelationManager;
+
     protected static string $relationship = 'documents';
 
     public function form(Schema $form): Schema
     {
         static::translateConfigureForm();
+
         return $form
             ->schema([
                 Schemas\Components\Section::make()
@@ -68,11 +67,11 @@ class DocumentsRelationManager extends RelationManager
                             ->required()
                             ->columnSpanFull()
                             ->openable()
-                            //->deletable(true)
-                            //->model(fn() => $this->ownerRecord)
+                            // ->deletable(true)
+                            // ->model(fn() => $this->ownerRecord)
                             ->maxSize(10240) // 10MB
                             ->downloadable(),
-                    ])->columnSpan(1)
+                    ])->columnSpan(1),
 
             ])->columns(3);
     }
@@ -80,6 +79,7 @@ class DocumentsRelationManager extends RelationManager
     public function infolist(Schema $schema): Schema
     {
         static::translateConfigureInfolist();
+
         return $schema
             ->components([
 
@@ -89,13 +89,14 @@ class DocumentsRelationManager extends RelationManager
                     ->label('File')
                     ->collection('truck_docs')
 
-                    ->conversion('thumb')
+                    ->conversion('thumb'),
             ]);
     }
 
     public function table(Table $table): Table
     {
         static::translateConfigureTable();
+
         return $table
             ->recordTitleAttribute('name')
             ->columns([
@@ -114,7 +115,7 @@ class DocumentsRelationManager extends RelationManager
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('note')
-                    ->searchable()
+                    ->searchable(),
             ])->filters([
                 DateRangeFilter::make('issuance_date')->opens(OpenDirection::RIGHT),
             ])
@@ -127,18 +128,18 @@ class DocumentsRelationManager extends RelationManager
                 EditAction::make(),
                 DetachAction::make(),
                 DeleteAction::make(),
-                //ForceDeleteAction::make(),
-                //RestoreAction::make(),
+                // ForceDeleteAction::make(),
+                // RestoreAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DetachBulkAction::make(),
                     DeleteBulkAction::make(),
-                    //ForceDeleteBulkAction::make(),
-                    //RestoreBulkAction::make(),
+                    // ForceDeleteBulkAction::make(),
+                    // RestoreBulkAction::make(),
                 ]),
             ])
-            ->modifyQueryUsing(fn(Builder $query) => $query
+            ->modifyQueryUsing(fn (Builder $query) => $query
                 ->withoutGlobalScopes([
                     SoftDeletingScope::class,
                 ]));

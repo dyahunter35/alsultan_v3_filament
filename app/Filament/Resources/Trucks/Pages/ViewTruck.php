@@ -12,12 +12,11 @@ class ViewTruck extends ViewRecord
     protected static string $resource = TruckResource::class;
 
     protected function getHeaderWidgets(): array
-{
-    return [
-        TruckFinanceOverview::class,
-    ];
-}
-
+    {
+        return [
+            TruckFinanceOverview::class,
+        ];
+    }
 
     protected function getHeaderActions(): array
     {

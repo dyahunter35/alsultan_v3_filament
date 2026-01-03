@@ -2,13 +2,12 @@
 
 namespace App\Enums;
 
-use Filament\Support\Contracts\HasLabel;
+use App\Traits\EnumsKeys;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
-use App\Traits\EnumsKeys;
-use Filament\Support\Contracts;
+use Filament\Support\Contracts\HasLabel;
 
-enum CompanyType: string implements HasLabel, HasColor, HasIcon
+enum CompanyType: string implements HasColor, HasIcon, HasLabel
 {
     use EnumsKeys;
 
@@ -17,7 +16,7 @@ enum CompanyType: string implements HasLabel, HasColor, HasIcon
 
     public function getLabel(): ?string
     {
-        return __('enums.company_type.' . $this->value);
+        return __('enums.company_type.'.$this->value);
     }
 
     public function getColor(): ?string

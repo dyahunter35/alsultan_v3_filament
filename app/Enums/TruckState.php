@@ -3,11 +3,11 @@
 namespace App\Enums;
 
 use App\Traits\EnumsKeys;
-use Filament\Support\Contracts\HasLabel;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
+use Filament\Support\Contracts\HasLabel;
 
-enum TruckState: string implements HasLabel, HasColor, HasIcon
+enum TruckState: string implements HasColor, HasIcon, HasLabel
 {
     use EnumsKeys;
     case OnWay = 'on_way';
@@ -17,13 +17,14 @@ enum TruckState: string implements HasLabel, HasColor, HasIcon
 
     public function arabic(): string
     {
-        return __('enums.truck_state.' . $this->value);
+        return __('enums.truck_state.'.$this->value);
     }
 
     public function getLabel(): ?string
     {
         return $this->arabic();
     }
+
     public function getColor(): ?string
     {
         return match ($this) {
@@ -33,6 +34,7 @@ enum TruckState: string implements HasLabel, HasColor, HasIcon
             self::port => 'info',
         };
     }
+
     public function getIcon(): ?string
     {
         return match ($this) {

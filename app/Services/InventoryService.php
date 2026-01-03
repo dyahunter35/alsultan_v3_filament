@@ -5,12 +5,9 @@ namespace App\Services;
 use App\Enums\StockCase;
 use App\Models\Branch;
 use App\Models\Product;
-use App\Models\Scopes\IsVisibleScope;
 use App\Models\StockHistory;
 use App\Models\Truck;
 use App\Models\User;
-use Exception;
-use Filament\Facades\Filament;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -85,7 +82,7 @@ class InventoryService
      *
      * ملاحظة: يسمح بخروج رصيد سالب (حسب رغبتك) — لا يقوم بالـ throw عند الوصول لسالب.
      */
-    public function deductStockForBranch(Product $product, Branch $branch, int $quantity, ?string $notes = 'Sale',  ?User $causer = null, ?Truck $truck = null): StockHistory
+    public function deductStockForBranch(Product $product, Branch $branch, int $quantity, ?string $notes = 'Sale', ?User $causer = null, ?Truck $truck = null): StockHistory
     {
         return DB::transaction(function () use ($product, $branch, $quantity, $notes, $causer, $truck) {
             // Lock or create pivot row
@@ -178,7 +175,7 @@ class InventoryService
                   WHERE stock_histories.product_id = branch_product.product_id
                   AND stock_histories.branch_id = branch_product.branch_id), 0))'
             ),
-            'updated_at' => now()
+            'updated_at' => now(),
         ]);
     }
 
@@ -194,7 +191,7 @@ class InventoryService
                 product: $product,
                 branch: $fromBranch,
                 quantity: $quantity,
-                notes: "تحويل صادر: " . ($notes ?? "إلى " . $toBranch->name),
+                notes: 'تحويل صادر: '.($notes ?? 'إلى '.$toBranch->name),
                 causer: $causer,
                 truck: $truck
             );
@@ -205,7 +202,7 @@ class InventoryService
                 branch: $toBranch,
                 quantity: $quantity,
                 type: StockCase::Increase,
-                notes: "تحويل وارد: " . ($notes ?? "من " . $fromBranch->name),
+                notes: 'تحويل وارد: '.($notes ?? 'من '.$fromBranch->name),
                 causer: $causer,
                 truck: $truck
             );

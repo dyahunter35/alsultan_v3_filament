@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\InnerTrucks\RelationManagers;
 
 use App\Filament\Clusters\Expanes\Pages\CustomExpense;
-use App\Filament\Clusters\Expanes\Pages\TaxExpense;
 use App\Filament\Pages\Concerns\HasRelationManager;
 use Filament\Actions\AssociateAction;
 use Filament\Actions\BulkActionGroup;
@@ -17,10 +16,8 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -29,6 +26,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class CustomExpensesRelationManager extends RelationManager
 {
     use HasRelationManager;
+
     protected static string $relationship = 'customExpenses';
 
     public static function getLocalePath(): string
@@ -54,12 +52,12 @@ class CustomExpensesRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->preserveFormDataWhenCreatingAnother(fn(array $data): array => $data),
-                //AssociateAction::make(),
+                    ->preserveFormDataWhenCreatingAnother(fn (array $data): array => $data),
+                // AssociateAction::make(),
             ])
             ->recordActions([
                 EditAction::make(),
-                //DissociateAction::make(),
+                // DissociateAction::make(),
                 DeleteAction::make(),
                 ForceDeleteAction::make(),
                 RestoreAction::make(),
@@ -72,7 +70,7 @@ class CustomExpensesRelationManager extends RelationManager
                     RestoreBulkAction::make(),
                 ]),
             ])
-            ->modifyQueryUsing(fn(Builder $query) => $query
+            ->modifyQueryUsing(fn (Builder $query) => $query
                 ->withoutGlobalScopes([
                     SoftDeletingScope::class,
                 ]));

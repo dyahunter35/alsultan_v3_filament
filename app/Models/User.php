@@ -5,10 +5,10 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Traits\HasFinancials;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -23,9 +23,10 @@ class User extends Authenticatable implements HasTenants
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
-    use SoftDeletes;
-    use HasRoles;
+
     use HasFinancials;
+    use HasRoles;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -37,6 +38,7 @@ class User extends Authenticatable implements HasTenants
         'email',
         'password',
     ];
+
     /* protected $appends = [
         'rep_name',
     ]; */
@@ -63,7 +65,6 @@ class User extends Authenticatable implements HasTenants
         ];
     }
 
-
     public function scopeSales($query)
     {
         return User::role('sales')->pluck('name', 'id');
@@ -73,10 +74,10 @@ class User extends Authenticatable implements HasTenants
     {
         return Attribute::make(
             // Accessor (للعرض في كل مكان):
-            get: fn(string $value) => $this->hasRole('sales') ? $value . " (مندوب)" : $value,
+            get: fn (string $value) => $this->hasRole('sales') ? $value.' (مندوب)' : $value,
 
             // Mutator (للتنظيف عند الحفظ):
-            set: fn(string $value) => str_replace(' (مندوب)', '', $value),
+            set: fn (string $value) => str_replace(' (مندوب)', '', $value),
         );
     }
 

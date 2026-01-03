@@ -6,13 +6,9 @@ use App\Models\Pivots\BranchProduct;
 use App\Models\Scopes\IsVisibleScope;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Facades\Auth;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -25,7 +21,7 @@ class Product extends Model implements HasMedia
 
     protected static function booted(): void
     {
-        static::addGlobalScope(new IsVisibleScope());
+        static::addGlobalScope(new IsVisibleScope);
     }
 
     /** @return BelonngsTo<Category> */
@@ -39,6 +35,7 @@ class Product extends Model implements HasMedia
     {
         return $this->belongsTo(Unit::class);
     }
+
     public function branches(): BelongsToMany
     {
         return $this->belongsToMany(Branch::class)
@@ -54,8 +51,6 @@ class Product extends Model implements HasMedia
 
     /**
      * Get the stock quantity for this product for the CURRENTLY active branch.
-     *
-     * @return Attribute
      */
     public function stockForCurrentBranch(): Attribute
     {
@@ -80,13 +75,11 @@ class Product extends Model implements HasMedia
 
     /**
      * Get the total stock quantity for this product across all branches.
-     *
-     * @return Attribute
      */
     public function totalStock(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->branches()->sum('total_quantity'),
+            get: fn () => $this->branches()->sum('total_quantity'),
         );
     }
 
@@ -95,7 +88,7 @@ class Product extends Model implements HasMedia
         return Attribute::make(
             // The 'history' relationship already orders by the latest,
             // so we just need to get the first record.
-            get: fn() => $this->history()->first(),
+            get: fn () => $this->history()->first(),
         );
     }
 

@@ -3,15 +3,12 @@
 namespace App\Filament\Pages\Reports;
 
 use App\Filament\Pages\Concerns\HasReport;
-use Filament\Actions\Action;
-use App\Filament\Resources\Products\ProductResource;
-use App\Models\Branch;
 use App\Models\Product;
 use App\Models\Scopes\IsVisibleScope;
 use App\Services\InventoryService;
-use Filament\Pages\Page;
-use Filament\Actions;
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
+use Filament\Pages\Page;
 use Illuminate\Contracts\Support\Htmlable;
 
 class ProductBranchStockReport extends Page
@@ -20,9 +17,11 @@ class ProductBranchStockReport extends Page
 
     protected static bool $isScopedToTenant = true;
 
+    protected static ?int $navigationSort = 40;
+
     public function getReportParameters(): array
     {
-        return  ['b' =>  Filament::getTenant()->name];
+        return ['b' => Filament::getTenant()->name];
     }
 
     // --- NAVIGATION ---
@@ -38,13 +37,11 @@ class ProductBranchStockReport extends Page
 
     public static function getNavigationLabel(): string
     {
-        return __('report.product_branch_stock_report.heading', ['b' =>  Filament::getTenant()->name]);
+        return __('report.product_branch_stock_report.heading', ['b' => Filament::getTenant()->name]);
     }
 
     // protected static string $view = 'filament.resources.product-resource.pages.product-stock-report';
     protected string $view = 'filament.resources.product-resource.branch-report';
-    // protected static string $view = 'welcome';
-
 
     /**
      * إعداد البيانات التي سيتم تمريرها إلى ملف العرض (Blade).

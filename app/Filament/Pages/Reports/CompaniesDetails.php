@@ -12,6 +12,7 @@ class CompaniesDetails extends Page
 {
     use HasReport;
 
+    protected static ?int $navigationSort = 34;
 
     protected string $view = 'filament.pages.reports.companies-details';
 
@@ -21,8 +22,11 @@ class CompaniesDetails extends Page
 
     // loaded data
     public $company;
+
     public $companies;
+
     public $transactions = [];
+
     public $totals = [
         'total_in' => 0,
         'total_out' => 0,
@@ -34,8 +38,9 @@ class CompaniesDetails extends Page
         $this->companies = Company::select('id', 'name')->get();
         $companyId = request()->get('company_id', Company::first()?->id ?? null);
         $this->companyId = $companyId;
-        if ($this->companyId)
+        if ($this->companyId) {
             $this->loadData();
+        }
     }
 
     public function loadData(): void
@@ -46,7 +51,7 @@ class CompaniesDetails extends Page
             'trucksAsContractor',
             'expenses',
         ])->findOrFail($this->companyId);
-        //dd($company);
+        // dd($company);
 
         $tx = $company->currencyTransactions->sortByDesc('created_at')->values();
 
@@ -55,7 +60,7 @@ class CompaniesDetails extends Page
         $balance = (float) $tx->sum('total');
 
         $this->company = $company;
-        $this->transactions = $tx->map(fn($t) => [
+        $this->transactions = $tx->map(fn ($t) => [
             'id' => $t->id,
             'date' => optional($t->created_at)->toDateTimeString(),
             'type' => $t->type,

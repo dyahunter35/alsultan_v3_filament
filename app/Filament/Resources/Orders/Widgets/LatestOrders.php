@@ -2,17 +2,16 @@
 
 namespace App\Filament\Resources\Orders\Widgets;
 
-use Filament\Tables\Columns\TextColumn;
-use Filament\Actions\Action;
-use App\Enums\OrderStatus;
 use App\Filament\Resources\Orders\OrderResource;
-use Filament\Tables;
+use Filament\Actions\Action;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 
 class LatestOrders extends BaseWidget
 {
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
+
     protected static ?string $heading = 'أحدث الطلبات';
 
     public function table(Table $table): Table
@@ -37,7 +36,7 @@ class LatestOrders extends BaseWidget
             ->recordActions([
                 Action::make('view')
                     ->label('عرض')
-                    ->url(fn($record): string => OrderResource::getUrl('view', ['record' => $record])),
+                    ->url(fn ($record): string => OrderResource::getUrl('view', ['record' => $record])),
             ]);
     }
 }

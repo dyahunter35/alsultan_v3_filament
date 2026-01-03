@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Order;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Seeder;
 
 class OrderSeeder extends Seeder
 {
@@ -18,13 +17,13 @@ class OrderSeeder extends Seeder
                 Order::factory()->count(20)->create();
                 $this->command?->info('Created 20 orders using OrderFactory.');
             } catch (\Throwable $e) {
-                $this->command?->error('Order seeding failed: ' . $e->getMessage());
+                $this->command?->error('Order seeding failed: '.$e->getMessage());
             }
 
             return;
         }
 
-        $this->command?->info('OrderFactory not found at ' . $factoryPath . '. Skipping Order seeding.');
+        $this->command?->info('OrderFactory not found at '.$factoryPath.'. Skipping Order seeding.');
         $this->command?->info('To enable order seeding, create a factory at database/factories/OrderFactory.php that returns a valid Order model.');
     }
 }

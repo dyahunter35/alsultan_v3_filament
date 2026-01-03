@@ -3,10 +3,9 @@
 namespace App\Filament\Resources\Products\Pages;
 
 use App\Filament\Pages\Reports\ProductStockReport;
+use App\Filament\Resources\Products\ProductResource;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
-use App\Filament\Resources\Products\ProductResource;
-use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
 class ListProducts extends ListRecords
@@ -21,7 +20,7 @@ class ListProducts extends ListRecords
                 ->label(__('product.actions.report.label'))
                 ->icon(__('heroicon-o-document'))
                 ->color('info')
-                ->visible(fn() => !auth()->user()->hasRole('بائع'))
+                ->visible(fn () => ! auth()->user()->hasRole('بائع'))
             // ->url(ProductResource::getUrl('report'))
             ,
 

@@ -7,7 +7,7 @@ use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
-enum ContractStatus: string implements HasColor, HasLabel, HasIcon
+enum ContractStatus: string implements HasColor, HasIcon, HasLabel
 {
     use EnumsKeys;
 
@@ -18,8 +18,9 @@ enum ContractStatus: string implements HasColor, HasLabel, HasIcon
 
     public function getLabel(): ?string
     {
-        return __('contract.fields.status.options.' . $this->value);
+        return __('contract.fields.status.options.'.$this->value);
     }
+
     public function getColor(): string
     {
         return match ($this) {

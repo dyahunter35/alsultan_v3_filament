@@ -65,7 +65,7 @@ return [
     'currency_type' => [
         'send' => 'Send To',
         'convert' => 'Internal Currency Exchange',
-        'company' => 'Company Expense'
+        'company' => 'Company Expense',
     ],
 
     'expense_group' => [

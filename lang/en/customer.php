@@ -1,4 +1,5 @@
 <?php
+
 return [
     'navigation' => [
         'group' => 'Users Management',
@@ -6,7 +7,7 @@ return [
         'plural_label' => 'Customers',
         'model_label' => 'Customer',
         'search_key' => 'Customer name',
-        'sort' => 2
+        'sort' => 2,
 
     ],
     'breadcrumbs' => [

@@ -2,16 +2,15 @@
 
 namespace App\Filament\Resources\Orders\Pages;
 
-use Exception;
 use App\Filament\Resources\Orders\OrderResource;
 use App\Models\Order;
 use App\Models\Product;
 use App\Services\InventoryService;
+use Exception;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Support\Exceptions\Halt;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class CreateOrder extends CreateRecord
@@ -24,7 +23,7 @@ class CreateOrder extends CreateRecord
      */
     protected function afterCreate(): void
     {
-        $inventoryService = new InventoryService();
+        $inventoryService = new InventoryService;
         $currentBranch = Filament::getTenant();
         $currentUser = auth()->user();
         $order = $this->record;
@@ -69,7 +68,7 @@ class CreateOrder extends CreateRecord
 
             // ملاحظة: لا نستدعي updateAllBranches هنا (ثقيل). إذا أردت إعادة حساب كامل، شغّله كسكجولد أو background job.
             $order->orderLogs()->create([
-                'log' => "Invoice created By: " . ($currentUser?->name ?? 'system'),
+                'log' => 'Invoice created By: '.($currentUser?->name ?? 'system'),
                 'type' => 'created',
             ]);
         });

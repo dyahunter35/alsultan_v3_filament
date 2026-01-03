@@ -2,71 +2,68 @@
 
 namespace App\Filament\Resources\Orders;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Group;
-use Filament\Schemas\Components\Section;
-use Filament\Actions\Action;
-use Filament\Schemas\Components\Utilities\Set;
-use Filament\Schemas\Components\Utilities\Get;
-use Filament\Forms\Components\Textarea;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\Summarizers\Sum;
-use Filament\Tables\Filters\TrashedFilter;
-use Filament\Tables\Filters\Filter;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Actions\ViewAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\RestoreAction;
-use Filament\Actions\BulkAction;
-use Filament\Actions\DeleteBulkAction;
-use App\Filament\Resources\Orders\Pages\ListOrders;
-use App\Filament\Resources\Orders\Pages\CreateOrder;
-use App\Filament\Resources\Orders\Pages\EditOrder;
-use App\Filament\Resources\Orders\Pages\ViewOrder;
-use App\Filament\Resources\Orders\Pages\SalesReport;
-use Filament\Forms\Components\ToggleButtons;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\DateTimePicker;
-use App\Filament\Resources\OrderResource\Pages;
-use App\Filament\Resources\OrderResource\RelationManagers;
-use App\Models\Order;
-use Filament\Forms;
 use App\Enums\OrderStatus;
 use App\Enums\Payment;
 use App\Filament\Forms\Components\DecimalInput;
+use App\Filament\Resources\Orders\Pages\CreateOrder;
+use App\Filament\Resources\Orders\Pages\EditOrder;
+use App\Filament\Resources\Orders\Pages\ListOrders;
+use App\Filament\Resources\Orders\Pages\SalesReport;
+use App\Filament\Resources\Orders\Pages\ViewOrder;
 use App\Filament\Resources\Orders\RelationManagers\OrderLogsRelationManager;
 use App\Filament\Resources\Orders\RelationManagers\OrderMetasRelationManager;
 use App\Filament\Resources\Orders\Widgets\OrderStats;
-use App\Models\Customer;
+use App\Models\Order;
 use App\Models\Product;
-use App\Models\Scopes\IsVisibleScope;
-use DeepCopy\TypeFilter\Date\DatePeriodFilter;
+use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Columns\Summarizers\Sum;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Livewire\Attributes\On;
 use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 
 class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
+
     protected static bool $isScopedToTenant = true;
+
     protected static ?string $recordTitleAttribute = 'number';
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-shopping-bag';
+
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
+
+    protected static ?int $navigationSort = 17;
 
     public static function getModelLabel(): string
     {
@@ -110,7 +107,7 @@ class OrderResource extends Resource
                                     ->modalDescription(__('order.actions.reset.modal.description'))
                                     ->requiresConfirmation()
                                     ->color('danger')
-                                    ->action(fn(Set $set) => $set('items', [])),
+                                    ->action(fn (Set $set) => $set('items', [])),
                             ])
                             ->schema([self::getItemsRepeater()]),
 
@@ -121,14 +118,14 @@ class OrderResource extends Resource
                                     ->label(__('order.fields.shipping.label'))
                                     ->live(onBlur: true)
 
-                                    ->afterStateUpdated(fn(Get $get, Set $set) => self::calculate($get, $set)),
+                                    ->afterStateUpdated(fn (Get $get, Set $set) => self::calculate($get, $set)),
                                 DecimalInput::make('install')
                                     ->label(__('order.fields.installation.label'))
                                     ->live(onBlur: true)
 
-                                    ->afterStateUpdated(fn(Get $get, Set $set) => self::calculate($get, $set)),
+                                    ->afterStateUpdated(fn (Get $get, Set $set) => self::calculate($get, $set)),
                                 DecimalInput::make('discount')
-                                    ->hint(fn($state) => number_format($state))
+                                    ->hint(fn ($state) => number_format($state))
                                     ->label(__('order.fields.items.discount.label'))
                                     ->disabled()
                                     ->dehydrated(true),
@@ -171,7 +168,7 @@ class OrderResource extends Resource
                 TextColumn::make('customer.name')
                     ->label(__('order.fields.customer.label'))
                     ->searchable()
-                    ->formatStateUsing(fn($state, $record) => ($record->is_guest) ? $state . '  ' . __('customer.guest_suffix') : $state)
+                    ->formatStateUsing(fn ($state, $record) => ($record->is_guest) ? $state.'  '.__('customer.guest_suffix') : $state)
                     ->sortable()
                     ->toggleable(),
 
@@ -189,12 +186,12 @@ class OrderResource extends Resource
                     ->label(__('order.fields.total.label'))
                     ->searchable()
                     ->sortable()
-                    ->formatStateUsing(fn($state) => (string)number_format($state, 2))
+                    ->formatStateUsing(fn ($state) => (string) number_format($state, 2))
                     ->toggleable()
                     ->summarize([
                         Sum::make()
                             ->money()
-                            ->formatStateUsing(fn($state) => (string)number_format($state, 2)),
+                            ->formatStateUsing(fn ($state) => (string) number_format($state, 2)),
                     ]),
 
                 IconColumn::make('is_guest')
@@ -206,27 +203,25 @@ class OrderResource extends Resource
                     ->label(__('order.fields.paid.label'))
                     ->searchable()
                     ->sortable()
-                    ->formatStateUsing(fn($state) => (string)number_format($state, 2))
+                    ->formatStateUsing(fn ($state) => (string) number_format($state, 2))
                     ->toggleable()
                     ->summarize([
                         Sum::make()
                             ->money()
-                            ->formatStateUsing(fn($state) => (string)number_format($state, 2)),
+                            ->formatStateUsing(fn ($state) => (string) number_format($state, 2)),
                     ])->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('shipping')
                     ->label(__('order.fields.shipping.label'))
                     ->searchable()
                     ->sortable()
-                    ->formatStateUsing(fn($state) => (string)number_format($state, 2))
+                    ->formatStateUsing(fn ($state) => (string) number_format($state, 2))
                     ->toggleable()
                     ->summarize([
                         Sum::make()
                             ->money()
-                            ->formatStateUsing(fn($state) => (string)number_format($state, 2)),
+                            ->formatStateUsing(fn ($state) => (string) number_format($state, 2)),
                     ])->toggleable(isToggledHiddenByDefault: true),
-
-
 
             ])
             ->filters([
@@ -241,27 +236,28 @@ class OrderResource extends Resource
                 Filter::make('created_at')
                     ->schema([
                         DatePicker::make('created_from')
-                            ->placeholder('Dec 18, ' . now()->subYear()->format('Y')),
+                            ->placeholder('Dec 18, '.now()->subYear()->format('Y')),
                         DatePicker::make('created_until')
                             ->placeholder(now()->format('M d, Y')),
                     ])
-                    ->query(fn(Builder $query, array $data): Builder => $query
-                        ->when($data['created_from'], fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date))
-                        ->when($data['created_until'], fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date)))
+                    ->query(fn (Builder $query, array $data): Builder => $query
+                        ->when($data['created_from'], fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date))
+                        ->when($data['created_until'], fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date)))
                     ->indicateUsing(function (array $data): array {
                         $indicators = [];
                         if (isset($data['created_from'])) {
-                            $indicators['created_from'] = 'Order from ' . Carbon::parse($data['created_from'])->toFormattedDateString();
+                            $indicators['created_from'] = 'Order from '.Carbon::parse($data['created_from'])->toFormattedDateString();
                         }
                         if (isset($data['created_until'])) {
-                            $indicators['created_until'] = 'Order until ' . Carbon::parse($data['created_until'])->toFormattedDateString();
+                            $indicators['created_until'] = 'Order until '.Carbon::parse($data['created_until'])->toFormattedDateString();
                         }
+
                         return $indicators;
                     }),
             ])
             ->recordActions([
                 Action::make('pay')
-                    ->visible(fn($record) => $record->total != $record->paid || $record->status === OrderStatus::Processing || $record->status === OrderStatus::New)
+                    ->visible(fn ($record) => $record->total != $record->paid || $record->status === OrderStatus::Processing || $record->status === OrderStatus::New)
                     ->requiresConfirmation()
                     ->icon('heroicon-o-credit-card')
                     ->label(__('order.actions.pay.label'))
@@ -269,8 +265,8 @@ class OrderResource extends Resource
                     ->tooltip(__('order.actions.pay.label'))
                     ->iconButton()
                     ->color('info')
-                    ->visible(fn($record) => $record->is_guest)
-                    ->fillForm(fn($record) => [
+                    ->visible(fn ($record) => $record->is_guest)
+                    ->fillForm(fn ($record) => [
                         'total' => $record->total,
                         'paid' => $record->paid,
                         'amount' => $record->total - $record->paid,
@@ -291,26 +287,26 @@ class OrderResource extends Resource
                             ->label(__('order.fields.amount.label'))
                             ->required()
                             ->live(onBlur: true)
-                            ->hint(fn($state) => number_format($state))
+                            ->hint(fn ($state) => number_format($state))
                             ->hintColor('info')
                             ->numeric()
                             ->rules(['regex:/^-?\d+(\.\d{1,2})?$/'])
-                            ->maxValue(fn($record) => $record->total - $record->paid),
+                            ->maxValue(fn ($record) => $record->total - $record->paid),
                     ])
                     ->action(function (array $data, Order $record) {
 
                         $record->update([
-                            'paid' => $record->paid + $data['amount']
+                            'paid' => $record->paid + $data['amount'],
                         ]);
 
                         $record->orderMetas()->create([
                             'key' => 'payments',
                             'group' => $data['payment_method'] ?? 'cash',
-                            'value' => $data['amount']
+                            'value' => $data['amount'],
                         ]);
 
                         $record->orderLogs()->create([
-                            'log' => 'دفع مبلغ ' . number_format($data['amount'], 2) . ' ' . $record->currency . ' بواسطة: ' . auth()->user()->name,
+                            'log' => 'دفع مبلغ '.number_format($data['amount'], 2).' '.$record->currency.' بواسطة: '.auth()->user()->name,
                             'type' => 'payment',
                         ]);
 
@@ -327,29 +323,29 @@ class OrderResource extends Resource
 
                 ViewAction::make(),
                 EditAction::make()
-                    ->visible(fn($record) => !$record->deleted_at),
+                    ->visible(fn ($record) => ! $record->deleted_at),
                 DeleteAction::make()
-                    ->visible(fn($record) => !$record->deleted_at),
+                    ->visible(fn ($record) => ! $record->deleted_at),
                 RestoreAction::make()
                     ->requiresConfirmation()
-                    ->visible(fn($record) => $record->deleted_at && auth()->user()->can('restore_order')),
+                    ->visible(fn ($record) => $record->deleted_at && auth()->user()->can('restore_order')),
                 Action::make('forceDeleteItem')
                     ->label('حذف نهائي')
                     ->requiresConfirmation()
-                    ->action(fn(Model $record) => $record->forceDelete())
+                    ->action(fn (Model $record) => $record->forceDelete())
                     ->color('danger')
                     ->icon('heroicon-o-trash')
-                    ->visible(fn($record) => $record->deleted_at && auth()->user()->can('force_delete_order')),
+                    ->visible(fn ($record) => $record->deleted_at && auth()->user()->can('force_delete_order')),
             ])
             ->defaultSort('created_at', 'desc')
             ->groupedBulkActions([
                 BulkAction::make('forceDelete')
                     ->label('حذف نهائي للمحدد')
                     ->requiresConfirmation()
-                    ->action(fn(Collection $records) => $records->each->forceDelete())
+                    ->action(fn (Collection $records) => $records->each->forceDelete())
                     ->color('danger')
                     ->icon('heroicon-o-trash')
-                    ->visible(fn() => auth()->user()->can('force_delete_any_order')),
+                    ->visible(fn () => auth()->user()->can('force_delete_any_order')),
                 DeleteBulkAction::make()
                     ->requiresConfirmation(),
             ])
@@ -403,7 +399,7 @@ class OrderResource extends Resource
         return [
             __('order.fields.customer.label') => optional($record->registeredCustomer)->name,
             __('order.fields.items.total.label') => number_format($record->total, 0),
-            __('order.fields.created_at.label') =>  $record->created_at
+            __('order.fields.created_at.label') => $record->created_at,
         ];
     }
 
@@ -415,6 +411,7 @@ class OrderResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         $modelClass = static::$model;
+
         return (string) $modelClass::where('status', 'new')->where('branch_id', Filament::getTenant()->id)->count();
     }
 
@@ -445,9 +442,9 @@ class OrderResource extends Resource
                 ->placeholder(__('order.fields.customer.placeholder'))
                 ->relationship('registeredCustomer', 'name')
                 ->searchable()
-                ->required(fn(Get $get) => !$get('is_guest'))
+                ->required(fn (Get $get) => ! $get('is_guest'))
                 ->preload()
-                ->visible(fn(Get $get) => !$get('is_guest'))
+                ->visible(fn (Get $get) => ! $get('is_guest'))
                 ->createOptionForm([
                     TextInput::make('name')
                         ->label(__('customer.fields.name.label'))
@@ -464,7 +461,7 @@ class OrderResource extends Resource
                     Hidden::make('branch_id')
                         ->default(Filament::getTenant()->id),
                 ])
-                ->createOptionAction(fn(Action $action) => $action
+                ->createOptionAction(fn (Action $action) => $action
                     ->modalHeading(__('customer.actions.create.modal.heading'))
                     ->modalSubmitActionLabel(__('customer.actions.create.modal.submit'))
                     ->modalWidth('lg')),
@@ -473,7 +470,7 @@ class OrderResource extends Resource
                 ->schema([
                     TextInput::make('guest_customer.name')
                         ->label(__('order.fields.guest_customer.name.label'))
-                        ->required(fn(Get $get) => $get('is_guest')),
+                        ->required(fn (Get $get) => $get('is_guest')),
                     TextInput::make('guest_customer.email')
                         ->label(__('order.fields.guest_customer.email.label'))
                         ->email(),
@@ -483,7 +480,7 @@ class OrderResource extends Resource
                         ->prefix('+'),
                 ])->columns(3)
                 ->columnSpanFull()
-                ->visible(fn(Get $get) => $get('is_guest')),
+                ->visible(fn (Get $get) => $get('is_guest')),
         ];
     }
 
@@ -519,22 +516,22 @@ class OrderResource extends Resource
             ->relationship()
             ->hiddenLabel()
             ->label(__('order.fields.items.label'))
-            ->itemLabel(fn(array $state): string => Product::find($state['product_id'])?->name ?? 'Order Item')
+            ->itemLabel(fn (array $state): string => Product::find($state['product_id'])?->name ?? 'Order Item')
             ->schema([
                 Select::make('product_id')
                     ->label(__('order.fields.items.product.label'))
                     ->placeholder(__('order.fields.items.product.placeholder'))
                     ->options(
-                        Product::whereHas('branches', fn($query) => $query->where('branches.id', Filament::getTenant()->id))
+                        Product::whereHas('branches', fn ($query) => $query->where('branches.id', Filament::getTenant()->id))
                             ->get()
-                            ->mapWithKeys(fn(Product $product) => [
+                            ->mapWithKeys(fn (Product $product) => [
                                 $product->id => sprintf(
                                     '%s - %s ($%s) [%s]',
                                     $product->name,
                                     $product->category?->name,
                                     $product->price,
                                     $product->stock_for_current_branch
-                                )
+                                ),
                             ])
                     )
                     ->required()
@@ -542,7 +539,7 @@ class OrderResource extends Resource
                     ->columnSpan([
                         'lg' => 1,
                         'md' => 2,
-                        'sm' => 'full'
+                        'sm' => 'full',
                     ])
                     ->searchable(),
 
@@ -551,7 +548,7 @@ class OrderResource extends Resource
                     ->columnSpan([
                         'lg' => 1,
                         'md' => 2,
-                        'sm' => 'full'
+                        'sm' => 'full',
                     ]),
 
                 Group::make()
@@ -573,10 +570,10 @@ class OrderResource extends Resource
                             ->columnSpan(1)
                             ->readOnly()
                             ->dehydrated(true),
-                    ])
+                    ]),
             ])
             ->live(onBlur: true)
-            ->afterStateUpdated(fn(Get $get, Set $set) => self::calculate($get, $set))
+            ->afterStateUpdated(fn (Get $get, Set $set) => self::calculate($get, $set))
             ->columns(2)
             ->columnSpanFull();
     }
@@ -584,7 +581,7 @@ class OrderResource extends Resource
     public static function calculate(Get $get, Set $set): void
     {
         // دالة داخلية مساعدة لتنظيف الأرقام من الفواصل
-        $parseNumber = fn($value) => (float) str_replace(',', '', $value ?? 0);
+        $parseNumber = fn ($value) => (float) str_replace(',', '', $value ?? 0);
 
         $items = collect($get('items') ?? [])->map(function ($item) use ($parseNumber) {
             // تنظيف المدخلات قبل الحساب
@@ -596,6 +593,7 @@ class OrderResource extends Resource
 
             // حفظ المجموع الفرعي (سيقوم الـ DecimalInput في Repeater بتنسيقه تلقائياً)
             $item['sub_total'] = self::truncate_float($subTotal, 2);
+
             return $item;
         });
 
@@ -603,7 +601,7 @@ class OrderResource extends Resource
         $set('items', $items->toArray());
 
         // حساب الإجماليات مع التنظيف أيضاً
-        $totalDiscount = $items->sum(fn($item) => $parseNumber($item['sub_discount'] ?? 0) * $parseNumber($item['qty'] ?? 1));
+        $totalDiscount = $items->sum(fn ($item) => $parseNumber($item['sub_discount'] ?? 0) * $parseNumber($item['qty'] ?? 1));
         $totalItemsPrice = $items->sum('sub_total');
 
         $shipping = $parseNumber($get('shipping'));
@@ -616,6 +614,7 @@ class OrderResource extends Resource
     public static function truncate_float(float $number, int $precision): float
     {
         $factor = pow(10, $precision);
+
         return floor($number * $factor) / $factor;
     }
 

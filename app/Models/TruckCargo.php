@@ -20,7 +20,7 @@ class TruckCargo extends Model
         'weight',
         'unit_price',
         'ton_weight',
-        'note'
+        'note',
     ];
 
     public function product()
@@ -30,6 +30,6 @@ class TruckCargo extends Model
 
     public function truck()
     {
-        return $this->belongsTo(\App\Models\Truck::class); //->converte();
+        return $this->belongsTo(\App\Models\Truck::class); // ->converte();
     }
 }

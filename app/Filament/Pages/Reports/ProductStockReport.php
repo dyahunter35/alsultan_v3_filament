@@ -3,20 +3,19 @@
 namespace App\Filament\Pages\Reports;
 
 use App\Filament\Pages\Concerns\HasReport;
-use Filament\Actions\Action;
-use App\Filament\Resources\Products\ProductResource;
 use App\Models\Branch;
 use App\Models\Product;
 use App\Models\Scopes\IsVisibleScope;
 use App\Services\InventoryService;
-use Filament\Pages\Page;
-use Filament\Actions;
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
-use Illuminate\Contracts\Support\Htmlable;
+use Filament\Pages\Page;
 
 class ProductStockReport extends Page
 {
     use HasReport;
+
+    protected static ?int $navigationSort = 39;
 
     protected string $view = 'filament.resources.product-resource.pages.product-stock-report';
     // protected static string $view = 'filament.resources.product-resource.pages.product';

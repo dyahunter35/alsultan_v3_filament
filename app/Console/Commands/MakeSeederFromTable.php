@@ -4,9 +4,9 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class MakeSeederFromTable extends Command
 {
@@ -16,14 +16,16 @@ class MakeSeederFromTable extends Command
      * @var string
      */
     protected $signature = 'make:table-seeder {table}';
+
     protected $description = 'Generate a seeder from an existing table';
 
     public function handle()
     {
         $table = $this->argument('table');
 
-        if (!Schema::hasTable($table)) {
+        if (! Schema::hasTable($table)) {
             $this->error("Table {$table} does not exist!");
+
             return 1;
         }
 
@@ -31,14 +33,14 @@ class MakeSeederFromTable extends Command
 
         if ($rows->isEmpty()) {
             $this->warn("Table {$table} is empty!");
+
             return 0;
         }
 
-        $seederName = Str::studly($table) . 'Seeder';
+        $seederName = Str::studly($table).'Seeder';
         $filePath = database_path("seeders/{$seederName}.php");
 
-        $dataArray = $rows->map(fn($row) => (array) $row)->toArray();
-
+        $dataArray = $rows->map(fn ($row) => (array) $row)->toArray();
 
         $export = var_export($dataArray, true);
 
@@ -63,6 +65,7 @@ PHP;
         File::put($filePath, $stub);
 
         $this->info("Seeder created: {$filePath}");
+
         return 0;
     }
 }

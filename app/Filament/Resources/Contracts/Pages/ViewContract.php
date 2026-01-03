@@ -13,7 +13,6 @@ class ViewContract extends ViewRecord
 
     protected string $view = 'filament.resources.contracts.view-contract';
 
-
     protected function getHeaderActions(): array
     {
         return [

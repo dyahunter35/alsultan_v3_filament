@@ -2,19 +2,18 @@
 
 namespace App\Filament\Pages\Tenancy;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
 use App\Models\Branch;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\TextInput;
 use Filament\Pages\Tenancy\RegisterTenant;
-use Illuminate\Database\Eloquent\Model;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class RegisterBranch extends RegisterTenant
 {
-   // use HasPageShield;
+    // use HasPageShield;
 
     public static function getLabel(): string
     {
@@ -35,7 +34,7 @@ class RegisterBranch extends RegisterTenant
                     TextInput::make('slug')
                         ->dehydrated()
                         ->readOnly(),
-                ])->columnSpan(1)
+                ])->columnSpan(1),
             ])
             ->columns(1);
     }

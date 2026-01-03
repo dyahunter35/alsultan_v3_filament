@@ -1,11 +1,12 @@
 <?php
+
 return [
     'navigation' => [
         'group' => 'Users Management',
         'label' => 'Branches',
         'plural_label' => 'Branches',
         'model_label' => 'Branch',
-        'sort' => 4
+        'sort' => 4,
     ],
     'breadcrumbs' => [
         'index' => 'Branches',

@@ -58,6 +58,6 @@ trait HasFinancialRelations
     public function getNetBalanceAttribute(): float
     {
         // زيادة المطالبات عند شراء، ونقص عند دفع المصروفات أو التوريدات
-        return ($this->total_sales) - ($this->total_paid + $this->total_supplyings);
+        return $this->total_sales - ($this->total_paid + $this->total_supplyings);
     }
 }

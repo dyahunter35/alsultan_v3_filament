@@ -1,4 +1,5 @@
 <?php
+
 return [
     'navigation' => [
         'group' => 'إدارة المستخدمين',
@@ -6,7 +7,7 @@ return [
         'plural_label' => 'العملاء',
         'model_label' => 'عميل',
         'search_key' => 'اسم العميل',
-        'sort' => 2
+        'sort' => 2,
     ],
     'breadcrumbs' => [
         'index' => 'العملاء',

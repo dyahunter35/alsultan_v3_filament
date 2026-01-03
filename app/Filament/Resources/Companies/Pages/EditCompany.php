@@ -15,7 +15,7 @@ class EditCompany extends EditRecord
     protected function getHeaderWidgets(): array
     {
         return [
-            //Widgets\Companystate::make(['record', $this->record]),
+            // Widgets\Companystate::make(['record', $this->record]),
             // Widgets\CompanyFinanceOverview::class,
             Widgets\CurrencyWidget::class,
         ];

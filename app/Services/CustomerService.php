@@ -16,7 +16,7 @@ class CustomerService
         $ledger = collect();
 
         $startDate = $startDate ? Carbon::parse($startDate)->startOfDay() : null;
-        $endDate   = $endDate ? Carbon::parse($endDate)->endOfDay() : null;
+        $endDate = $endDate ? Carbon::parse($endDate)->endOfDay() : null;
 
         // ✅ الرصيد الافتتاحي قبل startDate
         $openingBalance = $this->calculateOpeningBalance($customer, $startDate);
@@ -32,17 +32,17 @@ class CustomerService
 
         // تحديد الفترة
         $rangeStart = $startDate;
-        $rangeEnd   = $endDate;
+        $rangeEnd = $endDate;
 
         $transactions = collect();
 
         // 🔹 مصروفات دافع
         $transactions = $transactions->merge(
             $customer->expensesAsPayer()
-                ->when($rangeStart, fn($q) => $q->where('created_at', '>=', $rangeStart))
-                ->when($rangeEnd, fn($q) => $q->where('created_at', '<=', $rangeEnd))
+                ->when($rangeStart, fn ($q) => $q->where('created_at', '>=', $rangeStart))
+                ->when($rangeEnd, fn ($q) => $q->where('created_at', '<=', $rangeEnd))
                 ->get()
-                ->map(fn($e) => [
+                ->map(fn ($e) => [
                     'type' => 'expense_paid',
                     'date' => $e->created_at,
                     'description' => 'دفع مصروف',
@@ -54,10 +54,10 @@ class CustomerService
         // 🔹 مصروفات مستلمة
         $transactions = $transactions->merge(
             $customer->expensesAsBeneficiary()
-                ->when($rangeStart, fn($q) => $q->where('created_at', '>=', $rangeStart))
-                ->when($rangeEnd, fn($q) => $q->where('created_at', '<=', $rangeEnd))
+                ->when($rangeStart, fn ($q) => $q->where('created_at', '>=', $rangeStart))
+                ->when($rangeEnd, fn ($q) => $q->where('created_at', '<=', $rangeEnd))
                 ->get()
-                ->map(fn($e) => [
+                ->map(fn ($e) => [
                     'type' => 'expense_received',
                     'date' => $e->created_at,
                     'description' => 'استلام مصروف',
@@ -69,10 +69,10 @@ class CustomerService
         // 🔹 التوريدات
         $transactions = $transactions->merge(
             $customer->supplyings()
-                ->when($rangeStart, fn($q) => $q->where('created_at', '>=', $rangeStart))
-                ->when($rangeEnd, fn($q) => $q->where('created_at', '<=', $rangeEnd))
+                ->when($rangeStart, fn ($q) => $q->where('created_at', '>=', $rangeStart))
+                ->when($rangeEnd, fn ($q) => $q->where('created_at', '<=', $rangeEnd))
                 ->get()
-                ->map(fn($s) => [
+                ->map(fn ($s) => [
                     'type' => 'supplying',
                     'date' => $s->created_at,
                     'description' => 'توريد',
@@ -84,10 +84,10 @@ class CustomerService
         // 🔹 المبيعات
         $transactions = $transactions->merge(
             $customer->sales()
-                ->when($rangeStart, fn($q) => $q->where('created_at', '>=', $rangeStart))
-                ->when($rangeEnd, fn($q) => $q->where('created_at', '<=', $rangeEnd))
+                ->when($rangeStart, fn ($q) => $q->where('created_at', '>=', $rangeStart))
+                ->when($rangeEnd, fn ($q) => $q->where('created_at', '<=', $rangeEnd))
                 ->get()
-                ->map(fn($o) => [
+                ->map(fn ($o) => [
                     'type' => 'sale',
                     'date' => $o->created_at,
                     'description' => 'بيع',
@@ -99,14 +99,14 @@ class CustomerService
         // 🔹 تحويل العملات (فقط لو النوع convert)
         $transactions = $transactions->merge(
             $customer->currencyConversion()
-                ->when($rangeStart, fn($q) => $q->where('created_at', '>=', $rangeStart))
-                ->when($rangeEnd, fn($q) => $q->where('created_at', '<=', $rangeEnd))
+                ->when($rangeStart, fn ($q) => $q->where('created_at', '>=', $rangeStart))
+                ->when($rangeEnd, fn ($q) => $q->where('created_at', '<=', $rangeEnd))
                 ->where('type', 'convert')
                 ->get()
-                ->map(fn($c) => [
+                ->map(fn ($c) => [
                     'type' => 'currency_conversion',
                     'date' => $c->created_at,
-                    'description' => 'تحويل عملة (' . optional($c->currency)->name . ')',
+                    'description' => 'تحويل عملة ('.optional($c->currency)->name.')',
                     'amount_in' => 0,
                     'amount_out' => $c->total,
                 ])
@@ -114,11 +114,13 @@ class CustomerService
 
         // ترتيب حسب التاريخ وحساب الرصيد المتراكم
         $balance = $openingBalance;
+
         return $ledger
             ->merge($transactions->sortBy('date')->values())
             ->map(function ($item) use (&$balance) {
                 $balance += $item['amount_in'] - $item['amount_out'];
                 $item['balance'] = $balance;
+
                 return $item;
             });
     }
@@ -128,7 +130,9 @@ class CustomerService
      */
     public function calculateOpeningBalance(Customer $customer, ?string $startDate): float
     {
-        if (!$startDate) return 0;
+        if (! $startDate) {
+            return 0;
+        }
 
         $date = Carbon::parse($startDate)->startOfDay();
         $balance = 0;
@@ -161,6 +165,6 @@ class CustomerService
 
     public function updateCustomersBalance(): void
     {
-        Customer::all()->each(fn($c) => $this->updateCustomerBalance($c));
+        Customer::all()->each(fn ($c) => $this->updateCustomerBalance($c));
     }
 }

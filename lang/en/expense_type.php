@@ -1,4 +1,5 @@
 <?php
+
 return [
     'navigation' => [
         'group' => 'Finance',

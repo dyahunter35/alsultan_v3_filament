@@ -2,19 +2,18 @@
 
 namespace App\Models;
 
-use App\Enums\Payment;
 use App\Enums\PaymentOptions;
-use App\Models\ExpenseType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Expense extends Model
 {
     use SoftDeletes;
+
     protected $guarded = [];
 
     protected $casts = [
-        //'expense_type' => ExpenseType::class,
+        // 'expense_type' => ExpenseType::class,
         'payment_method' => PaymentOptions::class,
     ];
 
@@ -84,11 +83,11 @@ class Expense extends Model
         return $this->morphTo();
     }
 
-
     public function representative()
     {
         return $this->belongsTo(User::class, 'representative_id');
     }
+
     public function branch()
     {
         return $this->belongsTo(Branch::class);

@@ -1,4 +1,5 @@
 <?php
+
 return [
     'navigation' => [
         'group' => 'إدارة الشاحنات',
@@ -100,61 +101,60 @@ return [
 
         'category' => [
             'label' => 'نوع الشحنة',
-            'placeholder' => ''
+            'placeholder' => '',
         ],
 
         'country' => [
             'label' => 'بلد الشحن',
-            'placeholder' => ''
+            'placeholder' => '',
         ],
 
         'city' => [
             'label' => 'المدينة',
-            'placeholder' => ''
+            'placeholder' => '',
         ],
 
         'trip_days' => [
             'label' => 'عدد ايام الرحلة',
-            'placeholder' => ''
+            'placeholder' => '',
         ],
         'agreed_duration' => [
             'label' => 'الايام المتفق عليها',
-            'placeholder' => ''
+            'placeholder' => '',
         ],
         'diff_trip' => [
             'label' => 'الفرق بين الايام',
-            'placeholder' => ''
+            'placeholder' => '',
         ],
         'delay_day_value' => [
             'label' => 'قيمة يوم التاخير',
-            'placeholder' => ''
+            'placeholder' => '',
         ],
         'truck_fare' => [
             'label' => 'اجرة الشاحة',
             'placeholder' => '',
-            'helper_text' => '( النولون )'
+            'helper_text' => '( النولون )',
         ],
         'delay_value' => [
             'label' => 'قيمة التاخير',
             'placeholder' => '',
-            'helper_text' => '( العطلات )'
+            'helper_text' => '( العطلات )',
         ],
         'total_amount' => [
             'label' => 'المبلغ الكلي',
-            'placeholder' => ''
+            'placeholder' => '',
         ],
-
 
     ],
     'filters' => [
 
         'toStore' => [
 
-            'label' => 'حسب المخزن'
+            'label' => 'حسب المخزن',
         ],
         'country' => [
 
-            'label' => 'حسب بلد الانتاج'
+            'label' => 'حسب بلد الانتاج',
         ],
         'pack_date' => [
 
@@ -166,7 +166,7 @@ return [
 
             'label' => 'حسب تاريخ الوصول ',
 
-        ]
+        ],
     ],
     'actions' => [
         'create' => [
@@ -186,5 +186,5 @@ return [
             'label' => 'تقرير الشاحنة',
             'icon' => 'heroicon-m-document-text',
         ],
-    ]
+    ],
 ];

@@ -3,42 +3,38 @@
 namespace App\Filament\Resources\Users;
 
 use App\Filament\Pages\Concerns\HasResource;
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Select;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\Action;
-use Filament\Actions\RestoreAction;
-use Filament\Actions\ForceDeleteAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use App\Filament\Resources\Users\Pages\ListUsers;
 use App\Filament\Resources\Users\Pages\CreateUser;
 use App\Filament\Resources\Users\Pages\EditUser;
-use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
+use App\Filament\Resources\Users\Pages\ListUsers;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Filament\Forms;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
 class UserResource extends Resource
 {
     use HasResource;
+
     protected static ?string $model = User::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-m-users';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-m-users';
+
     protected static bool $isScopedToTenant = false;
 
     protected static ?int $navigationSort = 1;
@@ -73,7 +69,7 @@ class UserResource extends Resource
                             ->label(__('user.fields.name.label'))
                             ->placeholder(__('user.fields.name.placeholder'))
                             ->required()
-                            ->afterStateUpdated(fn(?Model $record) => $record)
+                            ->afterStateUpdated(fn (?Model $record) => $record)
 
                             ->maxLength(255),
                         TextInput::make('email')
@@ -87,18 +83,18 @@ class UserResource extends Resource
                             ->label('كلمة السر')
                             ->placeholder('أدخل كلمة السر الجديدة')
                             ->password()                          // يخفي النص المدخل
-                            ->required(fn($record) => !$record)
+                            ->required(fn ($record) => ! $record)
                             ->revealable()                        // زر لإظهار/إخفاء كلمة السر
                             ->rule(
                                 Password::default()          // الحد الأدنى للطول
-                                //->mixedCase()         // يجب أن تحتوي على حروف كبيرة وصغيرة
-                                //->letters()           // يجب أن تحتوي على حروف
-                                //->numbers()           // يجب أن تحتوي على أرقام
-                                //->symbols()           // يجب أن تحتوي على رموز
-                                //->uncompromised()     // تتحقق من عدم تسريبها في خروقات
-                            )->dehydrated(fn($state) => filled($state))  // حفظ فقط إذا تم تعبئتها
-                            ->dehydrateStateUsing(fn($state) => Hash::make($state)) // تشفير قبل الحفظ
-                        //->helperText('يجب أن تحتوي كلمة السر على 8 أحرف على الأقل، أحرف كبيرة وصغيرة، أرقام ورموز.')
+                                // ->mixedCase()         // يجب أن تحتوي على حروف كبيرة وصغيرة
+                                // ->letters()           // يجب أن تحتوي على حروف
+                                // ->numbers()           // يجب أن تحتوي على أرقام
+                                // ->symbols()           // يجب أن تحتوي على رموز
+                                // ->uncompromised()     // تتحقق من عدم تسريبها في خروقات
+                            )->dehydrated(fn ($state) => filled($state))  // حفظ فقط إذا تم تعبئتها
+                            ->dehydrateStateUsing(fn ($state) => Hash::make($state)), // تشفير قبل الحفظ
+                        // ->helperText('يجب أن تحتوي كلمة السر على 8 أحرف على الأقل، أحرف كبيرة وصغيرة، أرقام ورموز.')
 
                     ])->columnSpan(2)
                     ->columns(2),
@@ -112,7 +108,7 @@ class UserResource extends Resource
                             ->saveRelationshipsUsing(function (Model $record, $state) {
                                 $record->roles()->sync($state);
                             })
-                            ->visible(fn() => auth()->user()->hasRole('super_admin'))
+                            ->visible(fn () => auth()->user()->hasRole('super_admin'))
                             ->multiple()
                             ->preload()
                             ->searchable(),
@@ -129,7 +125,7 @@ class UserResource extends Resource
                             ->multiple()
                             ->preload()
                             ->searchable(),
-                    ])->columnSpan(1)
+                    ])->columnSpan(1),
             ])->columns(3);
     }
 
@@ -172,12 +168,12 @@ class UserResource extends Resource
             ])
             ->recordActions([
                 EditAction::make(),
-                DeleteAction::make()->hidden(fn(User $user) => (auth()->user()->hasRole('super_admin') || $user->id == auth()->user()->id) || $user->deleted_at),
+                DeleteAction::make()->hidden(fn (User $user) => (auth()->user()->hasRole('super_admin') || $user->id == auth()->user()->id) || $user->deleted_at),
 
                 RestoreAction::make()
-                    ->visible(fn($record) => $record->deleted_at),
+                    ->visible(fn ($record) => $record->deleted_at),
                 ForceDeleteAction::make()
-                    ->visible(fn($record) => $record->deleted_at),
+                    ->visible(fn ($record) => $record->deleted_at),
             ])
             ->toolbarActions([
                 Action::make('export_pdf')
@@ -190,7 +186,7 @@ class UserResource extends Resource
                         $pdf = Pdf::loadView('filament.resources.user-resource.reports.users-print', compact('data'));
 
                         return response()->streamDownload(
-                            fn() => print($pdf->output()),
+                            fn () => print ($pdf->output()),
                             'users.pdf'
                         );
                     }),

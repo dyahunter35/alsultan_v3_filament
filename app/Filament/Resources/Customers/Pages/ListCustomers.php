@@ -2,10 +2,9 @@
 
 namespace App\Filament\Resources\Customers\Pages;
 
-use Filament\Actions\CreateAction;
 use App\Filament\Resources\Customers\CustomerResource;
-use Filament\Actions;
 use Filament\Actions\Action;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 
@@ -22,7 +21,7 @@ class ListCustomers extends ListRecords
                 ->icon('heroicon-o-arrow-path')
                 ->color('primary')
                 ->action(function () {
-                    $servies = new \App\Services\CustomerService();
+                    $servies = new \App\Services\CustomerService;
                     $servies->updateCustomersBalance();
 
                     Notification::make()

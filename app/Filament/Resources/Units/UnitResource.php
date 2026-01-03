@@ -20,6 +20,7 @@ use Filament\Tables\Table;
 class UnitResource extends Resource
 {
     use HasResource;
+
     protected static ?string $model = Unit::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
@@ -31,6 +32,7 @@ class UnitResource extends Resource
     public static function form(Schema $schema): Schema
     {
         self::translateConfigureForm();
+
         return $schema
             ->components([
                 TextInput::make('name')
@@ -43,6 +45,7 @@ class UnitResource extends Resource
     public static function table(Table $table): Table
     {
         self::translateConfigureTable();
+
         return $table
             ->recordTitleAttribute('name')
             ->columns([

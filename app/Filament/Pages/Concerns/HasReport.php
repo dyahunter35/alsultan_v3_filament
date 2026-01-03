@@ -3,8 +3,8 @@
 namespace App\Filament\Pages\Concerns;
 
 use BackedEnum;
-use Illuminate\Support\Str;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\Str;
 use UnitEnum;
 
 trait HasReport
@@ -30,12 +30,13 @@ trait HasReport
     /**
      * إرجاع بيانات التقرير من ملف الترجمة
      * (تحسين: الوصول المباشر عبر المسار الكامل report.key)
+     *
      * @return array<string, mixed>
      */
     public static function getReportData(): array
     {
         $key = static::getReportKey();
-        $fullPath = 'report.' . $key;
+        $fullPath = 'report.'.$key;
 
         $reportData = trans($fullPath);
 
@@ -55,9 +56,10 @@ trait HasReport
         return data_get(static::getReportData(), 'sort');
     }
 
-    public static function getNavigationGroup(): string | UnitEnum | null
+    public static function getNavigationGroup(): string|UnitEnum|null
     {
         $group = __('report.group');
+
         return is_string($group) && $group !== 'report.group' ? $group : null;
     }
 
@@ -65,7 +67,7 @@ trait HasReport
      * العنوان الرئيسي للتقرير
      * (التحسين هنا: تمرير البارامترات $params إلى دالة __() بعد جلب مفتاح الترجمة)
      */
-    public function getHeading(): string | Htmlable
+    public function getHeading(): string|Htmlable
     {
         $data = static::getReportData();
         // 1. جلب البارامترات من دالة getReportParameters()
@@ -81,15 +83,13 @@ trait HasReport
         return $this->getTitle();
     }
 
-
     /**
      * الأيقونة الخاصة بالتقرير
      */
-    public static function getNavigationIcon(): string | BackedEnum | Htmlable | null
+    public static function getNavigationIcon(): string|BackedEnum|Htmlable|null
     {
         return data_get(static::getReportData(), 'icon');
     }
-
 
     /**
      * العنوان المستخدم في قائمة التنقل
@@ -103,6 +103,7 @@ trait HasReport
             // عادةً لا تحتاج إلى بارامترات ديناميكية (مثل أسماء المنتجات).
             // نستخدم الترجمة البسيطة فقط.
             $translatedLabel = __($labelKey);
+
             return (is_string($translatedLabel) && $translatedLabel !== $labelKey) ? $translatedLabel : $labelKey;
         }
 
@@ -115,7 +116,7 @@ trait HasReport
     /**
      * العنوان الافتراضي للصفحة
      */
-    public function getTitle(): string | Htmlable
+    public function getTitle(): string|Htmlable
     {
         $data = static::getReportData();
         // جلب البارامترات لتضمينها في العنوان

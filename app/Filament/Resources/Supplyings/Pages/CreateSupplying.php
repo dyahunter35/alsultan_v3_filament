@@ -10,7 +10,6 @@ class CreateSupplying extends CreateRecord
 {
     protected static string $resource = SupplyingResource::class;
 
-
     /* protected function mutateFormDataBeforeCreate(array $data): array
     {
         dd($data);

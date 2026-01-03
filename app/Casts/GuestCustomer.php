@@ -18,7 +18,8 @@ class GuestCustomer implements CastsAttributes
         }
         // Decode the JSON and create a new, non-persisted Customer model
         $data = json_decode($value, true);
-        $data['name'] = $data['name'] ;
+        $data['name'] = $data['name'];
+
         return new Customer($data);
     }
 
@@ -33,6 +34,7 @@ class GuestCustomer implements CastsAttributes
 
         // Ensure the value is an array and encode it to JSON for storage
         $data = is_array($value) ? $value : $value->toArray();
+
         return json_encode($data);
     }
 }

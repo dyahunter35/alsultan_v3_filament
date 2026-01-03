@@ -16,11 +16,8 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Concerns\HasRelationship;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -40,6 +37,7 @@ class TaxExpensesRelationManager extends RelationManager
     public function form(Schema $schema): Schema
     {
         self::translateConfigureForm();
+
         return $schema
             ->components(
                 TaxExpense::expenseForm($this->ownerRecord->id)
@@ -49,6 +47,7 @@ class TaxExpensesRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         self::translateConfigureTable();
+
         return $table
             ->recordTitleAttribute('id')
             ->columns(
@@ -76,7 +75,7 @@ class TaxExpensesRelationManager extends RelationManager
                     RestoreBulkAction::make(),
                 ]),
             ])
-            ->modifyQueryUsing(fn(Builder $query) => $query
+            ->modifyQueryUsing(fn (Builder $query) => $query
                 ->withoutGlobalScopes([
                     SoftDeletingScope::class,
                 ]));

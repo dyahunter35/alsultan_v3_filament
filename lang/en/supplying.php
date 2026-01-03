@@ -7,7 +7,7 @@ return [
         'plural_label' => 'Suppliers',
         'model_label' => 'Supplier',
         'search_key' => 'Supplier Name',
-        'sort' => 3
+        'sort' => 3,
     ],
     'breadcrumbs' => [
         'index' => 'Suppliers',

@@ -3,10 +3,8 @@
 namespace App\Filament\Resources\Companies\RelationManagers;
 
 use App\Enums\CompanyType;
-use App\Enums\TruckType;
 use App\Filament\Resources\Trucks\TruckResource;
 use Filament\Actions\Action;
-use Filament\Actions\CreateAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
@@ -21,15 +19,14 @@ class TrucksAsCompanyRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->query(fn() => $this->ownerRecord->trucksAsCompany())
+            ->query(fn () => $this->ownerRecord->trucksAsCompany())
             ->headerActions([
                 Action::make('create')
                     ->icon(Heroicon::Plus)
                     ->label(__('truck.actions.create.label'))
                     ->action(
-                        fn() =>
-                        redirect(TruckResource::getUrl('create', ['company_id' =>  $this->ownerRecord]))
-                    )
+                        fn () => redirect(TruckResource::getUrl('create', ['company_id' => $this->ownerRecord]))
+                    ),
             ]);
     }
 

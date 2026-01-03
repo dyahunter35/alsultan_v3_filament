@@ -79,7 +79,7 @@ class TruckInfolist
                     ->placeholder('-'),
                 TextEntry::make('deleted_at')
                     ->dateTime()
-                    ->visible(fn(Truck $record): bool => $record->trashed()),
+                    ->visible(fn (Truck $record): bool => $record->trashed()),
             ]);
     }
 }

@@ -15,6 +15,7 @@ class OrderItemFactory extends Factory
         $qty = $this->faker->randomFloat(2, 1, 10);
         $price = $this->faker->randomFloat(2, 5, 1000);
         $subDiscount = $this->faker->randomFloat(2, 0, min(50, $price * 0.2));
+
         return [
             'sort' => 0,
             'product_id' => Product::inRandomOrder()->first()?->id,

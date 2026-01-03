@@ -3,12 +3,10 @@
 namespace App\Filament\Pages\Concerns;
 
 use BackedEnum;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Lang;
-use Illuminate\Database\Eloquent\Model;
-use Filament\Forms\Form;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Support\Facades\File;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Str;
 
 trait HasResource
 {
@@ -37,11 +35,11 @@ trait HasResource
     /**
      * Get a localized string or return null if not found
      */
-    public static function getLocale($key): string | null
+    public static function getLocale($key): ?string
     {
         $locale_path = static::getLocalePath();
 
-        if (Lang::has($key = $locale_path . '.' . $key, app()->getLocale())) {
+        if (Lang::has($key = $locale_path.'.'.$key, app()->getLocale())) {
             return __($key);
         }
 
@@ -98,11 +96,9 @@ trait HasResource
         return null;
     }
 
-
-
-    public static function getNavigationIcon(): string | BackedEnum | Htmlable | null
+    public static function getNavigationIcon(): string|BackedEnum|Htmlable|null
     {
-        return  static::getLocale('navigation.icon') ??
+        return static::getLocale('navigation.icon') ??
             static::$navigationIcon;
     }
 

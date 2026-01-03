@@ -2,17 +2,12 @@
 
 namespace App\Filament\Resources\InnerTrucks\Schemas;
 
-use App\Enums\Country;
 use App\Enums\TruckState;
 use App\Enums\TruckType;
 use App\Models\Branch;
-use App\Models\Port;
-use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Schemas;
 use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Components\Utilities\Set;
 use Filament\Support\Icons\Heroicon;
 
 class TruckForm
@@ -33,9 +28,9 @@ class TruckForm
             Schemas\Components\Grid::make(1)
                 ->schema([
 
-                    //self::financialSection(),
+                    // self::financialSection(),
                     self::statusSection(),
-                ])->columnSpan(1)
+                ])->columnSpan(1),
         ])->columns(3);
     }
 
@@ -55,8 +50,8 @@ class TruckForm
                 Forms\Components\TextInput::make('driver_phone')
                     ->label(__('truck.fields.driver_phone.label'))
                     ->tel()
-                    ->prefix("+")
-                    ->placeholder("999999999")
+                    ->prefix('+')
+                    ->placeholder('999999999')
                     ->required()
                     ->maxLength(190),
 

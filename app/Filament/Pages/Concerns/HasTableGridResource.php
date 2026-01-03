@@ -2,9 +2,7 @@
 
 namespace App\Filament\Pages\Concerns;
 
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Database\Eloquent\Model;
 
 trait HasTableGridResource
 {
@@ -31,13 +29,10 @@ trait HasTableGridResource
             return 'grid';
         });
 
-
         if ($tableLayout == 'table') {
             return static::getTableLayoutColumns();
         }
 
-        return  static::getGridLayoutColumn();
+        return static::getGridLayoutColumn();
     }
-
-
 }

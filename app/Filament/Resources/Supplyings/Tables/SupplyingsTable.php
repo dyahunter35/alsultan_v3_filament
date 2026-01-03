@@ -22,10 +22,10 @@ class SupplyingsTable
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('customer.name')
-                    ->url(fn($record) => ((CustomerResource::getUrl('edit', ['record' => $record]))))
+                    ->url(fn ($record) => ((CustomerResource::getUrl('edit', ['record' => $record]))))
                     ->sortable(),
                 TextColumn::make('representative.name')
-                    ->url(fn($record) => ((UserResource::getUrl('edit', ['record' => $record]))))
+                    ->url(fn ($record) => ((UserResource::getUrl('edit', ['record' => $record]))))
                     ->sortable(),
                 IconColumn::make('is_completed')
                     ->boolean(),

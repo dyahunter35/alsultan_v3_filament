@@ -36,7 +36,7 @@ return new class extends Migration
             $table->double('total_amount');        // الإجمالي
             $table->double('remaining_amount')->default(0)->nullable();    // الباقي غير مدفوع
 
-            //$table->string('expense_type');        // نوع المصروف
+            // $table->string('expense_type');        // نوع المصروف
             $table->string('payment_method');      // وسيلة الدفع
             $table->string('payment_reference')->nullable(); // رقم الإشعار/الإيصال
             $table->boolean('is_paid')->default(false); // حالة الدفع

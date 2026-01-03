@@ -2,10 +2,8 @@
 
 namespace App\Models;
 
-use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use PhpParser\Node\Expr\Cast\Double;
 
 class OrderItem extends Model
 {

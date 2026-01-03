@@ -4,10 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
-        if (!Schema::hasTable('expense_types'))
+        if (! Schema::hasTable('expense_types')) {
             Schema::create('expense_types', function (Blueprint $table) {
                 $table->id();
                 $table->string('key')->unique(); // اسم القيمة من الـ enum (مثلاً sale, rent)
@@ -17,6 +18,7 @@ return new class extends Migration {
                 $table->string('color')->nullable();
                 $table->timestamps();
             });
+        }
     }
 
     public function down(): void

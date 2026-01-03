@@ -3,19 +3,14 @@
 namespace App\Filament\Pages\Auth;
 
 use Filament\Auth\Pages\EditProfile;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Support\Enums\Width;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
-use Illuminate\Validation\Rule;
 
 class Profile extends EditProfile
 {
-
     protected static string $layout = 'filament-panels::components.layout.base';
 
     protected string $view = 'filament.pages.auth.profile';
@@ -29,13 +24,10 @@ class Profile extends EditProfile
         $this->form->fill(
             [
                 'name' => $user->getRawOriginal('name'),
-                'email' => $user->email
+                'email' => $user->email,
             ]
         );
     }
-
-
-
 
     protected function getFormSchema(): array
     {
@@ -46,7 +38,7 @@ class Profile extends EditProfile
                     TextInput::make('name')
                         ->label('الاسم')
                         ->required()
-                        ->afterStateUpdated(fn($record) => $record->getRawOriginal('name'))
+                        ->afterStateUpdated(fn ($record) => $record->getRawOriginal('name'))
                         ->maxLength(255),
 
                     TextInput::make('email')
@@ -59,7 +51,6 @@ class Profile extends EditProfile
 
                 ])->columns(2),
 
-
             Section::make('تغيير كلمة المرور')
                 ->description('ملء هذه الحقول الثلاثة مطلوب لتغيير كلمة المرور.')
                 ->schema([
@@ -67,16 +58,16 @@ class Profile extends EditProfile
                     TextInput::make('current_password')
                         ->label('كلمة المرور الحالية')
                         ->password()
-                        ->requiredIf('new_password', fn($get) => filled($get('new_password')))
+                        ->requiredIf('new_password', fn ($get) => filled($get('new_password')))
 
                         // احتفظ بالقاعدة المخصصة للتحقق من تطابق كلمة المرور
                         ->rules([
                             function ($attribute, $value, $fail) {
                                 // التحقق يتم فقط إذا تم ملء الحقل
-                                if (filled($value) && !Hash::check($value, auth()->user()->password)) {
+                                if (filled($value) && ! Hash::check($value, auth()->user()->password)) {
                                     $fail('كلمة المرور الحالية غير صحيحة.');
                                 }
-                            }
+                            },
                         ]),
 
                     // **كلمة المرور الجديدة**
@@ -87,7 +78,7 @@ class Profile extends EditProfile
                         ->confirmed()
                         // 2. استخدم required_with:current_password ليصبح مطلوباً إذا تم ملء الحقل القديم
                         ->requiredWith('current_password')
-                        ->dehydrateStateUsing(fn($state) => filled($state) ? Hash::make($state) : null) // تشفير الكلمة فقط إذا كانت موجودة
+                        ->dehydrateStateUsing(fn ($state) => filled($state) ? Hash::make($state) : null) // تشفير الكلمة فقط إذا كانت موجودة
                         ->rule(Password::default()),
 
                     // **تأكيد كلمة المرور الجديدة**
@@ -101,6 +92,7 @@ class Profile extends EditProfile
                 ])->columns(2),
         ];
     }
+
     protected function getFormModel(): string
     {
         // يربط النموذج بشكل مباشر بمستخدم المصادقة
@@ -112,9 +104,8 @@ class Profile extends EditProfile
     {
         return
             $schema
-            ->model(auth()->user())
-            ->schema($this->getFormSchema())
-        ;
+                ->model(auth()->user())
+                ->schema($this->getFormSchema());
     }
 
     // دالة المعالجة عند الضغط على زر الحفظ
@@ -133,12 +124,11 @@ class Profile extends EditProfile
             // إزالة حقول كلمة المرور من بيانات التحديث الأساسية
             unset($data['current_password'], $data['new_password'], $data['new_password_confirmation']);
 
-
             // تحديث بيانات المستخدم الأساسية (الاسم، البريد الإلكتروني، الصورة)
             auth()->user()->update($data);
 
             // تحديث كلمة المرور الجديدة إذا تم إدخالها
-            if (!empty($passwordFields['new_password'])) {
+            if (! empty($passwordFields['new_password'])) {
                 auth()->user()->update([
                     'password' => $passwordFields['new_password'], // تم التشفير بالفعل في dehydrateStateUsing
                 ]);

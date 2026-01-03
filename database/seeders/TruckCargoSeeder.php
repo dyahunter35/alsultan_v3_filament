@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Truck;
-use App\Models\Product;
-use App\Models\TruckCargo;
 use App\Enums\TruckType;
+use App\Models\Product;
+use App\Models\Truck;
+use App\Models\TruckCargo;
+use Illuminate\Database\Seeder;
 
 class TruckCargoSeeder extends Seeder
 {
