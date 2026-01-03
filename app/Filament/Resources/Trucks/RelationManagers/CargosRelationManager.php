@@ -44,7 +44,7 @@ class CargosRelationManager extends RelationManager
                 Select::make('product_id')
                     ->options(
                         Product::get()
-                            ->mapWithKeys(fn (Product $product) => [
+                            ->mapWithKeys(fn(Product $product) => [
                                 $product->id => sprintf(
                                     '%s - %s (%s) ',
                                     $product->name,
@@ -63,10 +63,10 @@ class CargosRelationManager extends RelationManager
                     ->live(onBlur: true)
                     ->afterStateUpdated(function ($get, $set) {
                         $unitQuantity = (float) str_replace(',', '', $get('unit_quantity') ?? 1); // وزن الوحدة (مثلاً 50 كجم)
-                        $quantity = (float) str_replace(',', '', $get('quantity') ?? 1); // الكمية (مثلاً 200 جوال)
+                        $weight = (float) str_replace(',', '', $get('weight') ?? 1); // الكمية (مثلاً 200 جوال)
 
                         // الحسبة الافتراضية: (الكمية × وزن الوحدة) / 1000 للحصول على الأطنان
-                        $tonWeight = ($quantity * $unitQuantity) / 1000000;
+                        $tonWeight = ($weight * $unitQuantity) / 1000000;
 
                         // تحديث الحقل في الواجهة
                         $set('ton_weight', number_format($tonWeight, 2, '.', ''));
@@ -79,10 +79,10 @@ class CargosRelationManager extends RelationManager
                     ->live(onBlur: true)
                     ->afterStateUpdated(function ($get, $set) {
                         $unitQuantity = (float) str_replace(',', '', $get('unit_quantity') ?? 1); // وزن الوحدة (مثلاً 50 كجم)
-                        $quantity = (float) str_replace(',', '', $get('quantity') ?? 1); // الكمية (مثلاً 200 جوال)
+                        $weight = (float) str_replace(',', '', $get('weight') ?? 1); // الكمية (مثلاً 200 جوال)
 
                         // الحسبة الافتراضية: (الكمية × وزن الوحدة) / 1000 للحصول على الأطنان
-                        $tonWeight = ($quantity * $unitQuantity) / 1000000;
+                        $tonWeight = ($weight * $unitQuantity) / 1000000;
 
                         // تحديث الحقل في الواجهة
                         $set('ton_weight', number_format($tonWeight, 2, '.', ''));

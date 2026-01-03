@@ -163,7 +163,7 @@ class TruckForm
                         ->required()
                         ->live(onBlur: true)
                         ->afterStateUpdated(fn($get, $set) => self::calculateForm($get, $set))
-                        ->suffix('SDG')
+                        ->suffix('EGY')
                         ->hint(fn($state) => number_format($state ?? 0)),
 
                     Forms\Components\TextInput::make('trip_days')
@@ -197,7 +197,7 @@ class TruckForm
                     ->label(__('truck.fields.total_amount.label'))
                     ->numeric()
                     ->readOnly()
-                    ->suffix('SDG')
+                    ->suffix('EGY')
                     ->helperText(fn($state) => number_format($state ?? 0)),
             ]);
     }
