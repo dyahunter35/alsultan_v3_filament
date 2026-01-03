@@ -152,7 +152,7 @@
                     $delay = $truck->delay_value ?? 0;
                     $expenses = $truck->expenses->sum('total_amount') ?? 0;
                     // $netFare = $fare - ($delay + $expenses);
-                    $totalWeight = $truck->total_weight ?? 1;
+                    $totalWeight = $truck->ton_weight ?? 1;
                 @endphp
                 <table class="w-full text-sm border border-gray-200">
                     <tbody>

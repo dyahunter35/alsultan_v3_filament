@@ -149,11 +149,11 @@ class CargosRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make(),
-                AssociateAction::make(),
+                //AssociateAction::make(),
             ])
             ->recordActions([
                 EditAction::make(),
-                DissociateAction::make(),
+                //DissociateAction::make(),
                 DeleteAction::make(),
             ])
             ->toolbarActions([
