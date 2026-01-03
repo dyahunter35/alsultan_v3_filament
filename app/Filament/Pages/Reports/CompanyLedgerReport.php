@@ -41,8 +41,8 @@ class CompanyLedgerReport extends Page implements HasForms
                 ->schema([
                     Schemas\Components\Grid::make(4)->schema([
                         Forms\Components\Select::make('companyId')
-                            ->label('عرض شاحنة محددة')
-                            ->options(Truck::query()->latest()->get()->mapWithKeys(fn($t) => [$t->id => "($t->id) {$t->driver_name}"]))
+                            ->label('الشركة')
+                            ->options(Company::query()->latest()->pluck('name', 'id'))
                             ->searchable()
                             ->reactive()
                             ->afterStateUpdated(fn() => $this->loadData()),
