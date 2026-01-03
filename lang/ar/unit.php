@@ -5,6 +5,7 @@ return [
         'label' => 'الوحدات',
         'plural_label' => 'الوحدات',
         'model_label' => 'وحدة',
+        'sort' => 7
     ],
     'breadcrumbs' => [
         'index' => 'الوحدات',

@@ -6,6 +6,7 @@ return [
         'label' => 'المنتج',
         'plural_label' => 'المنتجات',
         'model_label' => 'منتج',
+        'sort' => 8
     ],
     'breadcrumbs' => [
         'index' => 'المنتجات',
@@ -120,7 +121,7 @@ return [
             'label' => 'هذا الفرع',
 
         ],
-         'all_branches_quantity' => [
+        'all_branches_quantity' => [
             'label' => 'كل الفروع',
         ],
 
@@ -154,18 +155,18 @@ return [
         ],
     ],
     'actions' => [
-        'report'=>[
-            'label'=>'تقرير كل الفروع'
+        'report' => [
+            'label' => 'تقرير كل الفروع'
         ],
-        'branch_report'=>[
-            'label'=>'تقرير هذا الفرع'
+        'branch_report' => [
+            'label' => 'تقرير هذا الفرع'
         ],
 
 
-        'print'=>[
+        'print' => [
             'label' => 'طباعة التقرير',
         ],
-        'refresh'=>[
+        'refresh' => [
             'label' => 'تحديث الكميات',
         ],
         'delete' => [

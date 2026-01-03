@@ -30,6 +30,8 @@ use Filament\Actions\ActionGroup;
 use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
+use Filament\Pages\Enums\SubNavigationPosition;
+use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
@@ -44,9 +46,6 @@ class CustomerResource extends Resource
 
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-m-user';
     protected static ?int $navigationSort = 2;
-
-
-
     public static function form(Schema $schema): Schema
     {
         static::translateConfigureForm();
@@ -168,4 +167,13 @@ class CustomerResource extends Resource
             'edit' => EditCustomer::route('/{record}/edit'),
         ];
     }
+
+    /* protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            EditCustomer::class,
+        ]);
+    } */
 }

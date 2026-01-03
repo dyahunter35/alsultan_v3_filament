@@ -5,7 +5,8 @@ return [
         'label' => 'Units',
         'plural_label' => 'Units',
         'model_label' => 'Unit',
-        'icon' => 'heroicon-m-building-office-2'
+        'icon' => 'heroicon-m-building-office-2',
+        'sort' => 7
     ],
     'breadcrumbs' => [
         'index' => 'Units',

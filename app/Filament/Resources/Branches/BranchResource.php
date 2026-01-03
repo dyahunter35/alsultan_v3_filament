@@ -31,7 +31,7 @@ class BranchResource extends Resource
     use HasResource;
     protected static ?string $model = Branch::class;
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 3;
 
     protected static string | \BackedEnum | null $navigationIcon = Heroicon::Wallet;
 

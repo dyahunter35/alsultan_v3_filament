@@ -37,8 +37,7 @@ class CategoryResource extends Resource
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-tag';
-
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 5;
 
     public static function getModelLabel(): string
     {
@@ -76,7 +75,7 @@ class CategoryResource extends Resource
                                     ->required()
                                     ->maxLength(255)
                                     ->live(onBlur: true)
-                                    ->afterStateUpdated(fn (string $operation, $state, Set $set) => $set('slug', Str::slug($state))),
+                                    ->afterStateUpdated(fn(string $operation, $state, Set $set) => $set('slug', Str::slug($state))),
 
                                 TextInput::make('slug')
                                     ->label(__('category.fields.slug.label'))
@@ -91,7 +90,7 @@ class CategoryResource extends Resource
                         Select::make('parent_id')
                             ->label(__('category.fields.parent_id.label'))
                             ->placeholder(__('category.fields.parent_id.placeholder'))
-                            ->relationship('parent', 'name', fn (Builder $query) => $query->where('parent_id', null))
+                            ->relationship('parent', 'name', fn(Builder $query) => $query->where('parent_id', null))
                             ->searchable()
                             ->preload(),
 
@@ -103,19 +102,19 @@ class CategoryResource extends Resource
                             ->label(__('category.fields.description.label'))
                             ->placeholder(__('category.fields.description.placeholder')),
                     ])
-                    ->columnSpan(['lg' => fn (?Category $record) => $record === null ? 3 : 2]),
+                    ->columnSpan(['lg' => fn(?Category $record) => $record === null ? 3 : 2]),
                 Section::make()
                     ->schema([
                         Placeholder::make('created_at')
                             ->label(__('category.fields.created_at.label'))
-                            ->content(fn (Category $record): ?string => $record->created_at?->diffForHumans()),
+                            ->content(fn(Category $record): ?string => $record->created_at?->diffForHumans()),
 
                         Placeholder::make('updated_at')
                             ->label(__('category.fields.updated_at.label'))
-                            ->content(fn (Category $record): ?string => $record->updated_at?->diffForHumans()),
+                            ->content(fn(Category $record): ?string => $record->updated_at?->diffForHumans()),
                     ])
                     ->columnSpan(['lg' => 1])
-                    ->hidden(fn (?Category $record) => $record === null),
+                    ->hidden(fn(?Category $record) => $record === null),
             ])
             ->columns(3);
     }

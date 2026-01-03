@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users;
 
+use App\Filament\Pages\Concerns\HasResource;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\TextInput;
@@ -34,11 +35,13 @@ use Illuminate\Validation\Rules\Password;
 
 class UserResource extends Resource
 {
+    use HasResource;
     protected static ?string $model = User::class;
 
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-m-users';
-    protected static ?int $navigationSort = 1;
     protected static bool $isScopedToTenant = false;
+
+    protected static ?int $navigationSort = 1;
 
     public static function getModelLabel(): string
     {

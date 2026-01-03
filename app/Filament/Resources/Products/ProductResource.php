@@ -46,15 +46,17 @@ use Illuminate\Support\Str;
 
 class ProductResource extends Resource
 {
+    use \App\Filament\Pages\Concerns\HasResource;
+
     protected static ?string $model = Product::class;
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    protected static ?int $navigationSort = 7;
+
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-bolt';
 
     protected static bool $isScopedToTenant = false;
-
-    protected static ?int $navigationSort = 3;
 
     // --- NAVIGATION ---
     public static function getModelLabel(): string

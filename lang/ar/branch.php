@@ -5,6 +5,7 @@ return [
         'label' => 'الفروع',
         'plural_label' => 'الفروع',
         'model_label' => 'فرع',
+        'sort' => 4
     ],
     'breadcrumbs' => [
         'index' => 'الفروع',

@@ -5,6 +5,7 @@ return [
         'label' => 'Users',
         'plural_label' => 'Users',
         'model_label' => 'User',
+        'sort' => 1
     ],
     'breadcrumbs' => [
         'index' => 'Users',

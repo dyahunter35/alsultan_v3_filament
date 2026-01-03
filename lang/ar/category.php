@@ -5,6 +5,7 @@ return [
         'label' => 'التصنيفات',
         'plural_label' => 'التصنيفات',
         'model_label' => 'تصنيف',
+        'sort' => 6
     ],
     'breadcrumbs' => [
         'index' => 'التصنيفات',

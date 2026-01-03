@@ -2,11 +2,12 @@
 
 return [
     'navigation' => [
-        'group' => 'Purchasing and Warehouse Management',
+        'group' => 'Users Management',
         'label' => 'Suppliers',
         'plural_label' => 'Suppliers',
         'model_label' => 'Supplier',
         'search_key' => 'Supplier Name',
+        'sort' => 3
     ],
     'breadcrumbs' => [
         'index' => 'Suppliers',

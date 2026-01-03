@@ -5,6 +5,7 @@ return [
         'label' => 'Categories',
         'plural_label' => 'Categories',
         'model_label' => 'Category',
+        'sort' => 6
     ],
     'breadcrumbs' => [
         'index' => 'Categories',

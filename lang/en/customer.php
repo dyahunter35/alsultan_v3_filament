@@ -5,7 +5,9 @@ return [
         'label' => 'Customers',
         'plural_label' => 'Customers',
         'model_label' => 'Customer',
-        'search_key' => 'Customer name'
+        'search_key' => 'Customer name',
+        'sort' => 2
+
     ],
     'breadcrumbs' => [
         'index' => 'Customers',

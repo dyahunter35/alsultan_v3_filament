@@ -6,6 +6,7 @@ return [
         'label' => 'Product',
         'plural_label' => 'Products',
         'model_label' => 'Product',
+        'sort' => 8
     ],
     'breadcrumbs' => [
         'index' => 'Products',
@@ -120,7 +121,7 @@ return [
             'label' => 'This Branch',
 
         ],
-         'all_branches_quantity' => [
+        'all_branches_quantity' => [
             'label' => 'All Branches',
         ],
 
@@ -154,16 +155,16 @@ return [
         ],
     ],
     'actions' => [
-        'report'=>[
-            'label'=>'Branches Quantity Report'
+        'report' => [
+            'label' => 'Branches Quantity Report'
         ],
-        'branch_report'=>[
-            'label'=>'Branch Report'
+        'branch_report' => [
+            'label' => 'Branch Report'
         ],
-        'print'=>[
+        'print' => [
             'label' => 'Print Report',
         ],
-        'refresh'=>[
+        'refresh' => [
             'label' => 'Refresh Quantity',
         ],
         'delete' => [

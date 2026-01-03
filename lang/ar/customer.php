@@ -5,7 +5,8 @@ return [
         'label' => 'العملاء',
         'plural_label' => 'العملاء',
         'model_label' => 'عميل',
-        'search_key' => 'اسم العميل'
+        'search_key' => 'اسم العميل',
+        'sort' => 2
     ],
     'breadcrumbs' => [
         'index' => 'العملاء',

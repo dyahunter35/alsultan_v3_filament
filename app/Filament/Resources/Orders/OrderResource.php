@@ -67,7 +67,6 @@ class OrderResource extends Resource
     protected static bool $isScopedToTenant = true;
     protected static ?string $recordTitleAttribute = 'number';
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-shopping-bag';
-    protected static ?int $navigationSort = 5;
 
     public static function getModelLabel(): string
     {

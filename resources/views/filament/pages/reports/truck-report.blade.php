@@ -50,7 +50,7 @@
 
 
             {{-- تفاصيل المنتجات --}}
-            <x-filament::section>
+            <x-filament::section class="mb-4">
                 <x-slot name="heading">تفاصيل البضائع</x-slot>
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm border border-gray-200">
@@ -98,7 +98,10 @@
                                 <td class="p-2 border" colspan="1">
                                     {{ number_format(array_sum(array_column($rows, 'real_quantity')), 2) }}
                                 </td>
-                                <td class="p-2 border" colspan="2"></td>
+                                <td class="p-2 border" colspan="1">
+                                    {{ number_format(array_sum(array_column($rows, 'dif')), 2) }}
+                                </td>
+                                <td class="p-2 border" colspan="1"></td>
 
                             </tr>
                         </tbody>
@@ -150,8 +153,6 @@
                     $expenses = $truck->expenses->sum('total_amount') ?? 0;
                     // $netFare = $fare - ($delay + $expenses);
                     $totalWeight = $truck->total_weight ?? 1;
-                    $costPerGram = $costPerGram ?? 0;
-                    $totalProductsCost = array_sum(array_column($rows, 'total_cost')) ?? 0;
                 @endphp
                 <table class="w-full text-sm border border-gray-200">
                     <tbody>
@@ -175,14 +176,8 @@
                             <td class="p-2 font-semibold text-gray-700 border">الوزن الكلي</td>
                             <td class="p-2 border">{{ number_format($totalWeight, 2) }}</td>
                         </tr>
-                        <tr>
-                            <td class="p-2 font-semibold text-gray-700 border">تكلفة الجرام الواحد</td>
-                            <td class="p-2 border">{{ number_format($costPerGram, 6) }}</td>
-                        </tr>
-                        <tr class="font-bold bg-gray-50">
-                            <td class="p-2 text-blue-800 border">إجمالي تكلفة البضائع</td>
-                            <td class="p-2 text-blue-800 border">{{ number_format($totalProductsCost, 2) }}</td>
-                        </tr>
+
+
                     </tbody>
                 </table>
 

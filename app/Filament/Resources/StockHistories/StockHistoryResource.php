@@ -30,14 +30,13 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class StockHistoryResource extends Resource
 {
+    use \App\Filament\Pages\Concerns\HasResource;
     protected static ?string $model = StockHistory::class;
 
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     // protected static bool $isScopedToTenant = true;
-
-    protected static ?int $navigationSort = 5;
-
+    protected static ?int $navigationSort = 8;
     // --- NAVIGATION ---
     public static function getModelLabel(): string
     {
