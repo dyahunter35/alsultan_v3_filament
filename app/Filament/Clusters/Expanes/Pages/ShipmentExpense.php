@@ -33,7 +33,7 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 
-class TaxExpense extends Page implements HasActions, HasTable
+class ShipmentExpense extends Page implements HasActions, HasTable
 {
     use HasSinglePage;
     use InteractsWithActions;
@@ -43,7 +43,7 @@ class TaxExpense extends Page implements HasActions, HasTable
 
     protected static ?string $cluster = ExpanesCluster::class;
 
-    protected static ?int $navigationSort = 107;
+    protected static ?int $navigationSort = 108;
 
     public static function getLocalePath(): string
     {
@@ -56,13 +56,11 @@ class TaxExpense extends Page implements HasActions, HasTable
 
         // dd(ExpansesType::getGroupName('store'));
         return $table
-            ->query(Expense::types(ExpenseGroup::TAX))
+            ->query(Expense::types(ExpenseGroup::SHIPMENT_CLEARANCE))
             ->defaultSort('id', 'desc')
             ->modelLabel(__('expense.' . static::className() . '.navigation.model_label'))
             ->columns(
-
-                TaxExpense::expenseTableColumns()
-
+                ShipmentExpense::expenseTableColumns()
             )
             ->filters([
                 TrashedFilter::make()
@@ -147,7 +145,7 @@ class TaxExpense extends Page implements HasActions, HasTable
                         Forms\Components\Select::make('expense_type_id')
                             ->label(__(self::getLocalePath() . '.fields.type.label'))
                             ->live()
-                            ->options(ExpenseType::where('group', ExpenseGroup::TAX)->pluck('label', 'id'))
+                            ->options(ExpenseType::where('group', ExpenseGroup::SHIPMENT_CLEARANCE)->pluck('label', 'id'))
                             ->required()
                             ->createOptionForm([
                                 Grid::make(2)
@@ -166,7 +164,7 @@ class TaxExpense extends Page implements HasActions, HasTable
 
                                         Hidden::make('group')
                                             ->label(__('expense_type.fields.group.label'))
-                                            ->default(ExpenseGroup::TAX->value),
+                                            ->default(ExpenseGroup::SHIPMENT_CLEARANCE->value),
                                     ]),
 
                             ])

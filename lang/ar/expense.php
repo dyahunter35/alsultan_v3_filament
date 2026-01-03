@@ -1,6 +1,6 @@
 <?php
 
-$commonFields = include __DIR__.'/partials/expense_fields.php';
+$commonFields = include __DIR__ . '/partials/expense_fields.php';
 
 return [
     'navigation' => [
@@ -117,6 +117,26 @@ return [
         'label' => [
             'plural' => 'الضرائب',
             'single' => 'ضريبة',
+        ],
+        'fields' => array_merge($commonFields, [
+            'amount' => [
+                'label' => 'عدد العربات',
+            ],
+            'unit_price' => [
+                'label' => 'سعر العربة',
+                'placeholder' => 'أدخل السعر',
+            ],
+        ]),
+    ],
+    'shipment_expense' => [
+        'navigation' => [
+            'heading' => 'التخليص والشحن',
+            'model_label' => 'معاملة تخليص وشحن',
+            'icon' => 'heroicon-m-truck',
+        ],
+        'label' => [
+            'plural' => 'التخليص والشحن',
+            'single' => 'تخليص وشحن',
         ],
         'fields' => array_merge($commonFields, [
             'amount' => [

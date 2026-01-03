@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Trucks\RelationManagers;
 
+use App\Filament\Clusters\Expanes\Pages\ShipmentExpense;
 use App\Filament\Clusters\Expanes\Pages\TaxExpense;
 use App\Filament\Pages\Concerns\HasRelationManager;
 use Filament\Actions\AssociateAction;
@@ -23,15 +24,15 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class TaxExpensesRelationManager extends RelationManager
+class ShipmentExpenseRelationManager extends RelationManager
 {
     use HasRelationManager;
 
-    protected static string $relationship = 'taxExpenses';
+    protected static string $relationship = 'shipmentExpenses';
 
     public static function getLocalePath(): string
     {
-        return 'expense.tax_expense';
+        return 'expense.shipmentExpenses';
     }
 
     public function form(Schema $schema): Schema
@@ -40,7 +41,7 @@ class TaxExpensesRelationManager extends RelationManager
 
         return $schema
             ->components(
-                TaxExpense::expenseForm($this->ownerRecord->id)
+                ShipmentExpense::expenseForm($this->ownerRecord->id)
             )->columns(1);
     }
 
@@ -51,31 +52,31 @@ class TaxExpensesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('id')
             ->columns(
-                TaxExpense::expenseTableColumns()
+                ShipmentExpense::expenseTableColumns()
             )
             ->filters([
                 TrashedFilter::make(),
             ])
             ->headerActions([
                 CreateAction::make(),
-                AssociateAction::make(),
+                //AssociateAction::make(),
             ])
             ->recordActions([
                 EditAction::make(),
-                DissociateAction::make(),
+                //DissociateAction::make(),
                 DeleteAction::make(),
                 ForceDeleteAction::make(),
                 RestoreAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DissociateBulkAction::make(),
+                    //DissociateBulkAction::make(),
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
                 ]),
             ])
-            ->modifyQueryUsing(fn (Builder $query) => $query
+            ->modifyQueryUsing(fn(Builder $query) => $query
                 ->withoutGlobalScopes([
                     SoftDeletingScope::class,
                 ]));

@@ -1,6 +1,6 @@
 <?php
 
-$commonFields = include __DIR__.'/partials/expense_fields.php';
+$commonFields = include __DIR__ . '/partials/expense_fields.php';
 
 return [
     'navigation' => [
@@ -117,6 +117,26 @@ return [
         'label' => [
             'plural' => 'Taxes',
             'single' => 'Tax',
+        ],
+        'fields' => array_merge($commonFields, [
+            'amount' => [
+                'label' => 'Number of Vehicles',
+            ],
+            'unit_price' => [
+                'label' => 'Vehicle Price',
+                'placeholder' => 'Enter price',
+            ],
+        ]),
+    ],
+    'shipment_expense' => [
+        'navigation' => [
+            'heading' => 'Shipment Clearance',
+            'model_label' => 'Shipment Clearance Transaction',
+            'icon' => 'heroicon-m-truck',
+        ],
+        'label' => [
+            'plural' => 'Shipment Clearances',
+            'single' => 'Shipment Clearance',
         ],
         'fields' => array_merge($commonFields, [
             'amount' => [
