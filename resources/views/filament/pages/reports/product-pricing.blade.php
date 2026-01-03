@@ -54,7 +54,7 @@
                     {{-- هيدر الشاحنة --}}
                     <div class="flex items-center justify-between pb-4 mb-6 border-b-2 border-gray-100">
                         <div>
-                            <h2 class="text-xl font-black text-gray-800 underline decoration-blue-500">بيان الشحنة رقم
+                            <h2 class="text-xl font-black text-gray-800 decoration-blue-500">بيان الشحنة رقم
                                 {{ $data['truck']->id }}</h2>
                             <p class="mt-1 font-bold text-gray-600">السائق: {{ $data['truck']->driver_name }} | رقم
                                 اللوحة:
@@ -78,7 +78,7 @@
 
                     {{-- الجدول --}}
                     <div class="overflow-x-auto">
-                        <table class="w-full text-[11px] text-center border-collapse border border-gray-400">
+                        <table class="w-full text-[13px] text-center border-collapse border border-gray-400">
                             <thead>
                                 <tr class="font-bold text-white bg-gray-800">
                                     <th colspan="3" class="p-1 border border-gray-400">بيانات الصنف</th>
@@ -86,7 +86,8 @@
                                     <th colspan="2" class="p-1 border border-gray-400">السعر الأساسي</th>
                                     <th colspan="3" class="p-1 border border-gray-400">التكاليف المضافة</th>
                                     <th colspan="3" class="p-1 border border-gray-400">المالية
-                                        ({{ $currency_name }})</th>
+                                        ({{ $currency_name }})
+                                    </th>
                                     <th colspan="2" class="p-1 border border-gray-400">سعر الطرد</th>
                                     <th colspan="2" class="p-1 border border-gray-400">السوداني</th>
                                 </tr>
@@ -183,13 +184,52 @@
                             </tfoot>
                         </table>
                     </div>
+
+                    <div class="overflow-x-auto">
+                        <h2 class="text-xl font-black text-gray-800 decoration-blue-500">المنصرفات</h2>
+                        <table class="w-full text-[11px] text-center border-collapse border border-gray-400 mt-2">
+                            <table class="w-full text-sm border">
+                                <thead class="bg-gray-100">
+                                    <tr class="font-bold text-white bg-gray-800">
+                                        <th class="p-1 border border-gray-400">#</th>
+                                        <th class="p-1 border border-gray-400">النوع</th>
+                                        <th class="p-1 border border-gray-400">المبلغ</th>
+                                        <th class="p-1 border border-gray-400">ملاحظة</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($data['truck']->expenses as $i => $expense)
+                                        <tr class="border-b border-gray-400 hover:bg-gray-50">
+                                            <td class="p-2 border">{{ $i + 1 }}</td>
+                                            <td class="p-2 border">{{ $expense->type->label }}</td>
+                                            <td class="p-2 border">{{ number_format($expense->total_amount, 2) }}</td>
+                                            <td class="p-2 border">{{ $expense->note }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="p-3 text-center text-gray-500">لا توجد مصروفات
+                                                مسجلة
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                    <tr class="font-bold text-white uppercase bg-gray-800">
+                                        <td colspan="2" class="p-2 text-right border">الإجمالي</td>
+                                        <td class="p-2 border" colspan="2">
+                                            {{ number_format($data['truck']->expenses->sum('total_amount'), 2) }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                    </div>
+
                 </div>
             @endforeach
         </div>
         <x-print-button />
     @else
         <div class="p-20 text-center bg-white border-2 border-gray-300 border-dashed shadow rounded-xl">
-            <h3 class="text-xl font-bold text-gray-400">الرجاء اختيار شاحنة أو شركة من القائمة أعلاه لعرض بيانات التسعير
+            <h3 class="text-xl font-bold text-gray-400">الرجاء اختيار شاحنة أو شركة من القائمة أعلاه لعرض بيانات
+                التسعير
             </h3>
         </div>
     @endif
