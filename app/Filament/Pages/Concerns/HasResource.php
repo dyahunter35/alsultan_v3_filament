@@ -39,7 +39,7 @@ trait HasResource
     {
         $locale_path = static::getLocalePath();
 
-        if (Lang::has($key = $locale_path.'.'.$key, app()->getLocale())) {
+        if (Lang::has($key = $locale_path . '.' . $key, app()->getLocale())) {
             return __($key);
         }
 
@@ -85,10 +85,10 @@ trait HasResource
      */
     public static function getGlobalSearchResultUrl(Model $record): ?string
     {
-        if (static::canView($record)) {
-            return static::getUrl('view', ['record' => $record]);
+        /* if (static::canView($record)) {
+            return static::getUrl('view', ['record' => $record]) ?? '';
         }
-
+ */
         if (static::canEdit($record)) {
             return static::getUrl('edit', ['record' => $record]);
         }

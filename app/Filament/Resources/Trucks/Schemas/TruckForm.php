@@ -124,8 +124,9 @@ class TruckForm
 
                 Forms\Components\Select::make('branch_to')
                     ->label(__('truck.fields.to.label'))
-                    ->relationship('toBranch', 'name')
+                    ->options(fn() => \App\Models\Branch::pluck('name', 'id'))
                     ->searchable()
+                    ->required()
                     ->preload(),
 
                 Forms\Components\Select::make('country')
