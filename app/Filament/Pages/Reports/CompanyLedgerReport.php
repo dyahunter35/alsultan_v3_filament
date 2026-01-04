@@ -63,8 +63,8 @@ class CompanyLedgerReport extends Page implements HasForms
     public function mount(): void
     {
         $this->companyId = request()->query('companyId');
-        $this->startDate = request()->query('startDate') ?? now()->startOfYear()->format('Y-m-d');
-        $this->endDate = request()->query('endDate') ?? now()->format('Y-m-d');
+        $this->startDate = request()->query('startDate');
+        $this->endDate = request()->query('endDate');
 
         if ($this->companyId) {
             $this->loadData();
