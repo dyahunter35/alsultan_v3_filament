@@ -302,6 +302,7 @@ class ProductPricing extends Page implements HasForms
             $package_egp = $item->quantity > 0 ? ($selling_egp / $item->quantity) : 0;
             $package_sdg = $package_egp * $exchange;
             $ton_sdg = $weight_ton > 0 ? (($selling_egp * $exchange) / $weight_ton) : 0;
+            $unit_sdg = $ton_sdg * 40;
 
             return (object) [
                 'cargo_id' => $item->id,
@@ -323,6 +324,7 @@ class ProductPricing extends Page implements HasForms
                 'package_price_egp' => $package_egp,
                 'package_price_sdg' => $package_sdg,
                 'ton_price_sdg' => $ton_sdg,
+                'unit_sdg' => $unit_sdg,
             ];
         });
 
