@@ -4,7 +4,9 @@
         {{ $this->form }}
     </div>
 
-    @php $reports = $this->report_data; @endphp
+    @php
+        $reports = $this->report_data;
+    @endphp
 
     @if ($reports)
         {{-- المعادل العام --}}
@@ -21,7 +23,11 @@
                     <div class="border row" style="border:1px dashed #999; padding:6px;">
                         <div style="display:flex; justify-content:space-between;">
                             <div>
-                                <div>📍 <b>اسم الشركة:</b> {{ $_company?->name ?? '-' }}</div>
+                                @if ($truck_id)
+                                    <div>📍 <b>تقرير الشحنة رقم :</b> {{ $reports[0]['truck']?->id ?? '-' }}</div>
+                                @else
+                                    <div>📍 <b>اسم الشركة:</b> {{ $_company?->name ?? '-' }}</div>
+                                @endif
                             </div>
                             <div style="text-align:left;">
                                 <div><b>تاريخ التقرير:</b> {{ now()->format('Y/m/d') }}</div>
@@ -35,14 +41,15 @@
                         <dt class="font-bold text-gray-600">العملة الافتراضية</dt>
                         <dd>{{ $currency_name ?? '' }}</dd>
                     </div>
+
                     <div>
-                        <dt class="font-bold text-gray-600">المعادل</dt>
-                        <dd>{{ $exchange_rate }}</dd>
+                        {{-- <dt class="font-bold text-gray-600">تكلفة العطلات</dt> --}}
+                        {{-- <dd>{{ number_format($truck->delay_value, 2) }}</dd> --}}
                     </div>
 
                     <div>
-                        <dt class="font-bold text-gray-600">تكلفة العطلات</dt>
-                        {{-- <dd>{{ number_format($truck->delay_value, 2) }}</dd> --}}
+                        <dt class="font-bold text-gray-600">المعادل</dt>
+                        <dd>{{ $exchange_rate }}</dd>
                     </div>
 
                 </dl>
@@ -56,7 +63,7 @@
                         <div>
                             <h2 class="text-xl font-black text-gray-800 decoration-blue-500">بيان الشحنة رقم
                                 {{ $data['truck']->id }}</h2>
-                            <p class="mt-1 font-bold text-gray-600">السائق: {{ $data['truck']->driver_name }} | رقم
+                            <p class="mt-1 font-bold text-gray-600"> رقم
                                 اللوحة:
                                 {{ $data['truck']->car_number }}
                                 | تاريخ الشحنة

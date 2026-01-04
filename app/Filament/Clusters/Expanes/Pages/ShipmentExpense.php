@@ -98,6 +98,9 @@ class ShipmentExpense extends Page implements HasActions, HasTable
                 Tables\Columns\TextColumn::make('id')
                     ->label('رقم المصروف')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('truck_id')
+                    ->label('رقم الشاحنة')
+                    ->sortable(),
                 /* Tables\Columns\TextColumn::make('branch.name')
                     ->searchable(), */
 
@@ -214,7 +217,7 @@ class ShipmentExpense extends Page implements HasActions, HasTable
 
                         Forms\Components\Select::make('truck_id')
                             ->label(__('الشاحنة'))
-                            ->relationship('truck', 'driver_name') // يفترض وجود علاقة 'store' في موديل Expense
+                            ->relationship('truck', 'id') // يفترض وجود علاقة 'store' في موديل Expense
                             ->required()
                             ->searchable()
                             ->preload()
