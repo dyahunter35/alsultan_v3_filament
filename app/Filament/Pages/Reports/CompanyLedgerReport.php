@@ -82,7 +82,10 @@ class CompanyLedgerReport extends Page implements HasForms
                 $q->where('company_id', $this->companyId)
                     ->orWhere('contractor_id', $this->companyId);
             })
-            ->whereBetween('pack_date', [$start, $end])
+            ->when($start && $end, function ($q) use ($start, $end) {
+                $q->whereBetween('pack_date', [$start, $end]);
+            })
+            //->whereBetween('pack_date', [$start, $end])
             ->orderBy('pack_date')
             ->get();
 
