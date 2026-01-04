@@ -39,6 +39,7 @@ return [
         'sort' => 4,
     ],
 
+
     'truck_report' => [
         'heading' => 'Truck Report',
         'icon' => 'heroicon-m-truck',
@@ -74,6 +75,11 @@ return [
         'heading' => 'Company Details Report',
         'icon' => 'heroicon-m-building-office',
         'sort' => 8,
+    ],
+    'company_ledger_report' => [
+        'heading' => 'Company Leadger',
+        'icon' => 'heroicon-m-building-office',
+        'sort' => 9,
     ],
     'product_pricing' => [
         'heading' => 'Cargo Product Pricing Report',

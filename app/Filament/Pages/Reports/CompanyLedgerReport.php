@@ -24,7 +24,11 @@ class CompanyLedgerReport extends Page implements HasForms
 
     #[Url()]
     public ?int $companyId = null;
+
+    #[Url()]
     public $startDate;
+
+    #[Url()]
     public $endDate;
 
     // البيانات للمعالجة
@@ -37,7 +41,7 @@ class CompanyLedgerReport extends Page implements HasForms
     protected function getFormSchema(): array
     {
         return [
-            Schemas\Components\Section::make('خيارات العرض')
+            Schemas\Components\Section::make()
                 ->schema([
                     Schemas\Components\Grid::make(4)->schema([
                         Forms\Components\Select::make('companyId')
@@ -46,8 +50,12 @@ class CompanyLedgerReport extends Page implements HasForms
                             ->searchable()
                             ->reactive()
                             ->afterStateUpdated(fn() => $this->loadData()),
-
-
+                        Forms\Components\DatePicker::make('startDate')
+                            ->reactive()
+                            ->afterStateUpdated(fn() => $this->loadData()),
+                        Forms\Components\DatePicker::make('endDate')
+                            ->reactive()
+                            ->afterStateUpdated(fn() => $this->loadData()),
                     ]),
                 ])->collapsible(),
         ];
@@ -69,7 +77,7 @@ class CompanyLedgerReport extends Page implements HasForms
         $end = Carbon::parse($this->endDate)->endOfDay();
 
         // 1. جلب الشاحنات المرتبطة بالشركة (كشركة أو كمقاول)
-        $trucks = Truck::with(['cargos.product', 'currencyTransactions'])
+        $trucks = Truck::with(['cargos.product'])
             ->where(function ($q) {
                 $q->where('company_id', $this->companyId)
                     ->orWhere('contractor_id', $this->companyId);

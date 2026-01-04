@@ -36,8 +36,8 @@
                         <dd>{{ $currency_name ?? '' }}</dd>
                     </div>
                     <div>
-                        <dt class="font-bold text-gray-600">الموديل</dt>
-                        {{-- <dd>{{ $truck->truck_model }}</dd> --}}
+                        <dt class="font-bold text-gray-600">المعادل</dt>
+                        <dd>{{ $exchange_rate }}</dd>
                     </div>
 
                     <div>

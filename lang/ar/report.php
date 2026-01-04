@@ -69,9 +69,14 @@ return [
         'icon' => 'heroicon-m-building-office',
         'sort' => 8,
     ],
+    'company_ledger_report' => [
+        'heading' => 'تقرير الشركة',
+        'icon' => 'heroicon-m-building-office',
+        'sort' => 9,
+    ],
     'product_pricing' => [
         'heading' => 'تقرير تسعير منتجات الشحن',
         'icon' => 'heroicon-o-currency-dollar',
-        'sort' => 9,
+        'sort' => 10,
     ],
 ];

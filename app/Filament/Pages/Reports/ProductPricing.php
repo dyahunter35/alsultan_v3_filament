@@ -54,17 +54,17 @@ class ProductPricing extends Page implements HasForms
                     Schemas\Components\Grid::make(4)->schema([
                         Forms\Components\Select::make('truck_id')
                             ->label('عرض شاحنة محددة')
-                            ->options(Truck::query()->latest()->get()->mapWithKeys(fn ($t) => [$t->id => "($t->id) {$t->driver_name}"]))
+                            ->options(Truck::query()->latest()->get()->mapWithKeys(fn($t) => [$t->id => "شحنة رقم : ($t->id)"]))
                             ->searchable()
                             ->reactive()
-                            ->afterStateUpdated(fn () => $this->company_id = null),
+                            ->afterStateUpdated(fn() => $this->company_id = null),
 
                         Forms\Components\Select::make('company_id')
                             ->label('عرض تقرير شركة (جميع شاحناتها)')
                             ->options(Company::all()->pluck('name', 'id'))
                             ->searchable()
                             ->reactive()
-                            ->afterStateUpdated(fn () => $this->truck_id = null),
+                            ->afterStateUpdated(fn() => $this->truck_id = null),
 
                         Forms\Components\TextInput::make('exchange_rate')
                             ->label('سعر الصرف')
@@ -74,7 +74,7 @@ class ProductPricing extends Page implements HasForms
 
                         DateRangePicker::make('date_range')
                             ->label('النطاق الزمني')
-                            ->visible(fn () => $this->company_id)
+                            ->visible(fn() => $this->company_id)
                             ->disableClear(false)
                             ->live()
                             // التعديل الثاني: استخدام منطق afterStateUpdated بدقة أكبر
@@ -122,7 +122,7 @@ class ProductPricing extends Page implements HasForms
             $fromDate = Carbon::createFromFormat('d/m/Y', trim($dates[0]))->startOfDay();
             $toDate = Carbon::createFromFormat('d/m/Y', trim($dates[1]))->endOfDay();
 
-            return fn ($query) => $query->whereBetween('created_at', [$fromDate, $toDate]);
+            return fn($query) => $query->whereBetween('created_at', [$fromDate, $toDate]);
         } catch (\Exception $e) {
             return null;
         }
@@ -199,7 +199,7 @@ class ProductPricing extends Page implements HasForms
             return null;
         }
 
-        return $trucksList->map(fn ($truck) => $this->calculateTruckData($truck));
+        return $trucksList->map(fn($truck) => $this->calculateTruckData($truck));
     }
 
     /*  private function calculateTruckData($truck)
@@ -280,7 +280,7 @@ class ProductPricing extends Page implements HasForms
         // 1. تعديل حساب إجمالي الأطنان للشاحنة
         // نستخدم ton_weight إذا وجد، وإلا نحسبه من الكمية والوزن الوحدوي
         $total_weight_tons = $cargos->sum(
-            fn ($item) => $item->ton_weight > 0 ? $item->ton_weight : ($item->quantity * $item->unit_quantity) / 1000
+            fn($item) => $item->ton_weight > 0 ? $item->ton_weight : ($item->quantity * $item->unit_quantity) / 1000
         );
 
         $rows = $cargos->map(function ($item, $index) use ($total_weight_tons, $customs_egp, $total_transport, $exchange) {
