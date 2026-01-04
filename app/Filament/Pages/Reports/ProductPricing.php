@@ -280,13 +280,13 @@ class ProductPricing extends Page implements HasForms
         // 1. تعديل حساب إجمالي الأطنان للشاحنة
         // نستخدم ton_weight إذا وجد، وإلا نحسبه من الكمية والوزن الوحدوي
         $total_weight_tons = $cargos->sum(
-            fn($item) => $item->ton_weight > 0 ? $item->ton_weight : ($item->quantity * $item->unit_quantity) / 1000
+            fn($item) => $item->ton_weight > 0 ? $item->ton_weight : ($item->weight * $item->unit_quantity) / 1000000
         );
 
         $rows = $cargos->map(function ($item, $index) use ($total_weight_tons, $customs_egp, $total_transport, $exchange) {
 
             // 2. تعديل حساب وزن السطر الحالي
-            $weight_ton = $item->ton_weight > 0 ? $item->ton_weight : ($item->quantity * $item->unit_quantity) / 1000;
+            $weight_ton = $item->ton_weight > 0 ? $item->ton_weight : ($item->weight * $item->unit_quantity) / 1000000;
 
             $weight_ratio = $total_weight_tons > 0 ? ($weight_ton / $total_weight_tons) : 0;
 
@@ -308,7 +308,7 @@ class ProductPricing extends Page implements HasForms
                 'index' => $index + 1,
                 'product_name' => $item->product->name ?? 'منتج غير معروف',
                 'size' => $item->size,
-                'unit_weight' => $item->unit_quantity,
+                'unit_weight' => $item->weight,
                 'quantity' => $item->quantity,
                 'weight_ton' => $weight_ton, // القيمة الجديدة (يدوية أو محسوبة)
                 'unit_price' => $item->unit_price,

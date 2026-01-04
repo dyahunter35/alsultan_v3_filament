@@ -96,7 +96,7 @@
                             <thead>
 
                                 <tr class="font-bold text-white bg-gray-800">
-                                    <th colspan=14 class="p-1 border border-gray-400"></th>
+                                    <th colspan=14 class="p-1 border border-gray-400">تفاصيل التحليل</th>
                                     <th colspan="4" class="p-1 border border-gray-400">التسعير</th>
                                 </tr>
                                 <tr class="font-bold text-white bg-gray-800">
@@ -114,7 +114,7 @@
                                     <th class="p-1 border border-gray-400">#</th>
                                     <th class="w-32 p-1 border border-gray-400">الصنف</th>
                                     <th class="p-1 border border-gray-400">المقاس</th>
-                                    <th class="p-1 border border-gray-400">وزن الطرد</th>
+                                    <th class="p-1 border border-gray-400">وزن الوحدة</th>
                                     <th class="p-1 border border-gray-400">العدد</th>
                                     <th class="p-1 border border-gray-400">الطن</th>
                                     <th class="p-1 border border-gray-400">سعر الطن</th>
