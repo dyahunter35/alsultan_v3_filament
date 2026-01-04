@@ -94,6 +94,11 @@
                     <div class="overflow-x-auto">
                         <table class="w-full text-[13px] text-center border-collapse border border-gray-400">
                             <thead>
+
+                                <tr class="font-bold text-white bg-gray-800">
+                                    <th colspan=14 class="p-1 border border-gray-400"></th>
+                                    <th colspan="4" class="p-1 border border-gray-400">التسعير</th>
+                                </tr>
                                 <tr class="font-bold text-white bg-gray-800">
                                     <th colspan="3" class="p-1 border border-gray-400">بيانات الصنف</th>
                                     <th colspan="2" class="p-1 border border-gray-400">الكميات</th>
@@ -102,7 +107,8 @@
                                     <th colspan="4" class="p-1 border border-gray-400">المالية
                                         ({{ $currency_name }})
                                     </th>
-                                    <th colspan="4" class="p-1 border border-gray-400">التسعير</th>
+                                    <th colspan="2" class="p-1 border border-gray-400">طرد</th>
+                                    <th colspan="2" class="p-1 border border-gray-400">طن</th>
                                 </tr>
                                 <tr class="font-bold text-gray-700 bg-gray-100">
                                     <th class="p-1 border border-gray-400">#</th>
@@ -120,10 +126,10 @@
                                     <th class="p-1 border border-gray-400">قيمة الربح</th>
                                     <th class="p-1 font-bold text-green-700 border border-gray-400"> سعر البيع للبند
                                     </th>
-                                    <th class="p-1 border border-gray-400">طرد (({{ $currency_name }}))</th>
-                                    <th class="p-1 border border-gray-400">طن (({{ $currency_name }}))</th>
-                                    <th class="p-1 font-bold text-blue-800 border border-gray-400">طرد (س)</th>
-                                    <th class="p-1 border border-gray-400">طن (س)</th>
+                                    <th class="p-1 border border-gray-400">بالسوداني</th>
+                                    <th class="p-1 border border-gray-400">{{ $currency_name }}</th>
+                                    <th class="p-1 font-bold text-blue-800 border border-gray-400">بالسوداني</th>
+                                    <th class="p-1 border border-gray-400">{{ $currency_name }}</th>
                                 </tr>
                             </thead>
                             <tbody>
