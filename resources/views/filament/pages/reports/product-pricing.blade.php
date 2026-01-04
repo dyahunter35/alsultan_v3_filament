@@ -96,7 +96,7 @@
                             <thead>
 
                                 <tr class="font-bold text-white bg-gray-800">
-                                    <th colspan=14 class="p-1 border border-gray-400">تفاصيل التحليل</th>
+                                    <th colspan=15 class="p-1 border border-gray-400">تفاصيل التحليل</th>
                                     <th colspan="4" class="p-1 border border-gray-400">التسعير</th>
                                 </tr>
                                 <tr class="font-bold text-white bg-gray-800">
