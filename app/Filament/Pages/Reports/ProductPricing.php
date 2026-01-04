@@ -310,6 +310,7 @@ class ProductPricing extends Page implements HasForms
                 'size' => $item->size,
                 'unit_weight' => $item->weight,
                 'quantity' => $item->quantity,
+                'unit_quantity' => $item->unit_quantity,
                 'weight_ton' => $weight_ton, // القيمة الجديدة (يدوية أو محسوبة)
                 'unit_price' => $item->unit_price,
                 'base_total_egp' => $base_total_egp,
