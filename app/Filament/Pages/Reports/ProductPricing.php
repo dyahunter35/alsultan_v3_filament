@@ -271,38 +271,45 @@ class ProductPricing extends Page implements HasForms
     private function calculateTruckData($truck)
     {
         $exchange = (float) $this->exchange_rate ?: 1;
+
+        // جلب إجمالي المنصرفات (بالسوداني) ونولون الشاحنة (بالعملة الأجنبية)
         $total_customs_sdg = $truck->expenses->sum('total_amount');
         $total_transport = $truck->truck_fare_sum;
 
-        $customs_egp = $total_customs_sdg / $exchange;
+        // تحويل المنصرفات إلى العملة الأجنبية لتوزيعها على الأصناف
+        $customs_foreign = $total_customs_sdg / $exchange;
+
         $cargos = $truck->cargos;
 
-        // 1. تعديل حساب إجمالي الأطنان للشاحنة
-        // نستخدم ton_weight إذا وجد، وإلا نحسبه من الكمية والوزن الوحدوي
+        // حساب إجمالي الأطنان (يدوي أو محسوب)
         $total_weight_tons = $cargos->sum(
             fn($item) => $item->ton_weight > 0 ? $item->ton_weight : ($item->weight * $item->unit_quantity) / 1000000
         );
 
-        $rows = $cargos->map(function ($item, $index) use ($total_weight_tons, $customs_egp, $total_transport, $exchange) {
+        $rows = $cargos->map(function ($item, $index) use ($total_weight_tons, $customs_foreign, $total_transport, $exchange) {
 
-            // 2. تعديل حساب وزن السطر الحالي
             $weight_ton = $item->ton_weight > 0 ? $item->ton_weight : ($item->weight * $item->unit_quantity) / 1000000;
-
             $weight_ratio = $total_weight_tons > 0 ? ($weight_ton / $total_weight_tons) : 0;
 
-            $base_total_egp = $weight_ton * $item->unit_price;
-            $item_customs_cost = $customs_egp * $weight_ratio;
+            // التكلفة بالعملة الأجنبية (EGP أو غيرها)
+            $base_total_foreign = $weight_ton * $item->unit_price;
+            $item_customs_cost = $customs_foreign * $weight_ratio;
             $item_transport_cost = $total_transport * $weight_ratio;
-            $total_cost = $base_total_egp + $item_customs_cost + $item_transport_cost;
+            $total_cost_foreign = $base_total_foreign + $item_customs_cost + $item_transport_cost;
 
+            // الربح
             $profit_percent = (float) ($this->profit_percents[$item->id] ?? 1);
-            $profit_value = $total_cost * ($profit_percent / 100);
+            $profit_value = $total_cost_foreign * ($profit_percent / 100);
 
-            $selling_egp = $total_cost + $profit_value;
-            $package_egp = $item->quantity > 0 ? ($selling_egp / $item->quantity) : 0;
-            $package_sdg = $package_egp * $exchange;
-            $ton_sdg = $weight_ton > 0 ? (($selling_egp * $exchange) / $weight_ton) : 0;
-            $unit_sdg = $ton_sdg * 40;
+            // سعر البيع بالعملة الأجنبية
+            $selling_foreign = $total_cost_foreign + $profit_value;
+
+            // التسعير النهائي (بالسوداني وبالعملة الأجنبية)
+            $package_foreign = $item->quantity > 0 ? ($selling_foreign / $item->quantity) : 0;
+            $package_sdg = $package_foreign * $exchange;
+
+            $ton_sdg = $weight_ton > 0 ? (($selling_foreign * $exchange) / $weight_ton) : 0;
+            $ton_foreign = $weight_ton > 0 ? ($selling_foreign / $weight_ton) : 0;
 
             return (object) [
                 'cargo_id' => $item->id,
@@ -312,35 +319,34 @@ class ProductPricing extends Page implements HasForms
                 'unit_weight' => $item->weight,
                 'quantity' => $item->quantity,
                 'unit_quantity' => number_format($item->unit_quantity),
-                'weight_ton' => $weight_ton, // القيمة الجديدة (يدوية أو محسوبة)
+                'weight_ton' => $weight_ton,
                 'unit_price' => $item->unit_price,
-                'base_total_egp' => $base_total_egp,
+                'base_total_foreign' => $base_total_foreign,
                 'transport_cost' => $item_transport_cost,
                 'customs_cost' => $item_customs_cost,
-                'total_cost' => $total_cost,
+                'total_cost' => $total_cost_foreign,
                 'profit_percent' => $profit_percent,
                 'profit_value' => $profit_value,
-                'selling_price_egp' => $selling_egp,
-                'package_price_egp' => $package_egp,
+                'selling_price_foreign' => $selling_foreign,
+                'package_price_foreign' => $package_foreign,
                 'package_price_sdg' => $package_sdg,
                 'ton_price_sdg' => $ton_sdg,
-                'unit_sdg' => $unit_sdg,
+                'ton_price_foreign' => $ton_foreign,
             ];
         });
 
         return [
             'truck' => $truck,
             'rows' => $rows,
-            'customs_egp_total' => $customs_egp,
             'totals' => [
                 'quantity' => $cargos->sum('quantity'),
                 'weight' => $total_weight_tons,
-                'base_egp' => $rows->sum('base_total_egp'),
+                'base_foreign' => $rows->sum('base_total_foreign'),
                 'transport' => $rows->sum('transport_cost'),
                 'customs' => $rows->sum('customs_cost'),
                 'total_cost' => $rows->sum('total_cost'),
                 'profit' => $rows->sum('profit_value'),
-                'selling_egp' => $rows->sum('selling_price_egp'),
+                'selling_foreign' => $rows->sum('selling_price_foreign'),
             ],
         ];
     }

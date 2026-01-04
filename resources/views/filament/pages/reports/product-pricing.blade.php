@@ -96,7 +96,7 @@
                             <thead>
 
                                 <tr class="font-bold text-white bg-gray-800">
-                                    <th colspan=15 class="p-1 border border-gray-400">تفاصيل التحليل</th>
+                                    <th colspan="15" class="p-1 border border-gray-400">تفاصيل التحليل</th>
                                     <th colspan="4" class="p-1 border border-gray-400">التسعير</th>
                                 </tr>
                                 <tr class="font-bold text-white bg-gray-800">
@@ -135,27 +135,24 @@
                             </thead>
                             <tbody>
                                 @foreach ($data['rows'] as $row)
-                                    <tr class="border-b border-gray-400 hover:bg-gray-50">
+                                    <tr class="border-b border-gray-400 hover:bg-gray-50 text-[12px]">
                                         <td class="p-1 border border-gray-400">{{ $row->index }}</td>
-                                        <td class="p-1 text-right border border-gray-400 whitespace-nowrap">
+                                        <td class="p-1 font-bold text-right border border-gray-400 whitespace-nowrap">
                                             {{ $row->product_name }}</td>
                                         <td class="p-1 border border-gray-400">{{ $row->size }}</td>
                                         <td class="p-1 border border-gray-400">{{ $row->unit_weight }}</td>
                                         <td class="p-1 border border-gray-400">{{ $row->quantity }}</td>
                                         <td class="p-1 border border-gray-400">{{ $row->unit_quantity }}</td>
-                                        <td class="p-1 border border-gray-400">{{ number_format($row->weight_ton, 3) }}
-                                        </td>
+                                        <td class="p-1 font-bold text-blue-800 border border-gray-400">
+                                            {{ number_format($row->weight_ton, 3) }}</td>
                                         <td class="p-1 border border-gray-400">{{ number_format($row->unit_price, 2) }}
                                         </td>
                                         <td class="p-1 border border-gray-400">
-                                            {{ number_format($row->base_total_egp, 2) }}
-                                        </td>
+                                            {{ number_format($row->base_total_foreign, 2) }}</td>
                                         <td class="p-1 border border-gray-400">
-                                            {{ number_format($row->transport_cost, 2) }}
-                                        </td>
+                                            {{ number_format($row->transport_cost, 2) }}</td>
                                         <td class="p-1 border border-gray-400">
-                                            {{ number_format($row->customs_cost, 2) }}
-                                        </td>
+                                            {{ number_format($row->customs_cost, 2) }}</td>
                                         <td class="p-1 font-bold border border-gray-400 bg-yellow-50">
                                             {{ number_format($row->total_cost, 2) }}</td>
 
@@ -164,45 +161,82 @@
                                                 wire:model.live.debounce.500ms="profit_percents.{{ $row->cargo_id }}"
                                                 class="w-full h-full p-1 text-xs font-bold text-center text-blue-800 bg-transparent border-none focus:ring-0">
                                         </td>
-                                        <td class="p-1 border border-gray-400 print-only">{{ $row->profit_percent }}%
-                                        </td>
+                                        <td class="p-1 text-xs border border-gray-400 print-only">
+                                            {{ $row->profit_percent }}%</td>
 
                                         <td class="p-1 border border-gray-400">
-                                            {{ number_format($row->profit_value, 2) }}
-                                        </td>
-                                        <td class="p-1 font-bold text-green-700 border border-gray-400">
-                                            {{ number_format($row->selling_price_egp, 2) }}</td>
-                                        <td class="p-1 border border-gray-400">
-                                            {{ number_format($row->package_price_egp, 2) }}</td>
-                                        <td class="p-1 font-bold border border-gray-400 bg-gray-50">
-                                            {{ number_format($row->package_price_sdg, 2) }}</td>
-                                        <td class="p-1 italic text-gray-600 border border-gray-400">
+                                            {{ number_format($row->profit_value, 2) }}</td>
+                                        <td class="p-1 font-bold text-green-700 border border-gray-400 bg-green-50">
+                                            {{ number_format($row->selling_price_foreign, 2) }}</td>
+
+                                        <td class="p-1 font-black text-green-900 bg-green-100 border border-gray-400">
+                                            {{ number_format($row->package_price_sdg, 0) }}</td>
+                                        <td class="p-1 border border-gray-400 bg-gray-50">
+                                            {{ number_format($row->package_price_foreign, 2) }}</td>
+
+                                        <td class="p-1 font-black text-orange-900 bg-yellow-100 border border-gray-400">
                                             {{ number_format($row->ton_price_sdg, 0) }}</td>
+                                        <td class="p-1 italic text-gray-600 border border-gray-400">
+                                            {{ number_format($row->ton_price_foreign, 0) }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
                             <tfoot class="font-bold text-white uppercase bg-gray-800">
-                                <tr>
-                                    <td colspan="3" class="p-1 text-center border border-gray-400">المجاميع</td>
+                                <tr class="text-[12px]">
+                                    {{-- بيانات الصنف الأساسية (دمج 4 أعمدة) --}}
+                                    <td colspan="4" class="p-1 text-center border border-gray-400">الإجمالي العام
+                                    </td>
+
+                                    {{-- الكميات (طرد) --}}
+                                    <td class="p-1 border border-gray-400">
+                                        {{ number_format($data['totals']['quantity']) }}</td>
+
+                                    {{-- العدد (فارغ أو إجمالي حسب الحاجة) --}}
                                     <td class="p-1 border border-gray-400"></td>
-                                    <td class="p-1 border border-gray-400">{{ $data['totals']['quantity'] }}</td>
-                                    <td class="p-1 border border-gray-400">
-                                        {{ number_format($data['totals']['weight'], 3) }}</td>
+
+                                    {{-- إجمالي الأطنان --}}
+                                    <td class="p-1 font-bold text-yellow-400 border border-gray-400">
+                                        {{ number_format($data['totals']['weight'], 3) }}
+                                    </td>
+
+                                    {{-- سعر الطن (فارغ لأنه لا يجمع) --}}
                                     <td class="p-1 border border-gray-400"></td>
+
+                                    {{-- إجمالي المجموع الأساسي بالعملة الأجنبية --}}
                                     <td class="p-1 border border-gray-400">
-                                        {{ number_format($data['totals']['base_egp'], 2) }}</td>
+                                        {{ number_format($data['totals']['base_foreign'], 2) }}
+                                    </td>
+
+                                    {{-- إجمالي الترحيل --}}
                                     <td class="p-1 border border-gray-400">
-                                        {{ number_format($data['totals']['transport'], 2) }}</td>
+                                        {{ number_format($data['totals']['transport'], 2) }}
+                                    </td>
+
+                                    {{-- إجمالي المنصرفات --}}
                                     <td class="p-1 border border-gray-400">
-                                        {{ number_format($data['totals']['customs'], 2) }}</td>
+                                        {{ number_format($data['totals']['customs'], 2) }}
+                                    </td>
+
+                                    {{-- إجمالي التكلفة الكلية بالعملة الأجنبية --}}
+                                    <td class="p-1 text-black bg-yellow-600 border border-gray-400">
+                                        {{ number_format($data['totals']['total_cost'], 2) }}
+                                    </td>
+
+                                    {{-- نسبة الربح (فارغ) --}}
+                                    <td class="p-1 border border-gray-400 no-print"></td>
+
+                                    {{-- إجمالي قيمة الربح --}}
                                     <td class="p-1 border border-gray-400">
-                                        {{ number_format($data['totals']['total_cost'], 2) }}</td>
-                                    <td class="p-1 border border-gray-400"></td>
-                                    <td class="p-1 border border-gray-400">
-                                        {{ number_format($data['totals']['profit'], 2) }}</td>
-                                    <td class="p-1 border border-gray-400">
-                                        {{ number_format($data['totals']['selling_egp'], 2) }}</td>
-                                    <td colspan="3" class="p-1 bg-gray-700 border border-gray-400"></td>
+                                        {{ number_format($data['totals']['profit'], 2) }}
+                                    </td>
+
+                                    {{-- إجمالي سعر البيع للبند بالعملة الأجنبية --}}
+                                    <td class="p-1 bg-green-700 border border-gray-400">
+                                        {{ number_format($data['totals']['selling_foreign'], 2) }}
+                                    </td>
+
+                                    {{-- خانات التسعير (طرد وطن) - تترك فارغة عادة لأنها أسعار وحدات لا تجمع --}}
+                                    <td colspan="4" class="p-1 bg-gray-700 border border-gray-400"></td>
                                 </tr>
                             </tfoot>
                         </table>
