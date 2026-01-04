@@ -61,8 +61,15 @@
                     {{-- هيدر الشاحنة --}}
                     <div class="flex items-center justify-between pb-4 mb-6 border-b-2 border-gray-100">
                         <div>
-                            <h2 class="text-xl font-black text-gray-800 decoration-blue-500">بيان الشحنة رقم
-                                {{ $data['truck']->id }}</h2>
+                            <h2 class="text-xl font-black text-gray-800 decoration-blue-500">
+                                @if ($truck_id)
+                                    الشركة {{ $_company->name ?? '' }}
+                                @else
+                                    بيان الشحنة رقم {{ $data['truck']->id }}
+                                @endif
+                            </h2>
+
+
                             <p class="mt-1 font-bold text-gray-600"> رقم
                                 اللوحة:
                                 {{ $data['truck']->car_number }}
@@ -92,11 +99,10 @@
                                     <th colspan="2" class="p-1 border border-gray-400">الكميات</th>
                                     <th colspan="2" class="p-1 border border-gray-400">السعر الأساسي</th>
                                     <th colspan="3" class="p-1 border border-gray-400">التكاليف المضافة</th>
-                                    <th colspan="3" class="p-1 border border-gray-400">المالية
+                                    <th colspan="4" class="p-1 border border-gray-400">المالية
                                         ({{ $currency_name }})
                                     </th>
-                                    <th colspan="2" class="p-1 border border-gray-400">سعر الطرد</th>
-                                    <th colspan="2" class="p-1 border border-gray-400">السوداني</th>
+                                    <th colspan="4" class="p-1 border border-gray-400">التسعير</th>
                                 </tr>
                                 <tr class="font-bold text-gray-700 bg-gray-100">
                                     <th class="p-1 border border-gray-400">#</th>
@@ -112,8 +118,10 @@
                                     <th class="p-1 bg-yellow-100 border border-gray-400">التكلفة</th>
                                     <th class="w-16 p-1 bg-blue-100 border border-gray-400">الربح %</th>
                                     <th class="p-1 border border-gray-400">قيمة الربح</th>
-                                    <th class="p-1 font-bold text-green-700 border border-gray-400">سعر البيع</th>
-                                    <th class="p-1 border border-gray-400">طرد (م)</th>
+                                    <th class="p-1 font-bold text-green-700 border border-gray-400"> سعر البيع للبند
+                                    </th>
+                                    <th class="p-1 border border-gray-400">طرد (({{ $currency_name }}))</th>
+                                    <th class="p-1 border border-gray-400">طن (({{ $currency_name }}))</th>
                                     <th class="p-1 font-bold text-blue-800 border border-gray-400">طرد (س)</th>
                                     <th class="p-1 border border-gray-400">طن (س)</th>
                                 </tr>
