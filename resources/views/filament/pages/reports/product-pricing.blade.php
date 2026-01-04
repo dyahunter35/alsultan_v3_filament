@@ -100,7 +100,7 @@
                                     <th colspan="4" class="p-1 border border-gray-400">التسعير</th>
                                 </tr>
                                 <tr class="font-bold text-white bg-gray-800">
-                                    <th colspan="3" class="p-1 border border-gray-400">بيانات الصنف</th>
+                                    <th colspan="4" class="p-1 border border-gray-400">بيانات الصنف</th>
                                     <th colspan="2" class="p-1 border border-gray-400">الكميات</th>
                                     <th colspan="2" class="p-1 border border-gray-400">السعر الأساسي</th>
                                     <th colspan="3" class="p-1 border border-gray-400">التكاليف المضافة</th>
@@ -115,6 +115,7 @@
                                     <th class="w-32 p-1 border border-gray-400">الصنف</th>
                                     <th class="p-1 border border-gray-400">المقاس</th>
                                     <th class="p-1 border border-gray-400">وزن الوحدة</th>
+                                    <th class="p-1 border border-gray-400">الطرد</th>
                                     <th class="p-1 border border-gray-400">العدد</th>
                                     <th class="p-1 border border-gray-400">الطن</th>
                                     <th class="p-1 border border-gray-400">سعر الطن</th>
@@ -141,6 +142,7 @@
                                         <td class="p-1 border border-gray-400">{{ $row->size }}</td>
                                         <td class="p-1 border border-gray-400">{{ $row->unit_weight }}</td>
                                         <td class="p-1 border border-gray-400">{{ $row->quantity }}</td>
+                                        <td class="p-1 border border-gray-400">{{ $row->unit_quantity }}</td>
                                         <td class="p-1 border border-gray-400">{{ number_format($row->weight_ton, 3) }}
                                         </td>
                                         <td class="p-1 border border-gray-400">{{ number_format($row->unit_price, 2) }}
