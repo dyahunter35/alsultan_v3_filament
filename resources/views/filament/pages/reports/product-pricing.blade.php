@@ -169,14 +169,14 @@
                                         <td class="p-1 font-bold text-green-700 border border-gray-400 bg-green-50">
                                             {{ number_format($row->selling_price_foreign, 2) }}</td>
 
-                                        <td class="p-1 font-black text-green-900 bg-green-100 border border-gray-400">
+                                        <td class="p-1 font-bold text-green-900 bg-green-100 border border-gray-400">
                                             {{ number_format($row->package_price_sdg, 0) }}</td>
-                                        <td class="p-1 border border-gray-400 bg-gray-50">
+                                        <td class="p-1 font-bold border border-gray-400 bg-gray-50">
                                             {{ number_format($row->package_price_foreign, 2) }}</td>
 
                                         <td class="p-1 font-black text-orange-900 bg-yellow-100 border border-gray-400">
                                             {{ number_format($row->ton_price_sdg, 0) }}</td>
-                                        <td class="p-1 italic text-gray-600 border border-gray-400">
+                                        <td class="p-1 font-bold text-gray-600 border border-gray-400">
                                             {{ number_format($row->ton_price_foreign, 0) }}</td>
                                     </tr>
                                 @endforeach

@@ -32,9 +32,27 @@ class DecimalInput extends TextInput
 
             // 2. عند الحفظ في القاعدة: اضرب في مليون
             $this->dehydrateStateUsing(function ($state) {
-                $value = (float) str_replace(',', '', $state);
+                // إذا كانت القيمة فارغة أو null، أرجع null
+                if (blank($state)) {
+                    return null;
+                }
 
-                return blank($state) ? null : $value * 1000000;
+                // تنظيف القيمة من الفواصل
+                $cleanedState = str_replace(',', '', (string) $state);
+                
+                // إذا كانت القيمة المنظفة فارغة أو صفر، أرجع null
+                if (blank($cleanedState) || $cleanedState === '0' || $cleanedState === '0.0') {
+                    return null;
+                }
+
+                $value = (float) $cleanedState;
+                
+                // إذا كانت القيمة بعد التحويل صفر، أرجع null
+                if ($value == 0) {
+                    return null;
+                }
+
+                return $value * 1000000;
             });
 
             // 3. إظهار القيمة الفعلية (القيمة المضروبة) في الـ hint
