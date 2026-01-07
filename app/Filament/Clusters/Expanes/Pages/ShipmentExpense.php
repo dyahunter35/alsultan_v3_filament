@@ -47,7 +47,7 @@ class ShipmentExpense extends Page implements HasActions, HasTable
 
     public static function getLocalePath(): string
     {
-        return 'expense.' . static::className();
+        return 'expense.'.static::className();
     }
 
     public function table(Table $table): Table
@@ -58,7 +58,7 @@ class ShipmentExpense extends Page implements HasActions, HasTable
         return $table
             ->query(Expense::types(ExpenseGroup::SHIPMENT_CLEARANCE))
             ->defaultSort('id', 'desc')
-            ->modelLabel(__('expense.' . static::className() . '.navigation.model_label'))
+            ->modelLabel(__('expense.'.static::className().'.navigation.model_label'))
             ->columns(
                 ShipmentExpense::expenseTableColumns()
             )
@@ -78,15 +78,15 @@ class ShipmentExpense extends Page implements HasActions, HasTable
                 DeleteAction::make()
                     ->requiresConfirmation(),
                 RestoreAction::make()
-                    ->visible(fn($record) => $record->deleted_at),
+                    ->visible(fn ($record) => $record->deleted_at),
                 ForceDeleteAction::make()
-                    ->visible(fn($record) => $record->deleted_at),
+                    ->visible(fn ($record) => $record->deleted_at),
             ])
             ->toolbarActions([
                 CreateAction::make()
                     ->schema($this->expenseForm())
                     ->preserveFormDataWhenCreatingAnother(
-                        fn(array $data): array => \Illuminate\Support\Arr::except($data, ['payment_reference', 'total_amount'])
+                        fn (array $data): array => \Illuminate\Support\Arr::except($data, ['payment_reference', 'amount'])
                     ),
             ]);
     }
@@ -106,14 +106,14 @@ class ShipmentExpense extends Page implements HasActions, HasTable
 
                 Tables\Columns\TextColumn::make('type.label')
                     ->formatStateUsing(
-                        fn($state, $record) => $record->expense_type_id
+                        fn ($state, $record) => $record->expense_type_id
                             ? $record->type->label
                             : $record->custom_expense_type
                     )
                     ->badge(),
 
                 Tables\Columns\TextColumn::make('payer.name')
-                    ->formatStateUsing(fn($record) => optional($record->payer)->name)
+                    ->formatStateUsing(fn ($record) => optional($record->payer)->name)
                     ->searchable(),
 
                 /* Tables\Columns\TextColumn::make('beneficiary.name')
@@ -146,7 +146,7 @@ class ShipmentExpense extends Page implements HasActions, HasTable
                     Section::make()->schema([
                         // 1. القيمة المخفية لنوع المصروف (Fixed for this page)
                         Forms\Components\Select::make('expense_type_id')
-                            ->label(__(self::getLocalePath() . '.fields.type.label'))
+                            ->label(__(self::getLocalePath().'.fields.type.label'))
                             ->live()
                             ->options(ExpenseType::where('group', ExpenseGroup::SHIPMENT_CLEARANCE)->pluck('label', 'id'))
                             ->required()
@@ -157,7 +157,7 @@ class ShipmentExpense extends Page implements HasActions, HasTable
                                         TextInput::make('label')
                                             ->label(__('expense_type.fields.label.label'))
                                             ->live(onBlur: true)
-                                            ->afterStateUpdated(fn($set, $state) => $set('key', Str::slug($state)))
+                                            ->afterStateUpdated(fn ($set, $state) => $set('key', Str::slug($state)))
                                             ->required(),
 
                                         TextInput::make('key')
@@ -178,7 +178,7 @@ class ShipmentExpense extends Page implements HasActions, HasTable
                                     ->send();
                             })
                             ->reactive()
-                            ->createOptionAction(fn(Action $action) => $action
+                            ->createOptionAction(fn (Action $action) => $action
                                 ->modalHeading(__('customer.actions.create.modal.heading'))
                                 ->modalSubmitActionLabel(__('customer.actions.create.modal.submit'))
                                 ->modalWidth('lg'))
@@ -186,7 +186,7 @@ class ShipmentExpense extends Page implements HasActions, HasTable
 
                         // 3. الحساب الدافع (الدفع من حساب)
                         MorphSelect::make('payer_select')
-                            ->label(__(self::getLocalePath() . '.fields.payer.label'))
+                            ->label(__(self::getLocalePath().'.fields.payer.label'))
                             ->models([
                                 'user' => \App\Models\User::class,
                                 'customer' => \App\Models\Customer::class,
@@ -250,8 +250,8 @@ class ShipmentExpense extends Page implements HasActions, HasTable
                             )
                             ->required(), */
 
-                        DecimalInput::make('total_amount')
-                            ->label(__(self::getLocalePath() . '.fields.total_amount.label'))
+                        DecimalInput::make('amount')
+                            ->label(__(self::getLocalePath().'.fields.total_amount.label'))
                             ->million()
                             ->required(),
 
@@ -269,18 +269,18 @@ class ShipmentExpense extends Page implements HasActions, HasTable
                     Section::make()->schema([
                         // 7. وسيلة الدفع
                         Forms\Components\Select::make('payment_method')
-                            ->label(__(self::getLocalePath() . '.fields.payment_method.label'))
+                            ->label(__(self::getLocalePath().'.fields.payment_method.label'))
                             ->options(\App\Enums\PaymentOptions::class),
 
                         // 8. رقم الإشعار/الإيصال
                         Forms\Components\TextInput::make('payment_reference')
-                            ->label(__(self::getLocalePath() . '.fields.payment_reference.label'))
+                            ->label(__(self::getLocalePath().'.fields.payment_reference.label'))
                             ->numeric()
                             ->nullable(),
 
                         // 9. حالة الدفع (عاجل/مؤجل)
                         Forms\Components\Select::make('is_paid')
-                            ->label(__(self::getLocalePath() . '.fields.is_paid.label'))
+                            ->label(__(self::getLocalePath().'.fields.is_paid.label'))
                             ->options([1 => 'مدفوع (عاجل)', 0 => 'غير مدفوع (مؤجل)'])
                             ->default(1),
 

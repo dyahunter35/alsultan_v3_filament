@@ -21,6 +21,7 @@ class CurrencyTransaction extends Model
         'amount',
         'total',
         'note',
+        'truck_id',
         'type',
         'rate',
     ];
@@ -36,11 +37,28 @@ class CurrencyTransaction extends Model
                 [$tx->payer_type, $tx->payer_id],
                 [$tx->party_type, $tx->party_id],
             ]);
+
+            // \App\Models\Customer::
+        });
+        static::creating(function (self $tx) {
+
+            /* $tx->total = $tx->rate ?? 1 * $tx->amount ?? 1;
+            $tx->saveQuietly(); */
+            // \App\Models\Customer::
+        });
+
+        static::updating(function (self $tx) {
+
             // \App\Models\Customer::
         });
 
         static::updated(function (self $tx) {
             \App\Models\CurrencyBalance::refreshBalances();
+            /*  $tx->updateQuietly(
+                 [
+                     'total' => $tx->rate ?? 1 * $tx->amount ?? 1,
+                 ]
+             ); */
         });
 
         static::deleted(function (self $tx) {
@@ -51,37 +69,41 @@ class CurrencyTransaction extends Model
         });
     }
 
-    /*  protected static function booted(): void
-    {
+    /*
+        protected static function booted(): void
+        {
 
-        static::created(function ($ct) {
-            if ($ct->type == CurrencyType::SEND) {
-                CurrencyBalance::refreshAllBalances();
-            } else {
-                app(CustomerService::class)->updateCustomersBalance();
-            }
-        });
+            static::created(function ($ct) {
+                if ($ct->type == CurrencyType::SEND) {
+                    CurrencyBalance::refreshAllBalances();
+                } else {
+                    app(CustomerService::class)->updateCustomersBalance();
+                }
+                $ct->total = $ct->rate ?? 1 * $ct->amount;
+                $ct->saveQuietly();
+            });
 
-        // 🟡 When a stock history record is updated
-        static::updated(function ($ct) {
-            if ($ct->type == CurrencyType::SEND) {
-                CurrencyBalance::refreshAllBalances();
-            } else {
-                app(CustomerService::class)->updateCustomersBalance();
-            }
-        });
+            // 🟡 When a stock history record is updated
+            static::updated(function ($ct) {
+                if ($ct->type == CurrencyType::SEND) {
+                    CurrencyBalance::refreshAllBalances();
+                } else {
+                    app(CustomerService::class)->updateCustomersBalance();
+                }
+                $ct->total = $ct->rate ?? 1 * $ct->amount;
+                $ct->saveQuietly();
+            });
 
-        // 🔴 When a stock history record is deleted
-        static::deleted(function ($ct) {
-            if ($ct->type == CurrencyType::SEND) {
-                CurrencyBalance::refreshAllBalances();
-            } else {
-                app(CustomerService::class)->updateCustomersBalance();
-            }
-        });
-    }
- */
-
+            // 🔴 When a stock history record is deleted
+            static::deleted(function ($ct) {
+                if ($ct->type == CurrencyType::SEND) {
+                    CurrencyBalance::refreshAllBalances();
+                } else {
+                    app(CustomerService::class)->updateCustomersBalance();
+                }
+            });
+        }
+     */
     public function currency()
     {
         return $this->belongsTo(Currency::class);
@@ -95,5 +117,10 @@ class CurrencyTransaction extends Model
     public function payer()
     {
         return $this->morphTo();
+    }
+
+    public function truck()
+    {
+        return $this->belongsTo(Truck::class);
     }
 }

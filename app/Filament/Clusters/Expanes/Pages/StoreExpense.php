@@ -124,7 +124,7 @@ class StoreExpense extends Page implements HasActions, HasTable
                 CreateAction::make()
                     ->schema($this->expenseForm())
                     ->preserveFormDataWhenCreatingAnother(
-                        fn (array $data): array => \Illuminate\Support\Arr::except($data, ['payment_reference', 'total_amount'])
+                        fn (array $data): array => \Illuminate\Support\Arr::except($data, ['payment_reference', 'amount'])
                     ),
 
             ]);
@@ -177,10 +177,11 @@ class StoreExpense extends Page implements HasActions, HasTable
                             ->default(fn () => Filament::getTenant()->id),
 
                         Forms\Components\Select::make('truck_id')
-                            ->relationship('truck', 'driver_name') // يفترض وجود علاقة 'store' في موديل Expense
+                            ->relationship('truck', 'id') // يفترض وجود علاقة 'store' في موديل Expense
                             ->label(__(self::getLocalePath().'.fields.truck.label'))
                             ->searchable()
                             ->preload()
+                            ->nullable()
                             ->default($truckId),
                         // 5. الكمية / amount (عدد الوحدات المشتراة/الكمية)
                         /* DecimalInput::make('amount')
@@ -209,7 +210,7 @@ class StoreExpense extends Page implements HasActions, HasTable
                             )
                             ->required(), */
 
-                        DecimalInput::make('total_amount')
+                        DecimalInput::make('amount')
                             ->million()
                             ->label(__(self::getLocalePath().'.fields.total_amount.label'))
                             ->required(),

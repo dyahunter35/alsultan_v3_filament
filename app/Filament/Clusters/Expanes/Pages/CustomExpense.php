@@ -86,7 +86,7 @@ class CustomExpense extends Page implements HasActions, HasTable
                 CreateAction::make()
                     ->schema($this->expenseForm())
                     ->preserveFormDataWhenCreatingAnother(
-                        fn (array $data): array => \Illuminate\Support\Arr::except($data, ['payment_reference', 'total_amount'])
+                        fn (array $data): array => \Illuminate\Support\Arr::except($data, ['payment_reference', 'amount'])
                     ),
             ]);
     }
@@ -232,7 +232,7 @@ class CustomExpense extends Page implements HasActions, HasTable
                             )
                             ->required(), */
 
-                        DecimalInput::make('total_amount')
+                        DecimalInput::make(name: 'amount')
                             ->million()
                             ->label(__(self::getLocalePath().'.fields.total_amount.label'))
                             ->required(),

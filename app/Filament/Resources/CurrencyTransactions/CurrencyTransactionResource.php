@@ -135,6 +135,11 @@ class CurrencyTransactionResource extends Resource
                 ->default($type)
                 ->live()
                 ->columnSpanFull()
+                ->afterStateUpdated(function (callable $set, $state) {
+                    $set('amount', 0);
+                    $set('rate', 0);
+                    $set('total', 0);
+                })
                 ->required(),
 
             ViewField::make('payer_currencies')
@@ -184,49 +189,56 @@ class CurrencyTransactionResource extends Resource
                 ])
                 ->live()
                 ->hidden(fn (callable $get) => in_array($get('type'), [CurrencyType::Convert, CurrencyType::CompanyExpense])),
+
             Hidden::make('party_type')
                 ->hidden(fn (callable $get) => in_array($get('type'), [CurrencyType::Convert, CurrencyType::CompanyExpense])),
 
             Hidden::make('party_id')
-                ->hidden(fn (callable $get) => in_array($get('type'), [CurrencyType::Convert, CurrencyType::CompanyExpense])),
+                ->hidden(condition: fn (callable $get) => in_array($get('type'), [CurrencyType::Convert, CurrencyType::CompanyExpense])),
 
             Select::make('currency_id')
                 ->relationship('currency', 'name')
                 ->required(),
+
+            Select::make('truck_id')
+                ->relationship(name: 'truck', titleAttribute: 'id')
+                ->searchable()
+                ->preload()
+                ->nullable()
+                ->visible(condition: fn (callable $get) => in_array($get('type'), [CurrencyType::CompanyExpense])),
+
             DecimalInput::make('amount')
                 ->required()
-                ->live(onBlur: true)
-                ->afterStateUpdated(
-                    function ($set, $get, $state) {
-                        // dd($get('type'));
-                        $price = $get('rate') ?? 1;
-                        $amount = $get('amount') ?? 0;
-                        $set('total', ($amount * $price));
-                    }
-                )
-                ->numeric(),
+                ->million()
+                ->afterStateUpdated(function ($set, $get) {
+                    // استخدام الدالة العالمية هنا أيضاً لضمان الدقة
+                    $price = clean_number($get('rate')) ?: 1;
+                    $amount = clean_number($get('amount')) ?: 0;
 
-            DecimalInput::make('rate')
+                    $set('total', $amount * $price);
+                }),
+
+            DecimalInput::make(name: 'rate')
                 ->required()
-                ->numeric()
                 ->live(onBlur: true)
-                ->afterStateUpdated(
-                    function ($set, $get, $state) {
-                        $price = $get('rate') ?? 1;
-                        $amount = $get('amount') ?? 0;
-                        $set('total', ($amount * $price));
-                    }
-                )
-                ->visible(fn (callable $get) => in_array($get('type'), [CurrencyType::CompanyExpense, CurrencyType::Convert]))
+                ->afterStateUpdated(function ($set, $get) {
+                    // استخدام الدالة العالمية هنا أيضاً لضمان الدقة
+                    $price = clean_number($get('rate')) ?: 1;
+                    $amount = clean_number($get('amount')) ?: 0;
+
+                    $set('total', $amount * $price);
+                })
+                ->visible(condition: fn (callable $get) => in_array($get('type'), [CurrencyType::CompanyExpense, CurrencyType::Convert]))
                 ->default(1),
 
             DecimalInput::make('total')
                 ->required()
-                ->readOnly()
-                ->numeric(),
+                ->million()
+                // ->visible(condition: fn (callable $get) => in_array($get('type'), [CurrencyType::CompanyExpense, CurrencyType::Convert]))
+                ->readOnly(),
 
             TextInput::make('note')
-                ->default(null),
+                ->default(null)->columnSpanFull(),
         ];
     }
 

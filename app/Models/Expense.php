@@ -50,8 +50,8 @@ class Expense extends Model
             if ($expense->beneficiary_type === 'App\Models\Customer') {
                 app('App\Services\CustomerService')->updateCustomerBalance($expense->beneficiary_id);
             } */
-            //$expense->total_amount = $expense->amount * $expense->unit_price;
-            //$expense->saveQuietly();
+            $expense->total_amount = $expense->amount ?? 1 * $expense->unit_price ?? 1;
+            $expense->saveQuietly();
         });
         static::updated(function ($expense) {
             /* if ($expense->payer_type === 'App\Models\Customer') {
@@ -60,8 +60,8 @@ class Expense extends Model
             if ($expense->beneficiary_type === 'App\Models\Customer') {
                 app('App\Services\CustomerService')->updateCustomerBalance($expense->beneficiary_id);
             } */
-            //$expense->total_amount = $expense->amount * $expense->unit_price;
-            //$expense->saveQuietly();
+            $expense->total_amount = $expense->amount ?? 1 * $expense->unit_price ?? 1;
+            $expense->updateQuietly();
         });
         static::deleted(function ($expense) {
             /* if ($expense->payer_type === 'App\Models\Customer') {

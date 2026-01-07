@@ -4,23 +4,22 @@ namespace App\Filament\Pages\Reports;
 
 use App\Filament\Pages\Concerns\HasReport;
 use App\Models\Company;
-use App\Models\Truck;
 use App\Models\CurrencyTransaction;
+use App\Models\Truck;
+use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
-use Illuminate\Support\Carbon;
 use Filament\Schemas;
-use Filament\Forms;
+use Illuminate\Support\Carbon;
 use Livewire\Attributes\Url;
 
 class CompanyLedgerReport extends Page implements HasForms
 {
-
     use HasReport;
     use InteractsWithForms;
 
-    protected  string $view = 'filament.pages.reports.company-ledger';
+    protected string $view = 'filament.pages.reports.company-ledger';
 
     #[Url()]
     public ?int $companyId = null;
@@ -33,11 +32,13 @@ class CompanyLedgerReport extends Page implements HasForms
 
     // البيانات للمعالجة
     public $groups = [];
+
     public $summary = [
         'total_claims' => 0,
         'total_paid' => 0,
         'balance' => 0, // تأكد من وجود هذا المفتاح يدوياً
     ];
+
     protected function getFormSchema(): array
     {
         return [
@@ -49,17 +50,18 @@ class CompanyLedgerReport extends Page implements HasForms
                             ->options(Company::query()->latest()->pluck('name', 'id'))
                             ->searchable()
                             ->reactive()
-                            ->afterStateUpdated(fn() => $this->loadData()),
+                            ->afterStateUpdated(fn () => $this->loadData()),
                         Forms\Components\DatePicker::make('startDate')
                             ->reactive()
-                            ->afterStateUpdated(fn() => $this->loadData()),
+                            ->afterStateUpdated(fn () => $this->loadData()),
                         Forms\Components\DatePicker::make('endDate')
                             ->reactive()
-                            ->afterStateUpdated(fn() => $this->loadData()),
+                            ->afterStateUpdated(fn () => $this->loadData()),
                     ]),
                 ])->collapsible(),
         ];
     }
+
     public function mount(): void
     {
         $this->companyId = request()->query('companyId');
@@ -85,7 +87,7 @@ class CompanyLedgerReport extends Page implements HasForms
             // ->when($start && $end, function ($q) use ($start, $end) {
             //     $q->whereBetween('pack_date', [$start, $end]);
             // })
-            //->whereBetween('pack_date', [$start, $end])
+            // ->whereBetween('pack_date', [$start, $end])
             ->orderBy('pack_date')
             ->get();
 
@@ -97,16 +99,19 @@ class CompanyLedgerReport extends Page implements HasForms
             // حساب إجمالي الشحنة من الـ Cargos
             $cargoTotalValue = $truck->cargos->sum(function ($cargo) {
                 $weight = $cargo->weight ?? ($cargo->quantity * $cargo->unit_quantity / 1000);
+
                 return $weight * $cargo->unit_price;
             });
 
             // جلب المعاملات المالية المرتبطة بهذه الشحنة تحديداً (إذا كنت تربطها بـ truck_id)
             // أو جلب المعاملات التي تمت في تاريخ الشحنة
-            $payments = CurrencyTransaction::where('party_id', $this->companyId)
-                ->where('party_type', Company::class)
-                ->whereDate('created_at', $truck->pack_date)
-                ->get();
-
+            $payments = CurrencyTransaction::
+            // where('party_id', $this->companyId)
+                // ->where('party_type', operator: Company::class)
+                // ->whereDate('created_at', $truck->pack_date)
+                where('truck_id', $truck->id)
+                    ->get();
+            $paymentValue = $payments->sum('total');
             $allGroups[] = [
                 'date' => $truck->pack_date,
                 'truck_id' => $truck->id,
@@ -114,7 +119,8 @@ class CompanyLedgerReport extends Page implements HasForms
                 'cargos' => $truck->cargos,
                 'payments' => $payments,
                 'total_invoice' => $cargoTotalValue,
-                'total_paid' => $payments->sum('total'),
+                'total_paid' => $paymentValue,
+                'balance' => $cargoTotalValue -  $paymentValue
             ];
 
             $totalClaims += $cargoTotalValue;

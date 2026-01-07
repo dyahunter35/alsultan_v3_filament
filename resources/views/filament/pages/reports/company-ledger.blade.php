@@ -65,14 +65,25 @@
                                 @php $payment = $group['payments']->get($i); @endphp
                                 <td class="p-1 border border-gray-400">
                                     {{ $payment?->created_at->format('Y-m-d') ?? '-' }}</td>
-                                <td class="p-1 border border-gray-400">{{ $payment?->note ?? '-' }}</td>
+                                    
+                                <td class="p-1 border border-gray-400">
+                                    @if ($payment)
+                                        
+                                    المعامل : {{ $payment?->rate ?? '-' }} <br/>التحويله : {{ $payment?->amount ?? '-' }}
+                                    @else
+                                    -
+                                    @endif
+
+                                </td>
                                 <td class="p-1 font-bold text-red-600 border border-gray-400">
                                     {{ $payment ? number_format($payment->total, 2) : '-' }}
                                 </td>
                             </tr>
                         @endfor
                         <tr class="font-bold bg-blue-50">
-                            <td colspan="5" class="px-4 text-left border border-gray-800">إجمالي الشحنة:</td>
+                            <td colspan="1" class="px-4 text-right border border-gray-800">مطلوبات الشحنة:</td>
+                            <td colspan="2" class="border border-gray-800">{{ number_format($group['balance'] , 2) }}</td>
+                            <td colspan="2" class="border border-gray-800"></td>
                             <td class="border border-gray-800">{{ number_format($group['total_invoice'], 2) }}</td>
                             <td colspan="2" class="border border-gray-800"></td>
                             <td class="border border-gray-800">{{ number_format($group['total_paid'], 2) }}</td>

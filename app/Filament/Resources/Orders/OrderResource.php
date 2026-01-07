@@ -581,7 +581,7 @@ class OrderResource extends Resource
     public static function calculate(Get $get, Set $set): void
     {
         // دالة داخلية مساعدة لتنظيف الأرقام من الفواصل
-        $parseNumber = fn($value) => (float) str_replace(',', '', $value ?? 0);
+        $parseNumber = fn($value): float => (float) str_replace(',', '', $value ?? 0);
 
         $items = collect($get('items') ?? [])->map(function ($item) use ($parseNumber) {
             // تنظيف المدخلات قبل الحساب

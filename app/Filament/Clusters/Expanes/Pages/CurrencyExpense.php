@@ -124,7 +124,7 @@ class CurrencyExpense extends Page implements HasActions, HasTable
                 CreateAction::make()
                     ->schema($this->expenseForm())
                     ->preserveFormDataWhenCreatingAnother(
-                        fn (array $data): array => \Illuminate\Support\Arr::except($data, ['payment_reference', 'total_amount'])
+                        fn (array $data): array => \Illuminate\Support\Arr::except($data, ['payment_reference', 'amount'])
                     ),
             ]);
     }
@@ -206,7 +206,7 @@ class CurrencyExpense extends Page implements HasActions, HasTable
                             ->default(now()),
 
                         // 6. سعر الوحدة / unit_price
-                        DecimalInput::make('total_amount')
+                        DecimalInput::make('amount')
                             ->label(__('المبلغ المراد تحويله'))
                             ->million()
                             ->required(),

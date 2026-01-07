@@ -124,7 +124,7 @@ class FinancialExpense extends Page implements HasActions, HasTable
                 CreateAction::make()
                     ->schema($this->expenseForm())
                     ->preserveFormDataWhenCreatingAnother(
-                        fn (array $data): array => \Illuminate\Support\Arr::except($data, ['payment_reference', 'total_amount'])
+                        fn (array $data): array => \Illuminate\Support\Arr::except($data, ['payment_reference', 'amount'])
                     ),
             ]);
     }
@@ -207,7 +207,6 @@ class FinancialExpense extends Page implements HasActions, HasTable
 
                         Forms\Components\Textarea::make('notes')
                             ->label(__('ملاحظات'))
-
                             ->rows(2)
                             ->columnSpanFull() // يجعل حقل الملاحظات يأخذ عرض العمودين كاملاً
                             ->nullable(),
