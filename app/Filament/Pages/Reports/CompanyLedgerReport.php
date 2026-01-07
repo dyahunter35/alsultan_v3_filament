@@ -120,7 +120,7 @@ class CompanyLedgerReport extends Page implements HasForms
                 'payments' => $payments,
                 'total_invoice' => $cargoTotalValue,
                 'total_paid' => $paymentValue,
-                'balance' => $cargoTotalValue -  $paymentValue
+                'balance' => $cargoTotalValue - $paymentValue,
             ];
 
             $totalClaims += $cargoTotalValue;

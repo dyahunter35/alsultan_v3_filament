@@ -143,6 +143,7 @@ class TrucksTable
                                 'product_id' => $cargo->product_id,
                                 'quantity' => $cargo->quantity,
                                 'real_quantity' => $cargo->real_quantity, // في حال تم إدخالها سابقاً
+                                'note' => $cargo->note, // في حال تم إدخالها سابقاً
                             ];
                         })->toArray(),
                         'brunch_id' => $record->branch_to,
@@ -151,7 +152,7 @@ class TrucksTable
                     // 2. تصميم النافذة (Modal)
                     ->schema([
 
-                        Grid::make(2)
+                        Grid::make(columns: 2)
                             ->schema([
 
                                 Select::make('brunch_id')
@@ -160,7 +161,6 @@ class TrucksTable
                                     ->required(),
 
                                 DatePicker::make('arrive_date')
-
                                     ->required(),
                                 Repeater::make('cargos')
                                     ->label('قائمة البضائع على الشاحنة')
@@ -168,29 +168,38 @@ class TrucksTable
                                     ->deletable(false)
                                     ->columnSpanFull()
                                     ->reorderable(false)
-                                    ->grid(2)
+                                    ->grid(columns: 2)
                                     ->schema([
-                                        // عرض اسم المنتج (للقراءة فقط)
-                                        Select::make('product_id')
-                                            ->label('المنتج')
-                                            ->options(Product::pluck('name', 'id'))
-                                            ->disabled()
-                                            ->dehydrated(), // مهم جداً لإرسال القيمة حتى لو كان الحقل معطل
+                                        Grid::make(columns: 2)
+                                            ->columnSpanFull()
+                                            ->schema([
 
-                                        // الكمية المسجلة (المتوقعة)
-                                        TextInput::make('quantity')
-                                            ->label('الكمية المسجلة')
-                                            ->readOnly()
-                                            ->dehydrated(),
+                                                // عرض اسم المنتج (للقراءة فقط)
+                                                Select::make('product_id')
+                                                    ->label('المنتج')
+                                                    ->options(Product::pluck('name', 'id'))
+                                                    ->disabled()
+                                                    ->dehydrated(), // مهم جداً لإرسال القيمة حتى لو كان الحقل معطل
 
-                                        // الكمية الفعلية (يكتبها المستخدم)
-                                        TextInput::make('real_quantity')
-                                            ->label('الكمية الفعلية')
-                                            ->helperText('اتركه فارغاً إذا كانت الكمية مطابقة')
-                                            ->numeric(),
+                                                // الكمية المسجلة (المتوقعة)
+                                                TextInput::make('quantity')
+                                                    ->label('الكمية المسجلة')
+                                                    ->readOnly()
+                                                    ->dehydrated(),
 
-                                        // حقل مخفي لتمرير الـ ID الخاص بالبضاعة
-                                        Hidden::make('id'),
+                                                // الكمية الفعلية (يكتبها المستخدم)
+                                                TextInput::make('real_quantity')
+                                                    ->label('الكمية الفعلية')
+                                                    ->helperText('اتركه فارغاً إذا كانت الكمية مطابقة')
+                                                    ->numeric(),
+
+                                                TextInput::make('note')
+                                                    ->label('ملاحظة'),
+
+                                                // حقل مخفي لتمرير الـ ID الخاص بالبضاعة
+                                                Hidden::make('id'),
+                                            ]),
+
                                     ])
                                     ->columns(3), // تنسيق العرض في 3 أعمدة
                             ]),
@@ -225,7 +234,7 @@ class TrucksTable
                             // تحديث سجل الـ truck_cargos بالكمية الفعلية المدخلة
                             $cargoModel = TruckCargo::find($item['id']);
                             if ($cargoModel) {
-                                $cargoModel->update(['real_quantity' => $realQtyInput]);
+                                $cargoModel->update(['real_quantity' => $realQtyInput, 'note', $item['note']]);
                             }
 
                             // استدعاء خدمة المخزون لنقل الكمية

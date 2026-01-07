@@ -18,6 +18,7 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -39,65 +40,100 @@ class CargosRelationManager extends RelationManager
                     ->required(), */
 
                 Hidden::make('type')
-                    ->default(TruckType::Outer->value),
+                    ->default(state: TruckType::Outer->value),
 
-                Select::make('product_id')
-                    ->options(
-                        Product::get()
-                            ->mapWithKeys(fn(Product $product) => [
-                                $product->id => sprintf(
-                                    '%s - %s (%s) ',
-                                    $product->name,
-                                    $product->category?->name,
-                                    $product->unit?->name
-                                ),
-                            ])
-                    )->preload()
-                    ->searchable()
-                    ->required(),
+                Section::make()
+                    ->schema([
 
-                TextInput::make('size')
-                    ->default(null),
-                DecimalInput::make('unit_quantity')
-                    ->required()
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(function ($get, $set) {
-                        $unitQuantity = (float) str_replace(',', '', $get('unit_quantity') ?? 1); // وزن الوحدة (مثلاً 50 كجم)
-                        $weight = (float) str_replace(',', '', $get('weight') ?? 1); // الكمية (مثلاً 200 جوال)
+                        Select::make('product_id')
+                            ->options(
+                                Product::get()
+                                    ->mapWithKeys(fn (Product $product) => [
+                                        $product->id => sprintf(
+                                            '%s - %s (%s) ',
+                                            $product->name,
+                                            $product->category?->name,
+                                            $product->unit?->name
+                                        ),
+                                    ])
+                            )->preload()
+                            ->searchable()
+                            ->required(),
 
-                        // الحسبة الافتراضية: (الكمية × وزن الوحدة) / 1000 للحصول على الأطنان
-                        $tonWeight = ($weight * $unitQuantity) / 1000000;
+                        TextInput::make('size')
+                            ->default(null),
+                    ]),
+                Section::make()
+                    ->schema([
+                        DecimalInput::make('unit_quantity')
+                            ->required()
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function ($get, $set) {
+                                $unitQuantity = clean_number($get('unit_quantity') ?? 1); // وزن الوحدة (مثلاً 50 كجم)
+                                $weight = clean_number($get('weight') ?? 1); // الكمية (مثلاً 200 جوال)
+                                $unit_price = clean_number($get('unit_price')); // الكمية (مثلاً 200 جوال)
 
-                        // تحديث الحقل في الواجهة
-                        $set('ton_weight', number_format($tonWeight, 2, '.', ''));
-                    }),
-                DecimalInput::make('quantity')
-                    ->required(),
+                                // الحسبة الافتراضية: (الكمية × وزن الوحدة) / 1000 للحصول على الأطنان
+                                $tonWeight = ($weight * $unitQuantity) / 1000000;
 
-                DecimalInput::make('weight')
-                    ->default(null)
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(function ($get, $set) {
-                        $unitQuantity = (float) str_replace(',', '', $get('unit_quantity') ?? 1); // وزن الوحدة (مثلاً 50 كجم)
-                        $weight = (float) str_replace(',', '', $get('weight') ?? 1); // الكمية (مثلاً 200 جوال)
+                                // الحسبة الافتراضية: (الكمية × وزن الوحدة) / 1000 للحصول على الأطنان
+                                $ton_price = ($unit_price * $unitQuantity);
 
-                        // الحسبة الافتراضية: (الكمية × وزن الوحدة) / 1000 للحصول على الأطنان
-                        $tonWeight = ($weight * $unitQuantity) / 1000000;
+                                // تحديث الحقل في الواجهة
+                                $set('ton_price', number_format($ton_price, 2, '.', ''));
 
-                        // تحديث الحقل في الواجهة
-                        $set('ton_weight', number_format($tonWeight, 2, '.', ''));
-                    }),
+                                $set('ton_weight', number_format($tonWeight, 2, '.', ''));
+                            }),
+                        DecimalInput::make('quantity')
+                            ->required(),
 
-                DecimalInput::make('ton_weight')
-                    ->default(null),
+                    ]),
+                Section::make()
+                    ->schema([
 
-                DecimalInput::make('unit_price')
-                    ->live(onBlur: true)
-                    ->default(null),
+                        DecimalInput::make('weight')
+                            ->default(null)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function ($get, $set) {
+                                $unitQuantity = clean_number($get('unit_quantity')); // وزن الوحدة (مثلاً 50 كجم)
+                                $weight = clean_number($get('weight')); // الكمية (مثلاً 200 جوال)
 
-                TextInput::make('note')
-                    ->default(null),
+                                // الحسبة الافتراضية: (الكمية × وزن الوحدة) / 1000 للحصول على الأطنان
+                                $tonWeight = ($weight * $unitQuantity) / 1000000;
 
+                                // تحديث الحقل في الواجهة
+                                $set('ton_weight', number_format($tonWeight, 2, '.', ''));
+                            }),
+
+                        DecimalInput::make('ton_weight')
+                            ->default(null),
+                    ]),
+                Section::make()
+                    ->schema([
+                        DecimalInput::make('unit_price')
+                            ->default(null)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function ($get, $set) {
+                                $unitQuantity = clean_number($get('unit_quantity')); // وزن الوحدة (مثلاً 50 كجم)
+                                $unit_price = clean_number($get('unit_price')); // الكمية (مثلاً 200 جوال)
+
+                                // الحسبة الافتراضية: (الكمية × وزن الوحدة) / 1000 للحصول على الأطنان
+                                $ton_price = ($unit_price * $unitQuantity);
+
+                                // تحديث الحقل في الواجهة
+                                $set('ton_price', number_format($ton_price, 2, '.', ''));
+                            }),
+
+                        DecimalInput::make('ton_price'),
+                    ]),
+                Section::make()
+                    ->columnSpanFull()
+
+                    ->schema([
+                        TextInput::make(name: 'note')
+                            ->columnSpanFull()
+                            ->default(null),
+                    ]),
             ]);
     }
 
@@ -149,11 +185,11 @@ class CargosRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make(),
-                //AssociateAction::make(),
+                // AssociateAction::make(),
             ])
             ->recordActions([
                 EditAction::make(),
-                //DissociateAction::make(),
+                // DissociateAction::make(),
                 DeleteAction::make(),
             ])
             ->toolbarActions([

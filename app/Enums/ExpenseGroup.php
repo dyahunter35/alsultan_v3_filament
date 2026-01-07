@@ -14,13 +14,13 @@ enum ExpenseGroup: string implements HasIcon, HasLabel
 
     case DEBTORS = 'debtors';             // الدائنون
 
-        // Currency expenses
+    // Currency expenses
     case CURRENCY = 'currency';           // مرتبات وأجور
 
-        // Store expenses
+    // Store expenses
     case STORE = 'store';         // مصروفات ترحيل
 
-        // Government
+    // Government
     case CUSTOMS = 'customs';             // جمارك
 
     case CERTIFICATES = 'certificates';   // شهادات وارد
@@ -33,7 +33,7 @@ enum ExpenseGroup: string implements HasIcon, HasLabel
 
     public function getLabel(): ?string
     {
-        return __('enums.expense_group.' . $this->value);
+        return __('enums.expense_group.'.$this->value);
     }
 
     public function getColor(): string|array|null

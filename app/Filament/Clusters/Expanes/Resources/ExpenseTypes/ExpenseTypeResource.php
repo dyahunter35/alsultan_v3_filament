@@ -49,7 +49,7 @@ class ExpenseTypeResource extends Resource
                 TextInput::make('label')
                     ->required()
                     ->live(onBlur: true)
-                    ->afterStateUpdated(fn($state, $set) => $set('key', \Str::slug($state))),
+                    ->afterStateUpdated(fn ($state, $set) => $set('key', \Str::slug($state))),
                 TextInput::make('key')
                     ->readOnly()
                     ->suffixIcon(Heroicon::Key)

@@ -39,14 +39,14 @@ class DecimalInput extends TextInput
 
                 // تنظيف القيمة من الفواصل
                 $cleanedState = str_replace(',', '', (string) $state);
-                
+
                 // إذا كانت القيمة المنظفة فارغة أو صفر، أرجع null
                 if (blank($cleanedState) || $cleanedState === '0' || $cleanedState === '0.0') {
                     return null;
                 }
 
                 $value = (float) $cleanedState;
-                
+
                 // إذا كانت القيمة بعد التحويل صفر، أرجع null
                 if ($value == 0) {
                     return null;

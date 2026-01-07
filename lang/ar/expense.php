@@ -1,6 +1,6 @@
 <?php
 
-$commonFields = include __DIR__ . '/partials/expense_fields.php';
+$commonFields = include __DIR__.'/partials/expense_fields.php';
 
 return [
     'navigation' => [

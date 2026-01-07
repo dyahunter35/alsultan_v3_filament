@@ -39,7 +39,7 @@ trait HasResource
     {
         $locale_path = static::getLocalePath();
 
-        if (Lang::has($key = $locale_path . '.' . $key, app()->getLocale())) {
+        if (Lang::has($key = $locale_path.'.'.$key, app()->getLocale())) {
             return __($key);
         }
 

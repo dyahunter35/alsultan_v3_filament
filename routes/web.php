@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\TruckCargo;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -12,4 +13,8 @@ Route::get('/clear/', function ($code) {
     Artisan::call('filament:optimize-clear');
 
     return 'Cleared!';
+});
+
+Route::get('cargo/{truckCargo}', function (TruckCargo $truckCargo) {
+    dd($truckCargo->attributesToArray());
 });

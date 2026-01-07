@@ -11,7 +11,6 @@ use App\Filament\Resources\Trucks\RelationManagers\CargosRelationManager;
 use App\Filament\Resources\Trucks\RelationManagers\CustomExpensesRelationManager;
 use App\Filament\Resources\Trucks\RelationManagers\DocumentsRelationManager;
 use App\Filament\Resources\Trucks\RelationManagers\ShipmentExpenseRelationManager;
-use App\Filament\Resources\Trucks\RelationManagers\TaxExpensesRelationManager;
 use App\Filament\Resources\Trucks\Schemas\TruckForm;
 use App\Filament\Resources\Trucks\Schemas\TruckInfolist;
 use App\Filament\Resources\Trucks\Tables\TrucksTable;
@@ -61,7 +60,7 @@ class TruckResource extends Resource
             CargosRelationManager::class,
             DocumentsRelationManager::class,
             ShipmentExpenseRelationManager::class,
-            //CustomExpensesRelationManager::class,
+            // CustomExpensesRelationManager::class,
         ];
     }
 

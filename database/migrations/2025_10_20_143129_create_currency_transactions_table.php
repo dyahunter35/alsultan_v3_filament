@@ -27,7 +27,7 @@ return new class extends Migration
             // القيم المالية
             $table->double('amount');
             $table->double('rate')->default(1);
-            
+
             $table->double('total')->computed('amount * rate');
 
             // نوع المعاملة (إضافة / خصم)

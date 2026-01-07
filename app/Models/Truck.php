@@ -159,7 +159,6 @@ class Truck extends Model implements HasMedia
         );
     }
 
-
     public function customExpenses()
     {
         return $this->hasMany(Expense::class)->whereIn(
@@ -225,7 +224,7 @@ class Truck extends Model implements HasMedia
     protected function totalWeight(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->cargos()->sum('weight'),
+            get: fn () => $this->cargos()->sum('weight'),
             // set: fn (string $value) => strtolower($value),
         );
     }
@@ -237,7 +236,7 @@ class Truck extends Model implements HasMedia
         $totalExpenses = $nolon + $extraDaysCost;
 
         return Attribute::make(
-            get: fn() => $totalExpenses,
+            get: fn () => $totalExpenses,
             // set: fn (string $value) => strtolower($value),
         );
     }

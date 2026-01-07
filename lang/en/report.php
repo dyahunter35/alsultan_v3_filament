@@ -39,7 +39,6 @@ return [
         'sort' => 4,
     ],
 
-
     'truck_report' => [
         'heading' => 'Truck Report',
         'icon' => 'heroicon-m-truck',

@@ -52,7 +52,7 @@ class CustomExpensesRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->preserveFormDataWhenCreatingAnother(fn(array $data): array => $data),
+                    ->preserveFormDataWhenCreatingAnother(fn (array $data): array => $data),
                 // AssociateAction::make(),
             ])
             ->recordActions([
@@ -64,13 +64,13 @@ class CustomExpensesRelationManager extends RelationManager
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    //DissociateBulkAction::make(),
+                    // DissociateBulkAction::make(),
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
                 ]),
             ])
-            ->modifyQueryUsing(fn(Builder $query) => $query
+            ->modifyQueryUsing(fn (Builder $query) => $query
                 ->withoutGlobalScopes([
                     SoftDeletingScope::class,
                 ]));

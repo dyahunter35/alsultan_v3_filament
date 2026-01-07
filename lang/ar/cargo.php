@@ -27,9 +27,8 @@ return [
             'placeholder' => '',
         ],
         'quantity' => [
-            'label' => 'الكمية',
+            'label' => 'الكمية بالطرد',
             'placeholder' => '',
-            'helper_text' => 'الكميات بالطرد',
         ],
         'weight' => [
             'label' => 'الوزن',
@@ -38,6 +37,14 @@ return [
         'unit_price' => [
             'label' => 'سعر الوحدة',
             'placeholder' => '',
+        ],
+        'ton_price'=>[
+            'label'=>'سعر الطن',
+
+        ],
+        'ton_weight'=>[
+            'label'=>'وزن الطن',
+
         ],
         'note' => [
             'label' => 'ملاحظة',

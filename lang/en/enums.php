@@ -77,7 +77,7 @@ return [
         'certificates' => 'Import Certificates',
         'tax' => 'Taxes',
         'government_fees' => 'Government Fees',
-        'shipmentـclearance' => 'Shipment Clearance Details'
+        'shipmentـclearance' => 'Shipment Clearance Details',
     ],
 
 ];

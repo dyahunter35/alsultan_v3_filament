@@ -61,7 +61,7 @@ class CompanyResource extends Resource
         return [
             'index' => ListCompanies::route('/'),
             'create' => CreateCompany::route('/create'),
-            //'view' => ViewCompany::route('/{record}'),
+            // 'view' => ViewCompany::route('/{record}'),
             'edit' => EditCompany::route('/{record}/edit'),
             // 'repo' => CompaniesReport::route('/report'),
         ];

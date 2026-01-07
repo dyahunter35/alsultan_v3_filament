@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,6 +21,7 @@ class TruckCargo extends Model
         'weight',
         'unit_price',
         'ton_weight',
+        'ton_price',
         'note',
     ];
 
@@ -31,5 +33,31 @@ class TruckCargo extends Model
     public function truck()
     {
         return $this->belongsTo(\App\Models\Truck::class); // ->converte();
+    }
+
+    protected function tonPrice(): Attribute
+    {
+        return Attribute::make(
+            // جلب القيمة: إذا كانت القيمة فارغة في القاعدة، قم بحسابها برمجياً
+            get: fn (mixed $value, array $attributes) => $value ?: ($attributes['unit_price'] * $attributes['unit_quantity']),
+
+            // تخزين القيمة: التأكد من تخزين القيمة المحسوبة إذا لم يتم إدخال قيمة يدوية
+            set: fn (mixed $value, array $attributes) => [
+                'ton_price' => $value ?: ($attributes['unit_price'] * $attributes['unit_quantity']),
+            ],
+        );
+    }
+
+    protected function tonWeight(): Attribute
+    {
+        return Attribute::make(
+            // جلب القيمة: إذا كانت القيمة فارغة في القاعدة، قم بحسابها برمجياً
+            get: fn (mixed $value, array $attributes) => $value ?: (($attributes['weight'] * $attributes['unit_quantity']) / 1000000),
+
+            // تخزين القيمة: التأكد من تخزين القيمة المحسوبة إذا لم يتم إدخال قيمة يدوية
+            set: fn (mixed $value, array $attributes) => [
+                'ton_weight' => $value ?: (($attributes['weight'] * $attributes['unit_quantity']) / 1000000),
+            ],
+        );
     }
 }

@@ -77,7 +77,7 @@ return [
         'certificates' => 'شهادات وارد',
         'tax' => 'ضرائب',
         'government_fees' => 'رسوم حكومية',
-        'shipmentـclearance' => 'تفاصيل تخليص الشحنة'
+        'shipmentـclearance' => 'تفاصيل تخليص الشحنة',
     ],
 
 ];
