@@ -229,6 +229,14 @@ class Truck extends Model implements HasMedia
         );
     }
 
+    protected function totalTonWeight(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->cargos()->sum('ton_weight'),
+            // set: fn (string $value) => strtolower($value),
+        );
+    }
+
     protected function truckFareSum(): Attribute
     {
         $nolon = (float) $this->truck_fare ?? 0;

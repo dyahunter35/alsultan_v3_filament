@@ -38,8 +38,8 @@
                     </div>
 
                     <div>
-                        <dt class="font-bold text-gray-600">تكلفة العطلات</dt>
-                        <dd>{{ number_format($truck->delay_value, 2) }}</dd>
+                        <dt class="font-bold text-gray-600">اسم الشركة </dt>
+                        <dd>{{ $truck->companyId?->name }}</dd>
                     </div>
 
                 </dl>
@@ -76,7 +76,7 @@
                                     <td class="p-2 border">{{ number_format($row['quantity'], 2) }}</td>
                                     <td class="p-2 border">{{ number_format($row['real_quantity'], 2) }}</td>
                                     <td class="p-2 border" style="color :{{ $row['dif'] >= 0 ? 'green' : 'red' }}">
-                                        {{ number_format($row['dif'], 2) }}</td>
+                                        {{ ($truck->is_converted)? number_format($row['dif'], 2) : '-' }}</td>
                                     <td class="p-2 border">{{ $row['note'] }}</td>
                                 </tr>
                             @empty
@@ -99,7 +99,7 @@
                                     {{ number_format(array_sum(array_column($rows, 'real_quantity')), 2) }}
                                 </td>
                                 <td class="p-2 border" colspan="1">
-                                    {{ number_format(array_sum(array_column($rows, 'dif')), 2) }}
+                                    {{ ($truck->is_converted)? number_format(array_sum(array_column($rows, 'dif')), 2) : '-' }}
                                 </td>
                                 <td class="p-2 border" colspan="1"></td>
 
@@ -152,21 +152,28 @@
                     $delay = $truck->delay_value ?? 0;
                     $expenses = $truck->expenses->sum('total_amount') ?? 0;
                     // $netFare = $fare - ($delay + $expenses);
-                    $totalWeight = $truck->ton_weight ?? 1;
+                    $totalWeight = $truck->total_weight ?? 1;
+                    $totalTonWeight = $truck->total_ton_weight ?? 1;
                 @endphp
                 <table class="w-full text-sm border border-gray-200">
                     <tbody>
+
                         <tr>
                             <td class="p-2 font-semibold text-gray-700 border">النولون</td>
-                            <td class="p-2 border">{{ number_format($fare, 2) }}</td>
+                            <td colspan="2" class="p-2 border">{{ number_format($fare, 2) }}</td>
                         </tr>
                         <tr>
                             <td class="p-2 font-semibold text-gray-700 border">تكلفة العطلات</td>
-                            <td class="p-2 border">{{ number_format($delay, 2) }}</td>
+                            <td colspan="2" class="p-2 border">{{ number_format($delay, 2) }}</td>
                         </tr>
                         <tr>
+                            <td class="p-2 font-semibold text-gray-700 border">تكلفة الترحيل الكليه </td>
+                            <td colspan="2" class="p-2 border">{{ number_format($truck->truck_fare_sum, 2) }}</td>
+                        </tr>
+                        
+                        <tr>
                             <td class="p-2 font-semibold text-gray-700 border">إجمالي المنصرفات</td>
-                            <td class="p-2 border">{{ number_format($expenses, 2) }}</td>
+                            <td colspan="2" class="p-2 border">{{ number_format($expenses, 2) }}</td>
                         </tr>
                         {{-- <tr>
                             <td class="p-2 font-semibold text-gray-700 border">صافي النولون بعد الخصم</td>
@@ -174,7 +181,8 @@
                         </tr> --}}
                         <tr>
                             <td class="p-2 font-semibold text-gray-700 border">الوزن الكلي</td>
-                            <td class="p-2 border">{{ number_format($totalWeight, 2) }}</td>
+                            <td class="p-2 border w-[30%]">{{ number_format($totalWeight, 2) }}  جرام</td>
+                            <td class="p-2 border w-[30%]">{{ number_format($totalTonWeight, 2) }}  طن</td>
                         </tr>
 
 

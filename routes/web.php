@@ -15,6 +15,10 @@ Route::get('/clear/', function ($code) {
     return 'Cleared!';
 });
 
+Route::get('/artisan/{$command}', function ($command) {
+    return Artisan::call($command);
+});
+
 Route::get('cargo/{truckCargo}', function (TruckCargo $truckCargo) {
     dd($truckCargo->attributesToArray());
 });
