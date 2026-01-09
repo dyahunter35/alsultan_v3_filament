@@ -8,8 +8,8 @@ use App\Filament\Resources\InnerTrucks\Pages\EditTruck;
 use App\Filament\Resources\InnerTrucks\Pages\ListTrucks;
 use App\Filament\Resources\InnerTrucks\Pages\ViewTruck;
 use App\Filament\Resources\InnerTrucks\RelationManagers\CargosRelationManager;
-use App\Filament\Resources\InnerTrucks\RelationManagers\CustomExpensesRelationManager;
 use App\Filament\Resources\InnerTrucks\RelationManagers\DocumentsRelationManager;
+use App\Filament\Resources\InnerTrucks\RelationManagers\ShipmentExpenseRelationManager;
 use App\Filament\Resources\InnerTrucks\RelationManagers\TaxExpensesRelationManager;
 use App\Filament\Resources\InnerTrucks\Schemas\TruckForm;
 use App\Filament\Resources\InnerTrucks\Schemas\TruckInfolist;
@@ -77,8 +77,8 @@ class InnerTruckResource extends Resource
         return [
             CargosRelationManager::class,
             DocumentsRelationManager::class,
-            TaxExpensesRelationManager::class,
-            CustomExpensesRelationManager::class,
+            // TaxExpensesRelationManager::class,
+            ShipmentExpenseRelationManager::class,
         ];
     }
 
