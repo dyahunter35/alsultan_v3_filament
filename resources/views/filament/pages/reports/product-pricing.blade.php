@@ -146,6 +146,7 @@
                                         <td class="p-1 border border-gray-400">{{ $row->unit_quantity }}</td>
                                         <td class="p-1 font-bold text-blue-800 border border-gray-400">
                                             {{ number_format($row->weight_ton, 3) }}</td>
+                                            <td>-</td>
                                         <td class="p-1 border border-gray-400">{{ number_format($row->unit_price, 2) }}
                                         </td>
                                         <td class="p-1 border border-gray-400">

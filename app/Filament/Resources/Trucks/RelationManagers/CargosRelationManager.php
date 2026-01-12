@@ -80,7 +80,7 @@ class CargosRelationManager extends RelationManager
                                 $ton_price = ($unit_price * $unitQuantity);
 
                                 // تحديث الحقل في الواجهة
-                                $set('ton_price', number_format($ton_price, 2, '.', ''));
+                                // $set('ton_price', number_format($ton_price, 2, '.', ''));
 
                                 $set('ton_weight', number_format($tonWeight, 2, '.', ''));
                             }),
@@ -118,7 +118,7 @@ class CargosRelationManager extends RelationManager
                                 $weight = clean_number($get('weight')); // الكمية (مثلاً 200 جوال)
 
                                 // الحسبة الافتراضية: (الكمية × وزن الوحدة) / 1000 للحصول على الأطنان
-                                //$ton_price = ($unit_price * $wei);
+                                // $ton_price = ($unit_price * $wei);
                                 $ton_price = $unit_price / $weight * 1000000;
                                 // تحديث الحقل في الواجهة
                                 $set('ton_price', number_format($ton_price, 2, '.', ''));
