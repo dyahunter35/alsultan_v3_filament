@@ -283,12 +283,12 @@ class ProductPricing extends Page implements HasForms
 
         // حساب إجمالي الأطنان (يدوي أو محسوب)
         $total_weight_tons = $cargos->sum(
-            fn ($item) => $item->ton_weight > 0 ? $item->ton_weight : ($item->weight * $item->unit_quantity) / 1000000
+            fn ($item) => $item->ton_weight //> 0 ? $item->ton_weight : ($item->weight * $item->unit_quantity) / 1000000
         );
 
         $rows = $cargos->map(function ($item, $index) use ($total_weight_tons, $customs_foreign, $total_transport, $exchange) {
 
-            $weight_ton = $item->ton_weight > 0 ? $item->ton_weight : ($item->weight * $item->unit_quantity) / 1000000;
+            $weight_ton = $item->ton_weight; //> 0 ? $item->ton_weight : ($item->weight * $item->unit_quantity) / 1000000;
             $weight_ratio = $total_weight_tons > 0 ? ($weight_ton / $total_weight_tons) : 0;
 
             // التكلفة بالعملة الأجنبية (EGP أو غيرها)
