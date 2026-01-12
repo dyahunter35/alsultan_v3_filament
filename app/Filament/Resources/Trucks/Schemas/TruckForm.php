@@ -47,12 +47,13 @@ class TruckForm
             ->schema([
                 Forms\Components\TextInput::make('driver_name')
                     ->label(__('truck.fields.driver_name.label'))
-                    ->required()
+                    ->nullable()
                     ->maxLength(190),
 
                 Forms\Components\TextInput::make('driver_phone')
                     ->label(__('truck.fields.driver_phone.label'))
                     ->tel()
+                    ->nullable()
                     ->prefix('+')
                     ->placeholder('999999999')
                     ->required()

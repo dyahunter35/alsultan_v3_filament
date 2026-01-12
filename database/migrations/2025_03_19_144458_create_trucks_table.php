@@ -17,8 +17,8 @@ return new class extends Migration
     {
         Schema::create('trucks', function (Blueprint $table) {
             $table->id();
-            $table->string('driver_name')->comment('اسم السائق');
-            $table->string('driver_phone')->comment('رقم الهاتف');
+            $table->string('driver_name')->nullable()->comment('اسم السائق');
+            $table->string('driver_phone')->nullable()->comment('رقم الهاتف');
             $table->string('car_number')->comment('رقم العربة');
             $table->date('pack_date')->comment('تاريخ التعبئة');
 
