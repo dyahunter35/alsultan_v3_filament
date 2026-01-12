@@ -14,6 +14,7 @@ use Filament\Actions\DissociateBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\ReplicateAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -31,7 +32,7 @@ class ShipmentExpenseRelationManager extends RelationManager
 
     public static function getLocalePath(): string
     {
-        return 'expense.shipmentExpenses';
+        return 'expense.shipment_expenses';
     }
 
     public function form(Schema $schema): Schema
@@ -57,12 +58,18 @@ class ShipmentExpenseRelationManager extends RelationManager
                 TrashedFilter::make(),
             ])
             ->headerActions([
-                CreateAction::make(),
+                CreateAction::make()
+                    ->preserveFormDataWhenCreatingAnother(
+                        fn (array $data): array => another_expense($data)
+                    ),
                 // AssociateAction::make(),
             ])
             ->recordActions([
                 EditAction::make(),
                 // DissociateAction::make(),
+                ReplicateAction::make()
+                    ->schema(ShipmentExpense::expenseForm($this->ownerRecord->id))
+                    ,
                 DeleteAction::make(),
                 ForceDeleteAction::make(),
                 RestoreAction::make(),

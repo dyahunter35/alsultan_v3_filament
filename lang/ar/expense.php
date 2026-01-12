@@ -140,10 +140,10 @@ return [
         ],
         'fields' => array_merge($commonFields, [
             'amount' => [
-                'label' => 'عدد العربات',
+                'label' => 'المبلغ',
             ],
             'unit_price' => [
-                'label' => 'سعر العربة',
+                'label' => 'السعر',
                 'placeholder' => 'أدخل السعر',
             ],
         ]),

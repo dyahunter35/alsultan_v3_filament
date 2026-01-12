@@ -96,11 +96,13 @@ class ShipmentExpense extends Page implements HasActions, HasTable
         return
             [
                 Tables\Columns\TextColumn::make('id')
-                    ->label('رقم المصروف')
+                    ->label('#')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('truck_id')
+
+                Tables\Columns\TextColumn::make(name: 'code')
                     ->label('رقم الشاحنة')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 /* Tables\Columns\TextColumn::make('branch.name')
                     ->searchable(), */
 
@@ -121,9 +123,7 @@ class ShipmentExpense extends Page implements HasActions, HasTable
                     ->formatStateUsing(fn($record) => optional($record->beneficiary)->name)
                     ->searchable(), */
 
-                Tables\Columns\TextColumn::make('amount'),
-
-                Tables\Columns\TextColumn::make('unit_price'),
+                // Tables\Columns\TextColumn::make('amount'),
 
                 Tables\Columns\TextColumn::make('total_amount'),
 

@@ -38,7 +38,12 @@ class Truck extends Model implements HasMedia
 
     public function scopeLocal($query)
     {
-        return $query->where('type', 2);
+        return $query->where('type', TruckType::Local);
+    }
+
+    public function scopeOut($query)
+    {
+        return $query->where('type', TruckType::Outer);
     }
 
     public function scopeFromBy(Builder $query, Model $from): Builder
@@ -46,11 +51,6 @@ class Truck extends Model implements HasMedia
         return $query
             ->where('from_type', $from->getMorphClass())
             ->where('from_id', $from->getKey());
-    }
-
-    public function scopeOut($query)
-    {
-        return $query->where('type', 1);
     }
 
     public function from(): MorphTo
@@ -247,5 +247,38 @@ class Truck extends Model implements HasMedia
             get: fn () => $totalExpenses,
             // set: fn (string $value) => strtolower($value),
         );
+    }
+
+    public static function generateTruckNumber(TruckType $type): string
+    {
+
+        $prefix = ($type === TruckType::Local) ? 'TL' : 'TO';
+
+        $date = date('Ym');
+
+        $nextNumber = self::getNextTruckNumberValue($type);
+
+        return $prefix.'-'.$date.'-'.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+    }
+
+    public static function getNextTruckNumberValue(TruckType $type): int
+    {
+        $lastInvoice = self::whereYear('created_at', date('Y'))
+            ->where('type', $type)
+            ->whereMonth('created_at', date('m'))
+            ->orderBy('id', 'desc')
+            ->where('code', '!=', '')
+            ->withoutGlobalScope(SoftDeletingScope::class)
+            ->first();
+
+        // dd($lastInvoice);
+
+        if ($lastInvoice) {
+            $parts = explode('-', $lastInvoice->code);
+
+            return ((int) end($parts)) + 1;
+        }
+
+        return 1;
     }
 }

@@ -69,7 +69,7 @@ class ShipmentExpenseRelationManager extends RelationManager
                 // DissociateAction::make(),
                 ReplicateAction::make()
                     ->schema(ShipmentExpense::expenseForm($this->ownerRecord->id))
-                    ->action(fn ($data) => dd($data)),
+                    ,
                 DeleteAction::make(),
                 ForceDeleteAction::make(),
                 RestoreAction::make(),

@@ -1,11 +1,41 @@
 <?php
 
+use App\Enums\TruckType;
+use App\Models\Truck;
 use App\Models\TruckCargo;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/errors/{code}', function ($code) {
-    abort($code);
+Route::get('/errors/{code}', function ($code): string {
+    DB::transaction(function () use ($code) {
+        if($code == 1){
+
+            $trucks = Truck::out()->get();
+            
+            // جلب الرقم مع القفل (سيتم قفل السجل الأخير حتى تنتهي الحلقة بالكامل)
+            $nextNumber = Truck::getNextTruckNumberValue(TruckType::Outer);
+        }
+        else if($code == 2){
+            $trucks = TruckCargo::local()->get();
+            $nextNumber = Truck::getNextTruckNumberValue(TruckType::Local);
+        }else{
+            return;
+        }
+
+        //dd($nextNumber);
+        foreach ($trucks as $truck) {
+            $prefix = 'TO';
+            $yearMonth = date('Ym');
+            if (! $truck->code) {
+                $truck->code = $prefix.'-'.$yearMonth.'-'.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+                $truck->save();
+            }
+            $nextNumber++;
+        }
+    });
+
+    return 'done';
 });
 
 Route::get('/clear/', function () {
@@ -24,16 +54,4 @@ Route::get('cargo/{truckCargo}', function (TruckCargo $truckCargo) {
     dd($truckCargo->attributesToArray());
 });
 
-Route::get('test', function ($command) {
-    $data = ['expense_type_id' => 17,
-        'payer_id' => 2,
-        'payer_type' => "App\Models\User",
-        'truck_id' => 23,
-        'amount' => 6000000.0,
-        'notes' => null,
-
-        'payment_reference' => 65656.0,
-        'is_paid' => 1,
-        'created_at' => '2026-01-12 09:41:14',
-    ];
-});
+Route::get('/test', function () {});
