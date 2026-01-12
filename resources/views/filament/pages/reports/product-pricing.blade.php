@@ -101,8 +101,8 @@
                                 </tr>
                                 <tr class="font-bold text-white bg-gray-800">
                                     <th colspan="4" class="p-1 border border-gray-400">بيانات الصنف</th>
-                                    <th colspan="2" class="p-1 border border-gray-400">الكميات</th>
-                                    <th colspan="2" class="p-1 border border-gray-400">السعر الأساسي</th>
+                                    <th colspan="3" class="p-1 border border-gray-400">الكميات</th>
+                                    <th colspan="2" class="p-1 border border-gray-400">سعر الشراء </th>
                                     <th colspan="3" class="p-1 border border-gray-400">التكاليف المضافة</th>
                                     <th colspan="4" class="p-1 border border-gray-400">المالية
                                         ({{ $currency_name }})
@@ -118,7 +118,7 @@
                                     <th class="p-1 border border-gray-400">الطرد</th>
                                     <th class="p-1 border border-gray-400">العدد</th>
                                     <th class="p-1 border border-gray-400">الطن</th>
-                                    <th class="p-1 border border-gray-400">سعر الوحدة</th>
+                                    <th class="p-1 border border-gray-400">الوحدة</th>
                                     <th class="p-1 border border-gray-400">سعر الطن</th>
                                     <th class="p-1 border border-gray-400">المجموع</th>
                                     <th class="p-1 border border-gray-400">الترحيل</th>
@@ -144,9 +144,10 @@
                                         <td class="p-1 border border-gray-400">{{ $row->unit_weight }}</td>
                                         <td class="p-1 border border-gray-400">{{ $row->quantity }}</td>
                                         <td class="p-1 border border-gray-400">{{ $row->unit_quantity }}</td>
+                                        <td class="p-1 border border-gray-400">{{ $row->ton_price }}</td>
+                                        
                                         <td class="p-1 font-bold text-blue-800 border border-gray-400">
-                                            {{ number_format($row->weight_ton, 3) }}</td>
-                                            <td>-</td>
+                                            {{ number_format($row->weight_ton, decimals: 3) }}</td>
                                         <td class="p-1 border border-gray-400">{{ number_format($row->unit_price, 2) }}
                                         </td>
                                         <td class="p-1 border border-gray-400">

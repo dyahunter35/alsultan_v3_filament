@@ -17,7 +17,7 @@ return [
             'placeholder' => '',
         ],
         'unit_quantity' => [
-            'label' => 'كمية الوحدة',
+            'label' => ' الكمية بالوحدة',
             'placeholder' => '',
             'helper_text' => 'الكميات بالوحدة وليس الطرد',
         ],
@@ -31,7 +31,7 @@ return [
             'placeholder' => '',
         ],
         'weight' => [
-            'label' => 'الوزن',
+            'label' => 'وزن الوحدة - جم',
             'placeholder' => '',
         ],
         'unit_price' => [
@@ -43,7 +43,7 @@ return [
 
         ],
         'ton_weight'=>[
-            'label'=>'وزن الطن',
+            'label'=>'الكمية بالطن',
 
         ],
         'note' => [
