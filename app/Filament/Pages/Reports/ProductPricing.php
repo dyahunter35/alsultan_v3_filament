@@ -292,7 +292,7 @@ class ProductPricing extends Page implements HasForms
             $weight_ratio = $total_weight_tons > 0 ? ($weight_ton / $total_weight_tons) : 0;
 
             // التكلفة بالعملة الأجنبية (EGP أو غيرها)
-            $base_total_foreign = $weight_ton * $item->unit_price;
+            $base_total_foreign = $item->ton_price * $item->weight_ton; // $weight_ton * $item->unit_price;
             $item_customs_cost = $customs_foreign * $weight_ratio;
             $item_transport_cost = $total_transport * $weight_ratio;
             $total_cost_foreign = $base_total_foreign + $item_customs_cost + $item_transport_cost;
