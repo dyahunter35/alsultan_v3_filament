@@ -56,7 +56,7 @@ class TruckForm
                     ->nullable()
                     ->prefix('+')
                     ->placeholder('999999999')
-                    ->required()
+
                     ->maxLength(190),
 
                 Forms\Components\Select::make('category_id')
