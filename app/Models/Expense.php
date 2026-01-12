@@ -29,10 +29,12 @@ class Expense extends Model
     {
         parent::boot();
 
-        static::creating(function ($model) {
+        static::creating(function ($expense) {
             if (auth()->check()) {
-                $model->created_by = auth()->id();
+                $expense->created_by = auth()->id();
             }
+            $expense->total_amount = $expense->amount ?? 0 * $expense->unit_price ?? 1;
+            // $expense->saveQuietly();
         });
 
         /*  static::saving(function ($expense) {
@@ -50,18 +52,17 @@ class Expense extends Model
             if ($expense->beneficiary_type === 'App\Models\Customer') {
                 app('App\Services\CustomerService')->updateCustomerBalance($expense->beneficiary_id);
             } */
-            $expense->total_amount = $expense->amount ?? 1 * $expense->unit_price ?? 1;
-            $expense->saveQuietly();
+
         });
-        static::updated(function ($expense) {
+        static::updating(function ($expense) {
             /* if ($expense->payer_type === 'App\Models\Customer') {
                 app('App\Services\CustomerService')->updateCustomerBalance($expense->payer_id);
             }
             if ($expense->beneficiary_type === 'App\Models\Customer') {
                 app('App\Services\CustomerService')->updateCustomerBalance($expense->beneficiary_id);
             } */
-            $expense->total_amount = $expense->amount ?? 1 * $expense->unit_price ?? 1;
-            $expense->updateQuietly();
+            $expense->total_amount = $expense->amount ?? 0 * $expense->unit_price ?? 1;
+            // $expense->updateQuietly();
         });
         static::deleted(function ($expense) {
             /* if ($expense->payer_type === 'App\Models\Customer') {

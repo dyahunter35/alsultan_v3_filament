@@ -31,7 +31,7 @@ class ShipmentExpenseRelationManager extends RelationManager
 
     public static function getLocalePath(): string
     {
-        return 'expense.shipmentExpenses';
+        return 'expense.shipment_expense';
     }
 
     public function form(Schema $schema): Schema

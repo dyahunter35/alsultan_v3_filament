@@ -122,14 +122,14 @@ class DocumentsRelationManager extends RelationManager
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
-                DetachAction::make(),
+                //DetachAction::make(),
                 DeleteAction::make(),
                 // ForceDeleteAction::make(),
                 // RestoreAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DetachBulkAction::make(),
+                    //DetachBulkAction::make(),
                     DeleteBulkAction::make(),
                     // ForceDeleteBulkAction::make(),
                     // RestoreBulkAction::make(),

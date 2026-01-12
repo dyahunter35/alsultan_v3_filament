@@ -87,7 +87,7 @@ class InnerTruckResource extends Resource
         return [
             'index' => ListTrucks::route('/'),
             'create' => CreateTruck::route('/create'),
-            'view' => ViewTruck::route('/{record}'),
+            // 'view' => ViewTruck::route('/{record}'),
             'edit' => EditTruck::route('/{record}/edit'),
         ];
     }
