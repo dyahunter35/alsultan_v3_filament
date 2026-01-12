@@ -22,3 +22,11 @@ if (! function_exists('clean_number')) {
 
     }
 }
+
+if (! function_exists('another_expense')) {
+    function another_expense(array $data, array $filter = ['payment_reference', 'amount', 'total_amount']): array
+    {
+        return array_keys(\Illuminate\Support\Arr::except($data, $filter));
+
+    }
+}

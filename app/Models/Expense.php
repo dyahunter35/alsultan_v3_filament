@@ -33,7 +33,8 @@ class Expense extends Model
             if (auth()->check()) {
                 $expense->created_by = auth()->id();
             }
-            $expense->total_amount = $expense->amount ?? 0 * $expense->unit_price ?? 1;
+            $expense->total_amount = $expense->amount ?? 0
+             * $expense->unit_price ?? 1;
             // $expense->saveQuietly();
         });
 

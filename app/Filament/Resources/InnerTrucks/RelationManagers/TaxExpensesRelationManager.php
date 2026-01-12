@@ -14,6 +14,7 @@ use Filament\Actions\DissociateBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\ReplicateAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -71,6 +72,9 @@ class TaxExpensesRelationManager extends RelationManager
                 BulkActionGroup::make([
                     DissociateBulkAction::make(),
                     DeleteBulkAction::make(),
+                    ReplicateAction::make()
+                        ->schema(TaxExpense::expenseForm()),
+
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
                 ]),

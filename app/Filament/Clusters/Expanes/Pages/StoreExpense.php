@@ -124,7 +124,7 @@ class StoreExpense extends Page implements HasActions, HasTable
                 CreateAction::make()
                     ->schema($this->expenseForm())
                     ->preserveFormDataWhenCreatingAnother(
-                        fn (array $data): array => \Illuminate\Support\Arr::except($data, ['payment_reference', 'amount'])
+                        fn (array $data): array => another_expense($data)
                     ),
 
             ]);

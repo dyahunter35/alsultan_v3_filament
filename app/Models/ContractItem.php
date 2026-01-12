@@ -9,15 +9,7 @@ class ContractItem extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'contract_id',
-        'description',
-        'size',
-        'weight',
-        'quantity',
-        'unit_price',
-        'machine_count',
-    ];
+    protected $fillable = ['contract_id','description','size','weight','quantity','unit_price','machine_count'];
 
     protected $casts = [
         'weight' => 'decimal:2',
