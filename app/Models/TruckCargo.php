@@ -38,26 +38,19 @@ class TruckCargo extends Model
     protected function tonPrice(): Attribute
     {
         return Attribute::make(
-            // جلب القيمة: إذا كانت القيمة فارغة في القاعدة، قم بحسابها برمجياً
-            get: fn (mixed $value, array $attributes) => $value ?: ($attributes['unit_price'] * $attributes['unit_quantity']),
+            get: fn (mixed $value, array $attributes) => $value ?: ($attributes['unit_price'] * ($attributes['unit_quantity'] ?? 0)),
 
-            // تخزين القيمة: التأكد من تخزين القيمة المحسوبة إذا لم يتم إدخال قيمة يدوية
-            set: fn (mixed $value, array $attributes) => [
-                'ton_price' => $value ?: ($attributes['unit_price'] * $attributes['unit_quantity']),
-            ],
+            // في الـ set، نرجع القيمة مباشرة، وLaravel سيهتم بإسنادها لـ ton_price
+            set: fn (mixed $value, array $attributes) => $value ?: ($attributes['unit_price'] * ($attributes['unit_quantity'] ?? 0)),
         );
     }
 
     protected function tonWeight(): Attribute
     {
         return Attribute::make(
-            // جلب القيمة: إذا كانت القيمة فارغة في القاعدة، قم بحسابها برمجياً
-            get: fn (mixed $value, array $attributes) => $value ?: (($attributes['weight'] * $attributes['unit_quantity']) / 1000000),
+            get: fn (mixed $value, array $attributes) => $value ?: (($attributes['weight'] * ($attributes['unit_quantity'] ?? 0)) / 1000000),
 
-            // تخزين القيمة: التأكد من تخزين القيمة المحسوبة إذا لم يتم إدخال قيمة يدوية
-            set: fn (mixed $value, array $attributes) => [
-                'ton_weight' => $value ?: (($attributes['weight'] * $attributes['unit_quantity']) / 1000000),
-            ],
+            set: fn (mixed $value, array $attributes) => $value ?: (($attributes['weight'] * ($attributes['unit_quantity'] ?? 0)) / 1000000),
         );
     }
 }
