@@ -111,7 +111,7 @@
 
             {{-- المنصرفات --}}
             <x-filament::section>
-                <x-slot name="heading">المنصرفات</x-slot>
+                <x-slot name="heading">المنصرفات ({{-- #TODO : add categor --}})</x-slot>
                 <table class="w-full text-sm border">
                     <thead class="bg-gray-100">
                         <tr>
@@ -146,7 +146,7 @@
 
             {{-- الحسابات النهائية --}}
             <x-filament::section class="mt-6">
-                <x-slot name="heading">📊 الحسابات النهائية</x-slot>
+                <x-slot name="heading">📊 حسابات الترحيل </x-slot>
                 @php
                     $fare = $truck->truck_fare ?? 0;
                     $delay = $truck->delay_value ?? 0;
@@ -171,19 +171,11 @@
                             <td colspan="2" class="p-2 border">{{ number_format($truck->truck_fare_sum, 2) }}</td>
                         </tr>
                         
-                        <tr>
-                            <td class="p-2 font-semibold text-gray-700 border">إجمالي المنصرفات</td>
-                            <td colspan="2" class="p-2 border">{{ number_format($expenses, 2) }}</td>
-                        </tr>
                         {{-- <tr>
                             <td class="p-2 font-semibold text-gray-700 border">صافي النولون بعد الخصم</td>
                             <td class="p-2 text-green-700 border">{{ number_format($netFare, 2) }}</td>
                         </tr> --}}
-                        <tr>
-                            <td class="p-2 font-semibold text-gray-700 border">الوزن الكلي</td>
-                            <td class="p-2 border w-[30%]">{{ number_format($totalWeight, 2) }}  جرام</td>
-                            <td class="p-2 border w-[30%]">{{ number_format($totalTonWeight, 2) }}  طن</td>
-                        </tr>
+                        
 
 
                     </tbody>
