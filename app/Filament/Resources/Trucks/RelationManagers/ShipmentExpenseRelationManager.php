@@ -32,7 +32,7 @@ class ShipmentExpenseRelationManager extends RelationManager
 
     public static function getLocalePath(): string
     {
-        return 'expense.shipment_expenses';
+        return 'expense.shipment_expense';
     }
 
     public function form(Schema $schema): Schema
@@ -68,8 +68,7 @@ class ShipmentExpenseRelationManager extends RelationManager
                 EditAction::make(),
                 // DissociateAction::make(),
                 ReplicateAction::make()
-                    ->schema(ShipmentExpense::expenseForm($this->ownerRecord->id))
-                    ,
+                    ->schema(ShipmentExpense::expenseForm($this->ownerRecord->id)),
                 DeleteAction::make(),
                 ForceDeleteAction::make(),
                 RestoreAction::make(),

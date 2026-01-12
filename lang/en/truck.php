@@ -31,6 +31,9 @@ return [
             'label' => 'Cargo ID',
             'placeholder' => 'Enter cargo ID',
         ],
+        'code'=>[
+            'label'=> 'Truck Code',
+        ],
         'driver_name' => [
             'label' => 'Driver Name',
             'placeholder' => 'Enter driver name',

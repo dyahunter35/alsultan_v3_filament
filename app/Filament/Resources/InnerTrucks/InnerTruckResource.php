@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\InnerTrucks;
 
+use App\Enums\TruckState;
 use App\Filament\Pages\Concerns\HasResource;
 use App\Filament\Resources\InnerTrucks\Pages\CreateTruck;
 use App\Filament\Resources\InnerTrucks\Pages\EditTruck;
@@ -20,6 +21,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class InnerTruckResource extends Resource
 {
@@ -29,7 +32,7 @@ class InnerTruckResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'driver_name';
+    protected static ?string $recordTitleAttribute = 'code';
 
     protected static ?int $navigationSort = 15;
 
@@ -90,5 +93,31 @@ class InnerTruckResource extends Resource
             // 'view' => ViewTruck::route('/{record}'),
             'edit' => EditTruck::route('/{record}/edit'),
         ];
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['code', 'id'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            //__('truck.fields.code.label') => $record->code,
+            __('truck.fields.pack_date.label') => $record->pack_date,
+            __('order.fields.created_at.label') => $record->created_at,
+        ];
+    }
+
+    public static function getGlobalSearchEloquentQuery(): Builder
+    {
+        return parent::getGlobalSearchEloquentQuery()->local();
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        $modelClass = static::$model;
+
+        return (string) $modelClass::local()->where('truck_status', TruckState::OnWay)->count();
     }
 }

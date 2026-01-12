@@ -29,6 +29,9 @@ return [
             'label' => 'معرف الحمولة',
             'placeholder' => 'ادخل معرف الحمولة',
         ],
+        'code'=>[
+            'label'=> 'رقم الشحنة',
+        ],
         'driver_name' => [
             'label' => 'اسم السائق',
             'placeholder' => 'ادخل اسم السائق',

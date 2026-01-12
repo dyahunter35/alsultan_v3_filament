@@ -83,18 +83,22 @@ trait HasResource
     /**
      * Get global search result URL
      */
-    public static function getGlobalSearchResultUrl(Model $record): ?string
+    /* public static function getGlobalSearchResultUrl(Model $record): ?string
     {
-        /* if (static::canView($record)) {
+         if (static::canView($record)) {
             return static::getUrl('view', ['record' => $record]) ?? '';
         }
- */
-        if (static::canEdit($record)) {
-            return static::getUrl('edit', ['record' => $record]);
+
+         if (static::canEdit($record)) {
+            try {
+                return static::getUrl('edit', ['record' => $record]);
+            } catch (\Exception $e) {
+                return null;
+            }
         }
 
         return null;
-    }
+    } */
 
     public static function getNavigationIcon(): string|BackedEnum|Htmlable|null
     {

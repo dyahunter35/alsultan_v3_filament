@@ -36,9 +36,12 @@ class TrucksTable
             ->columns([
 
                 Tables\Columns\TextColumn::make('id')
-                    ->getStateUsing(fn ($record) => 'شاحنة رقم : '.$record->id)->html(),
+                    ->getStateUsing(fn ($record): string => 'شاحنة رقم : '.$record->id)->html(),
+                Tables\Columns\TextColumn::make('code')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('driver_name')
-                    ->getStateUsing(fn ($record) => $record->driver_name.'<br>'.$record->driver_phone)->html()
+                    ->getStateUsing(fn ($record) => $record->driver_name ?? ''.'<br>'.$record->driver_phone ?? '')->html()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('car_details')
