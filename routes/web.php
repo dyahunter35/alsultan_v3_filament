@@ -8,7 +8,8 @@ Route::get('/errors/{code}', function ($code) {
     abort($code);
 });
 
-Route::get('/clear/', function ($code) {
+Route::get('/clear/', function () {
+
     Artisan::call('optimize:clear');
     Artisan::call('filament:optimize-clear');
 
