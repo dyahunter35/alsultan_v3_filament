@@ -96,8 +96,8 @@
                             <thead>
 
                                 <tr class="font-bold text-white bg-gray-800">
-                                    <th colspan="13" class="p-1 border border-gray-400">تفاصيل التحليل</th>
-                                    <th colspan="7" class="p-1 border border-gray-400">التسعير</th>
+                                    <th colspan="16" class="p-1 border border-gray-400">تفاصيل التحليل</th>
+                                    <th colspan="4" class="p-1 border border-gray-400">التسعير</th>
                                 </tr>
                                 <tr class="font-bold text-white bg-gray-800">
                                     <th colspan="4" class="p-1 border border-gray-400">بيانات الصنف</th>
@@ -123,7 +123,7 @@
                                     <th class="p-1 border border-gray-400">المجموع</th>
                                     <th class="p-1 border border-gray-400">الترحيل</th>
                                     <th class="p-1 border border-gray-400">المنصرفات</th>
-                                    <th class="p-1 bg-yellow-100 border border-gray-400">التكلفة</th>
+                                    <th class="p-1 bg-yellow-100 border border-gray-400">هامش الربح</th>
                                     <th class="w-16 p-1 bg-blue-100 border border-gray-400">الربح %</th>
                                     <th class="p-1 border border-gray-400">قيمة الربح</th>
                                     <th class="p-1 font-bold text-green-700 border border-gray-400"> سعر البيع للبند
@@ -148,7 +148,7 @@
                                             {{ number_format($row->weight_ton, decimals: 3) }}</td>
                                         <td class="p-1 border border-gray-400">{{ number_format($row->unit_price, 2) }}</td>
 
-                                        <td class="p-1 border border-gray-400">{{ $row->ton_price }}</td>
+                                        <td class="p-1 border border-gray-400">{{ number_format($row->ton_price,2) }}</td>
                                         
                                     
                                         <td class="p-1 border border-gray-400">
@@ -197,12 +197,12 @@
 
                                     {{-- العدد (فارغ أو إجمالي حسب الحاجة) --}}
                                     <td class="p-1 border border-gray-400"></td>
-                                    <td class="p-1 border border-gray-400"></td>
 
                                     {{-- إجمالي الأطنان --}}
                                     <td class="p-1 font-bold text-yellow-400 border border-gray-400">
                                         {{ number_format($data['totals']['weight'], 3) }}
                                     </td>
+                                    <td class="p-1 border border-gray-400"></td>
 
                                     {{-- سعر الطن (فارغ لأنه لا يجمع) --}}
                                     <td class="p-1 border border-gray-400"></td>
@@ -248,7 +248,7 @@
                     </div>
 
                     <div class="overflow-x-auto">
-                        <h2 class="text-l font-black text-gray-800 decoration-blue-500">المنصرفات {{ $data['truck']->category?->name }}</h2>
+                        <h2 class=" mt-3 text-l font-black text-gray-800 decoration-blue-500">المنصرفات <span  class="text-l font-black">({{ $data['truck']->category?->name }})</span></h2>
                         <table class="w-full text-[11px] text-center border-collapse border border-gray-400 mt-2">
                             <table class="w-full text-sm border">
                                 <thead class="bg-gray-100">
