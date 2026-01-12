@@ -146,11 +146,11 @@
                                         <td class="p-1 border border-gray-400">{{ $row->unit_quantity }}</td>
                                         <td class="p-1 font-bold text-blue-800 border border-gray-400">
                                             {{ number_format($row->weight_ton, decimals: 3) }}</td>
+                                        <td class="p-1 border border-gray-400">{{ number_format($row->unit_price, 2) }}</td>
+
                                         <td class="p-1 border border-gray-400">{{ $row->ton_price }}</td>
                                         
-                                      
-                                        <td class="p-1 border border-gray-400">{{ number_format($row->unit_price, 2) }}
-                                        </td>
+                                    
                                         <td class="p-1 border border-gray-400">
                                             {{ number_format($row->base_total_foreign, 2) }}</td>
                                         <td class="p-1 border border-gray-400">
