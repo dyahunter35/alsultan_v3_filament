@@ -118,6 +118,7 @@
                                     <th class="p-1 border border-gray-400">الطرد</th>
                                     <th class="p-1 border border-gray-400">العدد</th>
                                     <th class="p-1 border border-gray-400">الطن</th>
+                                    <th class="p-1 border border-gray-400">سعر الوحدة</th>
                                     <th class="p-1 border border-gray-400">سعر الطن</th>
                                     <th class="p-1 border border-gray-400">المجموع</th>
                                     <th class="p-1 border border-gray-400">الترحيل</th>
