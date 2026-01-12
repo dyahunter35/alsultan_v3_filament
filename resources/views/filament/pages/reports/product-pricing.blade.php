@@ -97,7 +97,7 @@
 
                                 <tr class="font-bold text-white bg-gray-800">
                                     <th colspan="13" class="p-1 border border-gray-400">تفاصيل التحليل</th>
-                                    <th colspan="6" class="p-1 border border-gray-400">التسعير</th>
+                                    <th colspan="7" class="p-1 border border-gray-400">التسعير</th>
                                 </tr>
                                 <tr class="font-bold text-white bg-gray-800">
                                     <th colspan="4" class="p-1 border border-gray-400">بيانات الصنف</th>
@@ -248,7 +248,7 @@
                     </div>
 
                     <div class="overflow-x-auto">
-                        <h2 class="text-xl font-black text-gray-800 decoration-blue-500">المنصرفات</h2>
+                        <h2 class="text-l font-black text-gray-800 decoration-blue-500">المنصرفات {{ $data['truck']->category?->name }}</h2>
                         <table class="w-full text-[11px] text-center border-collapse border border-gray-400 mt-2">
                             <table class="w-full text-sm border">
                                 <thead class="bg-gray-100">
@@ -287,46 +287,46 @@
                     
                 </div>
 
+                <x-filament::section class="mt-6">
+                    <x-slot name="heading">📊 حسابات الترحيل </x-slot>
+                    @php
+                        $_truck = $data['truck'];
+                        $fare = $_truck->truck_fare ?? 0;
+                        $delay = $_truck->delay_value ?? 0;
+                        // $netFare = $fare - ($delay + $expenses);
+                        
+                    @endphp
+                    <table class="w-full text-sm border border-gray-200">
+                        <tbody>
+    
+                            <tr>
+                                <td class="p-2 font-semibold text-gray-700 border">النولون</td>
+                                <td colspan="2" class="p-2 border">{{ number_format($fare, 2) }}</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 font-semibold text-gray-700 border">تكلفة العطلات</td>
+                                <td colspan="2" class="p-2 border">{{ number_format($delay, 2) }}</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 font-semibold text-gray-700 border">تكلفة الترحيل الكليه </td>
+                                <td colspan="2" class="p-2 border">{{ number_format($_truck->truck_fare_sum, 2) }}</td>
+                            </tr>
+                            
+                            {{-- <tr>
+                                <td class="p-2 font-semibold text-gray-700 border">صافي النولون بعد الخصم</td>
+                                <td class="p-2 text-green-700 border">{{ number_format($netFare, 2) }}</td>
+                            </tr> --}}
+                            
+    
+    
+                        </tbody>
+                    </table>
+    
+                </x-filament::section>
+    
             @endforeach
         </div>
-        <x-filament::section class="mt-6">
-                <x-slot name="heading">📊 حسابات الترحيل </x-slot>
-                @php
-                    $fare = $truck->truck_fare ?? 0;
-                    $delay = $truck->delay_value ?? 0;
-                    $expenses = $truck->expenses->sum('total_amount') ?? 0;
-                    // $netFare = $fare - ($delay + $expenses);
-                    $totalWeight = $truck->total_weight ?? 1;
-                    $totalTonWeight = $truck->total_ton_weight ?? 1;
-                @endphp
-                <table class="w-full text-sm border border-gray-200">
-                    <tbody>
-
-                        <tr>
-                            <td class="p-2 font-semibold text-gray-700 border">النولون</td>
-                            <td colspan="2" class="p-2 border">{{ number_format($fare, 2) }}</td>
-                        </tr>
-                        <tr>
-                            <td class="p-2 font-semibold text-gray-700 border">تكلفة العطلات</td>
-                            <td colspan="2" class="p-2 border">{{ number_format($delay, 2) }}</td>
-                        </tr>
-                        <tr>
-                            <td class="p-2 font-semibold text-gray-700 border">تكلفة الترحيل الكليه </td>
-                            <td colspan="2" class="p-2 border">{{ number_format($truck->truck_fare_sum, 2) }}</td>
-                        </tr>
-                        
-                        {{-- <tr>
-                            <td class="p-2 font-semibold text-gray-700 border">صافي النولون بعد الخصم</td>
-                            <td class="p-2 text-green-700 border">{{ number_format($netFare, 2) }}</td>
-                        </tr> --}}
-                        
-
-
-                    </tbody>
-                </table>
-
-            </x-filament::section>
-
+       
         <x-print-button />
     @else
         <div class="p-20 text-center bg-white border-2 border-gray-300 border-dashed shadow rounded-xl">
