@@ -104,8 +104,8 @@
                                     <th colspan="3" class="p-1 border border-gray-400">الكميات</th>
                                     <th colspan="2" class="p-1 border border-gray-400">سعر الشراء </th>
                                     <th colspan="4" class="p-1 border border-gray-400"> حساب التكلفة</th>
-                                    <th colspan="3" class="p-1 border border-gray-400">المالية
-                                        ({{ $currency_name }})
+                                    <th colspan="3" class="p-1 border border-gray-400">هامش الربح
+                                       
                                     </th>
                                     <th colspan="2" class="p-1 border border-gray-400">طرد</th>
                                     <th colspan="2" class="p-1 border border-gray-400">طن</th>
@@ -123,7 +123,7 @@
                                     <th class="p-1 border border-gray-400">المجموع</th>
                                     <th class="p-1 border border-gray-400">الترحيل</th>
                                     <th class="p-1 border border-gray-400">المنصرفات</th>
-                                    <th class="p-1 bg-yellow-100 border border-gray-400">هامش الربح</th>
+                                    <th class="p-1 bg-yellow-100 border border-gray-400">التكلفة الكليه </th>
                                     <th class="w-16 p-1 bg-blue-100 border border-gray-400">الربح %</th>
                                     <th class="p-1 border border-gray-400">قيمة الربح</th>
                                     <th class="p-1 font-bold text-green-700 border border-gray-400"> سعر البيع للبند
