@@ -114,12 +114,12 @@ class CargosRelationManager extends RelationManager
                             ->default(null)
                             ->live(onBlur: true)
                             ->afterStateUpdated(function ($get, $set) {
-                                $unitQuantity = clean_number($get('unit_quantity')); // وزن الوحدة (مثلاً 50 كجم)
-                                $unit_price = clean_number($get('unit_price')); // الكمية (مثلاً 200 جوال)
+                                $unit_price = clean_number($get('unit_price')); // وزن الوحدة (مثلاً 50 كجم)
+                                $weight = clean_number($get('weight')); // الكمية (مثلاً 200 جوال)
 
                                 // الحسبة الافتراضية: (الكمية × وزن الوحدة) / 1000 للحصول على الأطنان
-                                $ton_price = ($unit_price * $unitQuantity);
-
+                                //$ton_price = ($unit_price * $wei);
+                                $ton_price = $unit_price / $weight * 1000000;
                                 // تحديث الحقل في الواجهة
                                 $set('ton_price', number_format($ton_price, 2, '.', ''));
                             }),
