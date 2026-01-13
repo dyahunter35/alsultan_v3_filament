@@ -48,6 +48,10 @@ return [
             'label' => 'العميل',
             'placeholder' => 'اختر العميل',
         ],
+        'representative' => [
+            'label' => 'المندوب',
+            'placeholder' => ''
+        ],
         'guest_customer' => [
             'name' => [
                 'label' => 'الاسم',

@@ -24,6 +24,8 @@ class OrdersReport extends Page implements Forms\Contracts\HasForms
     #[Url]
     public $date_range;
 
+    public $representative_id;
+
     #[Url]
     public $branch_id; // إضافة معرف الفرع للـ URL
 
@@ -33,7 +35,14 @@ class OrdersReport extends Page implements Forms\Contracts\HasForms
     protected function getFormSchema(): array
     {
         return [
-            Schemas\Components\Grid::make(2)->schema([
+            Schemas\Components\Grid::make(3)->schema([
+                Forms\Components\Select::make('representative_id')
+                    ->label('المندوب')
+                    ->options(\App\Models\User::sales())
+                    ->placeholder('كل المناديب')
+                    ->searchable()
+                    ->reactive()
+                    ->afterStateUpdated(fn() => $this->loadData()),
                 // حقل اختيار الفرع
                 Forms\Components\Select::make('branch_id')
                     ->label('الفرع')
@@ -78,7 +87,8 @@ class OrdersReport extends Page implements Forms\Contracts\HasForms
         $query = Order::with(['items.product', 'branch']) // تم إضافة الـ branch للـ Eager Loading
             ->whereBetween('created_at', [$from, $to])
             // منطق الفلترة للفرع: إذا كان $branch_id موجوداً يتم الفلترة، وإلا يتم جلب الكل
-            ->when($this->branch_id, fn($q) => $q->where('branch_id', $this->branch_id));
+            ->when($this->branch_id, fn($q) => $q->where('branch_id', $this->branch_id))
+            ->when($this->representative_id, fn($q) => $q->where('representative_id', $this->representative_id));
 
         $totalSales = (float) $query->sum('total');
         $countOrders = $query->count();

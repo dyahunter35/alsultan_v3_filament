@@ -48,6 +48,10 @@ return [
             'label' => 'Customer',
             'placeholder' => 'Select customer',
         ],
+        'representative' => [
+            'label' => 'Representative',
+            'placeholder' => 'representative'
+        ],
         'guest_customer' => [
             'name' => [
                 'label' => 'Name',

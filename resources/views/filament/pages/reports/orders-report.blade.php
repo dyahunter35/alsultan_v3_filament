@@ -14,11 +14,11 @@
     </x-filament::section>
 
     @if ($date_range)
-
         <div class="space-y-6" id="report-content">
+            <x-report-header label="تقرير المبيعات التفصيلي" />
+
             {{-- العنوان الرسمي --}}
             <div class="pb-4 text-center border-b border-slate-100">
-                <h2 class="text-2xl font-black text-slate-800">تقرير المبيعات التفصيلي</h2>
                 <p class="text-sm text-slate-500 tabular-nums">الفترة: {{ $date_range }}</p>
             </div>
 
@@ -59,16 +59,20 @@
                             <th class="px-4 py-3 border border-slate-700">التاريخ</th>
                             <th class="px-4 py-3 border border-slate-700">رقم الفاتورة</th>
                             <th class="px-4 py-3 border border-slate-700">العميل / الفرع</th>
-                            <th class="w-2/5 px-2 py-3 border border-slate-700">الأصناف المبيعة (جدول تفصيلي)</th>
+                            <th class="px-4 py-3 border border-slate-700">المندوب</th>
+                            <th class="px-2 py-3 border border-slate-700">المنتج</th>
+                            <th class="px-2 py-3 border border-slate-700">الكمية</th>
+                            <th class="px-2 py-3 border border-slate-700">السعر</th>
+                            <th class="px-2 py-3 border border-slate-700">المجموع</th>
                             <th class="px-4 py-3 border border-slate-700">الخصم</th>
                             <th class="px-4 py-3 border border-slate-700">الإجمالي</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-200">
+                    <tbody class="text-center divide-y divide-slate-200">
                         @forelse($orders as $order)
                             <tr class="transition-colors hover:bg-slate-50">
                                 <td class="px-4 py-2 font-medium border tabular-nums text-[11px]">
-                                    {{ $order->created_at?->format('Y/m/d H:i') }}
+                                    {{ $order->created_at?->format('Y/m/d') }}
                                 </td>
                                 <td class="px-4 py-2 font-bold text-center border tabular-nums">
                                     #{{ $order->number }}
@@ -78,15 +82,17 @@
                                     </div>
                                     <div class="text-[13px] text-slate-400 uppercase">{{ $order->branch?->name }}</div>
                                 </td>
-
+                                <td class="px-4 py-2 font-bold text-center border tabular-nums">
+                                    {{ str_replace(' (مندوب)', '', $order->representative?->name) }}
+                                </td>
                                 {{-- الجدول الداخلي الموزون للأصناف بدون رؤوس --}}
-                                <td class="px-2 py-2 align-top border bg-slate-50/10">
-                                    <table class="w-full border-collapse text-[15px]">
+                                <td colspan="4" class="px-2 py-2 align-top border bg-slate-50/10">
+                                    <table class="w-full border-collapse text-[15px] divide-y divide-slate-200">
                                         <tbody>
                                             @foreach ($order->items as $item)
                                                 <tr class="border-b border-slate-100 last:border-0 hover:bg-white/50">
                                                     {{-- اسم الصنف - مساحة مرنة --}}
-                                                    <td class="text-right py-1.5 pr-1 font-bold text-slate-700">
+                                                    <td class="text-right py-1.5 pr-1 font-bold text-slate-700  w-24">
                                                         {{ $item->product?->name }}
                                                     </td>
 

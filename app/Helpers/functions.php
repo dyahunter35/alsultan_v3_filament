@@ -50,6 +50,10 @@ if (! function_exists('parseDateRange')) {
 if (! function_exists('another_expense')) {
     function another_expense(array $data, array $filter = ['payment_reference']): array
     {
+        \Illuminate\Support\Facades\Log::debug('Data before filtering: ', $data);
+        \Illuminate\Support\Facades\Log::debug('Filter keys: ', $filter);
+        \Illuminate\Support\Facades\Log::debug('Data after filtering: ', \Illuminate\Support\Arr::except($data, $filter));
+
         return array_keys(\Illuminate\Support\Arr::except($data, $filter));
     }
 }

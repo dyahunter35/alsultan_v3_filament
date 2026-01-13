@@ -26,6 +26,7 @@ class Order extends Model
         'paid',
         'status',
         'currency',
+        'representative_id',
         'shipping',
         'shipping_method',
         'notes',
@@ -45,6 +46,11 @@ class Order extends Model
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);
+    }
+
+    public function representative(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     /** @return HasMany<OrderItem> */
@@ -138,6 +144,6 @@ class Order extends Model
             $nextNumber = $lastNumber + 1;
         }
 
-        return $prefix.str_pad($branch_id, 2, '0', STR_PAD_LEFT).'-'.$year.$month.'-'.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return $prefix . str_pad($branch_id, 2, '0', STR_PAD_LEFT) . '-' . $year . $month . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 }

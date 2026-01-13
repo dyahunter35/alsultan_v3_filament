@@ -87,7 +87,9 @@
                                 <th class="p-2 border border-slate-600">#</th>
                                 <th class="p-2 border border-slate-600">التاريخ</th>
                                 <th class="p-2 border border-slate-600">البيان / النوع</th>
-                                <th class="p-2 border border-slate-600">المبلغ</th>
+                                <th class="p-2 border border-slate-600">القيمة</th>
+                                <th class="p-2 border border-slate-600">المعامل</th>
+                                <th class="p-2 border border-slate-600">المبلغ بالسوداني</th>
                                 <th class="p-2 border border-slate-600">العملة</th>
                                 <th class="p-2 px-4 text-right border border-slate-600">ملاحظات</th>
                             </tr>
@@ -100,6 +102,10 @@
                                     <td class="p-2 border border-slate-200">{{ $t['date'] }}</td>
                                     <td class="p-2 italic font-bold border border-slate-200 text-slate-700">
                                         {{ $t['type']->getLabel() }}</td>
+                                    <td class="p-2 font-black border border-slate-200 text-slate-900">
+                                        {{ number_format($t['amount'], 2) }}</td>
+                                    <td class="p-2 font-black border border-slate-200 text-slate-900">
+                                        {{ number_format($t['rate'], 2) }}</td>
                                     <td class="p-2 font-black border border-slate-200 text-slate-900">
                                         {{ number_format($t['total'], 2) }}</td>
                                     <td class="p-2 font-bold text-blue-700 border border-slate-200">

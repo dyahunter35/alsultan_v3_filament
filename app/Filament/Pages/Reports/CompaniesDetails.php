@@ -84,6 +84,8 @@ class CompaniesDetails extends Page implements HasForms
             'id' => $t->id,
             'date' => optional($t->created_at)->toDateTimeString(),
             'type' => $t->type,
+            'amount' => $t->amount,
+            'rate' => $t->rate,
             'total' => (float) $t->total,
             'currency' => optional($t->currency)->code,
             'note' => $t->note ?? null,
