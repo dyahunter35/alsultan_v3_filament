@@ -121,7 +121,7 @@ class CompanyLedgerReport extends Page implements HasForms
                     'size' => $item->size,
                     'unit_weight' => $item->weight,
                     'quantity' => $item->quantity,
-                    'unit_quantity' => number_format($item->unit_quantity),
+                    'unit_quantity' => $item->unit_quantity,
                     'weight_ton' => $weight_ton,
                     'unit_price' => $item->unit_price,
                     'ton_price' => $item->ton_price,
