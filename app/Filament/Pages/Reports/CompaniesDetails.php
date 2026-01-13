@@ -4,26 +4,27 @@ namespace App\Filament\Pages\Reports;
 
 use App\Filament\Pages\Concerns\HasReport;
 use App\Filament\Resources\Companies\Widgets\CompanyFinanceOverview;
+use App\Filament\Resources\Companies\Widgets\CurrencyWidget;
 use App\Models\Company;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms;
 use Filament\Pages\Page;
 use Livewire\Attributes\Url;
 
-class CompaniesDetails extends Page
+class CompaniesDetails extends Page implements HasForms
 {
     use HasReport;
+    use InteractsWithForms;
 
     protected static ?int $navigationSort = 34;
-
     protected string $view = 'filament.pages.reports.companies-details';
 
-    // input (mount with company id)
     #[Url()]
     public $companyId;
 
-    // loaded data
-    public $company;
-
-    public $companies;
+    // ملاحظة: الـ Widgets تتوقع وجود متغير باسم record في الغالب
+    public ?Company $company = null;
 
     public $transactions = [];
 
@@ -33,11 +34,29 @@ class CompaniesDetails extends Page
         'balance' => 0,
     ];
 
+    // 1. تعريف الفورم بشكل صحيح في فيلامينت 3/4
+    protected function getFormSchema(): array
+    {
+        return [
+
+            Forms\Components\Select::make('companyId')
+                ->label('الشركة')
+                ->options(Company::query()->latest()->pluck('name', 'id'))
+                ->searchable()
+                ->columnSpanFull()
+                ->reactive()
+                ->afterStateUpdated(fn() => $this->loadData()),
+
+        ];
+    }
+
     public function mount(): void
     {
-        $this->companies = Company::select('id', 'name')->get();
-        $companyId = request()->get('company_id', Company::first()?->id ?? null);
-        $this->companyId = $companyId;
+        // تهيئة الفورم بالبيانات القادمة من الرابط (URL)
+        $this->form->fill([
+            'companyId' => $this->companyId,
+        ]);
+
         if ($this->companyId) {
             $this->loadData();
         }
@@ -45,45 +64,47 @@ class CompaniesDetails extends Page
 
     public function loadData(): void
     {
-        $company = Company::with([
+        if (! $this->companyId) {
+            $this->company = null;
+            return;
+        }
+
+        $this->company = Company::with([
             'currencyTransactions.currency',
             'trucksAsCompany',
             'trucksAsContractor',
             'expenses',
-        ])->findOrFail($this->companyId);
-        // dd($company);
+        ])->find($this->companyId);
 
-        $tx = $company->currencyTransactions->sortByDesc('created_at')->values();
+        if (! $this->company) return;
 
-        $totalIn = (float) $tx->where('total', '>', 0)->sum('total');
-        $totalOut = abs((float) $tx->where('total', '<', 0)->sum('total'));
-        $balance = (float) $tx->sum('total');
+        $tx = $this->company->currencyTransactions->sortByDesc('created_at')->values();
 
-        $this->company = $company;
-        $this->transactions = $tx->map(fn ($t) => [
+        $this->transactions = $tx->map(fn($t) => [
             'id' => $t->id,
             'date' => optional($t->created_at)->toDateTimeString(),
             'type' => $t->type,
             'total' => (float) $t->total,
             'currency' => optional($t->currency)->code,
             'note' => $t->note ?? null,
-            'meta' => $t->meta ?? null,
         ])->toArray();
 
         $this->totals = [
-            'total_in' => $totalIn,
-            'total_out' => $totalOut,
-            'balance' => $balance,
+            'total_in' => (float) $tx->where('total', '>', 0)->sum('total'),
+            'total_out' => abs((float) $tx->where('total', '<', 0)->sum('total')),
+            'balance' => (float) $tx->sum('total'),
         ];
+
+        // 2. إرسال حدث لتحديث الـ Widgets إذا كانت تستمع
+        $this->dispatch('updateCompany', companyId: $this->companyId);
     }
 
-    public static function getWidgets(): array
+    // 3. لضمان عرض الودجات في الصفحة
+    protected function getHeaderWidgets(): array
     {
         return [
-            // أضف الـ Widget الخاص بك هنا
-            CompanyFinanceOverview::class,
-            // يمكنك إضافة ويدجت آخر، مثلاً:
-            // \App\Filament\Widgets\AnotherWidget::class,
+            // إذا كنت تريد عرضها في رأس الصفحة تلقائياً
+            // CompanyFinanceOverview::class,
         ];
     }
 }

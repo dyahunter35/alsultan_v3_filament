@@ -54,13 +54,13 @@ class CompanyLedgerReport extends Page implements HasForms
                             ->options(Company::query()->latest()->pluck('name', 'id'))
                             ->searchable()
                             ->reactive()
-                            ->afterStateUpdated(fn () => $this->loadData()),
+                            ->afterStateUpdated(fn() => $this->loadData()),
                         Forms\Components\DatePicker::make('startDate')
                             ->reactive()
-                            ->afterStateUpdated(fn () => $this->loadData()),
+                            ->afterStateUpdated(fn() => $this->loadData()),
                         Forms\Components\DatePicker::make('endDate')
                             ->reactive()
-                            ->afterStateUpdated(fn () => $this->loadData()),
+                            ->afterStateUpdated(fn() => $this->loadData()),
                     ]),
                 ])->collapsible(),
         ];
@@ -104,7 +104,7 @@ class CompanyLedgerReport extends Page implements HasForms
             // حساب إجمالي الشحنة من الـ Cargos
 
             $total_weight_tons = $truck->cargos->sum(
-                fn ($item) => $item->ton_weight // > 0 ? $item->ton_weight : ($item->weight * $item->unit_quantity) / 1000000
+                fn($item) => $item->ton_weight // > 0 ? $item->ton_weight : ($item->weight * $item->unit_quantity) / 1000000
             );
 
             $cargos = $truck->cargos->map(function ($item, $index) use ($total_weight_tons) {

@@ -38,4 +38,9 @@ return [
             'placeholder' => '',
         ],
     ],
+    'widgets' => [
+        'state' => [
+            'label' => 'حسابات العملات'
+        ]
+    ]
 ];

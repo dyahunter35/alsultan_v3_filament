@@ -1,85 +1,149 @@
 <x-filament-panels::page>
+    {{-- قسم الفلترة --}}
+    <x-filament::section class="mb-4 shadow-sm no-print border-slate-200">
+        <div class="flex flex-col gap-4 md:flex-row md:items-end">
+            <div class="flex-1">
+                {{ $this->form }}
+            </div>
+            <div class="flex items-center gap-2">
+                <x-filament::button wire:click="loadData" color="gray" icon="heroicon-m-arrow-path">
+                    تحديث البيانات
+                </x-filament::button>
+            </div>
+        </div>
+    </x-filament::section>
 
-    <div class="space-y-6" id="report-content">
+    @if ($date_range)
 
-        <h2 class="text-2xl font-bold text-gray-800">تقرير المبيعات اليومي</h2>
-
-        <div class="flex items-center gap-4">
-            <div class="w-48">
-                <x-filament::input.wrapper>
-                    <x-filament::input type="date" wire:model.live="date" />
-                </x-filament::input.wrapper>
+        <div class="space-y-6" id="report-content">
+            {{-- العنوان الرسمي --}}
+            <div class="pb-4 text-center border-b border-slate-100">
+                <h2 class="text-2xl font-black text-slate-800">تقرير المبيعات التفصيلي</h2>
+                <p class="text-sm text-slate-500 tabular-nums">الفترة: {{ $date_range }}</p>
             </div>
 
-            <x-filament::button wire:click="loadData" color="primary" icon="heroicon-o-arrow-path">
-                تحديث
-            </x-filament::button>
-        </div>
+            {{-- شريط الملخص الموزون --}}
+            <div
+                class="grid grid-cols-2 overflow-hidden bg-white border shadow-sm md:grid-cols-4 print:grid-cols-4 rounded-xl print:shadow-none print:border-slate-300">
+                <div
+                    class="flex flex-col items-center justify-center p-4 border-b md:border-b-0 md:border-l border-slate-100 print:border-l">
+                    <span class="mb-1 text-xs font-bold uppercase text-slate-400">إجمالي المبيعات</span>
+                    <span
+                        class="text-xl font-black text-green-600 tabular-nums">{{ number_format($summary['total_sales'], 2) }}</span>
+                </div>
 
-        {{-- الملخص --}}
-        {{-- <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+                <div
+                    class="flex flex-col items-center justify-center p-4 border-b md:border-b-0 md:border-l border-slate-100 print:border-l">
+                    <span class="mb-1 text-xs font-bold uppercase text-slate-400">عدد الفواتير</span>
+                    <span class="text-xl font-black tabular-nums text-slate-700">{{ $summary['orders_count'] }}</span>
+                </div>
 
-            <x-filament::stats.card label="إجمالي المبيعات" value="{{ number_format($summary['total_sales'], 2) }}" />
+                <div class="flex flex-col items-center justify-center p-4 border-l border-slate-100 print:border-l">
+                    <span class="mb-1 text-xs font-bold uppercase text-slate-400">متوسط الفاتورة</span>
+                    <span
+                        class="text-xl font-black text-blue-600 tabular-nums">{{ number_format($summary['avg_sale'], 2) }}</span>
+                </div>
 
-            <x-filament::stats.card label="عدد الفواتير" value="{{ $summary['orders_count'] }}" />
+                <div class="flex flex-col items-center justify-center p-4 bg-slate-50/30">
+                    <span class="mb-1 text-xs font-bold uppercase text-slate-400">إجمالي الخصومات</span>
+                    <span
+                        class="text-xl font-black text-red-600 tabular-nums">{{ number_format($summary['discounts'], 2) }}</span>
+                </div>
+            </div>
 
-            <x-filament::stats.card label="متوسط البيع" value="{{ number_format($summary['avg_sale'], 2) }}" />
-
-            <x-filament::stats.card label="الخصومات" value="{{ number_format($summary['discounts'], 2) }}" />
-        </div> --}}
-
-        {{-- جدول الفواتير --}}
-        <div class="overflow-x-auto bg-white shadow-sm rounded-xl">
-            <table class="min-w-full text-sm text-right border-collapse">
-                <thead class="bg-gray-50">
-                    <tr class="font-semibold text-gray-700">
-                        <th class="px-4 py-2 border-b">التاريخ</th>
-                        <th class="px-4 py-2 border-b">رقم الفاتورة</th>
-                        <th class="px-4 py-2 border-b">العميل</th>
-                        <th class="px-4 py-2 border-b">التفاصيل</th>
-                        <th class="px-4 py-2 border-b">الإجمالي</th>
-                        <th class="px-4 py-2 border-b">الخصم</th>
-                        <th class="px-4 py-2 border-b">المخزن</th>
-                        <th class="px-4 py-2 border-b">المندوب</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @forelse($orders as $order)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-2 border-b">
-                                {{ $order->created_at->format('d-m-Y') }}
-                            </td>
-                            <td class="px-4 py-2 border-b">{{ $order->number }}</td>
-                            <td class="px-4 py-2 border-b">{{ $order->customer?->name }}</td>
-                            <td class="px-4 py-2 border-b">
-                                @foreach ($order->items as $item)
-                                    <div>
-                                        {{ $item->product?->name }} [ {{ $item->qty }} *
-                                        {{ number_format($item->price, 2) }} =
-                                        {{ number_format($item->qty * $item->price, 2) }} ]
+            {{-- جدول المبيعات الرئيسي --}}
+            <div class="overflow-x-auto bg-white border shadow-sm rounded-xl print:shadow-none print:border-slate-800">
+                <table class="w-full text-sm text-center border-collapse">
+                    <thead>
+                        <tr class="font-bold text-white bg-slate-800 print:bg-slate-100 print:text-black">
+                            <th class="px-4 py-3 border border-slate-700">التاريخ</th>
+                            <th class="px-4 py-3 border border-slate-700">رقم الفاتورة</th>
+                            <th class="px-4 py-3 border border-slate-700">العميل / الفرع</th>
+                            <th class="w-2/5 px-2 py-3 border border-slate-700">الأصناف المبيعة (جدول تفصيلي)</th>
+                            <th class="px-4 py-3 border border-slate-700">الخصم</th>
+                            <th class="px-4 py-3 border border-slate-700">الإجمالي</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200">
+                        @forelse($orders as $order)
+                            <tr class="transition-colors hover:bg-slate-50">
+                                <td class="px-4 py-2 font-medium border tabular-nums text-[11px]">
+                                    {{ $order->created_at?->format('Y/m/d H:i') }}
+                                </td>
+                                <td class="px-4 py-2 font-bold text-center border tabular-nums">
+                                    #{{ $order->number }}
+                                </td>
+                                <td class="px-4 py-2 border">
+                                    <div class="font-bold text-slate-700">{{ $order->customer?->name ?? 'عميل نقدي' }}
                                     </div>
-                                @endforeach
-                            </td>
-                            <td class="px-4 py-2 font-semibold text-green-700 border-b">
-                                {{ number_format($order->total, 2) }}
-                            </td>
-                            <td class="px-4 py-2 text-red-700 border-b">
-                                {{ number_format($order->discount, 2) }}
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="px-4 py-3 text-center text-gray-500">
-                                لا توجد فواتير لهذا اليوم.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                                    <div class="text-[13px] text-slate-400 uppercase">{{ $order->branch?->name }}</div>
+                                </td>
 
-    </div>
-    <x-print-button />
+                                {{-- الجدول الداخلي الموزون للأصناف بدون رؤوس --}}
+                                <td class="px-2 py-2 align-top border bg-slate-50/10">
+                                    <table class="w-full border-collapse text-[15px]">
+                                        <tbody>
+                                            @foreach ($order->items as $item)
+                                                <tr class="border-b border-slate-100 last:border-0 hover:bg-white/50">
+                                                    {{-- اسم الصنف - مساحة مرنة --}}
+                                                    <td class="text-right py-1.5 pr-1 font-bold text-slate-700">
+                                                        {{ $item->product?->name }}
+                                                    </td>
+
+                                                    {{-- الكمية - عرض ثابت --}}
+                                                    <td
+                                                        class="text-center py-1.5 px-2 tabular-nums w-12 border-r border-slate-50">
+                                                        <span
+                                                            class="font-black text-slate-900">{{ number_format($item->qty) }}</span>
+                                                    </td>
+
+                                                    {{-- السعر - عرض ثابت --}}
+                                                    <td
+                                                        class="text-center py-1.5 px-2 tabular-nums w-20 border-r border-slate-50">
+                                                        <span
+                                                            class="font-medium text-slate-600">{{ number_format($item->price, 2) }}</span>
+                                                    </td>
+
+                                                    {{-- الإجمالي - عرض ثابت --}}
+                                                    <td
+                                                        class="text-center py-1.5 pl-1 tabular-nums w-24 border-r border-slate-50">
+
+                                                        <span
+                                                            class="font-black text-green-700">{{ number_format($item->qty * $item->price, 2) }}</span>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </td>
+
+                                <td class="px-4 py-2 text-center text-red-600 border tabular-nums">
+                                    {{ number_format($order->discount, 2) }}
+                                </td>
+                                <td
+                                    class="px-4 py-2 font-black text-center text-green-700 border tabular-nums bg-green-50/30">
+                                    {{ number_format($order->total, 2) }}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="px-4 py-10 italic text-center text-gray-400">
+                                    لا توجد مبيعات مسجلة ضمن هذه الفترة.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <x-print-button />
+    @else
+        <div class="p-20 text-center bg-white border-2 border-gray-300 border-dashed shadow-sm rounded-xl">
+            <x-filament::icon icon="heroicon-o-calendar" class="w-12 h-12 mx-auto mb-4 text-gray-300" />
+            <h3 class="text-xl font-bold tracking-tight text-gray-400">الرجاء اختيار الفترة لتوليد
+                التقرير</h3>
+        </div>
+    @endif
+
 
 </x-filament-panels::page>

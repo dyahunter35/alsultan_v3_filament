@@ -1,164 +1,233 @@
-<x-filament-panels::page id="report-content">
-    <x-filament::section style="no-print">
+<x-filament-panels::page>
+    {{-- 1. قسم الفلترة (يختفي عند الطباعة) --}}
+    <x-filament::section class="mb-4 shadow-sm no-print border-slate-200">
+        <div class="flex flex-col gap-4 md:flex-row md:items-end">
+            <div class="flex-1">
+                {{-- فورم الفلترة الخاص بـ Filament --}}
+                {{ $this->form }}
+            </div>
 
-        <div class="flex items-center justify-between">
-
-            <x-filament::input.wrapper>
-                <x-filament::input.select :searchale wire:model.live="companyId" wire:change="loadData">
-
-                    @foreach ($companies as $c)
-                        <option value="{{ $c->id }}">{{ $c->name }}</option>
-                    @endforeach
-                </x-filament::input.select>
-            </x-filament::input.wrapper>
-
-
-
+            <div class="flex items-center gap-2">
+                <x-filament::button wire:click="loadData" color="gray" icon="heroicon-m-arrow-path">
+                    تحديث
+                </x-filament::button>
+            </div>
         </div>
     </x-filament::section>
 
+    @if ($companyId)
+        <div id="report-content" class="space-y-6 print:m-0">
 
-    <x-filament::section>
-        <div>
-            @livewire(\App\Filament\Resources\Companies\Widgets\CurrencyWidget::class, ['record' => $company])
-        </div>
-    </x-filament::section>
+            {{-- 2. الهيدر الموحد --}}
+            <x-report-header label="تقرير تفصيلي للشركة:" :value="$company->name" />
 
-    <x-filament::section>
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-xl font-bold">تقرير شركة - التفاصيل والمعاملات</h1>
-                <p class="text-sm text-gray-500">{{ $company->name ?? '-' }} — {{ now()->format('Y-m-d H:i') }}</p>
-            </div>
 
-            <div class="space-x-2">
-                <x-filament::button wire:click="loadData">تحديث</x-filament::button>
-                <button onclick="window.print()"
-                    class="inline-flex items-center px-3 py-1.5 bg-primary-600 text-white rounded">طباعة</button>
-            </div>
-        </div>
 
-        {{-- Company summary --}}
-        <div class="grid grid-cols-1 gap-4 mt-6 md:grid-cols-3">
-            <div class="p-4 bg-white rounded-lg shadow-sm">
-                <h3 class="text-sm font-medium text-gray-600">معلومات أساسية</h3>
-                <dl class="mt-2 text-sm text-gray-700">
-                    <div class="flex justify-between">
-                        <dt>الاسم</dt>
-                        <dd>{{ $company->name ?? '-' }}</dd>
-                    </div>
-                    <div class="flex justify-between">
-                        <dt>الهاتف</dt>
-                        <dd>{{ $company->phone ?? '-' }}</dd>
-                    </div>
-                    <div class="flex justify-between">
-                        <dt>النوع</dt>
-                        <dd>{{ $company->type ?? '-' }}</dd>
-                    </div>
-                </dl>
-            </div>
+            {{-- 4. كروت الملخص المالي والمعلومات --}}
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3 print:grid-cols-3 print:gap-2">
+                {{-- معلومات الشركة --}}
+                <div class="p-4 bg-white border shadow-sm border-slate-200 rounded-xl print:p-2 print:border-slate-300">
+                    <h3 class="pb-1 mb-2 text-xs font-bold uppercase border-b text-slate-400">بيانات التواصل</h3>
+                    <dl class="space-y-1 text-sm print:text-[11px]">
+                        <div class="flex justify-between">
+                            <dt class="text-slate-500">الهاتف:</dt>
+                            <dd class="font-bold tabular-nums">{{ $company->phone ?? '-' }}</dd>
+                        </div>
+                        <div class="flex justify-between">
+                            <dt class="text-slate-500">التصنيف:</dt>
+                            <dd class="font-bold">{{ $company->type->getLabel() ?? '-' }}</dd>
+                        </div>
+                    </dl>
+                </div>
 
-            <div class="p-4 bg-white rounded-lg shadow-sm">
-                <h3 class="text-sm font-medium text-gray-600">ملخص مالي</h3>
-                <dl class="mt-2 text-sm text-gray-700">
-                    <div class="flex justify-between">
-                        <dt>المجموع الوارد</dt>
-                        <dd>{{ number_format($totals['total_in'] ?? 0, 2) }}</dd>
-                    </div>
-                    <div class="flex justify-between">
-                        <dt>المجموع الصادر</dt>
-                        <dd>{{ number_format($totals['total_out'] ?? 0, 2) }}</dd>
-                    </div>
-                    <div class="flex justify-between">
-                        <dt>الرصيد الحالي</dt>
-                        <dd
-                            class="font-semibold {{ ($totals['balance'] ?? 0) < 0 ? 'text-red-600' : 'text-green-700' }}">
-                            {{ number_format($totals['balance'] ?? 0, 2) }}
-                        </dd>
-                    </div>
-                </dl>
-            </div>
+                {{-- ملخص الأرصدة الموحد --}}
+                <div
+                    class="p-4 border shadow-sm bg-slate-50 border-slate-200 rounded-xl print:p-2 print:border-slate-300">
+                    <h3 class="pb-1 mb-2 text-xs font-bold uppercase border-b text-slate-400">الوضع المالي الموحد</h3>
+                    <dl class="space-y-1 text-sm print:text-[11px] tabular-nums">
+                        <div class="flex justify-between">
+                            <dt class="text-slate-500">إجمالي الوارد:</dt>
+                            <dd class="font-bold text-green-700">{{ number_format($totals['total_in'] ?? 0, 2) }}</dd>
+                        </div>
+                        <div class="flex justify-between">
+                            <dt class="text-slate-500">إجمالي الصادر:</dt>
+                            <dd class="font-bold text-red-700">{{ number_format($totals['total_out'] ?? 0, 2) }}</dd>
+                        </div>
+                        <div class="flex justify-between pt-1 mt-1 border-t border-dashed border-slate-300">
+                            <dt class="font-black text-slate-800">الرصيد النهائي:</dt>
+                            <dd
+                                class="font-black text-lg print:text-sm {{ ($totals['balance'] ?? 0) < 0 ? 'text-red-600' : 'text-green-700' }}">
+                                {{ number_format($totals['balance'] ?? 0, 2) }}
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
 
-            <div class="p-4 bg-white rounded-lg shadow-sm">
-                <h3 class="text-sm font-medium text-gray-600">علاقات وسجلات</h3>
-                <div class="mt-2 text-sm text-gray-700">
-                    <div>عدد الشاحنات (شركة): {{ $company->trucksAsCompany->count() ?? 0 }}</div>
-                    <div>عدد الشاحنات (مقاول): {{ $company->trucksAsContractor->count() ?? 0 }}</div>
-                    <div>عدد المصروفات المرتبطة: {{ $company->expenses->count() ?? 0 }}</div>
+                {{-- إحصائيات النشاط --}}
+                <div class="p-4 bg-white border shadow-sm border-slate-200 rounded-xl print:p-2 print:border-slate-300">
+                    <h3 class="pb-1 mb-2 text-xs font-bold uppercase border-b text-slate-400">حجم النشاط</h3>
+                    <ul class="text-sm print:text-[11px] space-y-1">
+                        <li class="flex justify-between"><span>شاحنات (شركة):</span> <span
+                                class="font-bold tabular-nums">{{ $company->trucksAsCompany->count() }}</span></li>
+                        <li class="flex justify-between"><span>شاحنات (مقاول):</span> <span
+                                class="font-bold tabular-nums">{{ $company->trucksAsContractor->count() }}</span></li>
+                        <li class="flex justify-between text-blue-600"><span>عدد المصروفات:</span> <span
+                                class="font-bold tabular-nums">{{ $company->expenses->count() }}</span></li>
+                    </ul>
                 </div>
             </div>
-        </div>
 
-        {{-- Transactions table --}}
-        <div class="mt-6 overflow-x-auto bg-white shadow-sm rounded-xl">
-            <h3 class="text-sm font-medium text-gray-600">سجل العملات </h3>
+            {{-- 5. جدول سجل العملات والمعاملات --}}
+            <x-filament::section class="print:shadow-none print:border-slate-400">
+                <x-slot name="heading">سجل العملات والمعاملات المكتملة</x-slot>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-center border-collapse text-sm print:text-[10px]">
+                        <thead class="text-white bg-slate-800">
+                            <tr>
+                                <th class="p-2 border border-slate-600">#</th>
+                                <th class="p-2 border border-slate-600">التاريخ</th>
+                                <th class="p-2 border border-slate-600">البيان / النوع</th>
+                                <th class="p-2 border border-slate-600">المبلغ</th>
+                                <th class="p-2 border border-slate-600">العملة</th>
+                                <th class="p-2 px-4 text-right border border-slate-600">ملاحظات</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 tabular-nums">
+                            @forelse($transactions as $t)
+                                <tr class="transition-colors border-b hover:bg-slate-50">
+                                    <td class="p-2 font-medium border border-slate-200 bg-slate-50 text-slate-500">
+                                        {{ $t['id'] }}</td>
+                                    <td class="p-2 border border-slate-200">{{ $t['date'] }}</td>
+                                    <td class="p-2 italic font-bold border border-slate-200 text-slate-700">
+                                        {{ $t['type']->getLabel() }}</td>
+                                    <td class="p-2 font-black border border-slate-200 text-slate-900">
+                                        {{ number_format($t['total'], 2) }}</td>
+                                    <td class="p-2 font-bold text-blue-700 border border-slate-200">
+                                        {{ $t['currency'] ?? '-' }}</td>
+                                    <td
+                                        class="p-2 px-4 text-xs italic text-right border border-slate-200 text-slate-500">
+                                        {{ $t['note'] ?? '-' }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="p-10 italic text-slate-400">لا توجد معاملات مسجلة حالياً
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </x-filament::section>
 
-            <table class="w-full min-w-[800px] divide-y divide-gray-200 text-sm">
-                <thead class="text-gray-700 bg-gray-50">
-                    <tr>
-                        <th class="px-4 py-3 text-right">#</th>
-                        <th class="px-4 py-3 text-right">التاريخ</th>
-                        <th class="px-4 py-3 text-right">النوع</th>
-                        <th class="px-4 py-3 text-right">المبلغ</th>
-                        <th class="px-4 py-3 text-right">العملة</th>
-                        <th class="px-4 py-3 text-left">ملاحظة</th>
-                    </tr>
-                </thead>
+            {{-- 6. تفاصيل المصروفات والشاحنات (جنباً إلى جنب في A3) --}}
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2 print:grid-cols-2 print:gap-4">
+                {{-- كشف المصروفات --}}
+                <div class="p-4 bg-white border shadow-sm border-slate-300 rounded-xl print:p-2">
+                    <h3 class="pr-2 mb-3 font-black border-r-4 border-red-500 text-slate-800 print:text-sm">سجل آخر
+                        المصروفات</h3>
+                    <table class="w-full text-xs print:text-[9px]">
+                        <tbody class="divide-y divide-slate-100">
+                            @forelse($company->expenses->take(15) as $e)
+                                <tr>
+                                    <td class="py-1.5 italic text-slate-600">{{ $e->description ?? 'مصروف تشغيلي' }}
+                                    </td>
+                                    <td class="py-1.5 font-bold text-left tabular-nums text-red-700">
+                                        {{ number_format($e->amount ?? 0, 2) }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td class="py-2 text-slate-400">لا توجد مصروفات مرتبطة</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
 
-                <tbody class="bg-white divide-y divide-gray-100">
-                    @forelse($transactions as $t)
-                        <tr>
-                            <td class="px-4 py-3 text-right">{{ $t['id'] }}</td>
-                            <td class="px-4 py-3 text-right">{{ $t['date'] }}</td>
-                            <td class="px-4 py-3 text-right">
-                                {{ $t['type']->getLabel() }}</td>
-                            <td class="px-4 py-3 text-right">{{ number_format($t['total'], 2) }}</td>
-                            <td class="px-4 py-3 text-right">{{ $t['currency'] ?? '-' }}</td>
-                            <td class="px-4 py-3 text-left">{{ $t['note'] ?? '-' }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="px-4 py-6 text-sm text-center text-gray-500">لا توجد معاملات</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        {{-- Optionally show expenses/trucks details --}}
-        <div class="grid grid-cols-1 gap-4 mt-6 md:grid-cols-1">
-            <div class="p-4 bg-white rounded-lg shadow-sm">
-                <h3 class="mb-2 text-sm font-medium text-gray-600">مصروفات مرتبطة</h3>
-                <ul class="space-y-2 text-sm text-gray-700">
-                    @forelse($company->expenses as $e)
-                        <li class="flex justify-between">
-                            <span>{{ $e->description ?? 'مصروف' }}</span><span>{{ number_format($e->amount ?? 0, 2) }}</span>
-                        </li>
-                    @empty
-                        <li class="text-gray-500">لا توجد مصروفات</li>
-                    @endforelse
-                </ul>
+                {{-- سجل الشاحنات --}}
+                <div class="p-4 bg-white border shadow-sm border-slate-300 rounded-xl print:p-2">
+                    <h3 class="pr-2 mb-3 font-black border-r-4 border-blue-500 text-slate-800 print:text-sm">سجل
+                        الشاحنات المرتبطة</h3>
+                    <table class="w-full text-xs print:text-[9px]">
+                        <tbody class="divide-y divide-slate-100">
+                            @forelse($company->trucksAsCompany->merge($company->trucksAsContractor)->take(15) as $truck)
+                                <tr>
+                                    <td class="py-1.5">
+                                        <span class="font-bold text-slate-700">{{ $truck->car_number }}</span>
+                                        <span class="mx-1 text-slate-300">|</span>
+                                        <span class="text-slate-600">{{ $truck->driver_name }}</span>
+                                    </td>
+                                    <td class="py-1.5 text-left text-slate-400 tabular-nums">{{ $truck->pack_date }}
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td class="py-2 text-slate-400">لا توجد شاحنات مسجلة</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div class="p-4 bg-white rounded-lg shadow-sm">
-                <h3 class="mb-2 text-sm font-medium text-gray-600">شاحنات مرتبطة (عينة)</h3>
-                <ul class="space-y-2 text-sm text-gray-700">
-                    @forelse($company->trucksAsCompany->merge($company->trucksAsContractor) as $truck)
-                        <li class="flex justify-between"><span>{{ $truck->driver_name ?? '—' }}
-                                ({{ $truck->car_number ?? '—' }})
-                            </span><span>{{ $truck->pack_date ?? '' }}</span>
-                        </li>
-                    @empty
-                        <li class="text-gray-500">لا توجد شاحنات</li>
-                    @endforelse
-                </ul>
+            {{-- 3. ودجت العملات (تظهر في الطباعة) --}}
+            <div class="print:mb-4">
+                @livewire(\App\Filament\Resources\Companies\Widgets\CurrencyWidget::class, ['record' => $company], key('currency-widget-' . $companyId))
             </div>
-        </div>
-    </x-filament::section>
 
-    <x-filament::section>
-        <div>
-            @livewire(\App\Filament\Resources\Companies\Widgets\CompanyFinanceOverview::class, ['record' => $company])
+            {{-- 7. ودجت النظرة العامة المالية (الخلاصة) --}}
+            <div class="mt-6 print:mt-4 no-break">
+                @livewire(\App\Filament\Resources\Companies\Widgets\CompanyFinanceOverview::class, ['record' => $company], key('finance-widget-' . $companyId))
+            </div>
+
         </div>
-    </x-filament::section>
+
+        {{-- زر الطباعة العائم --}}
+        <div class="fixed bottom-6 left-6 no-print">
+            <x-print-button />
+        </div>
+    @else
+        <div class="p-20 text-center bg-white border-2 border-gray-300 border-dashed shadow-sm rounded-xl">
+            <x-filament::icon icon="heroicon-o-building-office-2" class="w-12 h-12 mx-auto mb-4 text-gray-300" />
+            <h3 class="text-xl font-bold tracking-tight text-gray-400">الرجاء اختيار شركة من القائمة العلوية لتوليد
+                التقرير</h3>
+        </div>
+    @endif
+
+    <style>
+        @media print {
+            @page {
+                size: A3 landscape;
+                margin: 10mm;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .fi-main-ctn {
+                padding: 0 !important;
+                width: 100% !important;
+            }
+
+            body {
+                background: white !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .tabular-nums {
+                font-variant-numeric: tabular-nums;
+            }
+
+            .no-break {
+                page-break-inside: avoid;
+            }
+
+            /* تحسين مظهر الودجات في الطباعة */
+            .fi-wi-widget {
+                border: 1px solid #e2e8f0 !important;
+                box-shadow: none !important;
+                margin-bottom: 1rem !important;
+            }
+        }
+    </style>
 </x-filament-panels::page>
