@@ -13,6 +13,7 @@ use Filament\Pages\Page;
 use Filament\Schemas;
 use Illuminate\Support\Carbon;
 use Livewire\Attributes\Url;
+use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
 
 class CompanyLedgerReport extends Page implements HasForms
 {
@@ -34,6 +35,8 @@ class CompanyLedgerReport extends Page implements HasForms
     #[Url()]
     public $endDate;
 
+    #[Url()]
+    public $date_range;
     // البيانات للمعالجة
     public $groups = [];
 
@@ -48,19 +51,22 @@ class CompanyLedgerReport extends Page implements HasForms
         return [
             Schemas\Components\Section::make()
                 ->schema([
-                    Schemas\Components\Grid::make(4)->schema([
+                    Schemas\Components\Grid::make(3)->schema([
                         Forms\Components\Select::make('companyId')
                             ->label('الشركة')
                             ->options(Company::query()->latest()->pluck('name', 'id'))
                             ->searchable()
                             ->reactive()
                             ->afterStateUpdated(fn() => $this->loadData()),
-                        Forms\Components\DatePicker::make('startDate')
-                            ->reactive()
-                            ->afterStateUpdated(fn() => $this->loadData()),
-                        Forms\Components\DatePicker::make('endDate')
-                            ->reactive()
-                            ->afterStateUpdated(fn() => $this->loadData()),
+
+                        DateRangePicker::make('date_range')
+                            ->label('الفترة الزمنية')
+                            ->disableClear(false)
+                            ->live()
+                            ->afterStateUpdated(function ($state) {
+                                $this->date_range = $state;
+                                $this->loadData();
+                            }),
                     ]),
                 ])->collapsible(),
         ];
@@ -80,8 +86,7 @@ class CompanyLedgerReport extends Page implements HasForms
 
     public function loadData(): void
     {
-        $start = Carbon::parse($this->startDate)->startOfDay();
-        $end = Carbon::parse($this->endDate)->endOfDay();
+        [$start, $end] = parseDateRange($this->date_range);
 
         // 1. جلب الشاحنات المرتبطة بالشركة (كشركة أو كمقاول)
         $trucks = Truck::with(['cargos.product'])
@@ -89,9 +94,9 @@ class CompanyLedgerReport extends Page implements HasForms
                 $q->where('company_id', $this->companyId)
                     ->orWhere('contractor_id', $this->companyId);
             })
-            // ->when($start && $end, function ($q) use ($start, $end) {
-            //     $q->whereBetween('pack_date', [$start, $end]);
-            // })
+            ->when($start && $end, function ($q) use ($start, $end) {
+                $q->whereBetween('pack_date', [$start, $end]);
+            })
             // ->whereBetween('pack_date', [$start, $end])
             ->orderBy('pack_date')
             ->get();
