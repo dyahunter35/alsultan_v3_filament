@@ -14,10 +14,6 @@
                 <x-filament::button wire:click="loadData" icon="heroicon-m-arrow-path" color="gray" size="sm">
                     تحديث البيانات
                 </x-filament::button>
-
-                <x-filament::button onclick="window.print()" icon="heroicon-m-printer" size="sm">
-                    طباعة التقرير
-                </x-filament::button>
             </div>
         </div>
 

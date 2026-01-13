@@ -28,27 +28,27 @@ if (! function_exists('parseDateRange')) {
 
     function parseDateRange($range): array
     {
-        if (! $range) {
+        /* if (! $range) {
             return [now()->startOfDay(), now()->endOfDay()];
-        }
+        } */
 
         $dates = explode(' - ', $range);
-        if (count($dates) !== 2) {
+        /*  if (count($dates) !== 2) {
             return [now()->startOfDay(), now()->endOfDay()];
-        }
+        } */
 
         try {
             $from = Carbon::createFromFormat('d/m/Y', trim($dates[0]))->startOfDay();
             $to = Carbon::createFromFormat('d/m/Y', trim($dates[1]))->endOfDay();
             return [$from, $to];
         } catch (\Exception $e) {
-            return [now()->startOfDay(), now()->endOfDay()];
+            return [null, null];
         }
     }
 }
 
 if (! function_exists('another_expense')) {
-    function another_expense(array $data, array $filter = ['payment_reference', 'amount', 'total_amount']): array
+    function another_expense(array $data, array $filter = ['payment_reference']): array
     {
         return array_keys(\Illuminate\Support\Arr::except($data, $filter));
     }

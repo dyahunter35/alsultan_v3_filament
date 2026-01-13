@@ -43,33 +43,30 @@ class CompanyLedgerReport extends Page implements HasForms
     protected function getFormSchema(): array
     {
         return [
-            Schemas\Components\Section::make()
-                ->schema([
-                    Schemas\Components\Grid::make(3)->schema([
-                        Forms\Components\Select::make('companyId')
-                            ->label('الشركة')
-                            ->options(Company::query()->latest()->pluck('name', 'id'))
-                            ->searchable()
-                            ->reactive()
-                            ->afterStateUpdated(fn() => $this->loadData()),
 
-                        DateRangePicker::make('date_range')
-                            ->label('الفترة الزمنية')
-                            ->disableClear(false)
-                            ->live()
-                            ->afterStateUpdated(function ($state) {
-                                $this->date_range = $state;
-                                $this->loadData();
-                            }),
-                    ]),
-                ])->collapsible(),
+            Schemas\Components\Grid::make(3)->schema([
+                Forms\Components\Select::make('companyId')
+                    ->label('الشركة')
+                    ->options(Company::query()->latest()->pluck('name', 'id'))
+                    ->searchable()
+                    ->reactive()
+                    ->afterStateUpdated(fn() => $this->loadData()),
+
+                DateRangePicker::make('date_range')
+                    ->label('الفترة الزمنية')
+                    ->disableClear(false)
+                    ->reactive()
+                    ->afterStateUpdated(function ($state) {
+                        $this->date_range = $state;
+                        $this->loadData();
+                    }),
+            ]),
+
         ];
     }
 
     public function mount(): void
     {
-
-
         if ($this->companyId) {
             $this->_company = Company::findOrFail($this->companyId);
             $this->loadData();
@@ -80,15 +77,17 @@ class CompanyLedgerReport extends Page implements HasForms
     {
         [$start, $end] = parseDateRange($this->date_range);
 
+        //dd($start, $end);
+        //$this->date_range = $start . '-' . $end;
         // 1. جلب الشاحنات المرتبطة بالشركة (كشركة أو كمقاول)
         $trucks = Truck::with(['cargos.product'])
             ->where(function ($q) {
                 $q->where('company_id', $this->companyId)
                     ->orWhere('contractor_id', $this->companyId);
             })
-            /* ->when($start && $end, function ($q) use ($start, $end) {
-                $q->whereBetween('pack_date', [$start, $end]);
-            }) */
+            ->when($start && $end, function ($q) use ($start, $end) {
+                $q->whereBetween('created_at', [$start, $end]);
+            })
             // ->whereBetween('pack_date', [$start, $end])
             ->orderBy('pack_date')
             ->get();

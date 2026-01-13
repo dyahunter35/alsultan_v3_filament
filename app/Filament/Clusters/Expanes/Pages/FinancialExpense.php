@@ -48,7 +48,7 @@ class FinancialExpense extends Page implements HasActions, HasTable
 
     public static function getLocalePath(): string
     {
-        return 'expense.'.static::className();
+        return 'expense.' . static::className();
     }
 
     public function table(Table $table): Table
@@ -59,7 +59,7 @@ class FinancialExpense extends Page implements HasActions, HasTable
         return $table
             ->query(Expense::types(ExpenseGroup::CURRENCY->value))
             ->defaultSort('id', 'desc')
-            ->modelLabel(__('expense.'.static::className().'.navigation.model_label'))
+            ->modelLabel(__('expense.' . static::className() . '.navigation.model_label'))
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->sortable(),
@@ -70,7 +70,7 @@ class FinancialExpense extends Page implements HasActions, HasTable
 
                 Tables\Columns\TextColumn::make('type.label')
                     ->formatStateUsing(
-                        fn ($state, $record) => $record->expense_type_id
+                        fn($state, $record) => $record->expense_type_id
                             ? $record->type->label
                             : $record->custom_expense_type
                     )
@@ -116,15 +116,15 @@ class FinancialExpense extends Page implements HasActions, HasTable
                 DeleteAction::make()
                     ->requiresConfirmation(),
                 RestoreAction::make()
-                    ->visible(fn ($record) => $record->deleted_at),
+                    ->visible(fn($record) => $record->deleted_at),
                 ForceDeleteAction::make()
-                    ->visible(fn ($record) => $record->deleted_at),
+                    ->visible(fn($record) => $record->deleted_at),
             ])
             ->toolbarActions([
                 CreateAction::make()
                     ->schema($this->expenseForm())
                     ->preserveFormDataWhenCreatingAnother(
-                        fn (array $data): array => another_expense($data)
+                        fn(array $data): array => another_expense($data)
                     ),
             ]);
     }
@@ -139,7 +139,6 @@ class FinancialExpense extends Page implements HasActions, HasTable
                 ->schema([
 
                     Section::make()->schema([
-                        // 1. القيمة المخفية لنوع المصروف (Fixed for this page)
                         Forms\Components\Select::make('expense_type_id')
                             ->options($type->pluck('label', 'id'))
                             ->required()
@@ -157,10 +156,10 @@ class FinancialExpense extends Page implements HasActions, HasTable
                             ->nullable(),
 
                         MorphSelect::make('beneficiary_select')
-                            ->label(__(self::getLocalePath().'.fields.beneficiary.label'))
+                            ->label(__(self::getLocalePath() . '.fields.beneficiary.label'))
                             ->models([
                                 'user' => \App\Models\User::class,
-                                'customer' => fn () => \App\Models\Customer::per(ExpenseGroup::CURRENCY->value)->get(),
+                                'customer' => fn() => \App\Models\Customer::per(ExpenseGroup::CURRENCY->value)->get(),
                             ])
                             ->preload()
                             ->required(),

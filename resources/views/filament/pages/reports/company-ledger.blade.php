@@ -1,8 +1,19 @@
 <x-filament-panels::page>
     {{-- 1. الفلترة - تختفي عند الطباعة --}}
-    <div class="mb-6 no-print">
-        {{ $this->form }}
-    </div>
+    <x-filament::section class="mb-4 shadow-sm no-print border-slate-200">
+        <div class="flex flex-col gap-4 md:flex-row md:items-end">
+            <div class="flex-1">
+                {{-- فورم الفلترة الخاص بـ Filament --}}
+                {{ $this->form }}
+            </div>
+
+            <div class="flex items-center gap-2">
+                <x-filament::button contextmenu="g" wire:click="loadData" color="gray" icon="heroicon-m-arrow-path">
+                    تحديث
+                </x-filament::button>
+            </div>
+        </div>
+    </x-filament::section>
 
     @if ($companyId)
         <div id='report-content' class="print:m-0 print:p-0">
