@@ -71,29 +71,9 @@ class OrdersReport extends Page implements Forms\Contracts\HasForms
         $this->loadData();
     }
 
-    protected function parseDateRange(): array
-    {
-        if (! $this->date_range) {
-            return [now()->startOfDay(), now()->endOfDay()];
-        }
-
-        $dates = explode(' - ', $this->date_range);
-        if (count($dates) !== 2) {
-            return [now()->startOfDay(), now()->endOfDay()];
-        }
-
-        try {
-            $from = Carbon::createFromFormat('d/m/Y', trim($dates[0]))->startOfDay();
-            $to = Carbon::createFromFormat('d/m/Y', trim($dates[1]))->endOfDay();
-            return [$from, $to];
-        } catch (\Exception $e) {
-            return [now()->startOfDay(), now()->endOfDay()];
-        }
-    }
-
     public function loadData(): void
     {
-        [$from, $to] = $this->parseDateRange();
+        [$from, $to] = parseDateRange($this->date_range);
 
         $query = Order::with(['items.product', 'branch']) // تم إضافة الـ branch للـ Eager Loading
             ->whereBetween('created_at', [$from, $to])

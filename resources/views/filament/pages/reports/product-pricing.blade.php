@@ -173,13 +173,15 @@
                                             {{ number_format($data['totals']['base_foreign'], 2) }}</td>
                                         <td class="p-1 border border-gray-400">
                                             {{ number_format($data['totals']['transport'], 2) }}</td>
+
                                         <td class="p-1 border border-gray-400">
                                             {{ number_format($data['totals']['customs'], 2) }}</td>
                                         <td class="p-1 text-black bg-yellow-500 border border-gray-400">
                                             {{ number_format($data['totals']['total_cost'], 2) }}</td>
-                                        <td class="p-1 border border-gray-400 no-print"></td>
+                                        <td class="p-1 border border-gray-400"></td>
                                         <td class="p-1 border border-gray-400">
                                             {{ number_format($data['totals']['profit'], 2) }}</td>
+
                                         <td class="p-1 bg-green-700 border border-gray-400">
                                             {{ number_format($data['totals']['selling_foreign'], 2) }}</td>
                                         <td colspan="4" class="p-1 border border-gray-400 bg-slate-700"></td>
