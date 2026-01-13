@@ -51,10 +51,10 @@ trait HasReport
 
     // --- الدوال الخاصة بالتنقل والعناوين ---
 
-    public static function getNavigationSort(): ?int
+    /* public static function getNavigationSort(): ?int
     {
         return data_get(static::getReportData(), 'sort');
-    }
+    } */
 
     public static function getNavigationGroup(): string|UnitEnum|null
     {

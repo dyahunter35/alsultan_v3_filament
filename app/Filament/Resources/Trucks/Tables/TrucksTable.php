@@ -5,7 +5,7 @@ namespace App\Filament\Resources\Trucks\Tables;
 use App\Enums\Country;
 use App\Enums\StockCase;
 use App\Enums\TruckState;
-use App\Enums\TruckType;
+use App\Filament\Pages\Reports\ProductPricing;
 use App\Filament\Pages\Reports\TruckReport;
 use App\Models\Branch;
 use App\Models\Product;
@@ -32,7 +32,7 @@ class TrucksTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->query(Truck::where('type', TruckType::Outer))
+            ->query(Truck::out())
             ->columns([
 
                 Tables\Columns\TextColumn::make('id')
@@ -115,12 +115,21 @@ class TrucksTable
             ->recordActions([
 
                 Actions\ActionGroup::make([
+                    Actions\ActionGroup::make([
 
-                    Actions\Action::make('report')
-                        ->label(__('truck.actions.report.label'))
-                        ->icon(__('truck.actions.report.icon'))
-                        ->action(fn (Truck $record) => redirect(TruckReport::getUrl(['truckId' => $record->id]))),
+                        Actions\Action::make('report')
+                            ->label(__('truck.actions.report.label'))
+                            ->icon(__('truck.actions.report.icon'))
+                            ->action(fn (Truck $record) => redirect(TruckReport::getUrl(['truckId' => $record->id]))),
 
+                        Actions\Action::make('product_price_report')
+                            ->label(__('truck.actions.product_price_report.label'))
+                            ->icon(__('truck.actions.product_price_report.icon'))
+                            ->action(fn (Truck $record) => redirect(ProductPricing::getUrl(['truck' => $record->id]))),
+
+                    ])
+                        ->label(__('truck.actions.reports.label'))
+                       ,
                     Actions\Action::make('reload_cargo')
                         ->requiresConfirmation()
                         ->modalDescription(__('truck.actions.reload_cargo.message'))

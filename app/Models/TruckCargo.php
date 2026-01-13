@@ -38,10 +38,10 @@ class TruckCargo extends Model
     protected function tonPrice(): Attribute
     {
         return Attribute::make(
-            get: fn (mixed $value, array $attributes) => $value ?: ($attributes['unit_price'] / ($attributes['weight'] ?? 0)*1000000),
+            get: fn (mixed $value, array $attributes) => $value ?: ($attributes['unit_price'] / ($attributes['weight'] ?? 1) * 1000000),
 
             // في الـ set، نرجع القيمة مباشرة، وLaravel سيهتم بإسنادها لـ ton_price
-            set: fn (mixed $value, array $attributes) => $value ?: ($attributes['unit_price'] / ($attributes['weight'] ?? 0)*1000000),
+            set: fn (mixed $value, array $attributes) => $value ?: ($attributes['unit_price'] / ($attributes['weight'] ?? 1) * 1000000),
         );
     }
 

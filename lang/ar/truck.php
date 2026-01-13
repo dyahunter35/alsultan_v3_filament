@@ -29,8 +29,8 @@ return [
             'label' => 'معرف الحمولة',
             'placeholder' => 'ادخل معرف الحمولة',
         ],
-        'code'=>[
-            'label'=> 'رقم الشحنة',
+        'code' => [
+            'label' => 'رقم الشحنة',
         ],
         'driver_name' => [
             'label' => 'اسم السائق',
@@ -188,6 +188,15 @@ return [
         'report' => [
             'label' => 'تقرير الشاحنة',
             'icon' => 'heroicon-m-document-text',
+        ],
+
+        'reports' => [
+            'label' => 'التقارير',
+            'icon' => 'heroicon-m-document-text',
+        ],
+        'product_price_report' => [
+            'label' => 'تقرير تسعير المنتجات',
+            'icon' => 'heroicon-o-currency-dollar',
         ],
     ],
 ];

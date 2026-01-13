@@ -12,29 +12,13 @@
         {{-- المعادل العام --}}
 
         <div id='report-content'>
+            @php
+                $label = ($truck_id)? "تقرير الشحنة رقم :". ($reports[0]['truck']?->id ?? '-'): "اسم الشركة: ".( $_company?->name ?? '-');
+            @endphp
             <x-filament::section class="mb-4">
-                <header class="clearfix">
-                    <div id="logo" style="text-align:center; margin-top:10px;">
-                        <img width="80" src="{{ asset('asset/logo.png') }}" alt="logo" class="mx-auto" />
-                        <h2 class="text-bold">{{ __('app.name') }}</h2>
-                        <h3>{{ __('app.address') }}</h3>
-                    </div>
-
-                    <div class="border row" style="border:1px dashed #999; padding:6px;">
-                        <div style="display:flex; justify-content:space-between;">
-                            <div>
-                                @if ($truck_id)
-                                    <div>📍 <b>تقرير الشحنة رقم :</b> {{ $reports[0]['truck']?->id ?? '-' }}</div>
-                                @else
-                                    <div>📍 <b>اسم الشركة:</b> {{ $_company?->name ?? '-' }}</div>
-                                @endif
-                            </div>
-                            <div style="text-align:left;">
-                                <div><b>تاريخ التقرير:</b> {{ now()->format('Y/m/d') }}</div>
-                            </div>
-                        </div>
-                    </div>
-                </header>
+                <x-report-header 
+                :label="$label"
+                />
 
                 <dl class="grid grid-cols-3 gap-4 my-2 text-center text-l md:grid-cols-3">
                     <div>
@@ -56,19 +40,21 @@
             </x-filament::section>
 
             @foreach ($reports as $data)
-                <div class="p-6 mb-10 bg-white border border-gray-200 rounded-lg shadow-md" dir="rtl">
+             <div class="mb-3 p-0">
+            
+                <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-md" dir="rtl">
 
                     {{-- هيدر الشاحنة --}}
                     <div class="flex items-center justify-between pb-4 mb-6 border-b-2 border-gray-100">
                         <div>
-                            <h2 class="text-xl font-black text-gray-800 decoration-blue-500">
-                                @if ($truck_id)
-                                    الشركة {{ $_company->name ?? '' }}
+                            <h2 class="flex gap-3 my-3 text-l font-black text-gray-800 decoration-blue-500">
+                            @if ($truck_id)
+                            <x-filament::icon icon="heroicon-m-building-office-2"/>   الشركة {{ $data['truck']->companyId?->name ?? '' }}
                                 @else
-                                    بيان الشحنة رقم {{ $data['truck']->id }}
+                                <x-filament::icon icon="heroicon-m-truck"/>   بيان الشحنة رقم {{ $data['truck']->id }}
                                 @endif
                             </h2>
-
+                            
 
                             <p class="mt-1 font-bold text-gray-600"> رقم
                                 اللوحة:
@@ -77,17 +63,7 @@
                                 :
                                 {{ $data['truck']->created_at->format('Y-m-d') }}</p>
                         </div>
-                        {{-- <div class="grid grid-cols-2 gap-4 text-xs">
-                        <div class="p-2 border rounded bg-gray-50">
-                            <span class="block text-gray-500">جمارك (سوداني)</span>
-                            <span
-                                class="font-bold">{{ number_format($data['truck']->expenses->sum('total_amount'), 2) }}</span>
-                        </div>
-                        <div class="p-2 border rounded bg-gray-50">
-                            <span class="block text-gray-500">ترحيل (مصري)</span>
-                            <span class="font-bold">{{ number_format($data['truck']->truck_fare_sum, 2) }}</span>
-                        </div>
-                    </div> --}}
+                        
                     </div>
 
                     {{-- الجدول --}}
@@ -247,8 +223,9 @@
                         </table>
                     </div>
 
-                    <div class="overflow-x-auto">
-                        <h2 class=" mt-3 text-l font-black text-gray-800 decoration-blue-500">المنصرفات <span  class="text-l font-black">({{ $data['truck']->category?->name }})</span></h2>
+                    <div class="overflow-x-auto mt-3">
+                        <h2 class="flex gap-3 my-3 text-l font-black text-gray-800 decoration-blue-500"><x-filament::icon icon="heroicon-m-credit-card"/> المنصرفات <span  class="text-l font-black">({{ $data['truck']->category?->name }})</span> </h2>
+
                         <table class="w-full text-[11px] text-center border-collapse border border-gray-400 mt-2">
                             <table class="w-full text-sm border">
                                 <thead class="bg-gray-100">
@@ -282,48 +259,42 @@
                                     </tr>
                                 </tbody>
                             </table>
-                    </div>
+                    </div>   
 
-                    
+                    <div class="overflow-x-auto mt-3">
+                         
+                        <h2 class="flex gap-3 my-3 text-l font-black text-gray-800 decoration-blue-500"><x-filament::icon icon="heroicon-m-truck"/> حسابات الطريق </h2>
+                        <table class="w-full text-[11px] text-center border-collapse border border-gray-400 mt-2">
+                            <table class="w-full text-sm border font-black">
+                                <thead class="bg-gray-100">
+                                    <tr class="font-bold text-white bg-gray-800">
+                                        <th class="p-1 border border-gray-400">#</th>
+                                        <th class="p-1 border border-gray-400">المبلغ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                        <tr class="border-b border-gray-400 hover:bg-gray-50">
+                                            <td class="p-2 border  ">النولون</td>
+                                            <td class="p-2 border">{{ number_format( $data['truck']->truck_fare??0, 2) }}</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-400 hover:bg-gray-50">
+                                            <td class="p-2 border  ">العطلات</td>
+                                            <td class="p-2 border">{{ number_format( $data['truck']->delay_value??0, 2) }}</td>
+                                        </tr>
+                                    
+                                    <tr class="font-bold text-white uppercase bg-gray-800">
+                                        <td colspan="1" class="p-2 text-right border">الإجمالي</td>
+                                        <td class="p-2 border" colspan="2">
+                                            {{ number_format($data['truck']?->truck_fare_sum, 2) }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                    </div>  
                 </div>
+    
+            </div>
 
-                <x-filament::section class="mt-6">
-                    <x-slot name="heading">📊 حسابات الترحيل </x-slot>
-                    @php
-                        $_truck = $data['truck'];
-                        $fare = $_truck->truck_fare ?? 0;
-                        $delay = $_truck->delay_value ?? 0;
-                        // $netFare = $fare - ($delay + $expenses);
-                        
-                    @endphp
-                    <table class="w-full text-sm border border-gray-200">
-                        <tbody>
-    
-                            <tr>
-                                <td class="p-2 font-semibold text-gray-700 border">النولون</td>
-                                <td colspan="2" class="p-2 border">{{ number_format($fare, 2) }}</td>
-                            </tr>
-                            <tr>
-                                <td class="p-2 font-semibold text-gray-700 border">تكلفة العطلات</td>
-                                <td colspan="2" class="p-2 border">{{ number_format($delay, 2) }}</td>
-                            </tr>
-                            <tr>
-                                <td class="p-2 font-semibold text-gray-700 border">تكلفة الترحيل الكليه </td>
-                                <td colspan="2" class="p-2 border">{{ number_format($_truck->truck_fare_sum, 2) }}</td>
-                            </tr>
-                            
-                            {{-- <tr>
-                                <td class="p-2 font-semibold text-gray-700 border">صافي النولون بعد الخصم</td>
-                                <td class="p-2 text-green-700 border">{{ number_format($netFare, 2) }}</td>
-                            </tr> --}}
-                            
-    
-    
-                        </tbody>
-                    </table>
-    
-                </x-filament::section>
-    
             @endforeach
         </div>
        

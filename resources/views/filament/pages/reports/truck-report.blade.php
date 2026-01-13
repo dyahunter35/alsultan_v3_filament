@@ -18,7 +18,7 @@
                     <div class="border row" style="border:1px dashed #999; padding:6px;">
                         <div style="display:flex; justify-content:space-between;">
                             <div>
-                                <div>📍 <b>اسم السائق:</b> {{ $truck?->driver_name ?? '-' }}</div>
+                                <div>📍 <b>رقم الشحنة:</b> {{ $truck?->id ?? '-' }}</div>
                             </div>
                             <div style="text-align:left;">
                                 <div><b>تاريخ التقرير:</b> {{ now()->format('Y/m/d') }}</div>
@@ -111,7 +111,7 @@
 
             {{-- المنصرفات --}}
             <x-filament::section>
-                <x-slot name="heading">المنصرفات ({{-- #TODO : add categor --}})</x-slot>
+                <x-slot name="heading">المنصرفات ( {{ $truck?->category?->name}} )</x-slot>
                 <table class="w-full text-sm border">
                     <thead class="bg-gray-100">
                         <tr>

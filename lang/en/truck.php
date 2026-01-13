@@ -31,8 +31,8 @@ return [
             'label' => 'Cargo ID',
             'placeholder' => 'Enter cargo ID',
         ],
-        'code'=>[
-            'label'=> 'Truck Code',
+        'code' => [
+            'label' => 'Truck Code',
         ],
         'driver_name' => [
             'label' => 'Driver Name',
@@ -171,6 +171,14 @@ return [
         'report' => [
             'label' => 'Report',
             'icon' => 'heroicon-m-document-text',
+        ],
+        'reports' => [
+            'label' => 'Reports',
+            'icon' => 'heroicon-m-document-text',
+        ],
+        'product_price_report' => [
+            'label' => 'Product Price Report',
+            'icon' => 'heroicon-o-currency-dollar',
         ],
     ],
 ];
