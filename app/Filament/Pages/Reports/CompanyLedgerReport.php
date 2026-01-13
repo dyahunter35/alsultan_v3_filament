@@ -30,12 +30,6 @@ class CompanyLedgerReport extends Page implements HasForms
     public ?Company $_company = null;
 
     #[Url()]
-    public $startDate;
-
-    #[Url()]
-    public $endDate;
-
-    #[Url()]
     public $date_range;
     // البيانات للمعالجة
     public $groups = [];
@@ -74,9 +68,7 @@ class CompanyLedgerReport extends Page implements HasForms
 
     public function mount(): void
     {
-        $this->companyId = request()->query('companyId');
-        $this->startDate = request()->query('startDate');
-        $this->endDate = request()->query('endDate');
+
 
         if ($this->companyId) {
             $this->_company = Company::findOrFail($this->companyId);
@@ -94,9 +86,9 @@ class CompanyLedgerReport extends Page implements HasForms
                 $q->where('company_id', $this->companyId)
                     ->orWhere('contractor_id', $this->companyId);
             })
-            ->when($start && $end, function ($q) use ($start, $end) {
+            /* ->when($start && $end, function ($q) use ($start, $end) {
                 $q->whereBetween('pack_date', [$start, $end]);
-            })
+            }) */
             // ->whereBetween('pack_date', [$start, $end])
             ->orderBy('pack_date')
             ->get();
