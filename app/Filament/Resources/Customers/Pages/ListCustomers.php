@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Customers\Pages;
 
 use App\Filament\Resources\Customers\CustomerResource;
+use App\Services\CustomerService;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
@@ -21,8 +22,8 @@ class ListCustomers extends ListRecords
                 ->icon('heroicon-o-arrow-path')
                 ->color('primary')
                 ->action(function () {
-                    $servies = new \App\Services\CustomerService;
-                    $servies->updateCustomersBalance();
+
+                    app(CustomerService::class)->updateCustomersBalance();
 
                     Notification::make()
                         ->title(__('customer.notifications.refresh_success.title'))

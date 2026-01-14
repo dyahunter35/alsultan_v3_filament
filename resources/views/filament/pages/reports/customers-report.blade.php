@@ -61,6 +61,7 @@
                     <thead>
                         <tr class="font-bold text-white bg-slate-800">
                             <th class="p-3 border border-slate-700">التاريخ</th>
+                            <th class="p-3 text-right border border-slate-700">المعاملة</th>
                             <th class="p-3 text-right border border-slate-700">البيان / الوصف</th>
                             <th class="p-3 border border-slate-700 bg-green-900/50">دائن (+)</th>
                             <th class="p-3 border border-slate-700 bg-red-900/50">مدين (-)</th>
@@ -73,6 +74,47 @@
                                 <td class="p-2 border border-slate-200 text-slate-500">{{ $row['date'] }}</td>
                                 <td class="p-2 px-4 font-medium text-right border border-slate-200">
                                     {{ $row['description'] }}</td>
+                                    <td class="p-2 text-right border border-slate-200 min-w-[150px] leading-snug">
+                                    @if ($row['data'] instanceof \Illuminate\Support\Collection )
+                        
+                                <table class="w-full border-collapse text-[12px] divide-y divide-slate-200">
+                                        <tbody>
+                                            @foreach ($row['data'] as $item)
+                                                <tr class="border-b border-slate-100 last:border-0 hover:bg-white/50">
+                                                    {{-- اسم الصنف - مساحة مرنة --}}
+                                                    <td class="text-right py-1.5 pr-1 font-bold text-slate-700  w-24">
+                                                        {{ $item->product?->name }}
+                                                    </td>
+
+                                                    {{-- الكمية - عرض ثابت --}}
+                                                    <td
+                                                        class="text-center py-1.5 px-2 tabular-nums w-12 border-r border-slate-50">
+                                                        <span
+                                                            class="font-black text-slate-900">{{ number_format($item->qty) }}</span>
+                                                    </td>
+
+                                                    {{-- السعر - عرض ثابت --}}
+                                                    <td
+                                                        class="text-center py-1.5 px-2 tabular-nums w-20 border-r border-slate-50">
+                                                        <span
+                                                            class="font-medium text-slate-600">{{ number_format($item->price, 1) }}</span>
+                                                    </td>
+
+                                                    {{-- الإجمالي - عرض ثابت --}}
+                                                    <td
+                                                        class="text-center py-1.5 pl-1 tabular-nums w-24 border-r border-slate-50">
+
+                                                        <span
+                                                            class="font-black text-green-700">{{ number_format($item->qty * $item->price, 1) }}</span>
+                                                    </td>
+                                                </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                                @else
+                                    {{  $row['data']}}
+                                    @endif
+                            </td>
                                 <td class="p-2 font-bold text-green-600 border border-slate-200 bg-green-50/30">
                                     {{ $row['amount_in'] > 0 ? number_format($row['amount_in'], 2) : '-' }}
                                 </td>
@@ -88,7 +130,7 @@
                     {{-- الجزء الخاص بالتذييل (Footer) في جدول كشف الحساب --}}
                     <tfoot class="font-black border-t-2 bg-slate-100 border-slate-800">
                         <tr>
-                            <td colspan="2" class="p-3 px-6 text-left">الإجمالي</td>
+                            <td colspan="3" class="p-3 px-6 text-center">الإجمالي</td>
                             <td class="p-3 text-green-700 border border-slate-300">
                                 {{ number_format($ledger->sum('amount_in'), 2) }}
                             </td>

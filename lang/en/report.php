@@ -85,4 +85,13 @@ return [
         'icon' => 'heroicon-o-currency-dollar',
         'sort' => 9,
     ],
+    'delegates_report' => [
+        'heading' => 'Delegates Report',
+        'icon' => 'heroicon-o-currency-dollar',
+
+    ],
+    'advanced_delegates_report' => [
+        'heading' => 'Customers Delegates Report',
+        'icon' => 'heroicon-o-currency-dollar',
+    ],
 ];

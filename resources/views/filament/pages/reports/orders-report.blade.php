@@ -14,11 +14,11 @@
     </x-filament::section>
 
     @if ($date_range)
-        <div class="space-y-6" id="report-content">
+        <div class="space-y-2" id="report-content">
             <x-report-header label="تقرير المبيعات التفصيلي" />
 
             {{-- العنوان الرسمي --}}
-            <div class="pb-4 text-center border-b border-slate-100">
+            <div class="text-center border-b border-slate-100">
                 <p class="text-sm text-slate-500 tabular-nums">الفترة: {{ $date_range }}</p>
             </div>
 

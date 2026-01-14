@@ -39,6 +39,9 @@ return [
             'label' => 'الأدوار',
             'placeholder' => 'اختر أدوار المستخدم',
         ],
+        'balance' => [
+            'label' => 'الرصيد',
+        ],
         'branch' => [
             'label' => 'الفرع',
             'placeholder' => 'اختر الفرع',

@@ -35,6 +35,7 @@ class User extends Authenticatable implements HasTenants
      */
     protected $fillable = [
         'name',
+        'balance',
         'email',
         'password',
     ];
@@ -70,14 +71,19 @@ class User extends Authenticatable implements HasTenants
         return User::role('sales')->pluck('name', 'id');
     }
 
+    public function scopeValut($query)
+    {
+        return $query->where('is_valut', true);
+    }
+
     protected function name(): Attribute
     {
         return Attribute::make(
             // Accessor (للعرض في كل مكان):
-            get: fn (string $value) => $this->hasRole('sales') ? $value.' (مندوب)' : $value,
+            get: fn(string $value) => $this->hasRole('sales') ? $value . ' (مندوب)' : $value,
 
             // Mutator (للتنظيف عند الحفظ):
-            set: fn (string $value) => str_replace(' (مندوب)', '', $value),
+            set: fn(string $value) => str_replace(' (مندوب)', '', $value),
         );
     }
 
@@ -113,4 +119,14 @@ class User extends Authenticatable implements HasTenants
     {
         return $this->hasMany(Expense::class, 'created_by');
     }
+
+    /* public function orderAsRepresentative()
+    {
+        return $this->hasMany(Order::class, 'representative_id');
+    }
+
+    public function supplyingsAsRepresentative()
+    {
+        return $this->hasMany(Supplying::class, 'representative_id');
+    } */
 }

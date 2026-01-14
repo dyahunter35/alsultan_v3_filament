@@ -63,138 +63,141 @@ class UserResource extends Resource
     {
         return $schema
             ->components([
-                Section::make(__('user.sections.general'))
-                    ->schema([
-                        TextInput::make('name')
-                            ->label(__('user.fields.name.label'))
-                            ->placeholder(__('user.fields.name.placeholder'))
-                            ->required()
-                            ->afterStateUpdated(fn (?Model $record) => $record)
+                    Section::make(__('user.sections.general'))
+                        ->schema([
+                                TextInput::make('name')
+                                    ->label(__('user.fields.name.label'))
+                                    ->placeholder(__('user.fields.name.placeholder'))
+                                    ->required()
+                                    ->afterStateUpdated(fn(?Model $record) => $record)
 
-                            ->maxLength(255),
-                        TextInput::make('email')
-                            ->label(__('user.fields.email.label'))
-                            ->placeholder(__('user.fields.email.placeholder'))
-                            ->email()
-                            ->required()
-                            ->maxLength(255),
+                                    ->maxLength(255),
+                                TextInput::make('email')
+                                    ->label(__('user.fields.email.label'))
+                                    ->placeholder(__('user.fields.email.placeholder'))
+                                    ->email()
+                                    ->required()
+                                    ->maxLength(255),
 
-                        TextInput::make('password')
-                            ->label('كلمة السر')
-                            ->placeholder('أدخل كلمة السر الجديدة')
-                            ->password()                          // يخفي النص المدخل
-                            ->required(fn ($record) => ! $record)
-                            ->revealable()                        // زر لإظهار/إخفاء كلمة السر
-                            ->rule(
-                                Password::default()          // الحد الأدنى للطول
-                                // ->mixedCase()         // يجب أن تحتوي على حروف كبيرة وصغيرة
-                                // ->letters()           // يجب أن تحتوي على حروف
-                                // ->numbers()           // يجب أن تحتوي على أرقام
-                                // ->symbols()           // يجب أن تحتوي على رموز
-                                // ->uncompromised()     // تتحقق من عدم تسريبها في خروقات
-                            )->dehydrated(fn ($state) => filled($state))  // حفظ فقط إذا تم تعبئتها
-                            ->dehydrateStateUsing(fn ($state) => Hash::make($state)), // تشفير قبل الحفظ
-                        // ->helperText('يجب أن تحتوي كلمة السر على 8 أحرف على الأقل، أحرف كبيرة وصغيرة، أرقام ورموز.')
+                                TextInput::make('password')
+                                    ->label('كلمة السر')
+                                    ->placeholder('أدخل كلمة السر الجديدة')
+                                    ->password()                          // يخفي النص المدخل
+                                    ->required(fn($record) => !$record)
+                                    ->revealable()                        // زر لإظهار/إخفاء كلمة السر
+                                    ->rule(
+                                        Password::default()          // الحد الأدنى للطول
+                                        // ->mixedCase()         // يجب أن تحتوي على حروف كبيرة وصغيرة
+                                        // ->letters()           // يجب أن تحتوي على حروف
+                                        // ->numbers()           // يجب أن تحتوي على أرقام
+                                        // ->symbols()           // يجب أن تحتوي على رموز
+                                        // ->uncompromised()     // تتحقق من عدم تسريبها في خروقات
+                                    )->dehydrated(fn($state) => filled($state))  // حفظ فقط إذا تم تعبئتها
+                                    ->dehydrateStateUsing(fn($state) => Hash::make($state)), // تشفير قبل الحفظ
+                                // ->helperText('يجب أن تحتوي كلمة السر على 8 أحرف على الأقل، أحرف كبيرة وصغيرة، أرقام ورموز.')
 
-                    ])->columnSpan(2)
-                    ->columns(2),
-                Section::make(__('user.sections.roles'))
-                    ->schema([
+                            ])->columnSpan(2)
+                        ->columns(2),
+                    Section::make(__('user.sections.roles'))
+                        ->schema([
 
-                        Select::make('roles')
-                            ->label(__('user.fields.roles.label'))
-                            ->placeholder(__('user.fields.roles.placeholder'))
-                            ->relationship('roles', 'name')
-                            ->saveRelationshipsUsing(function (Model $record, $state) {
-                                $record->roles()->sync($state);
-                            })
-                            ->visible(fn () => auth()->user()->hasRole('super_admin'))
-                            ->multiple()
-                            ->preload()
-                            ->searchable(),
+                                Select::make('roles')
+                                    ->label(__('user.fields.roles.label'))
+                                    ->placeholder(__('user.fields.roles.placeholder'))
+                                    ->relationship('roles', 'name')
+                                    ->saveRelationshipsUsing(function (Model $record, $state) {
+                                        $record->roles()->sync($state);
+                                    })
+                                    ->visible(fn() => auth()->user()->hasRole('super_admin'))
+                                    ->multiple()
+                                    ->preload()
+                                    ->searchable(),
 
-                        Select::make('branch')
-                            ->label(__('user.fields.branch.label'))
-                            ->placeholder(__('user.fields.branch.placeholder'))
-                            ->relationship('branch', 'name')
-                            ->saveRelationshipsUsing(function (Model $record, $state) {
-                                $record->branch()->sync($state);
-                            })
-                            ->rules(['array', 'min:1'])
-                            // (اختياري ولكن موصى به) رسالة خطأ مخصصة
-                            ->multiple()
-                            ->preload()
-                            ->searchable(),
-                    ])->columnSpan(1),
-            ])->columns(3);
+                                Select::make('branch')
+                                    ->label(__('user.fields.branch.label'))
+                                    ->placeholder(__('user.fields.branch.placeholder'))
+                                    ->relationship('branch', 'name')
+                                    ->saveRelationshipsUsing(function (Model $record, $state) {
+                                        $record->branch()->sync($state);
+                                    })
+                                    ->rules(['array', 'min:1'])
+                                    // (اختياري ولكن موصى به) رسالة خطأ مخصصة
+                                    ->multiple()
+                                    ->preload()
+                                    ->searchable(),
+                            ])->columnSpan(1),
+                ])->columns(3);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('name')
-                    ->label(__('user.fields.name.label'))
-                    ->searchable(),
-                TextColumn::make('email')
-                    ->label(__('user.fields.email.label'))
-                    ->searchable(),
+                    TextColumn::make('name')
+                        ->label(__('user.fields.name.label'))
+                        ->searchable(),
+                    TextColumn::make('email')
+                        ->label(__('user.fields.email.label'))
+                        ->searchable(),
 
-                TextColumn::make('roles.name')
-                    ->label(__('user.fields.roles.label'))
-                    ->searchable()
-                    ->badge()
-                    ->sortable(),
-                TextColumn::make('branch.name')
-                    ->label(__('user.fields.branch.label'))
-                    ->searchable()
-                    ->badge()
-                    ->sortable(),
-                TextColumn::make('created_at')
-                    ->label(__('user.fields.created_at.label'))
+                    TextColumn::make('balance')
+                        ->label(__('user.fields.balance.label'))
+                        ->searchable(),
+                    TextColumn::make('roles.name')
+                        ->label(__('user.fields.roles.label'))
+                        ->searchable()
+                        ->badge()
+                        ->sortable(),
+                    TextColumn::make('branch.name')
+                        ->label(__('user.fields.branch.label'))
+                        ->searchable()
+                        ->badge()
+                        ->sortable(),
+                    TextColumn::make('created_at')
+                        ->label(__('user.fields.created_at.label'))
 
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->label(__('user.fields.updated_at.label'))
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
+                        ->dateTime()
+                        ->sortable()
+                        ->toggleable(isToggledHiddenByDefault: true),
+                    TextColumn::make('updated_at')
+                        ->label(__('user.fields.updated_at.label'))
+                        ->dateTime()
+                        ->sortable()
+                        ->toggleable(isToggledHiddenByDefault: true),
+                ])
             ->filters([
-                TrashedFilter::make()
-                    ->visible(auth()->user()->can('restore_user')),
-            ])
+                    TrashedFilter::make()
+                        ->visible(auth()->user()->can('restore_user')),
+                ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make()->hidden(fn (User $user) => (auth()->user()->hasRole('super_admin') || $user->id == auth()->user()->id) || $user->deleted_at),
+                    EditAction::make(),
+                    DeleteAction::make()->hidden(fn(User $user) => (auth()->user()->hasRole('super_admin') || $user->id == auth()->user()->id) || $user->deleted_at),
 
-                RestoreAction::make()
-                    ->visible(fn ($record) => $record->deleted_at),
-                ForceDeleteAction::make()
-                    ->visible(fn ($record) => $record->deleted_at),
-            ])
+                    RestoreAction::make()
+                        ->visible(fn($record) => $record->deleted_at),
+                    ForceDeleteAction::make()
+                        ->visible(fn($record) => $record->deleted_at),
+                ])
             ->toolbarActions([
-                Action::make('export_pdf')
-                    ->label('Export PDF')
-                    // ->icon('heroicon-o-pdf')
-                    ->action(function (\Filament\Tables\Contracts\HasTable $livewire) {
-                        // جلب بيانات الجدول حسب الفلترة الحالية
-                        $data = $livewire->getFilteredTableQuery()->get();
+                    Action::make('export_pdf')
+                        ->label('Export PDF')
+                        // ->icon('heroicon-o-pdf')
+                        ->action(function (\Filament\Tables\Contracts\HasTable $livewire) {
+                            // جلب بيانات الجدول حسب الفلترة الحالية
+                            $data = $livewire->getFilteredTableQuery()->get();
 
-                        $pdf = Pdf::loadView('filament.resources.user-resource.reports.users-print', compact('data'));
+                            $pdf = Pdf::loadView('filament.resources.user-resource.reports.users-print', compact('data'));
 
-                        return response()->streamDownload(
-                            fn () => print ($pdf->output()),
-                            'users.pdf'
-                        );
-                    }),
+                            return response()->streamDownload(
+                                fn() => print ($pdf->output()),
+                                'users.pdf'
+                            );
+                        }),
 
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+                    BulkActionGroup::make([
+                        DeleteBulkAction::make(),
+                    ]),
+                ]);
     }
 
     public static function getRelations(): array

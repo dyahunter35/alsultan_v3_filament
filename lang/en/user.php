@@ -46,6 +46,9 @@ return [
             'label' => 'Branch',
             'placeholder' => 'Select branch',
         ],
+        'balance' => [
+            'label' => 'Balance',
+        ],
         'created_at' => [
             'label' => 'Created at',
             'placeholder' => '',

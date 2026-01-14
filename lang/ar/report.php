@@ -79,4 +79,13 @@ return [
         'icon' => 'heroicon-o-currency-dollar',
         'sort' => 10,
     ],
+    'delegates_report' => [
+        'heading' => 'كشف حساب المناديب',
+        'icon' => 'heroicon-m-user-group',
+
+    ],
+    'advanced_delegates_report' => [
+        'heading' => ' حساب المناديب والمبيعات',
+        'icon' => 'heroicon-m-user-group',
+    ],
 ];

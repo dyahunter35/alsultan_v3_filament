@@ -3,23 +3,24 @@
 use App\Enums\TruckType;
 use App\Models\Truck;
 use App\Models\TruckCargo;
+use App\Models\User;
+use App\Services\DelegateService;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/errors/{code}', function ($code): string {
     DB::transaction(function () use ($code) {
-        if($code == 1){
+        if ($code == 1) {
 
             $trucks = Truck::out()->get();
-            
+
             // جلب الرقم مع القفل (سيتم قفل السجل الأخير حتى تنتهي الحلقة بالكامل)
             $nextNumber = Truck::getNextTruckNumberValue(TruckType::Outer);
-        }
-        else if($code == 2){
+        } else if ($code == 2) {
             $trucks = TruckCargo::local()->get();
             $nextNumber = Truck::getNextTruckNumberValue(TruckType::Local);
-        }else{
+        } else {
             return;
         }
 
@@ -27,8 +28,8 @@ Route::get('/errors/{code}', function ($code): string {
         foreach ($trucks as $truck) {
             $prefix = 'TO';
             $yearMonth = date('Ym');
-            if (! $truck->code) {
-                $truck->code = $prefix.'-'.$yearMonth.'-'.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+            if (!$truck->code) {
+                $truck->code = $prefix . '-' . $yearMonth . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
                 $truck->save();
             }
             $nextNumber++;
@@ -38,7 +39,7 @@ Route::get('/errors/{code}', function ($code): string {
     return 'done';
 });
 
-Route::get('/clear/', function () {
+Route::get('clear/', function () {
 
     Artisan::call('optimize:clear');
     Artisan::call('filament:optimize-clear');
@@ -51,7 +52,11 @@ Route::get('/artisan/{$command}', function ($command) {
 });
 
 Route::get('cargo/{truckCargo}', function (TruckCargo $truckCargo) {
-    dd($truckCargo->attributesToArray());
+    $users = User::all();
+    foreach ($users as $user) {
+        app(DelegateService::class)->calculateUserBalances($user);
+    }
+    return redirect()->back();
 });
 
-Route::get('/test', function () {});
+Route::get('/test', function () { });
