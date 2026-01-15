@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PaymentOptions;
+use App\Services\CustomerService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -13,7 +14,6 @@ class Expense extends Model
     protected $guarded = [];
 
     protected $casts = [
-        // 'expense_type' => ExpenseType::class,
         'payment_method' => PaymentOptions::class,
     ];
 
@@ -34,44 +34,22 @@ class Expense extends Model
                 $expense->created_by = auth()->id();
             }
             $expense->total_amount = $expense->amount ?? 0
-             * $expense->unit_price ?? 1;
+                * $expense->unit_price ?? 1;
             // $expense->saveQuietly();
         });
-
-        /*  static::saving(function ($expense) {
-            if ($expense->expense_type_id) {
-                $expense->custom_expense_type = null;
-            } elseif ($expense->custom_expense_type) {
-                $expense->expense_type_id = null;
-            }
-        });*/
-
         static::created(function ($expense) {
-            /* if ($expense->payer_type === 'App\Models\Customer') {
-                app('App\Services\CustomerService')->updateCustomerBalance($expense->payer_id);
-            }
-            if ($expense->beneficiary_type === 'App\Models\Customer') {
-                app('App\Services\CustomerService')->updateCustomerBalance($expense->beneficiary_id);
-            } */
+            app(CustomerService::class)->updateCustomersBalance();
 
         });
         static::updating(function ($expense) {
-            /* if ($expense->payer_type === 'App\Models\Customer') {
-                app('App\Services\CustomerService')->updateCustomerBalance($expense->payer_id);
-            }
-            if ($expense->beneficiary_type === 'App\Models\Customer') {
-                app('App\Services\CustomerService')->updateCustomerBalance($expense->beneficiary_id);
-            } */
             $expense->total_amount = $expense->amount ?? 0 * $expense->unit_price ?? 1;
-            // $expense->updateQuietly();
+        });
+        static::updated(function ($expense) {
+            app(CustomerService::class)->updateCustomersBalance();
+
         });
         static::deleted(function ($expense) {
-            /* if ($expense->payer_type === 'App\Models\Customer') {
-                app('App\Services\CustomerService')->updateCustomerBalance($expense->payer_id);
-            }
-            if ($expense->beneficiary_type === 'App\Models\Customer') {
-                app('App\Services\CustomerService')->updateCustomerBalance($expense->beneficiary_id);
-            } */
+            app(CustomerService::class)->updateCustomersBalance();
         });
     }
 

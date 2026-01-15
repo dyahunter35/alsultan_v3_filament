@@ -45,7 +45,7 @@
             
             {{-- 4. جدول الأستاذ المطور --}}
             <div class="overflow-x-auto bg-white border shadow-sm border-slate-200 rounded-xl print:border-slate-800 print:rounded-none">
-                <table class="w-full text-center border-collapse text-[11px] print:text-[10px]">
+                <table class="w-full text-center border-collapse text-[13px] print:text-[10px]">
                     <thead>
                         <tr class="font-bold text-white bg-slate-800">
                             <th class="w-24 p-2 border border-slate-700">التاريخ</th>
@@ -60,29 +60,51 @@
                     <tbody class="divide-y divide-slate-200 tabular-nums">
                         @foreach ($ledger as $row)
                             <tr class="transition-colors hover:bg-slate-50/50">
-                                <td class="p-2 border border-slate-200 text-slate-500 font-medium">{{ $row['date'] }}</td>
+                                <td class="p-2 border border-slate-200 text-slate-500 font-medium">{{ \Carbon\Carbon::parse($row['date'])?->format('Y-m-d') }}</td>
                                 <td class="p-2 border border-slate-200 font-bold text-slate-700">{{ $row['transaction_name'] }}</td>
                                 <td class="p-2 border border-slate-200 font-medium">{{ $row['customer_name'] ?? '—' }}</td>
                                 
                                 {{-- عمود التفاصيل الموزون --}}
-                                <td class="p-1 border border-slate-200 bg-slate-50/20 align-top">
+                                
+                                <td class="p-2 text-right border border-slate-200 min-w-[150px] leading-snug">
                                     @if ($row['details'] instanceof \Illuminate\Support\Collection)
-                                        <table class="w-full border-collapse text-[10px] leading-tight">
+
+                                        <table class="w-full border-collapse divide-y divide-slate-200 ">
                                             <tbody>
                                                 @foreach ($row['details'] as $item)
-                                                    <tr class="border-b border-slate-100 last:border-0">
-                                                        <td class="text-right py-1 font-bold text-slate-700">{{ $item->product?->name }}</td>
-                                                        <td class="text-center w-8 font-black text-slate-900">x{{ (int)$item->qty }}</td>
-                                                        <td class="text-center w-12 text-slate-500">{{ number_format($item->price, 1) }}</td>
-                                                        <td class="text-left w-16 font-black text-green-700">{{ number_format($item->qty * $item->price, 1) }}</td>
+                                                    <tr class="border-b border-slate-100 last:border-0 hover:bg-white/50">
+                                                        {{-- اسم الصنف - مساحة مرنة --}}
+                                                        <td class="text-right py-1.5 pr-1 font-bold text-slate-700  w-24">
+                                                            {{ $item->product?->name }}
+                                                        </td>
+
+                                                        {{-- الكمية - عرض ثابت --}}
+                                                        <td class="text-center py-1.5 px-2 tabular-nums w-12 border-r border-slate-50">
+                                                            <span
+                                                                class="font-black text-slate-900">{{ number_format($item->qty) }}</span>
+                                                        </td>
+
+                                                        {{-- السعر - عرض ثابت --}}
+                                                        <td class="text-center py-1.5 px-2 tabular-nums w-20 border-r border-slate-50">
+                                                            <span
+                                                                class="font-medium text-slate-600">{{ number_format($item->price, 1) }}</span>
+                                                        </td>
+
+                                                        {{-- الإجمالي - عرض ثابت --}}
+                                                        <td class="text-center py-1.5 pl-1 tabular-nums w-24 border-r border-slate-50">
+
+                                                            <span
+                                                                class="font-black text-green-700">{{ number_format($item->qty * $item->price, 1) }}</span>
+                                                        </td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
                                         </table>
                                     @else
-                                        <span class="px-2 text-slate-600 italic">{{ $row['details'] }}</span>
+                                        {{  $row['details']}}
                                     @endif
                                 </td>
+
 
                                 <td class="p-2 font-bold text-green-700 border border-slate-200 bg-green-50/10">
                                     {{ $row['amount_in'] > 0 ? number_format($row['amount_in'], 2) : '—' }}
@@ -95,15 +117,13 @@
                                 </td>
                             </tr>
                         @endforeach
-                    </tbody>
-                    <tfoot class="font-black border-t-2 bg-slate-800 text-white border-slate-900">
-                        <tr>
+                        <tr class="font-black border-t-2 bg-slate-800 text-white border-slate-900">
                             <td colspan="4" class="p-2 px-6 text-left text-sm uppercase">إجمالي الحركة</td>
                             <td class="p-2 border border-slate-700 bg-green-700/50">{{ number_format($ledger->sum('amount_in'), 2) }}</td>
                             <td class="p-2 border border-slate-700 bg-red-700/50">{{ number_format($ledger->sum('amount_out'), 2) }}</td>
                             <td class="p-2 text-sm border border-slate-700 bg-slate-900">{{ number_format($ledger->last()['balance'] ?? 0, 2) }}</td>
                         </tr>
-                    </tfoot>
+                    </tbody>
                 </table>
             </div>
 

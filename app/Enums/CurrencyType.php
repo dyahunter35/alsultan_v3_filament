@@ -11,13 +11,13 @@ enum CurrencyType: string implements HasColor, HasIcon, HasLabel
 {
     use EnumsKeys;
 
-    case SEND = 'send';
     case Convert = 'convert';
     case CompanyExpense = 'company';
+    case SEND = 'send';
 
     public function getLabel(): ?string
     {
-        return __('enums.currency_type.'.$this->value);
+        return __('enums.currency_type.' . $this->value);
     }
 
     public function getIcon(): ?string

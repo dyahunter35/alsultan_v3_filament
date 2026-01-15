@@ -32,33 +32,21 @@ class CurrencyTransaction extends Model
 
     protected static function booted(): void
     {
-        static::saved(function (self $tx) {
+        static::created(function (self $tx) {
             \App\Models\CurrencyBalance::refreshBalances([
                 [$tx->payer_type, $tx->payer_id],
                 [$tx->party_type, $tx->party_id],
             ]);
+            app(CustomerService::class)->updateCustomersBalance();
 
-            // \App\Models\Customer::
-        });
-        static::creating(function (self $tx) {
-
-            /* $tx->total = $tx->rate ?? 1 * $tx->amount ?? 1;
-            $tx->saveQuietly(); */
-            // \App\Models\Customer::
-        });
-
-        static::updating(function (self $tx) {
 
             // \App\Models\Customer::
         });
 
         static::updated(function (self $tx) {
             \App\Models\CurrencyBalance::refreshBalances();
-            /*  $tx->updateQuietly(
-                 [
-                     'total' => $tx->rate ?? 1 * $tx->amount ?? 1,
-                 ]
-             ); */
+            app(CustomerService::class)->updateCustomersBalance();
+
         });
 
         static::deleted(function (self $tx) {
@@ -66,6 +54,8 @@ class CurrencyTransaction extends Model
                 [$tx->payer_type, $tx->payer_id],
                 [$tx->party_type, $tx->party_id],
             ]);
+            app(CustomerService::class)->updateCustomersBalance();
+
         });
     }
 

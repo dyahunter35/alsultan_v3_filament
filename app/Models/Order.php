@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\GuestCustomer;
 use App\Enums\OrderStatus;
+use App\Services\CustomerService;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -42,6 +43,29 @@ class Order extends Model
         'status' => OrderStatus::class,
         'guest_customer' => GuestCustomer::class,
     ];
+
+    protected static function booted(): void
+    {
+        static::created(function (self $o) {
+
+            if (!$o->is_guest)
+                app(CustomerService::class)->updateCustomerBalance(Customer::find($o->customer_id));
+
+        });
+
+        static::updated(function (self $o) {
+            if (!$o->is_guest)
+                app(CustomerService::class)->updateCustomerBalance(Customer::find($o->customer_id));
+
+        });
+
+        static::deleted(function (self $o) {
+
+            if (!$o->is_guest)
+                app(CustomerService::class)->updateCustomerBalance(Customer::find($o->customer_id));
+
+        });
+    }
 
     public function branch(): BelongsTo
     {

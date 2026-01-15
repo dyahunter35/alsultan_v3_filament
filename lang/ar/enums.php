@@ -64,8 +64,8 @@ return [
 
     'currency_type' => [
         'send' => 'ارسال الي',
-        'convert' => 'تحويل عملة داخلي',
-        'company' => 'منصرف شركة',
+        'convert' => 'شراء عمله',
+        'company' => 'دفع عمله',
     ],
 
     'expense_group' => [

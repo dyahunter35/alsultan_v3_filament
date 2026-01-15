@@ -88,4 +88,8 @@ return [
         'heading' => ' حساب المناديب والمبيعات',
         'icon' => 'heroicon-m-user-group',
     ],
+    'supply_report' => [
+        'heading' => 'تقرير التوريدات',
+        'icon' => 'heroicon-o-currency-dollar',
+    ],
 ];

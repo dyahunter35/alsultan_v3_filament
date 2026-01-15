@@ -94,4 +94,8 @@ return [
         'heading' => 'Customers Delegates Report',
         'icon' => 'heroicon-o-currency-dollar',
     ],
+    'supply_report' => [
+        'heading' => 'Supplying Report',
+        'icon' => 'heroicon-o-currency-dollar',
+    ],
 ];

@@ -21,58 +21,59 @@ class SupplyingForm
         return $schema
             ->columns(3)
             ->components([
-                Section::make()
-                    ->columns(2)
-                    ->columnSpan(2)
-                    ->schema([
-                        Select::make('customer_id')
-                            ->relationship('customer', 'name')
-                            ->preload()
-                            ->required()
-                            ->searchable()
-                            ->default(fn () => request()->get('customer_id', null)),
+                    Section::make()
+                        ->columns(2)
+                        ->columnSpan(2)
+                        ->schema([
+                                Select::make('customer_id')
+                                    ->relationship('customer', 'name')
+                                    ->preload()
+                                    ->required()
+                                    ->searchable()
+                                    ->default(fn() => request()->get('customer_id', null)),
 
-                        Select::make('representative_id')
-                            ->relationship('representative', 'name')
-                            ->preload()
-                            ->required()
-                            ->searchable()
-                            ->default(fn () => request()->get('rep_id', null)),
+                                Select::make('representative_id')
+                                    ->relationship('representative', 'name')
+                                    ->preload()
+                                    ->required()
+                                    ->searchable()
+                                    ->default(fn() => request()->get('rep_id', null)),
 
-                        Select::make('payment_method')
-                            ->options(PaymentOptions::class)
-                            ->default(null),
+                                Select::make('payment_method')
+                                    ->options(PaymentOptions::class)
+                                    ->default(null),
 
-                        TextInput::make('statement')
-                            ->required(),
+                                TextInput::make('statement')
+                                    ->required(),
 
-                        TextInput::make('payment_reference')
-                            ->default(null),
+                                TextInput::make('payment_reference')
+                                    ->default(null),
 
-                        DecimalInput::make('total_amount')
-                            ->required()
-                            ->million(),
+                                DecimalInput::make('total_amount')
+                                    ->required()
+                                    ->million(),
 
-                        DecimalInput::make('paid_amount')
-                            ->required(fn (?Model $record) => $record != null),
+                                DecimalInput::make('paid_amount')
+                                    ->required(fn(?Model $record) => $record != null),
 
-                    ]),
-                Section::make()
-                    ->columns(1)
-                    ->columnSpan(1)
-                    ->schema([
-                        ToggleButtons::make('is_completed')
-                            ->inline()
-                            ->boolean()
-                            ->grouped()
-                            ->default(true)
-                            ->required(),
+                            ]),
+                    Section::make()
+                        ->columns(1)
+                        ->columnSpan(1)
+                        ->schema([
+                                ToggleButtons::make('is_completed')
+                                    ->inline()
+                                    ->boolean()
+                                    ->grouped()
+                                    ->default(true)
+                                    ->required(),
 
-                        DatePicker::make('created_at')
-                            ->default(now()),
-                    ]),
-                Hidden::make('created_by')
-                    ->default(fn () => auth()->user()->id),
-            ]);
+                                DatePicker::make('created_at')
+                                    ->required()
+                                    ->default(now()),
+                            ]),
+                    Hidden::make('created_by')
+                        ->default(fn() => auth()->user()->id),
+                ]);
     }
 }

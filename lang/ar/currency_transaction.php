@@ -42,7 +42,7 @@ return [
             'placeholder' => '',
         ],
         'type' => [
-            'label' => 'النوع',
+            'label' => 'المعاملة',
             'placeholder' => '',
         ],
         'note' => [

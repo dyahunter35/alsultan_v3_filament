@@ -5,11 +5,13 @@ namespace App\Filament\Pages\Reports;
 use App\Filament\Pages\Concerns\HasReport;
 use App\Models\User;
 use App\Services\DelegateService;
+use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Schemas;
 use Filament\Pages\Page;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Url;
+use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
 
 class AdvancedDelegatesReport extends Page implements Forms\Contracts\HasForms
 {
@@ -24,8 +26,7 @@ class AdvancedDelegatesReport extends Page implements Forms\Contracts\HasForms
     protected string $view = 'filament.pages.reports.advanced-delegates-report';
 
     #[Url] public ?int $delegateId = null;
-    #[Url] public ?string $startDate = null;
-    #[Url] public ?string $endDate = null;
+    #[Url] public ?string $date_range = null;
 
     public ?User $delegate = null;
     public Collection $ledger;
@@ -33,7 +34,7 @@ class AdvancedDelegatesReport extends Page implements Forms\Contracts\HasForms
     public function mount(): void
     {
         $this->ledger = collect();
-        $this->form->fill(['delegateId' => $this->delegateId, 'startDate' => $this->startDate, 'endDate' => $this->endDate]);
+        $this->form->fill(['delegateId' => $this->delegateId, 'date_range' => $this->date_range]);
         $this->loadLedger();
     }
 
@@ -47,20 +48,27 @@ class AdvancedDelegatesReport extends Page implements Forms\Contracts\HasForms
                     ->searchable()
                     ->reactive()
                     ->afterStateUpdated(fn($state) => [$this->delegateId = $state, $this->loadLedger()]),
-                Forms\Components\DatePicker::make('startDate')
-                    ->label('من تاريخ')
-                    ->reactive()
-                    ->afterStateUpdated(fn($state) => [$this->startDate = $state, $this->loadLedger()]),
-                Forms\Components\DatePicker::make('endDate')
-                    ->label('إلى تاريخ')
-                    ->reactive()
-                    ->afterStateUpdated(fn($state) => [$this->endDate = $state, $this->loadLedger()]),
+                DateRangePicker::make('date_range')
+                    ->label('الفترة الزمنية')
+                    //->disableClear(false)
+                    ->live()
+                    ->suffixAction(
+                        Action::make('clear')
+                            ->label(__('filament-daterangepicker-filter::message.clear'))
+                            ->icon('heroicon-m-calendar-days')
+                            ->action(fn() => [$this->date_range = null, $this->loadData()])
+                    )
+                    ->afterStateUpdated(fn($state) => [$this->date_range = $state, $this->loadData()]),
+
             ]),
         ];
     }
 
     public function loadLedger(): void
     {
+        [$from, $to] = parseDateRange($this->date_range);
+
+
         if (!$this->delegateId) {
             $this->delegate = null;
             $this->ledger = collect();
@@ -73,8 +81,8 @@ class AdvancedDelegatesReport extends Page implements Forms\Contracts\HasForms
             // استدعاء الدالة الموحدة الجديدة
             $this->ledger = app(DelegateService::class)->generateUnifiedLedger(
                 $this->delegate,
-                $this->startDate,
-                $this->endDate
+                $from,
+                $to
             );
         }
     }

@@ -12,6 +12,7 @@ use App\Models\Company;
 use App\Models\CurrencyBalance;
 use App\Models\CurrencyTransaction;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -21,10 +22,14 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ViewField;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Actions;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -57,66 +62,68 @@ class CurrencyTransactionResource extends Resource
         self::translateConfigureTable();
 
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
-                TextColumn::make('created_at')
-                    ->date('d-m-Y')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: false),
-                TextColumn::make('currency.name')
-                    ->badge()
-                    ->sortable(),
+                    TextColumn::make('created_at')
+                        ->date('d-m-Y')
+                        ->sortable()
+                        ->toggleable(isToggledHiddenByDefault: false),
+                    TextColumn::make('currency.name')
+                        ->badge()
+                        ->sortable(),
 
-                TextColumn::make('payer.name')
-                    ->searchable(),
+                    TextColumn::make('payer.name')
+                        ->searchable(),
 
-                TextColumn::make('party.name')
-                    ->searchable(),
+                    TextColumn::make('party.name')
+                        ->searchable(),
 
-                TextColumn::make('amount')
-                    ->numeric()
-                    ->sortable(),
+                    TextColumn::make('amount')
+                        ->numeric()
+                        ->sortable(),
 
-                TextColumn::make('rate')
-                    ->numeric()
-                    ->sortable(),
+                    TextColumn::make('rate')
+                        ->numeric()
+                        ->sortable(),
 
-                TextColumn::make('total')
-                    ->numeric()
-                    ->sortable(),
+                    TextColumn::make('total')
+                        ->numeric()
+                        ->sortable(),
 
-                TextColumn::make('type')
-                    ->badge(),
+                    TextColumn::make('type')
+                        ->badge(),
 
-                TextColumn::make('note')
-                    ->searchable(),
+                    TextColumn::make('note')
+                        ->searchable(),
 
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('deleted_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
+                    TextColumn::make('updated_at')
+                        ->dateTime()
+                        ->sortable()
+                        ->toggleable(isToggledHiddenByDefault: true),
+                    TextColumn::make('deleted_at')
+                        ->dateTime()
+                        ->sortable()
+                        //->visible(auth()->user()->hasPermissionTo(''))
+                        ->toggleable(isToggledHiddenByDefault: true),
+                ])
             ->filters([
-                TrashedFilter::make(),
-                SelectFilter::make('type')
-                    ->options(CurrencyType::class),
-            ])
+                    TrashedFilter::make(),
+                    SelectFilter::make('type')
+                        ->options(CurrencyType::class),
+                ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
-                ForceDeleteAction::make(),
-                RestoreAction::make(),
-            ])
+                    EditAction::make(),
+                    DeleteAction::make(),
+                    ForceDeleteAction::make(),
+                    RestoreAction::make(),
+                ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                ]),
-            ]);
+                    BulkActionGroup::make([
+                        DeleteBulkAction::make(),
+                        ForceDeleteBulkAction::make(),
+                        RestoreBulkAction::make(),
+                    ]),
+                ]);
     }
 
     public static function getPages(): array
@@ -126,127 +133,179 @@ class CurrencyTransactionResource extends Resource
         ];
     }
 
-    public static function formSchema($type = CurrencyType::SEND): array
+    public static function formSchema($type = CurrencyType::Convert): array
     {
         return [
-
-            Select::make('type')
-                ->options(\App\Enums\CurrencyType::class)
-                ->default($type)
-                ->live()
+            Grid::make(2)
                 ->columnSpanFull()
-                ->afterStateUpdated(function (callable $set, $state) {
-                    $set('amount', 0);
-                    $set('rate', 0);
-                    $set('total', 0);
-                })
-                ->required(),
+                ->schema([
+                        Section::make('بيانات المستفيد')
+                            ->columns(2)
+                            ->schema([
+                                    Select::make('type')
+                                        ->options(\App\Enums\CurrencyType::class)
+                                        ->default($type)
+                                        ->live()
+                                        ->columnSpanFull()
+                                        ->afterStateUpdated(function (callable $set, $state) {
+                                            $set('amount', 0);
+                                            $set('rate', 0);
+                                            $set('total', 0);
+                                        })
+                                        ->required(),
 
-            ViewField::make('payer_currencies')
-                ->label('Currencies')
-                ->view('filament.resources.customers.forms.customer-currencies-table')
-                ->reactive()
-                ->hidden(fn (callable $get) => empty($get('payer_currencies')))
-                ->columnSpanFull(),
+                                    ViewField::make('payer_currencies')
+                                        ->label('Currencies')
+                                        ->view('filament.resources.customers.forms.customer-currencies-table')
+                                        ->reactive()
+                                        ->hidden(fn(callable $get) => empty($get('payer_currencies')))
+                                        ->columnSpanFull(),
 
-            Select::make('payer_id')
-                ->options(
-                    fn ($get) => ($get('type') != CurrencyType::CompanyExpense) ?
-                        \App\Models\Customer::select('name', 'id', 'balance')->where('permanent', ExpenseGroup::DEBTORS->value)->get()
-                            ->mapWithKeys(fn (\App\Models\Customer $customer) => [
-                                $customer->id => sprintf(
-                                    '%s (%s SDG)',
-                                    $customer->name,
-                                    number_format($customer->balance, 2)
-                                ),
-                            ]) : Company::select('name', 'id', 'type')->get()
-                            ->mapWithKeys(fn (\App\Models\Company $company) => [
-                                $company->id => sprintf(
-                                    '%s ( %s )',
-                                    $company->name,
-                                    ($company->type?->getLabel())
-                                ),
-                            ])
+                                    Select::make('payer_id')
+                                        ->options(
 
-                )
-                ->reactive()
-                ->afterStateUpdated(function (callable $set, $state) {
-                    $currencies = CurrencyBalance::where('owner_type', \App\Models\Customer::class)
-                        ->where('owner_id', $state)
-                        ->get();
+                                            \App\Models\Customer::select('name', 'id', 'balance')->where('permanent', ExpenseGroup::DEBTORS->value)->get()
+                                                ->mapWithKeys(fn(\App\Models\Customer $customer) => [
+                                                    $customer->id => sprintf(
+                                                        '%s (%s SDG)',
+                                                        $customer->name,
+                                                        number_format($customer->balance, 2)
+                                                    ),
+                                                ])
 
-                    $set('payer_currencies', $currencies);
-                }),
+                                        )
+                                        ->reactive()
+                                        ->afterStateUpdated(function (callable $set, $state) {
+                                            $currencies = CurrencyBalance::where('owner_type', \App\Models\Customer::class)
+                                                ->where('owner_id', $state)
+                                                ->get();
 
-            Hidden::make('payer_type')
-                ->default(\App\Models\Customer::class)
-                ->required(),
+                                            $set('payer_currencies', $currencies);
+                                        }),
 
-            MorphSelect::make('party')
-                ->models([
-                    'company' => \App\Models\Company::class,
-                    'customer' => fn () => \App\Models\Customer::where('permanent', ExpenseGroup::DEBTORS->value)->get(),
-                ])
-                ->live()
-                ->hidden(fn (callable $get) => in_array($get('type'), [CurrencyType::Convert, CurrencyType::CompanyExpense])),
+                                    Hidden::make('payer_type')
+                                        ->default(\App\Models\Customer::class)
+                                        ->required(),
 
-            Hidden::make('party_type')
-                ->hidden(fn (callable $get) => in_array($get('type'), [CurrencyType::Convert, CurrencyType::CompanyExpense])),
+                                    MorphSelect::make('party')
+                                        ->models([
+                                                'company' => \App\Models\Company::class,
+                                                'customer' => fn() => \App\Models\Customer::where('permanent', ExpenseGroup::DEBTORS->value)->get(),
+                                            ])
+                                        ->live()
+                                        ->hidden(fn(callable $get) => in_array($get('type'), [CurrencyType::Convert])),
 
-            Hidden::make('party_id')
-                ->hidden(condition: fn (callable $get) => in_array($get('type'), [CurrencyType::Convert, CurrencyType::CompanyExpense])),
+                                    Hidden::make('party_type')
+                                        ->hidden(fn(callable $get) => in_array($get('type'), [CurrencyType::Convert])),
 
-            Select::make('currency_id')
-                ->relationship('currency', 'name')
-                ->required(),
+                                    Hidden::make('party_id')
+                                        ->hidden(condition: fn(callable $get) => in_array($get('type'), [CurrencyType::Convert])),
 
-            Select::make('truck_id')
-                ->relationship(name: 'truck', titleAttribute: 'id')
-                ->searchable()
-                ->preload()
-                ->nullable()
-                ->visible(condition: fn (callable $get) => in_array($get('type'), [CurrencyType::CompanyExpense])),
+                                    Select::make('currency_id')
+                                        ->relationship('currency', 'name')
+                                        ->required(),
 
-            DecimalInput::make('amount')
-                ->required()
-                ->million()
-                ->afterStateUpdated(function ($set, $get) {
-                    // استخدام الدالة العالمية هنا أيضاً لضمان الدقة
-                    $price = clean_number($get('rate')) ?: 1;
-                    $amount = clean_number($get('amount')) ?: 0;
+                                    TextInput::make('note')
+                                        ->default(null)->columnSpanFull(),
+                                ]),
 
-                    $set('total', $amount * $price);
-                }),
+                        // ... داخل formSchema ...
+                        Grid::make(1)->schema([
+                            Section::make('أداة التحويل السريع (للحساب فقط)')
+                                ->schema([
+                                        Grid::make(2)->schema([
+                                            DecimalInput::make('converter_rate')
+                                                ->label('سعر الصرف (للأداة)')
+                                                ->live(),
 
-            DecimalInput::make(name: 'rate')
-                ->required()
-                ->live(onBlur: true)
-                ->afterStateUpdated(function ($set, $get) {
-                    // استخدام الدالة العالمية هنا أيضاً لضمان الدقة
-                    $price = clean_number($get('rate')) ?: 1;
-                    $amount = clean_number($get('amount')) ?: 0;
+                                            DecimalInput::make('converter_amount')
+                                                ->label('المبلغ المراد تحويله')
+                                                ->million()
+                                                ->placeholder('مثلاً: 1.5') // المستخدم يدخل القيمة مقسومة كما يراها دائماً
+                                            ,
+                                        ]),
 
-                    $set('total', $amount * $price);
-                })
-                ->visible(condition: fn (callable $get) => in_array($get('type'), [CurrencyType::CompanyExpense, CurrencyType::Convert]))
-                ->default(1),
+                                        Radio::make('conversion_direction')
+                                            ->options([
+                                                    'to_sdg' => 'من أجنبي إلى سوداني',
+                                                    'from_sdg' => 'من سوداني إلى أجنبي',
+                                                ])
+                                            ->default('to_sdg')
+                                            ->inline()
+                                            ->live(),
 
-            DecimalInput::make('total')
-                ->required()
-                ->million()
-                // ->visible(condition: fn (callable $get) => in_array($get('type'), [CurrencyType::CompanyExpense, CurrencyType::Convert]))
-                ->readOnly(),
+                                        Actions::make([
+                                            Action::make('apply_conversion')
+                                                ->label('تطبيق الحساب')
+                                                ->color('warning')
+                                                ->icon('heroicon-m-calculator')
+                                                ->action(function ($set, $get) {
+                                                    // تحويل النصوص إلى أرقام نقية لإجراء العمليات الحسابية
+                                                    $rate = (float) str_replace(',', '', $get('converter_rate') ?? 0);
+                                                    $inputAmount = (float) str_replace(',', '', $get('converter_amount') ?? 0);
 
-            TextInput::make('note')
-                ->default(null)->columnSpanFull(),
+                                                    if ($get('conversion_direction') === 'to_sdg') {
+                                                        // الحالة: أدخلنا مبلغاً أجنبياً ونريد الإجمالي بالسوداني
+                                                        $set('amount', $inputAmount);
+                                                        $set('rate', $rate);
+                                                        $set('total', $inputAmount * $rate);
+                                                    } else {
+                                                        // الحالة: أدخلنا مبلغاً سودانياً ونريد معرفة كم يساوي بالأجنبي
+                                                        $foreignAmount = $rate > 0 ? ($inputAmount / $rate) : 0;
+                                                        $set('amount', $foreignAmount);
+                                                        $set('rate', $rate);
+                                                        $set('total', $inputAmount);
+                                                    }
+                                                })
+                                        ])->fullWidth(),
+                                    ])
+                                ->collapsible(),
+
+                            Section::make('بيانات العملية النهائية (للحفظ)')
+                                ->schema([
+                                        Grid::make(2)->schema([
+                                            DecimalInput::make('amount')
+                                                ->label('المبلغ بالأجنبي')
+                                                ->required()
+                                                ->million() // سيقوم بضرب القيمة في مليون عند الحفظ تلقائياً
+                                                ->live(onBlur: true)
+                                                ->afterStateUpdated(fn($set, $get) => self::updateTotal($set, $get)),
+
+                                            DecimalInput::make('rate')
+                                                ->label('سعر الصرف النهائي')
+                                                ->required()
+                                                ->default(1)
+                                                ->live(onBlur: true)
+                                                ->afterStateUpdated(fn($set, $get) => self::updateTotal($set, $get)),
+                                        ]),
+                                        DecimalInput::make('total')
+                                            ->label('المجموع (بالسوداني)')
+                                            ->required()
+                                            ->million() // سيقوم بضرب القيمة في مليون عند الحفظ تلقائياً
+                                            ->readOnly()
+                                            ->extraAttributes(['class' => 'bg-slate-50 font-bold']),
+                                    ]),
+
+                        ]),
+
+                    ]),
+
         ];
+    }
+    protected static function updateTotal($set, $get)
+    {
+        // تنظيف القيم من الفواصل قبل الحساب لضمان الدقة
+        $amount = (float) str_replace(',', '', $get('amount') ?? 0);
+        $rate = (float) str_replace(',', '', $get('rate') ?? 0);
+
+        $set('total', $amount * $rate);
     }
 
     public static function getRecordRouteBindingEloquentQuery(): Builder
     {
         return parent::getRecordRouteBindingEloquentQuery()
             ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
+                    SoftDeletingScope::class,
+                ]);
     }
 }
