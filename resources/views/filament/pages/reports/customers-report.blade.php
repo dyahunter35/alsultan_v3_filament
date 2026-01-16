@@ -8,8 +8,8 @@
             </div>
 
             <div class="flex items-center gap-2">
-                <x-filament::button wire:click="loadData" color="gray" icon="heroicon-m-arrow-path">
-                    تحديث
+                <x-filament::button wire:click="updateBalances" color="gray" icon="heroicon-m-arrow-path">
+                    تحديث حسابات العملاء
                 </x-filament::button>
             </div>
         </div>
@@ -73,48 +73,46 @@
                             <tr class="transition-colors hover:bg-slate-50">
                                 <td class="p-2 border border-slate-200 text-slate-500">{{ $row['date'] }}</td>
                                 <td class="p-2 px-4 font-medium text-right border border-slate-200">
-                                    {{ $row['description'] }}</td>
-                                    <td class="p-2 text-right border border-slate-200 min-w-[150px] leading-snug">
-                                    @if ($row['data'] instanceof \Illuminate\Support\Collection )
-                        
-                                <table class="w-full border-collapse text-[12px] divide-y divide-slate-200">
-                                        <tbody>
-                                            @foreach ($row['data'] as $item)
-                                                <tr class="border-b border-slate-100 last:border-0 hover:bg-white/50">
-                                                    {{-- اسم الصنف - مساحة مرنة --}}
-                                                    <td class="text-right py-1.5 pr-1 font-bold text-slate-700  w-24">
-                                                        {{ $item->product?->name }}
-                                                    </td>
+                                    {{ $row['description'] }}
+                                </td>
+                                <td class="p-2 text-right border border-slate-200 min-w-[150px] leading-snug">
+                                    @if ($row['data'] instanceof \Illuminate\Support\Collection)
 
-                                                    {{-- الكمية - عرض ثابت --}}
-                                                    <td
-                                                        class="text-center py-1.5 px-2 tabular-nums w-12 border-r border-slate-50">
-                                                        <span
-                                                            class="font-black text-slate-900">{{ number_format($item->qty) }}</span>
-                                                    </td>
+                                        <table class="w-full border-collapse text-[12px] divide-y divide-slate-200">
+                                            <tbody>
+                                                @foreach ($row['data'] as $item)
+                                                    <tr class="border-b border-slate-100 last:border-0 hover:bg-white/50">
+                                                        {{-- اسم الصنف - مساحة مرنة --}}
+                                                        <td class="text-right py-1.5 pr-1 font-bold text-slate-700  w-24">
+                                                            {{ $item->product?->name }}
+                                                        </td>
 
-                                                    {{-- السعر - عرض ثابت --}}
-                                                    <td
-                                                        class="text-center py-1.5 px-2 tabular-nums w-20 border-r border-slate-50">
-                                                        <span
-                                                            class="font-medium text-slate-600">{{ number_format($item->price, 1) }}</span>
-                                                    </td>
+                                                        {{-- الكمية - عرض ثابت --}}
+                                                        <td class="text-center py-1.5 px-2 tabular-nums w-12 border-r border-slate-50">
+                                                            <span
+                                                                class="font-black text-slate-900">{{ number_format($item->qty) }}</span>
+                                                        </td>
 
-                                                    {{-- الإجمالي - عرض ثابت --}}
-                                                    <td
-                                                        class="text-center py-1.5 pl-1 tabular-nums w-24 border-r border-slate-50">
+                                                        {{-- السعر - عرض ثابت --}}
+                                                        <td class="text-center py-1.5 px-2 tabular-nums w-20 border-r border-slate-50">
+                                                            <span
+                                                                class="font-medium text-slate-600">{{ number_format($item->price, 1) }}</span>
+                                                        </td>
 
-                                                        <span
-                                                            class="font-black text-green-700">{{ number_format($item->qty * $item->price, 1) }}</span>
-                                                    </td>
-                                                </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                                @else
-                                    {{  $row['data']}}
+                                                        {{-- الإجمالي - عرض ثابت --}}
+                                                        <td class="text-center py-1.5 pl-1 tabular-nums w-24 border-r border-slate-50">
+
+                                                            <span
+                                                                class="font-black text-green-700">{{ number_format($item->qty * $item->price, 1) }}</span>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    @else
+                                        {{  $row['data']}}
                                     @endif
-                            </td>
+                                </td>
                                 <td class="p-2 font-bold text-green-600 border border-slate-200 bg-green-50/30">
                                     {{ $row['amount_in'] > 0 ? number_format($row['amount_in'], 2) : '-' }}
                                 </td>
@@ -137,8 +135,7 @@
                             <td class="p-3 text-red-700 border border-slate-300">
                                 {{ number_format($ledger->sum('amount_out'), 2) }}
                             </td>
-                            <td
-                                class="p-3 text-lg italic font-black border border-slate-800 bg-slate-200 print:text-sm">
+                            <td class="p-3 text-lg italic font-black border border-slate-800 bg-slate-200 print:text-sm">
                                 @php
                                     $lastEntry = $ledger->last();
                                 @endphp
@@ -159,8 +156,7 @@
         <x-print-button />
     @else
         <div class="p-20 text-center bg-white border-2 border-gray-300 border-dashed shadow-sm rounded-xl">
-            <x-filament::icon icon="heroicon-o-document-magnifying-glass"
-                class="w-12 h-12 mx-auto mb-4 text-gray-300" />
+            <x-filament::icon icon="heroicon-o-document-magnifying-glass" class="w-12 h-12 mx-auto mb-4 text-gray-300" />
             <h3 class="text-xl font-bold tracking-tight text-gray-400">لا توجد حركات مالية مسجلة لهذا العميل في الفترة
                 المحددة</h3>
         </div>

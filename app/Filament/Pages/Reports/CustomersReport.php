@@ -6,6 +6,7 @@ use App\Filament\Pages\Concerns\HasReport;
 use App\Models\Customer;
 use App\Services\CustomerService;
 use Filament\Forms;
+use Filament\Notifications\Notification;
 use Filament\Schemas;
 use Filament\Pages\Page;
 use Illuminate\Support\Collection;
@@ -60,5 +61,14 @@ class CustomersReport extends Page implements Forms\Contracts\HasForms
         }
         $this->customer = Customer::find($this->customerId);
         $this->ledger = app(CustomerService::class)->generateLedger($this->customer, $this->startDate, $this->endDate);
+    }
+    public function updateBalances(): void
+    {
+        app(CustomerService::class)->updateCustomersBalance();
+        $this->loadLedger();
+        Notification::make()
+            ->title('تم تحديث بيانات العملاء')
+            ->success()
+            ->send();
     }
 }

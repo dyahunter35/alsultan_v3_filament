@@ -80,6 +80,11 @@ return [
         'icon' => 'heroicon-m-building-office',
         'sort' => 9,
     ],
+    'customer_debt_report' => [
+        'heading' => 'Customer Debt Report',
+        'icon' => 'heroicon-m-user-group',
+        'sort' => 10,
+    ],
     'product_pricing' => [
         'heading' => 'Cargo Product Pricing Report',
         'icon' => 'heroicon-o-currency-dollar',

@@ -17,6 +17,11 @@ return [
         'icon' => 'heroicon-m-user-group',
         'sort' => 1,
     ],
+    'customer_debt_report' => [
+        'heading' => 'تقرير كشف الديون للعملاء',
+        'icon' => 'heroicon-m-user-group',
+        'sort' => 2,
+    ],
     'currency_customers_report' => [
         'heading' => 'كشف حساب العملاء بالعملات',
         'icon' => 'heroicon-m-currency-dollar',
