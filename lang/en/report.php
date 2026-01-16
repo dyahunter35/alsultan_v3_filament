@@ -84,6 +84,8 @@ return [
         'heading' => 'Customer Debt Report',
         'icon' => 'heroicon-m-user-group',
         'sort' => 10,
+
+
     ],
     'product_pricing' => [
         'heading' => 'Cargo Product Pricing Report',
