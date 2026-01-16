@@ -23,6 +23,7 @@ class BranchProductStockReport extends Page implements HasForms
     use HasReport, InteractsWithForms;
 
     protected string $view = 'filament.pages.reports.branch-product-stock-report';
+    protected static ?int $navigationSort = 41;
 
     #[Url] public ?int $productId = null;
     #[Url] public ?int $branchId = null;

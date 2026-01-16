@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Orders\Widgets;
+namespace App\Filament\Widgets;
 
 use App\Filament\Resources\Orders\Pages\ListOrders;
 use App\Models\Order;
@@ -14,6 +14,8 @@ use Flowframe\Trend\TrendValue;
 class OrderStats extends BaseWidget
 {
     use InteractsWithPageTable;
+
+    protected static ?int $sort = 2;
 
     protected ?string $pollingInterval = null;
 
@@ -37,7 +39,7 @@ class OrderStats extends BaseWidget
             Stat::make('Orders', $query->count())
                 ->chart(
                     $orderData
-                        ->map(fn (TrendValue $value) => $value->aggregate)
+                        ->map(fn(TrendValue $value) => $value->aggregate)
                         ->toArray()
                 )
                 ->color('success')

@@ -40,7 +40,7 @@ class AdminPanelProvider extends PanelProvider
             ->font('Poppins')
             ->databaseTransactions()
             // ->databaseNotifications()
-            ->brandName(fn () => __('app.name'))
+            ->brandName(fn() => __('app.name'))
             // ->brandLogo(fn  ()=>asset('asset/images/logo/gas 200.png'))
             ->favicon(asset('asset/logo.png'))
             // ->brandLogo(asset('asset/logo.png'))
@@ -52,7 +52,7 @@ class AdminPanelProvider extends PanelProvider
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->renderHook(
                 'panels::head.end', // ⬅ يضيف قبل </head>
-                fn (): string => <<<'HTML'
+                fn(): string => <<<'HTML'
                         <link rel="manifest" href="/manifest.json">
                         <meta name="theme-color" content="#0f172a">
                         <script>
@@ -67,61 +67,56 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
             ->pages([
-                MainDashboard::class,
-                // BranchReport::class,
-                // ProductStockReport::class
-            ])
+                    MainDashboard::class
+                ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
-            ->widgets([
-                // Widgets\AccountWidget::class,
-                // Widgets\FilamentInfoWidget::class,
-            ])
+            ->widgets([])
             ->middleware([
-                EncryptCookies::class,
-                AddQueuedCookiesToResponse::class,
-                StartSession::class,
-                AuthenticateSession::class,
-                ShareErrorsFromSession::class,
-                VerifyCsrfToken::class,
-                SubstituteBindings::class,
-                DisableBladeIconComponents::class,
-                DispatchServingFilamentEvent::class,
-            ])
+                    EncryptCookies::class,
+                    AddQueuedCookiesToResponse::class,
+                    StartSession::class,
+                    AuthenticateSession::class,
+                    ShareErrorsFromSession::class,
+                    VerifyCsrfToken::class,
+                    SubstituteBindings::class,
+                    DisableBladeIconComponents::class,
+                    DispatchServingFilamentEvent::class,
+                ])
             ->plugins([
-                FilamentShieldPlugin::make()
-                    ->navigationGroup(fn () => __('user.navigation.group', [], app()->getLocale()))                  // string|Closure|null
-                    ->navigationSort(10)
-                    ->scopeToTenant(false)                       // bool|Closure
-                    ->tenantRelationshipName(null)    // string|Closure|null
-                    ->tenantOwnershipRelationshipName(null) // string|Closure|null
-                    // int|Closure|null
-                    // ->navigationBadge('5')                      // string|Closure|null
-                    // ->navigationBadgeColor('success')           // string|array|Closure|null
-                    // ->navigationParentItem('parent.item')       // string|Closure|null
-                    ->registerNavigation(true)
-                    ->gridColumns([
-                        'default' => 1,
-                        'sm' => 2,
-                        'lg' => 3,
-                    ])
-                    ->sectionColumnSpan(1)
-                    ->checkboxListColumns([
-                        'default' => 1,
-                        'sm' => 2,
-                        'lg' => 4,
-                    ])
-                    ->resourceCheckboxListColumns([
-                        'default' => 1,
-                        'sm' => 2,
-                    ]),
+                    FilamentShieldPlugin::make()
+                        ->navigationGroup(fn() => __('user.navigation.group', [], app()->getLocale()))                  // string|Closure|null
+                        ->navigationSort(10)
+                        ->scopeToTenant(false)                       // bool|Closure
+                        ->tenantRelationshipName(null)    // string|Closure|null
+                        ->tenantOwnershipRelationshipName(null) // string|Closure|null
+                        // int|Closure|null
+                        // ->navigationBadge('5')                      // string|Closure|null
+                        // ->navigationBadgeColor('success')           // string|array|Closure|null
+                        // ->navigationParentItem('parent.item')       // string|Closure|null
+                        ->registerNavigation(true)
+                        ->gridColumns([
+                                'default' => 1,
+                                'sm' => 2,
+                                'lg' => 3,
+                            ])
+                        ->sectionColumnSpan(1)
+                        ->checkboxListColumns([
+                                'default' => 1,
+                                'sm' => 2,
+                                'lg' => 4,
+                            ])
+                        ->resourceCheckboxListColumns([
+                                'default' => 1,
+                                'sm' => 2,
+                            ]),
 
-                // \TomatoPHP\FilamentInvoices\FilamentInvoicesPlugin::make()
-            ])
+                    // \TomatoPHP\FilamentInvoices\FilamentInvoicesPlugin::make()
+                ])
             ->tenantMiddleware([
-                // SyncShieldTenant::class,
-            ], isPersistent: true)
+                    // SyncShieldTenant::class,
+                ], isPersistent: true)
             ->authMiddleware([
-                Authenticate::class,
-            ]);
+                    Authenticate::class,
+                ]);
     }
 }

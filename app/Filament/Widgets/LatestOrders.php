@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Orders\Widgets;
+namespace App\Filament\Widgets;
 
 use App\Filament\Resources\Orders\OrderResource;
 use Filament\Actions\Action;
@@ -10,8 +10,9 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class LatestOrders extends BaseWidget
 {
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = '1';
 
+    protected static ?int $sort = 3;
     protected static ?string $heading = 'أحدث الطلبات';
 
     public function table(Table $table): Table
@@ -26,17 +27,14 @@ class LatestOrders extends BaseWidget
                 TextColumn::make('status')
                     ->label('الحالة')
                     ->badge(),
-                TextColumn::make('total')
-                    ->label('الإجمالي')
-                    ->money('SDG', true),
                 TextColumn::make('created_at')
                     ->label('تاريخ الطلب')
-                    ->dateTime(),
+                    ->date(),
             ])
             ->recordActions([
-                Action::make('view')
-                    ->label('عرض')
-                    ->url(fn ($record): string => OrderResource::getUrl('view', ['record' => $record])),
-            ]);
+                    Action::make('view')
+                        ->label('عرض')
+                        ->url(fn($record): string => OrderResource::getUrl('view', ['record' => $record])),
+                ]);
     }
 }

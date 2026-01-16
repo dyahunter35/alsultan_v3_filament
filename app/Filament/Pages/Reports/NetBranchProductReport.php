@@ -23,7 +23,7 @@ class NetBranchProductReport extends Page implements HasForms
 {
     use HasReport, InteractsWithForms;
 
-    protected static ?int $navigationSort = 39;
+    protected static ?int $navigationSort = 42;
     protected string $view = 'filament.pages.reports.net_branch_product_report';
     protected static ?string $navigationLabel = 'تقرير جرد الفروع التراكمي';
 

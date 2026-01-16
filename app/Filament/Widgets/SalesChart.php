@@ -1,16 +1,17 @@
 <?php
 
-namespace App\Filament\Resources\Orders\Widgets;
+namespace App\Filament\Widgets;
 
 use App\Models\Order;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
 
-class Chart extends ChartWidget
+class SalesChart extends ChartWidget
 {
     protected ?string $heading = 'مبيعات آخر 30 يوماً';
     // protected int | string | array $columnSpan = 'full'; // لجعل الرسم البياني يأخذ عرض الصفحة كاملاً
+    protected static ?int $sort = 5;
 
     protected function getData(): array
     {
@@ -27,17 +28,17 @@ class Chart extends ChartWidget
             'datasets' => [
                 [
                     'label' => 'المبيعات',
-                    'data' => $data->map(fn ($value) => $value->aggregate),
+                    'data' => $data->map(fn($value) => $value->aggregate),
                     'backgroundColor' => '#36A2EB',
                     'borderColor' => '#9BD0F5',
                 ],
             ],
-            'labels' => $data->map(fn ($value) => Carbon::parse($value->date)->format('M d')),
+            'labels' => $data->map(fn($value) => Carbon::parse($value->date)->format('M d')),
         ];
     }
 
     protected function getType(): string
     {
-        return 'bar'; // نوع الرسم البياني
+        return 'line'; // نوع الرسم البياني
     }
 }

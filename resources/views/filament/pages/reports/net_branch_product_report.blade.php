@@ -4,7 +4,7 @@
             <div class="flex-1">
                 {{ $this->form }}
             </div>
-            <x-filament::button wire:click="updateQty" color="gray" icon="heroicon-m-arrow-path">
+            <x-filament::button keyBindings="command+h" wire:click="updateQty" color="gray" icon="heroicon-m-arrow-path">
                 تحديث الكميات
             </x-filament::button>
         </div>
@@ -20,7 +20,6 @@
                         <h2 class="text-lg font-bold text-slate-800 italic">تقرير الجرد التراكمي الشامل</h2>
                         <p class="text-xs text-gray-500">مخازن الفروع + البضاعة العالقة (ميناء وحظيرة)</p>
                     </div>
-
                 </div>
 
                 <div class="overflow-x-auto">

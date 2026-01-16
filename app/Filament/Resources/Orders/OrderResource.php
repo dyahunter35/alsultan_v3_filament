@@ -12,7 +12,7 @@ use App\Filament\Resources\Orders\Pages\SalesReport;
 use App\Filament\Resources\Orders\Pages\ViewOrder;
 use App\Filament\Resources\Orders\RelationManagers\OrderLogsRelationManager;
 use App\Filament\Resources\Orders\RelationManagers\OrderMetasRelationManager;
-use App\Filament\Resources\Orders\Widgets\OrderStats;
+use App\Filament\Widgets\OrderStats;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -91,65 +91,65 @@ class OrderResource extends Resource
     {
         return $schema
             ->components([
-                Group::make()
-                    ->schema([
-                        // Order details section
-                        Section::make(__('order.sections.details.label'))
-                            ->icon('heroicon-o-user')
-                            ->schema(self::getDetailsFormSchema())
-                            ->columns(2),
+                    Group::make()
+                        ->schema([
+                                // Order details section
+                                Section::make(__('order.sections.details.label'))
+                                    ->icon('heroicon-o-user')
+                                    ->schema(self::getDetailsFormSchema())
+                                    ->columns(2),
 
-                        // Order items repeater section
-                        Section::make(__('order.sections.order_items.label'))
-                            ->icon('heroicon-o-shopping-bag')
-                            ->headerActions([
-                                Action::make('reset')
-                                    ->label(__('order.actions.reset.label'))
-                                    ->modalHeading(__('order.actions.reset.modal.heading'))
-                                    ->modalDescription(__('order.actions.reset.modal.description'))
-                                    ->requiresConfirmation()
-                                    ->color('danger')
-                                    ->action(fn(Set $set) => $set('items', [])),
+                                // Order items repeater section
+                                Section::make(__('order.sections.order_items.label'))
+                                    ->icon('heroicon-o-shopping-bag')
+                                    ->headerActions([
+                                            Action::make('reset')
+                                                ->label(__('order.actions.reset.label'))
+                                                ->modalHeading(__('order.actions.reset.modal.heading'))
+                                                ->modalDescription(__('order.actions.reset.modal.description'))
+                                                ->requiresConfirmation()
+                                                ->color('danger')
+                                                ->action(fn(Set $set) => $set('items', [])),
+                                        ])
+                                    ->schema([self::getItemsRepeater()]),
+
+                                Section::make(__('order.sections.totals.label'))
+                                    ->icon('heroicon-o-banknotes')
+                                    ->schema([
+                                            DecimalInput::make('shipping')
+                                                ->label(__('order.fields.shipping.label'))
+                                                ->live(onBlur: true)
+
+                                                ->afterStateUpdated(fn(Get $get, Set $set) => self::calculate($get, $set)),
+                                            DecimalInput::make('install')
+                                                ->label(__('order.fields.installation.label'))
+                                                ->live(onBlur: true)
+
+                                                ->afterStateUpdated(fn(Get $get, Set $set) => self::calculate($get, $set)),
+                                            DecimalInput::make('discount')
+                                                ->hint(fn($state) => number_format($state))
+                                                ->label(__('order.fields.items.discount.label'))
+                                                ->disabled()
+                                                ->dehydrated(true),
+                                            DecimalInput::make('total')
+                                                ->label(__('order.fields.total.label'))
+                                                ->disabled()
+                                                ->dehydrated(true),
+                                            Textarea::make('notes')
+                                                ->label(__('order.fields.notes.label'))
+                                                ->columnSpanFull(),
+                                        ])
+                                    ->columns(2)
+                                    ->collapsible(),
+
                             ])
-                            ->schema([self::getItemsRepeater()]),
+                        ->columnSpan(['lg' => 2]),
 
-                        Section::make(__('order.sections.totals.label'))
-                            ->icon('heroicon-o-banknotes')
-                            ->schema([
-                                DecimalInput::make('shipping')
-                                    ->label(__('order.fields.shipping.label'))
-                                    ->live(onBlur: true)
-
-                                    ->afterStateUpdated(fn(Get $get, Set $set) => self::calculate($get, $set)),
-                                DecimalInput::make('install')
-                                    ->label(__('order.fields.installation.label'))
-                                    ->live(onBlur: true)
-
-                                    ->afterStateUpdated(fn(Get $get, Set $set) => self::calculate($get, $set)),
-                                DecimalInput::make('discount')
-                                    ->hint(fn($state) => number_format($state))
-                                    ->label(__('order.fields.items.discount.label'))
-                                    ->disabled()
-                                    ->dehydrated(true),
-                                DecimalInput::make('total')
-                                    ->label(__('order.fields.total.label'))
-                                    ->disabled()
-                                    ->dehydrated(true),
-                                Textarea::make('notes')
-                                    ->label(__('order.fields.notes.label'))
-                                    ->columnSpanFull(),
-                            ])
-                            ->columns(2)
-                            ->collapsible(),
-
-                    ])
-                    ->columnSpan(['lg' => 2]),
-
-                // Status and totals section
-                Section::make(__('order.sections.status_and_totals.label'))
-                    ->schema(self::getStatusAndTotalsFormSchema())
-                    ->columnSpan(['lg' => 1]),
-            ])
+                    // Status and totals section
+                    Section::make(__('order.sections.status_and_totals.label'))
+                        ->schema(self::getStatusAndTotalsFormSchema())
+                        ->columnSpan(['lg' => 1]),
+                ])
             ->columns(3);
     }
 
@@ -157,215 +157,215 @@ class OrderResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('created_at')
-                    ->label(__('order.fields.created_at.label'))
-                    ->date()
-                    ->toggleable(),
+                    TextColumn::make('created_at')
+                        ->label(__('order.fields.created_at.label'))
+                        ->date()
+                        ->toggleable(),
 
-                TextColumn::make('number')
-                    ->label(__('order.fields.number.label'))
-                    ->searchable()
-                    ->sortable(),
+                    TextColumn::make('number')
+                        ->label(__('order.fields.number.label'))
+                        ->searchable()
+                        ->sortable(),
 
-                TextColumn::make('customer.name')
-                    ->label(__('order.fields.customer.label'))
-                    ->formatStateUsing(fn($state, $record) => ($record->is_guest) ? $state . '  ' . __('customer.guest_suffix') : $state)
-                    ->sortable()
-                    ->toggleable(),
+                    TextColumn::make('customer.name')
+                        ->label(__('order.fields.customer.label'))
+                        ->formatStateUsing(fn($state, $record) => ($record->is_guest) ? $state . '  ' . __('customer.guest_suffix') : $state)
+                        ->sortable()
+                        ->toggleable(),
 
-                TextColumn::make('representative.name')
-                    ->label(__('order.fields.representative.label'))
-                    ->sortable()
-                    ->toggleable(),
+                    TextColumn::make('representative.name')
+                        ->label(__('order.fields.representative.label'))
+                        ->sortable()
+                        ->toggleable(),
 
 
-                TextColumn::make('status')
-                    ->label(__('order.fields.status.label'))
-                    ->badge(),
-                TextColumn::make('currency')
-                    ->label(__('order.fields.currency.label'))
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->toggleable(),
+                    TextColumn::make('status')
+                        ->label(__('order.fields.status.label'))
+                        ->badge(),
+                    TextColumn::make('currency')
+                        ->label(__('order.fields.currency.label'))
+                        ->searchable()
+                        ->sortable()
+                        ->toggleable(isToggledHiddenByDefault: true)
+                        ->toggleable(),
 
-                TextColumn::make('total')
-                    ->label(__('order.fields.total.label'))
-                    ->searchable()
-                    ->sortable()
-                    ->formatStateUsing(fn($state) => (string) number_format($state, 2))
-                    ->toggleable()
-                    ->summarize([
-                        Sum::make()
-                            ->money()
-                            ->formatStateUsing(fn($state) => (string) number_format($state, 2)),
-                    ]),
+                    TextColumn::make('total')
+                        ->label(__('order.fields.total.label'))
+                        ->searchable()
+                        ->sortable()
+                        ->formatStateUsing(fn($state) => (string) number_format($state, 2))
+                        ->toggleable()
+                        ->summarize([
+                                Sum::make()
+                                    ->money()
+                                    ->formatStateUsing(fn($state) => (string) number_format($state, 2)),
+                            ]),
 
-                IconColumn::make('is_guest')
-                    ->label(__('order.fields.is_guest.filter'))
-                    ->boolean()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    IconColumn::make('is_guest')
+                        ->label(__('order.fields.is_guest.filter'))
+                        ->boolean()
+                        ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('paid')
-                    ->label(__('order.fields.paid.label'))
-                    ->searchable()
-                    ->sortable()
-                    ->formatStateUsing(fn($state) => (string) number_format($state, 2))
-                    ->toggleable()
-                    ->summarize([
-                        Sum::make()
-                            ->money()
-                            ->formatStateUsing(fn($state) => (string) number_format($state, 2)),
-                    ])->toggleable(isToggledHiddenByDefault: true),
+                    TextColumn::make('paid')
+                        ->label(__('order.fields.paid.label'))
+                        ->searchable()
+                        ->sortable()
+                        ->formatStateUsing(fn($state) => (string) number_format($state, 2))
+                        ->toggleable()
+                        ->summarize([
+                                Sum::make()
+                                    ->money()
+                                    ->formatStateUsing(fn($state) => (string) number_format($state, 2)),
+                            ])->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('shipping')
-                    ->label(__('order.fields.shipping.label'))
-                    ->searchable()
-                    ->sortable()
-                    ->formatStateUsing(fn($state) => (string) number_format($state, 2))
-                    ->toggleable()
-                    ->summarize([
-                        Sum::make()
-                            ->money()
-                            ->formatStateUsing(fn($state) => (string) number_format($state, 2)),
-                    ])->toggleable(isToggledHiddenByDefault: true),
+                    TextColumn::make('shipping')
+                        ->label(__('order.fields.shipping.label'))
+                        ->searchable()
+                        ->sortable()
+                        ->formatStateUsing(fn($state) => (string) number_format($state, 2))
+                        ->toggleable()
+                        ->summarize([
+                                Sum::make()
+                                    ->money()
+                                    ->formatStateUsing(fn($state) => (string) number_format($state, 2)),
+                            ])->toggleable(isToggledHiddenByDefault: true),
 
-            ])
+                ])
             ->filters([
-                SelectFilter::make('representative_id')
-                    ->label(__('order.fields.representative.label'))
-                    ->options(User::sales()),
-                DateRangeFilter::make('created_at'),
-                TernaryFilter::make('is_guest')
-                    ->trueLabel(__('order.fields.is_guest.filter'))
-                    ->falseLabel(__('order.fields.customer.label'))
-                    ->label(__('order.fields.is_guest.filter')),
+                    SelectFilter::make('representative_id')
+                        ->label(__('order.fields.representative.label'))
+                        ->options(User::sales()),
+                    DateRangeFilter::make('created_at'),
+                    TernaryFilter::make('is_guest')
+                        ->trueLabel(__('order.fields.is_guest.filter'))
+                        ->falseLabel(__('order.fields.customer.label'))
+                        ->label(__('order.fields.is_guest.filter')),
 
-                TrashedFilter::make()
-                    ->visible(auth()->user()->can('restore_order')),
-                Filter::make('created_at')
-                    ->schema([
-                        DatePicker::make('created_from')
-                            ->placeholder('Dec 18, ' . now()->subYear()->format('Y')),
-                        DatePicker::make('created_until')
-                            ->placeholder(now()->format('M d, Y')),
-                    ])
-                    ->query(fn(Builder $query, array $data): Builder => $query
-                        ->when($data['created_from'], fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date))
-                        ->when($data['created_until'], fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date)))
-                    ->indicateUsing(function (array $data): array {
-                        $indicators = [];
-                        if (isset($data['created_from'])) {
-                            $indicators['created_from'] = 'Order from ' . Carbon::parse($data['created_from'])->toFormattedDateString();
-                        }
-                        if (isset($data['created_until'])) {
-                            $indicators['created_until'] = 'Order until ' . Carbon::parse($data['created_until'])->toFormattedDateString();
-                        }
+                    TrashedFilter::make()
+                        ->visible(auth()->user()->can('restore_order')),
+                    Filter::make('created_at')
+                        ->schema([
+                                DatePicker::make('created_from')
+                                    ->placeholder('Dec 18, ' . now()->subYear()->format('Y')),
+                                DatePicker::make('created_until')
+                                    ->placeholder(now()->format('M d, Y')),
+                            ])
+                        ->query(fn(Builder $query, array $data): Builder => $query
+                            ->when($data['created_from'], fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date))
+                            ->when($data['created_until'], fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date)))
+                        ->indicateUsing(function (array $data): array {
+                            $indicators = [];
+                            if (isset($data['created_from'])) {
+                                $indicators['created_from'] = 'Order from ' . Carbon::parse($data['created_from'])->toFormattedDateString();
+                            }
+                            if (isset($data['created_until'])) {
+                                $indicators['created_until'] = 'Order until ' . Carbon::parse($data['created_until'])->toFormattedDateString();
+                            }
 
-                        return $indicators;
-                    }),
+                            return $indicators;
+                        }),
 
-            ])
+                ])
             ->recordActions([
-                Action::make('pay')
-                    ->visible(fn($record) => $record->total != $record->paid || $record->status === OrderStatus::Processing || $record->status === OrderStatus::New)
-                    ->requiresConfirmation()
-                    ->icon('heroicon-o-credit-card')
-                    ->label(__('order.actions.pay.label'))
-                    ->modalHeading(__('order.actions.pay.modal.heading'))
-                    ->tooltip(__('order.actions.pay.label'))
-                    ->iconButton()
-                    ->color('info')
-                    ->visible(fn($record) => $record->is_guest)
-                    ->fillForm(fn($record) => [
-                        'total' => $record->total,
-                        'paid' => $record->paid,
-                        'amount' => $record->total - $record->paid,
-                    ])
-                    ->schema([
-                        DecimalInput::make('total')
-                            ->label(__('order.fields.total.label'))
-                            ->disabled(),
-                        DecimalInput::make('paid')
-                            ->label(__('order.fields.paid.label'))
-                            ->disabled(),
-                        Select::make('payment_method')
-                            ->label(__('order.fields.payment_method.label'))
-                            ->required()
-                            ->options(Payment::class)
-                            ->default(Payment::Bok),
-                        TextInput::make('amount')
-                            ->label(__('order.fields.amount.label'))
-                            ->required()
-                            ->live(onBlur: true)
-                            ->hint(fn($state) => number_format($state))
-                            ->hintColor('info')
-                            ->numeric()
-                            ->rules(['regex:/^-?\d+(\.\d{1,2})?$/'])
-                            ->maxValue(fn($record) => $record->total - $record->paid),
-                    ])
-                    ->action(function (array $data, Order $record) {
+                    Action::make('pay')
+                        ->visible(fn($record) => $record->total != $record->paid || $record->status === OrderStatus::Processing || $record->status === OrderStatus::New)
+                        ->requiresConfirmation()
+                        ->icon('heroicon-o-credit-card')
+                        ->label(__('order.actions.pay.label'))
+                        ->modalHeading(__('order.actions.pay.modal.heading'))
+                        ->tooltip(__('order.actions.pay.label'))
+                        ->iconButton()
+                        ->color('info')
+                        ->visible(fn($record) => $record->is_guest)
+                        ->fillForm(fn($record) => [
+                            'total' => $record->total,
+                            'paid' => $record->paid,
+                            'amount' => $record->total - $record->paid,
+                        ])
+                        ->schema([
+                                DecimalInput::make('total')
+                                    ->label(__('order.fields.total.label'))
+                                    ->disabled(),
+                                DecimalInput::make('paid')
+                                    ->label(__('order.fields.paid.label'))
+                                    ->disabled(),
+                                Select::make('payment_method')
+                                    ->label(__('order.fields.payment_method.label'))
+                                    ->required()
+                                    ->options(Payment::class)
+                                    ->default(Payment::Bok),
+                                TextInput::make('amount')
+                                    ->label(__('order.fields.amount.label'))
+                                    ->required()
+                                    ->live(onBlur: true)
+                                    ->hint(fn($state) => number_format($state))
+                                    ->hintColor('info')
+                                    ->numeric()
+                                    ->rules(['regex:/^-?\d+(\.\d{1,2})?$/'])
+                                    ->maxValue(fn($record) => $record->total - $record->paid),
+                            ])
+                        ->action(function (array $data, Order $record) {
 
-                        $record->update([
-                            'paid' => $record->paid + $data['amount'],
-                        ]);
+                            $record->update([
+                                'paid' => $record->paid + $data['amount'],
+                            ]);
 
-                        $record->orderMetas()->create([
-                            'key' => 'payments',
-                            'group' => $data['payment_method'] ?? 'cash',
-                            'value' => $data['amount'],
-                        ]);
+                            $record->orderMetas()->create([
+                                'key' => 'payments',
+                                'group' => $data['payment_method'] ?? 'cash',
+                                'value' => $data['amount'],
+                            ]);
 
-                        $record->orderLogs()->create([
-                            'log' => 'دفع مبلغ ' . number_format($data['amount'], 2) . ' ' . $record->currency . ' بواسطة: ' . auth()->user()->name,
-                            'type' => 'payment',
-                        ]);
+                            $record->orderLogs()->create([
+                                'log' => 'دفع مبلغ ' . number_format($data['amount'], 2) . ' ' . $record->currency . ' بواسطة: ' . auth()->user()->name,
+                                'type' => 'payment',
+                            ]);
 
-                        if ($record->total === $record->paid) {
-                            $record->update(['status' => OrderStatus::Payed]);
-                        }
+                            if ($record->total === $record->paid) {
+                                $record->update(['status' => OrderStatus::Payed]);
+                            }
 
-                        Notification::make()
-                            ->title(__('order.actions.pay.notification.title'))
-                            ->body(__('order.actions.pay.notification.body'))
-                            ->success()
-                            ->send();
-                    }),
+                            Notification::make()
+                                ->title(__('order.actions.pay.notification.title'))
+                                ->body(__('order.actions.pay.notification.body'))
+                                ->success()
+                                ->send();
+                        }),
 
-                ViewAction::make(),
-                EditAction::make()
-                    ->visible(fn($record) => ! $record->deleted_at),
-                DeleteAction::make()
-                    ->visible(fn($record) => ! $record->deleted_at),
-                RestoreAction::make()
-                    ->requiresConfirmation()
-                    ->visible(fn($record) => $record->deleted_at && auth()->user()->can('restore_order')),
-                Action::make('forceDeleteItem')
-                    ->label('حذف نهائي')
-                    ->requiresConfirmation()
-                    ->action(fn(Model $record) => $record->forceDelete())
-                    ->color('danger')
-                    ->icon('heroicon-o-trash')
-                    ->visible(fn($record) => $record->deleted_at && auth()->user()->can('force_delete_order')),
-            ])
+                    ViewAction::make(),
+                    EditAction::make()
+                        ->visible(fn($record) => !$record->deleted_at),
+                    DeleteAction::make()
+                        ->visible(fn($record) => !$record->deleted_at),
+                    RestoreAction::make()
+                        ->requiresConfirmation()
+                        ->visible(fn($record) => $record->deleted_at && auth()->user()->can('restore_order')),
+                    Action::make('forceDeleteItem')
+                        ->label('حذف نهائي')
+                        ->requiresConfirmation()
+                        ->action(fn(Model $record) => $record->forceDelete())
+                        ->color('danger')
+                        ->icon('heroicon-o-trash')
+                        ->visible(fn($record) => $record->deleted_at && auth()->user()->can('force_delete_order')),
+                ])
             ->defaultSort('created_at', 'desc')
             ->groupedBulkActions([
-                BulkAction::make('forceDelete')
-                    ->label('حذف نهائي للمحدد')
-                    ->requiresConfirmation()
-                    ->action(fn(Collection $records) => $records->each->forceDelete())
-                    ->color('danger')
-                    ->icon('heroicon-o-trash')
-                    ->visible(fn() => auth()->user()->can('force_delete_any_order')),
-                DeleteBulkAction::make()
-                    ->requiresConfirmation(),
-            ])
+                    BulkAction::make('forceDelete')
+                        ->label('حذف نهائي للمحدد')
+                        ->requiresConfirmation()
+                        ->action(fn(Collection $records) => $records->each->forceDelete())
+                        ->color('danger')
+                        ->icon('heroicon-o-trash')
+                        ->visible(fn() => auth()->user()->can('force_delete_any_order')),
+                    DeleteBulkAction::make()
+                        ->requiresConfirmation(),
+                ])
             ->groups([
-                Tables\Grouping\Group::make('created_at')
-                    ->label('Order Date')
-                    ->date()
-                    ->collapsible(),
-            ]);
+                    Tables\Grouping\Group::make('created_at')
+                        ->label('Order Date')
+                        ->date()
+                        ->collapsible(),
+                ]);
     }
 
     public static function getRelations(): array
@@ -453,25 +453,25 @@ class OrderResource extends Resource
                 ->placeholder(__('order.fields.customer.placeholder'))
                 ->relationship('registeredCustomer', 'name')
                 ->searchable()
-                ->required(fn(Get $get) => ! $get('is_guest'))
+                ->required(fn(Get $get) => !$get('is_guest'))
                 ->preload()
-                ->visible(fn(Get $get) => ! $get('is_guest'))
+                ->visible(fn(Get $get) => !$get('is_guest'))
                 ->createOptionForm([
-                    TextInput::make('name')
-                        ->label(__('customer.fields.name.label'))
-                        ->required()
-                        ->maxLength(255),
-                    TextInput::make('email')
-                        ->label(__('customer.fields.email.label'))
-                        ->email()
-                        ->maxLength(255)
-                        ->unique(),
-                    TextInput::make('phone')
-                        ->label(__('customer.fields.phone.label'))
-                        ->maxLength(255),
-                    Hidden::make('branch_id')
-                        ->default(Filament::getTenant()->id),
-                ])
+                        TextInput::make('name')
+                            ->label(__('customer.fields.name.label'))
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('email')
+                            ->label(__('customer.fields.email.label'))
+                            ->email()
+                            ->maxLength(255)
+                            ->unique(),
+                        TextInput::make('phone')
+                            ->label(__('customer.fields.phone.label'))
+                            ->maxLength(255),
+                        Hidden::make('branch_id')
+                            ->default(Filament::getTenant()->id),
+                    ])
                 ->createOptionAction(fn(Action $action) => $action
                     ->modalHeading(__('customer.actions.create.modal.heading'))
                     ->modalSubmitActionLabel(__('customer.actions.create.modal.submit'))
@@ -486,17 +486,17 @@ class OrderResource extends Resource
 
             Section::make(__('order.sections.guest_customer.label'))
                 ->schema([
-                    TextInput::make('guest_customer.name')
-                        ->label(__('order.fields.guest_customer.name.label'))
-                        ->required(fn(Get $get) => $get('is_guest')),
-                    TextInput::make('guest_customer.email')
-                        ->label(__('order.fields.guest_customer.email.label'))
-                        ->email(),
-                    TextInput::make('guest_customer.phone')
-                        ->label(__('order.fields.guest_customer.phone.label'))
-                        ->tel()
-                        ->prefix('+'),
-                ])->columns(3)
+                        TextInput::make('guest_customer.name')
+                            ->label(__('order.fields.guest_customer.name.label'))
+                            ->required(fn(Get $get) => $get('is_guest')),
+                        TextInput::make('guest_customer.email')
+                            ->label(__('order.fields.guest_customer.email.label'))
+                            ->email(),
+                        TextInput::make('guest_customer.phone')
+                            ->label(__('order.fields.guest_customer.phone.label'))
+                            ->tel()
+                            ->prefix('+'),
+                    ])->columns(3)
                 ->columnSpanFull()
                 ->visible(fn(Get $get) => $get('is_guest')),
         ];
@@ -520,9 +520,9 @@ class OrderResource extends Resource
                 ->searchable()
                 ->default('SDG')
                 ->options([
-                    'SDG' => 'SDG',
-                    'USD' => 'USD',
-                ])
+                        'SDG' => 'SDG',
+                        'USD' => 'USD',
+                    ])
                 ->required(),
         ];
     }
@@ -536,60 +536,60 @@ class OrderResource extends Resource
             ->label(__('order.fields.items.label'))
             ->itemLabel(fn(array $state): string => Product::find($state['product_id'])?->name ?? 'Order Item')
             ->schema([
-                Select::make('product_id')
-                    ->label(__('order.fields.items.product.label'))
-                    ->placeholder(__('order.fields.items.product.placeholder'))
-                    ->options(
-                        Product::whereHas('branches', fn($query) => $query->where('branches.id', Filament::getTenant()->id))
-                            ->get()
-                            ->mapWithKeys(fn(Product $product) => [
-                                $product->id => sprintf(
-                                    '%s - %s ($%s) [%s]',
-                                    $product->name,
-                                    $product->category?->name,
-                                    $product->price,
-                                    $product->stock_for_current_branch
-                                ),
+                    Select::make('product_id')
+                        ->label(__('order.fields.items.product.label'))
+                        ->placeholder(__('order.fields.items.product.placeholder'))
+                        ->options(
+                            Product::whereHas('branches', fn($query) => $query->where('branches.id', Filament::getTenant()->id))
+                                ->get()
+                                ->mapWithKeys(fn(Product $product) => [
+                                    $product->id => sprintf(
+                                        '%s - %s ($%s) [%s]',
+                                        $product->name,
+                                        $product->category?->name,
+                                        $product->price,
+                                        $product->stock_for_current_branch
+                                    ),
+                                ])
+                        )
+                        ->required()
+                        ->disableOptionsWhenSelectedInSiblingRepeaterItems()
+                        ->columnSpan([
+                                'lg' => 1,
+                                'md' => 2,
+                                'sm' => 'full',
                             ])
-                    )
-                    ->required()
-                    ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                    ->columnSpan([
-                        'lg' => 1,
-                        'md' => 2,
-                        'sm' => 'full',
-                    ])
-                    ->searchable(),
+                        ->searchable(),
 
-                TextInput::make('description')
-                    ->label(__('order.fields.items.description.label'))
-                    ->columnSpan([
-                        'lg' => 1,
-                        'md' => 2,
-                        'sm' => 'full',
-                    ]),
+                    TextInput::make('description')
+                        ->label(__('order.fields.items.description.label'))
+                        ->columnSpan([
+                                'lg' => 1,
+                                'md' => 2,
+                                'sm' => 'full',
+                            ]),
 
-                Group::make()
-                    ->columns(4)->columnSpanFull()->schema([
-                        DecimalInput::make('price')
-                            ->label(__('order.fields.items.price.label'))
-                            ->columnSpan(1),
+                    Group::make()
+                        ->columns(4)->columnSpanFull()->schema([
+                                DecimalInput::make('price')
+                                    ->label(__('order.fields.items.price.label'))
+                                    ->columnSpan(1),
 
-                        DecimalInput::make('qty')
-                            ->columnSpan(1)
-                            ->label(__('order.fields.items.qty.label')),
+                                DecimalInput::make('qty')
+                                    ->columnSpan(1)
+                                    ->label(__('order.fields.items.qty.label')),
 
-                        DecimalInput::make('sub_discount')
-                            ->label(__('order.fields.items.sub_discount.label'))
-                            ->columnSpan(1),
+                                DecimalInput::make('sub_discount')
+                                    ->label(__('order.fields.items.sub_discount.label'))
+                                    ->columnSpan(1),
 
-                        DecimalInput::make('sub_total')
-                            ->label(__('order.fields.items.sub_total.label'))
-                            ->columnSpan(1)
-                            ->readOnly()
-                            ->dehydrated(true),
-                    ]),
-            ])
+                                DecimalInput::make('sub_total')
+                                    ->label(__('order.fields.items.sub_total.label'))
+                                    ->columnSpan(1)
+                                    ->readOnly()
+                                    ->dehydrated(true),
+                            ]),
+                ])
             ->live(onBlur: true)
             ->afterStateUpdated(fn(Get $get, Set $set) => self::calculate($get, $set))
             ->columns(2)

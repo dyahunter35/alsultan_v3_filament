@@ -6,8 +6,10 @@ use App\Filament\Pages\Dashboard\Widgets\ExpiringDocumentsWidget;
 use App\Filament\Pages\Dashboard\Widgets\StatsWidget;
 use App\Filament\Resources\Orders\Widgets\Chart;
 use App\Filament\Resources\Orders\Widgets\LatestOrders;
+use App\Filament\Resources\Orders\Widgets\OrderStats;
 use App\Filament\Resources\Orders\Widgets\SalesChart;
 use App\Filament\Resources\Orders\Widgets\SalesStats;
+use App\Filament\Widgets\DashoardLinks;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Pages\Dashboard as BaseDashboard;
 
@@ -39,11 +41,12 @@ class MainDashboard extends BaseDashboard
     {
         return [
             // StatsWidget::class,
-
+            /*DashoardLinks::class,
             SalesStats::class,
             SalesChart::class,
             Chart::class,
             LatestOrders::class,
+            OrderStats::class, */
         ];
     }
 

@@ -74,4 +74,9 @@ class StockHistory extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function truck(): BelongsTo
+    {
+        return $this->belongsTo(Truck::class);
+    }
 }

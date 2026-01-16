@@ -92,4 +92,9 @@ return [
         'heading' => 'تقرير التوريدات',
         'icon' => 'heroicon-o-currency-dollar',
     ],
+    'product_history_report' => [
+        'heading' => 'تقرير حركة المنتج',
+        'icon' => 'heroicon-m-clipboard-document-list',
+        'sort' => 7,
+    ],
 ];
