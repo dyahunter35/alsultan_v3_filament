@@ -13,6 +13,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Livewire\Attributes\Url;
 use Illuminate\Support\Collection;
@@ -21,14 +22,12 @@ class BranchProductStockReport extends Page implements HasForms
 {
     use HasReport, InteractsWithForms;
 
-    //protected static bool $isScopedToTenant = true;
     protected string $view = 'filament.pages.reports.branch-product-stock-report';
 
     #[Url] public ?int $productId = null;
     #[Url] public ?int $branchId = null;
-    #[Url] public ?bool $withZero = null;
+    #[Url] public bool $withZero = false; // جعل القيمة الافتراضية false
 
-    // سنخزن البيانات المعالجة هنا
     public Collection $reportData;
     public $branch;
 
@@ -42,14 +41,13 @@ class BranchProductStockReport extends Page implements HasForms
     {
         $this->branch = Branch::find($this->branchId) ?? Filament::getTenant();
 
-        // 1. جلب البيانات الخام مع العلاقات اللازمة فقط
         $rawProducts = Product::query()
             ->withOutGlobalScope(IsVisibleScope::class)
             ->with(['history' => fn($q) => $q->where('branch_id', $this->branchId)])
             ->when($this->productId, fn($q) => $q->where('id', $this->productId))
             ->get();
 
-        // 2. استخدام Collection Map لفصل المنطق الحسابي
+        // معالجة البيانات والفلترة
         $this->reportData = $rawProducts->map(function ($product) {
             $history = $product->history;
 
@@ -57,6 +55,7 @@ class BranchProductStockReport extends Page implements HasForms
             $increase = $history->where('type', StockCase::Increase)->sum('quantity_change');
             $decrease = $history->where('type', StockCase::Decrease)->sum('quantity_change');
             $net = ($initial + $increase) - $decrease;
+
             return (object) [
                 'id' => $product->id,
                 'name' => $product->name,
@@ -65,14 +64,12 @@ class BranchProductStockReport extends Page implements HasForms
                 'decrease' => $decrease,
                 'current_balance' => $net,
             ];
-        });
+        })
+            // تحسين: الفلترة تتم هنا وليس في الـ Blade
+            ->when(!$this->withZero, function ($collection) {
+                return $collection->where('current_balance', '!=', 0);
+            });
     }
-
-    // حساب الإجمالي العام للتقرير ليتم عرضه في الـ Footer
-    /* public function getTotalInventoryProperty(): float
-    {
-        return $this->reportData->sum('current_balance');
-    } */
 
     protected function getFormSchema(): array
     {
@@ -82,21 +79,41 @@ class BranchProductStockReport extends Page implements HasForms
                     ->label('المخزن المختار')
                     ->options(Branch::pluck('name', 'id'))
                     ->live()
-                    ->afterStateUpdated($this->loadData()),
+                    ->afterStateUpdated(fn() => $this->loadData()),
+
                 Select::make('productId')
                     ->label('المنتج')
                     ->options(Product::pluck('name', 'id'))
                     ->searchable()
                     ->live()
-                    ->afterStateUpdated($this->loadData()),
+                    ->afterStateUpdated(fn() => $this->loadData()),
 
                 ToggleButtons::make('withZero')
-                    ->boolean('تضمين', 'عدم التضمين')
-                    ->label('تضمين المنتجات الصفرية')
+                    ->label('المنتجات الصفرية')
+                    ->options([
+                            true => 'تضمين',
+                            false => 'إخفاء',
+                        ])
+                    ->colors([
+                            true => 'success',
+                            false => 'gray',
+                        ])
+                    ->icons([
+                            true => 'heroicon-o-eye',
+                            false => 'heroicon-o-eye-slash',
+                        ])
+                    ->default(false)
                     ->live()
                     ->inline()
-                    ->afterStateUpdated($this->loadData())
+                    ->afterStateUpdated(fn() => $this->loadData())
             ]),
         ];
+    }
+
+    public function updateQty()
+    {
+        app(InventoryService::class)->updateAllBranches();
+        Notification::make()->title('تم تحديث المخزون')->success()->send();
+        $this->loadData(); // تحديث البيانات بعد المزامنة
     }
 }

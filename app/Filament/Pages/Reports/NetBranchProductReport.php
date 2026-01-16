@@ -10,11 +10,12 @@ use App\Models\Scopes\IsVisibleScope;
 use App\Services\InventoryService;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Url;
 
@@ -26,19 +27,19 @@ class NetBranchProductReport extends Page implements HasForms
     protected string $view = 'filament.pages.reports.net_branch_product_report';
     protected static ?string $navigationLabel = 'تقرير جرد الفروع التراكمي';
 
-    #[Url] public ?int $branchId = null;
+    #[Url] public $branchId = [];
     #[Url] public ?int $productId = null;
+    #[Url] public bool $withZero = false; // القيمة الافتراضية عدم التضمين
 
-    // البيانات المعالجة للعرض
     public Collection $branches;
     public Collection $reportData;
-    public array $footerTotals = [];
 
     public function mount(): void
     {
         $this->form->fill([
             'branchId' => $this->branchId,
             'productId' => $this->productId,
+            'withZero' => $this->withZero,
         ]);
         $this->loadData();
     }
@@ -50,30 +51,41 @@ class NetBranchProductReport extends Page implements HasForms
                 Select::make('branchId')
                     ->label('المخزن / الفرع')
                     ->options(Branch::pluck('name', 'id'))
-                    ->placeholder('كافة الفروع')
                     ->live()
+                    ->suffixAction(Action::make('clear')
+                        ->color('danger')
+                        ->icon(Heroicon::Trash)
+                        ->action(fn() => [$this->branchId = [], $this->loadData()]))
+                    ->multiple()
                     ->afterStateUpdated(fn() => $this->loadData()),
 
                 Select::make('productId')
                     ->label('المنتج')
                     ->options(Product::pluck('name', 'id'))
-                    ->placeholder('كافة المنتجات')
                     ->searchable()
                     ->live()
+                    ->afterStateUpdated(fn() => $this->loadData()),
+
+                ToggleButtons::make('withZero')
+                    ->label('المنتجات الصفرية')
+                    ->options([
+                            true => 'تضمين الكل',
+                            false => 'إخفاء الصفرية تماماً',
+                        ])
+                    ->icons([true => 'heroicon-o-eye', false => 'heroicon-o-eye-slash'])
+                    ->colors([true => 'success', false => 'gray'])
+                    ->default(false)
+                    ->live()
+                    ->inline()
                     ->afterStateUpdated(fn() => $this->loadData()),
             ]),
         ];
     }
 
-    /**
-     * منطق معالجة البيانات وتحويلها (Logic Logic)
-     */
     public function loadData(): void
     {
-        // 1. تحديد الفروع التي ستظهر كأعمدة
-        $this->branches = Branch::when($this->branchId, fn($q) => $q->where('id', $this->branchId))->get();
+        $this->branches = Branch::when($this->branchId, fn($q) => $q->whereIn('id', $this->branchId))->get();
 
-        // 2. جلب المنتجات مع بيانات الـ Pivot بكفاءة
         $products = Product::query()
             ->withOutGlobalScope(IsVisibleScope::class)
             ->with([
@@ -86,7 +98,6 @@ class NetBranchProductReport extends Page implements HasForms
             ->when($this->productId, fn($q) => $q->where('id', $this->productId))
             ->get();
 
-        // 3. استخدام Map لتحويل المنتجات إلى كائنات بيانات بسيطة
         $this->reportData = $products->map(function ($product) {
             $balances = [];
             foreach ($this->branches as $branch) {
@@ -94,57 +105,40 @@ class NetBranchProductReport extends Page implements HasForms
                 $balances[$branch->id] = $branchData?->pivot->total_quantity ?? 0;
             }
 
-            // --- حسابات الشاحنات بناءً على الحالات المطلوبة ---
-            // نقوم بفلترة حركات الشاحنات المرتبطة بهذا المنتج فقط
+            // جلب كميات الشاحنات (Cargo)
             $truckQuantities = \App\Models\TruckCargo::where('product_id', $product->id)
                 ->whereHas('truck', function ($q) {
                     $q->whereIn('truck_status', [TruckState::barn->value, TruckState::port->value]);
                 })
                 ->get();
 
+            $barnQty = $truckQuantities->where('truck.truck_status', TruckState::barn->value)->sum('quantity');
+            $portQty = $truckQuantities->where('truck.truck_status', TruckState::port->value)->sum('quantity');
+            $branchesTotal = array_sum($balances);
+
             return (object) [
                 'name' => $product->name,
                 'balances' => $balances,
-                // كمية الحظيرة
-                'barn_qty' => $truckQuantities->where('truck.truck_status', TruckState::barn->value)->sum('quantity'),
-                // كمية الميناء
-                'port_qty' => $truckQuantities->where('truck.truck_status', TruckState::port->value)->sum('quantity'),
-                //'row_total' => array_sum($balances),
+                'barn_qty' => $barnQty,
+                'port_qty' => $portQty,
+                'branches_total' => $branchesTotal,
+                // المجموع الشامل لكل شيء
+                'grand_total' => $branchesTotal + $barnQty + $portQty,
             ];
-        });
-
-        // 4. حساب إجمالي الأعمدة للـ Footer
-        $this->calculateFooterTotals();
+        })
+            // --- المنطق المطلوب هنا ---
+            ->when(!$this->withZero, function ($collection) {
+                return $collection->filter(function ($item) {
+                    // اظهر المنتج إذا كان لديه رصيد في الفروع OR الحظيرة OR الميناء
+                    return $item->branches_total != 0 || $item->barn_qty != 0 || $item->port_qty != 0;
+                });
+            });
     }
 
-    /* private function calculateFooterTotals(): void
+    public function updateQty()
     {
-        $totals = [];
-        foreach ($this->branches as $branch) {
-            $totals[$branch->id] = $this->reportData->sum(fn($row) => $row->balances[$branch->id]);
-        }
-        $totals['grand_total'] = $this->reportData->sum('row_total');
-
-        $this->footerTotals = $totals;
-    } */
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            Action::make('refresh')
-                ->label('تحديث الكميات')
-                ->icon('heroicon-o-arrow-path')
-                ->color('warning')
-                ->action(function () {
-                    app(InventoryService::class)->updateAllBranches();
-                    Notification::make()->title('تم تحديث المخزون')->success()->send();
-                    $this->loadData();
-                }),
-            Action::make('print')
-                ->label('طباعة')
-                ->icon('heroicon-o-printer')
-                ->color('info')
-                ->action(fn() => $this->js('window.print()')),
-        ];
+        app(InventoryService::class)->updateAllBranches();
+        Notification::make()->title('تم تحديث المخزون')->success()->send();
+        $this->loadData();
     }
 }
