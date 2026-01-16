@@ -88,6 +88,12 @@ class DelegateService
         // 5. رصيد عابر
         $transactions = $transactions->merge($this->getRepresentativeExpenseTransactions($delegate, $formattedStartDate, $formattedEndDate));
 
+        // 6. سلف الموظفين
+        $transactions = $transactions->merge($this->getSalaryAdvanceTransactions($delegate, $formattedStartDate, $formattedEndDate));
+
+        // 7. رواتب الموظفين
+        $transactions = $transactions->merge($this->getSalaryPaymentTransactions($delegate, $formattedStartDate, $formattedEndDate));
+
         $sorted = $transactions->sortBy('date')->values();
         $ledger = collect();
 
@@ -230,6 +236,50 @@ class DelegateService
                 'customer_payment' => $e->total_amount,
                 'amount_in' => $e->total_amount,
                 'amount_out' => $e->total_amount,
+            ]);
+    }
+
+    private function getSalaryAdvanceTransactions(User $delegate, ?Carbon $startDate, ?Carbon $endDate): Collection
+    {
+        return $delegate->salaryAdvancesAsPayer()
+            ->when($startDate, fn($q) => $q->where('created_at', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->where('created_at', '<=', $endDate))
+            ->with('employee')
+            ->get()
+            ->map(fn($item) => [
+                'date' => $item->created_at,
+                'transaction_name' => 'سلفة موظف',
+                'description' => 'صرف سلفة للموظف: ' . ($item->employee?->name ?? '-'),
+                'details' => $item->notes ?? 'سلفة نقدية',
+                'customer_name' => '-',
+                'treasury_debit' => 0,
+                'treasury_credit' => $item->amount,
+                'customer_sales' => 0,
+                'customer_payment' => 0,
+                'amount_in' => 0,
+                'amount_out' => $item->amount,
+            ]);
+    }
+
+    private function getSalaryPaymentTransactions(User $delegate, ?Carbon $startDate, ?Carbon $endDate): Collection
+    {
+        return $delegate->salaryPaymentsAsPayer()
+            ->when($startDate, fn($q) => $q->where('payment_date', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->where('payment_date', '<=', $endDate))
+            ->with('employee')
+            ->get()
+            ->map(fn($item) => [
+                'date' => Carbon::parse($item->payment_date),
+                'transaction_name' => 'صرف راتب',
+                'description' => 'راتب شهر: ' . $item->for_month . ' - للموظف: ' . ($item->employee?->name ?? '-'),
+                'details' => $item->notes ?? 'صرف راتب شهري',
+                'customer_name' => '-',
+                'treasury_debit' => 0,
+                'treasury_credit' => $item->net_pay,
+                'customer_sales' => 0,
+                'customer_payment' => 0,
+                'amount_in' => 0,
+                'amount_out' => $item->net_pay,
             ]);
     }
 }

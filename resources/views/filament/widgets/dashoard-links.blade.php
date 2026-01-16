@@ -1,5 +1,6 @@
 <x-filament-widgets::widget>
     <x-filament::section shadow>
+        {{--    
         <x-slot name="heading">
             <div class="flex items-center gap-2">
                 <x-filament::icon 
@@ -9,6 +10,7 @@
                 <span class="text-base font-bold">الوصول السريع للمهام</span>
             </div>
         </x-slot>
+        --}}  
 
         <div class="py-2">
             {{-- شبكة البطاقات --}}

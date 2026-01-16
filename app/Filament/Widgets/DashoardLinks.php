@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Enums\OrderStatus;
 use App\Enums\TruckState;
+use App\Filament\Resources\InnerTrucks\InnerTruckResource;
 use App\Filament\Resources\Orders\OrderResource;
 use App\Filament\Resources\Supplyings\SupplyingResource;
 use App\Filament\Resources\Trucks\TruckResource;
@@ -25,7 +26,7 @@ class DashoardLinks extends Widget
                 'icon' => 'heroicon-o-shopping-cart',
                 'color' => 'success',
                 'url' => OrderResource::getUrl('create'),
-                'value' => 12000,
+                'value' => \App\Models\Order::whereIn('status', [OrderStatus::New , OrderStatus::Processing])->count(), // عداد حقيقي
             ],
             [
                 'title' => 'توريدة جديدة',
@@ -35,20 +36,26 @@ class DashoardLinks extends Widget
                 'value' => null,
             ],
             [
-                'title' => 'الطلبات المعلقة',
-                'icon' => 'heroicon-o-clock',
-                'color' => 'warning',
-                'url' => OrderResource::getUrl('index', ['tab' => 'processing']),
-                'value' => \App\Models\Order::where('status', OrderStatus::Processing)->count(), // عداد حقيقي
+                'title' => 'الشحن الخارجي',
+                'icon' => 'heroicon-o-truck',
+                'color' => 'gray',
+                'url' => TruckResource::getUrl('index'),
+                'value' => \App\Models\Truck::out()->where('truck_status', TruckState::OnWay)->count(), // عداد حقيقي
             ],
             [
                 'title' => 'الشحن الداخلي',
                 'icon' => 'heroicon-o-truck',
-                'color' => 'info',
-                'url' => TruckResource::getUrl('index', ['status' => 'internal']),
+                'color' => 'gray',
+                'url' => InnerTruckResource::getUrl('index'),
                 'value' => \App\Models\Truck::local()->where('truck_status', TruckState::OnWay)->count(), // عداد حقيقي
             ],
-            // يمكنك إضافة المزيد هنا بسهولة
+            [
+                'title' => 'الطلبات المعلقة',
+                'icon' => 'heroicon-o-clock',
+                'color' => 'danger',
+                'url' => OrderResource::getUrl('index', ['tab' => 'processing']),
+                'value' => \App\Models\Order::where('status', OrderStatus::Processing)->count(), // عداد حقيقي
+            ],
         ];
     }
 }

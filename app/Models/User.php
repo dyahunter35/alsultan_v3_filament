@@ -38,6 +38,8 @@ class User extends Authenticatable implements HasTenants
         'balance',
         'email',
         'password',
+        'base_salary',
+        'hourly_rate',
     ];
 
     /* protected $appends = [
@@ -129,4 +131,14 @@ class User extends Authenticatable implements HasTenants
     {
         return $this->hasMany(Supplying::class, 'representative_id');
     } */
+
+    public function salaryAdvancesAsPayer()
+    {
+        return $this->hasMany(SalaryAdvance::class, 'payer_id');
+    }
+
+    public function salaryPaymentsAsPayer()
+    {
+        return $this->hasMany(SalaryPayment::class, 'payer_id');
+    }
 }
