@@ -8,6 +8,7 @@ use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -25,7 +26,7 @@ class Product extends Model implements HasMedia
     }
 
     /** @return BelonngsTo<Category> */
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
@@ -60,7 +61,7 @@ class Product extends Model implements HasMedia
                 $currentBranch = Filament::getTenant();
 
                 // 2. If there is no active branch, return 0
-                if (! $currentBranch) {
+                if (!$currentBranch) {
                     return 0;
                 }
 
@@ -79,7 +80,7 @@ class Product extends Model implements HasMedia
     public function totalStock(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->branches()->sum('total_quantity'),
+            get: fn() => $this->branches()->sum('total_quantity'),
         );
     }
 
@@ -88,7 +89,7 @@ class Product extends Model implements HasMedia
         return Attribute::make(
             // The 'history' relationship already orders by the latest,
             // so we just need to get the first record.
-            get: fn () => $this->history()->first(),
+            get: fn() => $this->history()->first(),
         );
     }
 

@@ -16,12 +16,12 @@
     "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-Cnl__cfU.css",
+    "file": "assets/app-CmYxrwAa.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/css/filament/admin/theme.css": {
-    "file": "assets/theme-Bj_pCuZp.css",
+    "file": "assets/theme-mFovMBRm.css",
     "src": "resources/css/filament/admin/theme.css",
     "isEntry": true
   },

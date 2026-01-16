@@ -51,12 +51,12 @@ return [
         'sort' => 6,
     ],
 
-    'product_branch_stock_report' => [
-        'heading' => 'Branch Stock Report :b',
+    'branch_product_stock_report' => [
+        'heading' => 'Branch Stock Full Report',
         'sort' => 6,
     ],
 
-    'product_stock_report' => [
+    'net_branch_product_report' => [
         'heading' => 'All Stores Stock Report',
         'icon' => 'heroicon-m-archive-box',
         'sort' => 6,

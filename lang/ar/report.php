@@ -43,14 +43,14 @@ return [
         'sort' => 6,
     ],
 
-    'product_branch_stock_report' => [
-        'heading' => 'تقرير مخزن :b',
+    'branch_product_stock_report' => [
+        'heading' => 'تقرير المخازن المفصل',
         'icon' => 'heroicon-m-archive-box',
 
         'sort' => 6,
 
     ],
-    'product_stock_report' => [
+    'net_branch_product_report' => [
         'heading' => 'تقرير جميع المخازن',
         'icon' => 'heroicon-m-archive-box',
         'sort' => 6,

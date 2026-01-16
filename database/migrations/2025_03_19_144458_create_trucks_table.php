@@ -8,8 +8,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -37,7 +36,7 @@ return new class extends Migration
             $table->foreignIdFor(Branch::class, 'branch_to')->comment('الفرع');
 
             $table->date('arrive_date')->nullable()->comment('تاريخ الوصول');
-            $table->enum('truck_status', TruckState::getKeys())->comment('١ -خارجي , ٢ - داخلي');
+            $table->enum('truck_status', TruckState::getKeys());
             $table->enum('type', TruckType::getKeys());
             $table->boolean('is_converted')->comment('1 -تم التحويل , 0 - لم يتم')->default(0);
             $table->string('note')->nullable();

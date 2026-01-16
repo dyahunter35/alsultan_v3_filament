@@ -86,115 +86,115 @@ class ProductResource extends Resource
     {
         return $schema
             ->components([
-                Group::make()
-                    ->schema([
-                        Section::make()
-                            ->schema([
-                                TextInput::make('name')
-                                    ->label(__('product.fields.name.label'))
-                                    ->placeholder(__('product.fields.name.placeholder'))
-                                    ->required()
-                                    ->live(onBlur: true)
-                                    ->afterStateUpdated(fn (string $operation, $state, Set $set) => $set('slug', Str::slug($state))),
-
-                                TextInput::make('slug')
-                                    ->label(__('product.fields.slug.label'))
-                                    ->disabled()
-                                    ->dehydrated()
-                                    ->required()
-                                    ->unique(Product::class, 'slug', ignoreRecord: true),
-
-                                MarkdownEditor::make('description')
-                                    ->label(__('product.fields.description.label'))
-                                    ->placeholder(__('product.fields.description.placeholder'))
-                                    ->columnSpan('full'),
-                            ])
-                            ->columns(2)
-                            ->columnSpan(['lg' => 2]),
-
-                        Grid::make(2)
-                            ->schema([
-                                Section::make(__('product.sections.pricing.label'))
+                    Group::make()
+                        ->schema([
+                                Section::make()
                                     ->schema([
-                                        TextInput::make('price')
-                                            ->label(__('product.fields.price.label'))
-                                            ->numeric()
-                                            ->required(),
+                                            TextInput::make('name')
+                                                ->label(__('product.fields.name.label'))
+                                                ->placeholder(__('product.fields.name.placeholder'))
+                                                ->required()
+                                                ->live(onBlur: true)
+                                                ->afterStateUpdated(fn(string $operation, $state, Set $set) => $set('slug', Str::slug($state))),
 
-                                    ])
-                                    ->columnSpan(1),
-                                Section::make(__('product.sections.inventory.label'))
+                                            TextInput::make('slug')
+                                                ->label(__('product.fields.slug.label'))
+                                                ->disabled()
+                                                ->dehydrated()
+                                                ->required()
+                                                ->unique(Product::class, 'slug', ignoreRecord: true),
+
+                                            MarkdownEditor::make('description')
+                                                ->label(__('product.fields.description.label'))
+                                                ->placeholder(__('product.fields.description.placeholder'))
+                                                ->columnSpan('full'),
+                                        ])
+                                    ->columns(2)
+                                    ->columnSpan(['lg' => 2]),
+
+                                Grid::make(2)
                                     ->schema([
-                                        TextInput::make('security_stock')
-                                            ->label(__('product.fields.security_stock.label'))
-                                            ->helperText(__('product.fields.security_stock.helper'))
-                                            ->numeric()
-                                            ->rules(['integer', 'min:0'])
-                                            ->required(),
+                                            Section::make(__('product.sections.pricing.label'))
+                                                ->schema([
+                                                        TextInput::make('price')
+                                                            ->label(__('product.fields.price.label'))
+                                                            ->numeric()
+                                                            ->required(),
 
+                                                    ])
+                                                ->columnSpan(1),
+                                            Section::make(__('product.sections.inventory.label'))
+                                                ->schema([
+                                                        TextInput::make('security_stock')
+                                                            ->label(__('product.fields.security_stock.label'))
+                                                            ->helperText(__('product.fields.security_stock.helper'))
+                                                            ->numeric()
+                                                            ->rules(['integer', 'min:0'])
+                                                            ->required(),
+
+                                                    ])
+                                                ->columnSpan(1),
+                                        ])->columnSpan(2),
+
+                                /* Forms\Components\Section::make(__('product.sections.shipping.label'))
+                                    ->schema([
+                                        Forms\Components\Checkbox::make('backorder')
+                                            ->label(__('product.fields.backorder.label')),
+
+                                        Forms\Components\Checkbox::make('requires_shipping')
+                                            ->label(__('product.fields.requires_shipping.label')),
                                     ])
-                                    ->columnSpan(1),
-                            ])->columnSpan(2),
+                                    ->columns(2), */
 
-                        /* Forms\Components\Section::make(__('product.sections.shipping.label'))
-                            ->schema([
-                                Forms\Components\Checkbox::make('backorder')
-                                    ->label(__('product.fields.backorder.label')),
-
-                                Forms\Components\Checkbox::make('requires_shipping')
-                                    ->label(__('product.fields.requires_shipping.label')),
                             ])
-                            ->columns(2), */
+                        ->columns(2)
+                        ->columnSpan(['lg' => 2]),
 
-                    ])
-                    ->columns(2)
-                    ->columnSpan(['lg' => 2]),
+                    Group::make()
+                        ->schema([
+                                Section::make(__('product.sections.images.label'))
+                                    ->schema([
+                                            SpatieMediaLibraryFileUpload::make('media')
+                                                ->collection('product-images')
+                                                ->multiple()
+                                                ->maxFiles(5)
+                                                ->hiddenLabel(),
+                                        ])
+                                    ->collapsible(),
 
-                Group::make()
-                    ->schema([
-                        Section::make(__('product.sections.images.label'))
-                            ->schema([
-                                SpatieMediaLibraryFileUpload::make('media')
-                                    ->collection('product-images')
-                                    ->multiple()
-                                    ->maxFiles(5)
-                                    ->hiddenLabel(),
+                                Section::make(__('product.sections.status.label'))
+                                    ->schema([
+                                            Toggle::make('is_visible')
+                                                ->label(__('product.fields.is_visible.label'))
+                                                ->helperText(__('product.fields.is_visible.helper'))
+                                                ->default(true),
+
+                                            /* DatePicker::make('published_at')
+                                                ->label(__('product.fields.published_at.label'))
+                                                ->default(now())
+                                                ->required(), */
+                                        ]),
+
+                                Section::make(__('product.sections.associations.label'))
+                                    ->schema([
+                                            Select::make('branches')
+                                                ->label(__('product.fields.branch.label'))
+                                                ->placeholder(__('product.fields.branch.placeholder'))
+                                                ->relationship('branches', 'name')
+                                                ->multiple()
+                                                ->preload()
+                                                ->searchable(),
+
+                                            Select::make('category_id')
+                                                ->label(__('product.fields.category.label'))
+                                                ->placeholder(__('product.fields.category.placeholder'))
+                                                ->relationship('category', 'name')
+                                                ->preload()
+                                                ->required(),
+                                        ]),
                             ])
-                            ->collapsible(),
-
-                        Section::make(__('product.sections.status.label'))
-                            ->schema([
-                                Toggle::make('is_visible')
-                                    ->label(__('product.fields.is_visible.label'))
-                                    ->helperText(__('product.fields.is_visible.helper'))
-                                    ->default(true),
-
-                                /* DatePicker::make('published_at')
-                                    ->label(__('product.fields.published_at.label'))
-                                    ->default(now())
-                                    ->required(), */
-                            ]),
-
-                        Section::make(__('product.sections.associations.label'))
-                            ->schema([
-                                Select::make('branches')
-                                    ->label(__('product.fields.branch.label'))
-                                    ->placeholder(__('product.fields.branch.placeholder'))
-                                    ->relationship('branches', 'name')
-                                    ->multiple()
-                                    ->preload()
-                                    ->searchable(),
-
-                                Select::make('category_id')
-                                    ->label(__('product.fields.category.label'))
-                                    ->placeholder(__('product.fields.category.placeholder'))
-                                    ->relationship('category', 'name')
-                                    ->preload()
-                                    ->required(),
-                            ]),
-                    ])
-                    ->columnSpan(['lg' => 1]),
-            ])
+                        ->columnSpan(['lg' => 1]),
+                ])
             ->columns(3);
     }
 
@@ -203,111 +203,111 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                SpatieMediaLibraryImageColumn::make('product-image')
-                    ->label(__('product.columns.image.label'))
-                    ->collection('product-images'),
+                    SpatieMediaLibraryImageColumn::make('product-image')
+                        ->label(__('product.columns.image.label'))
+                        ->collection('product-images'),
 
-                TextColumn::make('name')
-                    ->label(__('product.columns.name.label'))
-                    ->searchable()
-                    ->sortable(),
+                    TextColumn::make('name')
+                        ->label(__('product.columns.name.label'))
+                        ->searchable()
+                        ->sortable(),
 
-                TextColumn::make('category.name')
-                    ->label(__('product.columns.category.label'))
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(),
+                    TextColumn::make('category.name')
+                        ->label(__('product.columns.category.label'))
+                        ->searchable()
+                        ->sortable()
+                        ->toggleable(),
 
-                IconColumn::make('is_visible')
-                    ->label(__('product.columns.visibility.label'))
-                    ->sortable()
-                    ->boolean(),
+                    IconColumn::make('is_visible')
+                        ->label(__('product.columns.visibility.label'))
+                        ->sortable()
+                        ->boolean(),
 
-                TextColumn::make('price')
-                    ->label(__('product.columns.price.label'))
-                    ->searchable()
-                    ->sortable(),
+                    TextColumn::make('price')
+                        ->label(__('product.columns.price.label'))
+                        ->searchable()
+                        ->sortable(),
 
-                /* Tables\Columns\TextColumn::make('sku')
-                    ->label(__('product.columns.sku.label'))
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(), */
+                    /* Tables\Columns\TextColumn::make('sku')
+                        ->label(__('product.columns.sku.label'))
+                        ->searchable()
+                        ->sortable()
+                        ->toggleable(), */
 
-                TextColumn::make('security_stock')
-                    ->label(__('product.columns.security_stock.label'))
-                    ->searchable()
-                    ->sortable()
-                    // ->visible(fn() => !auth()->user()->hasRole('بائع'))
-                    ->toggleable(),
+                    TextColumn::make('security_stock')
+                        ->label(__('product.columns.security_stock.label'))
+                        ->searchable()
+                        ->sortable()
+                        // ->visible(fn() => !auth()->user()->hasRole('بائع'))
+                        ->toggleable(),
 
-                TextColumn::make('stock_for_current_branch')
-                    ->label(__('product.columns.quantity.label'))
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(),
+                    TextColumn::make('stock_for_current_branch')
+                        ->label(__('product.columns.quantity.label'))
+                        ->searchable()
+                        ->sortable()
+                        ->toggleable(),
 
-                TextColumn::make('total_stock')
-                    ->label(__('product.columns.all_branches_quantity.label'))
-                    ->searchable()
-                    ->sortable()
-                    ->color(fn ($record) => $record->total_stock > $record->security_stock ? 'success' : 'danger')
-                    ->visible(fn () => ! auth()->user()->hasRole('بائع'))
-                    ->toggleable(),
+                    TextColumn::make('total_stock')
+                        ->label(__('product.columns.all_branches_quantity.label'))
+                        ->searchable()
+                        ->sortable()
+                        ->color(fn($record) => $record->total_stock > $record->security_stock ? 'success' : 'danger')
+                        ->visible(fn() => !auth()->user()->hasRole('بائع'))
+                        ->toggleable(),
 
-                TextColumn::make('branches.name')
-                    ->label(__('product.columns.branch.label'))
-                    ->searchable()
-                    ->badge()
-                    ->visible(fn () => ! auth()->user()->hasRole('بائع'))
-                    ->sortable(),
+                    TextColumn::make('branches.name')
+                        ->label(__('product.columns.branch.label'))
+                        ->searchable()
+                        ->badge()
+                        ->visible(fn() => !auth()->user()->hasRole('بائع'))
+                        ->sortable(),
 
-                TextColumn::make('published_at')
-                    ->label(__('product.columns.publish_date.label'))
-                    ->date()
-                    ->sortable()
-                    ->toggleable()
-                    ->toggledHiddenByDefault(),
-            ])
+                    TextColumn::make('published_at')
+                        ->label(__('product.columns.publish_date.label'))
+                        ->date()
+                        ->sortable()
+                        ->toggleable()
+                        ->toggledHiddenByDefault(),
+                ])
             ->filters([
-                QueryBuilder::make()
-                    ->constraints([
-                        TextConstraint::make('name')->label(__('product.filters.constraints.name')),
-                        TextConstraint::make('slug')->label(__('product.filters.constraints.slug')),
-                        // TextConstraint::make('sku')->label(__('product.filters.constraints.sku')),
-                        // TextConstraint::make('barcode')->label(__('product.filters.constraints.barcode')),
-                        TextConstraint::make('description')->label(__('product.filters.constraints.description')),
-                        // NumberConstraint::make('old_price')->label(__('product.filters.constraints.old_price')),
-                        NumberConstraint::make('price')->label(__('product.filters.constraints.price')),
-                        // NumberConstraint::make('cost')->label(__('product.filters.constraints.cost')),
-                        NumberConstraint::make('security_stock')->label(__('product.filters.constraints.security_stock')),
-                        BooleanConstraint::make('is_visible')->label(__('product.filters.constraints.is_visible')),
-                        // BooleanConstraint::make('featured')->label(__('product.filters.constraints.featured')),
-                        // BooleanConstraint::make('backorder')->label(__('product.filters.constraints.backorder')),
-                        // BooleanConstraint::make('requires_shipping')->label(__('product.filters.constraints.requires_shipping')),
-                        // DateConstraint::make('published_at')->label(__('product.filters.constraints.published_at')),
-                    ])
-                    ->constraintPickerColumns(2),
-            ], layout: FiltersLayout::Modal)
+                    QueryBuilder::make()
+                        ->constraints([
+                                TextConstraint::make('name')->label(__('product.filters.constraints.name')),
+                                TextConstraint::make('slug')->label(__('product.filters.constraints.slug')),
+                                // TextConstraint::make('sku')->label(__('product.filters.constraints.sku')),
+                                // TextConstraint::make('barcode')->label(__('product.filters.constraints.barcode')),
+                                TextConstraint::make('description')->label(__('product.filters.constraints.description')),
+                                // NumberConstraint::make('old_price')->label(__('product.filters.constraints.old_price')),
+                                NumberConstraint::make('price')->label(__('product.filters.constraints.price')),
+                                // NumberConstraint::make('cost')->label(__('product.filters.constraints.cost')),
+                                NumberConstraint::make('security_stock')->label(__('product.filters.constraints.security_stock')),
+                                BooleanConstraint::make('is_visible')->label(__('product.filters.constraints.is_visible')),
+                                // BooleanConstraint::make('featured')->label(__('product.filters.constraints.featured')),
+                                // BooleanConstraint::make('backorder')->label(__('product.filters.constraints.backorder')),
+                                // BooleanConstraint::make('requires_shipping')->label(__('product.filters.constraints.requires_shipping')),
+                                // DateConstraint::make('published_at')->label(__('product.filters.constraints.published_at')),
+                            ])
+                        ->constraintPickerColumns(2),
+                ], layout: FiltersLayout::Modal)
             ->deferFilters()
             ->recordActions([
-                EditAction::make(),
-                Action::make('stock')
-                    ->label(__('product.actions.stock.label'))
-                    ->icon('heroicon-o-chart-bar')
-                    ->url(fn (Product $record) => ProductResource::getUrl('stock', ['record' => $record]))
-                    ->openUrlInNewTab()
-                    ->color('secondary'),
-            ])
+                    EditAction::make(),
+                    Action::make('stock')
+                        ->label(__('product.actions.stock.label'))
+                        ->icon('heroicon-o-chart-bar')
+                        //->url(fn(Product $record) => ProductResource::getUrl('stock', ['record' => $record]))
+                        ->openUrlInNewTab()
+                        ->color('secondary'),
+                ])
             ->groupedBulkActions([
-                DeleteBulkAction::make()
-                    ->action(function () {
-                        Notification::make()
-                            ->title(__('product.actions.delete.notification'))
-                            ->warning()
-                            ->send();
-                    }),
-            ]);
+                    DeleteBulkAction::make()
+                        ->action(function () {
+                            Notification::make()
+                                ->title(__('product.actions.delete.notification'))
+                                ->warning()
+                                ->send();
+                        }),
+                ]);
     }
 
     public static function getRelations(): array
@@ -323,7 +323,7 @@ class ProductResource extends Resource
             'index' => ListProducts::route('/'),
             'create' => CreateProduct::route('/create'),
             'edit' => EditProduct::route('/{record}/edit'),
-            'stock' => SingleStockReport::route('/{record}/stock-report'),
+            //'stock' => SingleStockReport::route('/{record}/stock-report'),
         ];
     }
 }
