@@ -2,7 +2,6 @@
     <x-filament::section>
         <div>
 
-
             <div class="font-sans text-gray-800">
 
                 <!-- Main Container -->
@@ -66,44 +65,45 @@
                                 <tbody>
                                     @forelse ($products as $product)
 
-                                        <tr
-                                            class="transition-colors duration-200 bg-white border-b border-gray-200 hover:bg-gray-50">
-                                            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                                {{ $product->name }}
+                                    <tr
+                                        class="transition-colors duration-200 bg-white border-b border-gray-200 hover:bg-gray-50">
+                                        <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                            {{ $product->name }}
+                                        </td>
+                                        @foreach ($branches as $branch)
+                                            @php
+                                                // البحث عن بيانات الفرع المحدد داخل علاقة المنتج بالفروع
+                                                $branchPivot = $product->branches->firstWhere('id', $branch->id);
+                                                // جلب الكمية من حقل الـ pivot أو عرض 0 إذا لم يكن المنتج مرتبطاً بالفرع
+                                                $quantityInBranch = $branchPivot?->pivot->total_quantity ?? 0;
+                                            @endphp
+                                            <td class="px-6 py-4 text-center">
+                                                {{ $quantityInBranch }}
                                             </td>
-                                            @foreach ($branches as $branch)
-                                                @php
-                                                    // البحث عن بيانات الفرع المحدد داخل علاقة المنتج بالفروع
-                                                    $branchPivot = $product->branches->firstWhere('id', $branch->id);
-                                                    // جلب الكمية من حقل الـ pivot أو عرض 0 إذا لم يكن المنتج مرتبطاً بالفرع
-                                                    $quantityInBranch = $branchPivot?->pivot->total_quantity ?? 0;
-                                                @endphp
-                                                <td class="px-6 py-4 text-center">
-                                                    {{ $quantityInBranch }}
-                                                </td>
-                                            @endforeach
-                                            <td class="px-6 py-4 font-semibold text-center text-gray-900">
-                                                {{ number_format($product->totalStock ?? 0) }}</td>
-                                            {{-- <td class="px-6 py-4 text-center">
-                                        <span
-                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            أداء مرتفع
-                                        </span>
-                                    </td> --}}
-                                        </tr>
+                                        @endforeach
+                                        <td class="px-6 py-4 font-semibold text-center text-gray-900">
+                                            {{ number_format($product->totalStock ?? 0) }}
+                                        </td>
+                                        {{-- <td class="px-6 py-4 text-center">
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                أداء مرتفع
+                                            </span>
+                                        </td> --}}
+                                    </tr>
                                     @endforeach
                                 </tbody>
 
                                 <!-- Table Footer -->
                                 {{-- <tfoot class="bg-gray-50">
-                            <tr class="font-semibold text-gray-900">
-                                <td class="px-6 py-4 text-base">الإجمالي</td>
-                                <td class="px-6 py-4 text-center">5,920</td>
-                                <td class="px-6 py-4 text-center">--</td>
-                                <td class="px-6 py-4 text-base text-center">$2,117,780</td>
-                                <td class="px-6 py-4 text-center">--</td>
-                            </tr>
-                        </tfoot> --}}
+                                    <tr class="font-semibold text-gray-900">
+                                        <td class="px-6 py-4 text-base">الإجمالي</td>
+                                        <td class="px-6 py-4 text-center">5,920</td>
+                                        <td class="px-6 py-4 text-center">--</td>
+                                        <td class="px-6 py-4 text-base text-center">$2,117,780</td>
+                                        <td class="px-6 py-4 text-center">--</td>
+                                    </tr>
+                                </tfoot> --}}
                             </table>
                         </div>
 

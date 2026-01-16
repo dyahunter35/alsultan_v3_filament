@@ -9,6 +9,7 @@ use App\Models\Scopes\IsVisibleScope;
 use App\Services\InventoryService;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 
 class ProductStockReport extends Page
@@ -65,8 +66,10 @@ class ProductStockReport extends Page
                 ->icon('heroicon-o-arrow-path')
                 ->color('primary')
                 ->action(function () {
-                    $servies = new InventoryService;
-                    $servies->updateAllBranches();
+                    app(InventoryService::class)->updateAllBranches();
+                    Notification::make('done')
+                        ->body('تم تحديث الكميات')
+                        ->send();
                 }),
         ];
     }
