@@ -85,17 +85,22 @@ class CreateOrder extends CreateRecord
         $currentUser = auth()->user();
 
         // Handle guest customer logic
-        if (isset($data['is_guest'])) {
-            if ($data['is_guest'] === false) {
-                $data['guest_customer'] = null;
-            } else {
-                $data['customer_id'] = null;
-            }
-        }
-        $data['paid'] ??= 0;
-        $data['discount'] ??= 0;
-        $data['shipping'] ??= 0;
-        $data['install'] ??= 0;
+        $data['paid'] = (float) ($data['paid'] ?? 0);
+        $data['discount'] = (float) ($data['discount'] ?? 0);
+        $data['shipping'] = (float) ($data['shipping'] ?? 0);
+        $data['install'] = (float) ($data['install'] ?? 0);
+
+        // 3. منطق العميل (Guest vs Registered)
+        // نستخدم filter_var للتأكد من قيمة Boolean في حال كانت قادمة من Form
+        /* $isGuest = filter_var($data['is_guest'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
+        if (!$isGuest) {
+            // إذا كان عميل مسجل، نفرغ بيانات الضيف
+            $data['guest_customer'] = null;
+        } else {
+            // إذا كان ضيف، نفرغ معرف العميل
+            $data['customer_id'] = null;
+        } */
 
         $data['number'] = Order::generateInvoiceNumber();
         $data['caused_by'] = $currentUser->id;

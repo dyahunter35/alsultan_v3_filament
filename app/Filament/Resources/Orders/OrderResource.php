@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Orders;
 
+use App\Enums\ExpenseGroup;
+use App\Enums\ExpenseType;
 use App\Enums\OrderStatus;
 use App\Enums\Payment;
 use App\Filament\Forms\Components\DecimalInput;
@@ -13,6 +15,7 @@ use App\Filament\Resources\Orders\Pages\ViewOrder;
 use App\Filament\Resources\Orders\RelationManagers\OrderLogsRelationManager;
 use App\Filament\Resources\Orders\RelationManagers\OrderMetasRelationManager;
 use App\Filament\Widgets\OrderStats;
+use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -156,6 +159,7 @@ class OrderResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(fn(OrderResource $resource) => $resource->getEloquentQuery()->with('registeredCustomer'))
             ->columns([
                     TextColumn::make('created_at')
                         ->label(__('order.fields.created_at.label'))
@@ -451,7 +455,7 @@ class OrderResource extends Resource
             Select::make('customer_id')
                 ->label(__('order.fields.customer.label'))
                 ->placeholder(__('order.fields.customer.placeholder'))
-                ->relationship('registeredCustomer', 'name')
+                ->options(Customer::per(ExpenseGroup::SALE)->pluck('name', 'id'))
                 ->searchable()
                 ->required(fn(Get $get) => !$get('is_guest'))
                 ->preload()

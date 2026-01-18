@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\GuestCustomer;
+use App\Enums\ExpenseGroup;
 use App\Enums\OrderStatus;
 use App\Services\CustomerService;
 use Filament\Facades\Filament;
@@ -29,6 +30,7 @@ class Order extends Model
         'currency',
         'representative_id',
         'shipping',
+        'customer_id',
         'shipping_method',
         'notes',
         'is_guest',
@@ -40,6 +42,7 @@ class Order extends Model
     ];
 
     protected $casts = [
+        'is_guest' => 'boolean',
         'status' => OrderStatus::class,
         'guest_customer' => GuestCustomer::class,
         'paid' => 'float',
@@ -50,17 +53,19 @@ class Order extends Model
 
     protected static function booted(): void
     {
+        static::saving(function ($order) {
+            if ($order->is_guest) {
+                $order->customer_id = null;
+            } else {
+                $order->guest_customer = null;
+            }
+        });
         $callack = function ($order) {
             // نتحقق أولاً أنه ليس ضيفاً وأن علاقة العميل موجودة فعلياً
-            if (!$order->is_guest && $order->customer) {
-                app(CustomerService::class)->updateCustomerBalance($order->customer);
+            if (!$order->is_guest && $order->registeredCustomer) {
+                app(CustomerService::class)->updateCustomerBalance($order->registeredCustomer);
             }
         };
-
-        $callack2 = function ($order) {
-
-        };
-
 
         static::created($callack);
         static::updated($callack);
@@ -106,7 +111,8 @@ class Order extends Model
     public function registeredCustomer(): BelongsTo
     {
         // Assuming your registered customer model is 'Customer'
-        return $this->belongsTo(Customer::class, 'customer_id');
+        return $this->belongsTo(Customer::class, 'customer_id')
+            ->where('customers.permanent', ExpenseGroup::SALE);
     }
 
     /**
@@ -115,7 +121,7 @@ class Order extends Model
      */
     public function getCustomerAttribute()
     {
-        return $this->registeredCustomer ?? $this->guest_customer;
+        return $this->is_guest ? $this->guest_customer : $this->registeredCustomer;
     }
 
     //

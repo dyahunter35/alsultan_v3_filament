@@ -31,19 +31,27 @@ class EditOrder extends EditRecord
      */
     protected function mutateFormDataBeforeSave(array $data): array
     {
+        // 1. تحديد المستخدم الذي قام بالإجراء
         $data['caused_by'] = auth()->id();
-        $data['paid'] ??= 0;
-        $data['discount'] ??= 0;
-        $data['shipping'] ??= 0;
-        $data['install'] ??= 0;
-        // If the order is for a registered customer...
-        if ($data['is_guest'] === false) {
-            // ...ensure the guest_customer field is null.
+
+        // 2. معالجة القيم المالية (تجنب الـ NULL)
+        // استخدام الـ Null Coalescing Operator هنا ممتاز لضمان الحسابات لاحقاً
+        $data['paid'] = (float) ($data['paid'] ?? 0);
+        $data['discount'] = (float) ($data['discount'] ?? 0);
+        $data['shipping'] = (float) ($data['shipping'] ?? 0);
+        $data['install'] = (float) ($data['install'] ?? 0);
+
+        // 3. منطق العميل (Guest vs Registered)
+        // نستخدم filter_var للتأكد من قيمة Boolean في حال كانت قادمة من Form
+        /* $isGuest = filter_var($data['is_guest'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
+        if (!$isGuest) {
+            // إذا كان عميل مسجل، نفرغ بيانات الضيف
             $data['guest_customer'] = null;
         } else {
-            // Otherwise, if it's a guest, ensure customer_id is null.
+            // إذا كان ضيف، نفرغ معرف العميل
             $data['customer_id'] = null;
-        }
+        } */
 
         return $data;
     }
