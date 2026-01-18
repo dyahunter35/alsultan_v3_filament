@@ -25,16 +25,16 @@ class TruckForm
             Schemas\Components\Grid::make(1)
                 ->columnSpan(2)
                 ->schema([
-                    self::driverSection(),
-                    self::contractSection(),
-                ]),
+                        self::driverSection(),
+                        self::contractSection(),
+                    ]),
 
             Schemas\Components\Grid::make(1)
                 ->schema([
 
-                    self::financialSection(),
-                    self::statusSection(),
-                ])->columnSpan(1),
+                        self::financialSection(),
+                        self::statusSection(),
+                    ])->columnSpan(1),
         ])->columns(3);
     }
 
@@ -45,47 +45,47 @@ class TruckForm
     {
         return Schemas\Components\Section::make(__('truck.sections.driver_info'))
             ->schema([
-                Forms\Components\TextInput::make('driver_name')
-                    ->label(__('truck.fields.driver_name.label'))
-                    ->nullable()
-                    ->maxLength(190),
+                    Forms\Components\TextInput::make('driver_name')
+                        ->label(__('truck.fields.driver_name.label'))
+                        ->nullable()
 
-                Forms\Components\TextInput::make('driver_phone')
-                    ->label(__('truck.fields.driver_phone.label'))
-                    ->tel()
-                    ->nullable()
-                    ->prefix('+')
-                    ->placeholder('999999999')
+                        ->maxLength(190),
 
-                    ->maxLength(190),
+                    Forms\Components\TextInput::make('driver_phone')
+                        ->label(__('truck.fields.driver_phone.label'))
+                        ->tel()
+                        ->nullable()
+                        ->prefix('+')
+                        ->placeholder('999999999')
+                        ->maxLength(190),
 
-                Forms\Components\Select::make('category_id')
-                    ->label(__('truck.fields.category.label'))
-                    ->relationship('category', 'name')
-                    ->searchable()
-                    ->preload(),
+                    Forms\Components\Select::make('category_id')
+                        ->label(__('truck.fields.category.label'))
+                        ->relationship('category', 'name')
+                        ->searchable()
+                        ->preload(),
 
-                Forms\Components\TextInput::make('car_number')
-                    ->label(__('truck.fields.car_number.label'))
-                    ->required()
-                    ->maxLength(190),
+                    Forms\Components\TextInput::make('car_number')
+                        ->label(__('truck.fields.car_number.label'))
+                        ->required()
+                        ->maxLength(190),
 
-                Forms\Components\DatePicker::make('pack_date')
-                    ->label(__('truck.fields.pack_date.label'))
-                    ->required()
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(fn ($get, $set) => self::calculateForm($get, $set)),
+                    Forms\Components\DatePicker::make('pack_date')
+                        ->label(__('truck.fields.pack_date.label'))
+                        ->required()
+                        ->live(onBlur: true)
+                        ->afterStateUpdated(fn($get, $set) => self::calculateForm($get, $set)),
 
-                Forms\Components\DatePicker::make('arrive_date')
-                    ->label(__('truck.fields.arrive_date.label'))
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(fn ($get, $set) => self::calculateForm($get, $set)),
+                    Forms\Components\DatePicker::make('arrive_date')
+                        ->label(__('truck.fields.arrive_date.label'))
+                        ->live(onBlur: true)
+                        ->afterStateUpdated(fn($get, $set) => self::calculateForm($get, $set)),
 
-                Forms\Components\TextInput::make('truck_model')
-                    ->label(__('truck.fields.truck_model.label'))
-                    ->required()
-                    ->maxLength(190),
-            ])->columns(2);
+                    Forms\Components\TextInput::make('truck_model')
+                        ->label(__('truck.fields.truck_model.label'))
+                        ->required()
+                        ->maxLength(190),
+                ])->columns(2);
     }
 
     /**
@@ -96,50 +96,50 @@ class TruckForm
         return Schemas\Components\Section::make(__('truck.sections.contract_info'))
             ->columns(2)
             ->schema([
-                Forms\Components\Select::make('contractor_id')
-                    ->label(__('truck.fields.contractor_id.label'))
-                    ->relationship('contractorInfo', 'name')
-                    ->searchable()
-                    ->default(fn () => request()->get('contractor_id')) // <-- pre-fill
-                    ->preload(),
+                    Forms\Components\Select::make('contractor_id')
+                        ->label(__('truck.fields.contractor_id.label'))
+                        ->relationship('contractorInfo', 'name')
+                        ->searchable()
+                        ->default(fn() => request()->get('contractor_id')) // <-- pre-fill
+                        ->preload(),
 
-                Forms\Components\Select::make('company_id')
-                    ->label(__('truck.fields.company_id.label'))
-                    ->relationship('companyId', 'name')
-                    ->searchable()
-                    ->default(fn () => request()->get('company_id')) // <-- pre-fill
-                    ->preload(),
+                    Forms\Components\Select::make('company_id')
+                        ->label(__('truck.fields.company_id.label'))
+                        ->relationship('companyId', 'name')
+                        ->searchable()
+                        ->default(fn() => request()->get('company_id')) // <-- pre-fill
+                        ->preload(),
 
-                Forms\Components\Hidden::make('type')
-                    ->default(TruckType::Outer->value),
+                    Forms\Components\Hidden::make('type')
+                        ->default(TruckType::Outer->value),
 
-                Forms\Components\Hidden::make('from_type')
-                    ->default(Port::class),
+                    Forms\Components\Hidden::make('from_type')
+                        ->default(Port::class),
 
-                Forms\Components\Select::make('from_id')
-                    ->label(__('truck.fields.from.label'))
-                    ->options(Port::pluck('name', 'id'))
-                    ->required()
-                    ->searchable()
-                    ->preload(),
+                    Forms\Components\Select::make('from_id')
+                        ->label(__('truck.fields.from.label'))
+                        ->options(Port::pluck('name', 'id'))
+                        ->required()
+                        ->searchable()
+                        ->preload(),
 
-                Forms\Components\Select::make('branch_to')
-                    ->label(__('truck.fields.to.label'))
-                    ->options(fn () => \App\Models\Branch::pluck('name', 'id'))
-                    ->searchable()
-                    ->required()
-                    ->preload(),
+                    Forms\Components\Select::make('branch_to')
+                        ->label(__('truck.fields.to.label'))
+                        ->options(fn() => \App\Models\Branch::pluck('name', 'id'))
+                        ->searchable()
+                        ->required()
+                        ->preload(),
 
-                Forms\Components\Select::make('country')
-                    ->label(__('truck.fields.country.label'))
-                    ->options(Country::class)
-                    ->searchable()
-                    ->preload(),
+                    Forms\Components\Select::make('country')
+                        ->label(__('truck.fields.country.label'))
+                        ->options(Country::class)
+                        ->searchable()
+                        ->preload(),
 
-                Forms\Components\TextInput::make('city')
-                    ->label(__('truck.fields.city.label'))
-                    ->maxLength(190),
-            ]);
+                    Forms\Components\TextInput::make('city')
+                        ->label(__('truck.fields.city.label'))
+                        ->maxLength(190),
+                ]);
     }
 
     /**
@@ -149,58 +149,58 @@ class TruckForm
     {
         return Schemas\Components\Section::make(__('truck.sections.financial_info'))
             ->schema([
-                Schemas\Components\Grid::make(2)->schema([
-                    Forms\Components\TextInput::make('agreed_duration')
-                        ->label(__('truck.fields.agreed_duration.label'))
-                        ->numeric()
-                        ->minValue(0)
-                        ->required()
-                        ->live(onBlur: true)
-                        ->afterStateUpdated(fn ($get, $set) => self::calculateForm($get, $set)),
+                    Schemas\Components\Grid::make(2)->schema([
+                        Forms\Components\TextInput::make('agreed_duration')
+                            ->label(__('truck.fields.agreed_duration.label'))
+                            ->numeric()
+                            ->minValue(0)
+                            ->required()
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn($get, $set) => self::calculateForm($get, $set)),
 
-                    Forms\Components\TextInput::make('delay_day_value')
-                        ->label(__('truck.fields.delay_day_value.label'))
+                        Forms\Components\TextInput::make('delay_day_value')
+                            ->label(__('truck.fields.delay_day_value.label'))
+                            ->numeric()
+                            ->required()
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn($get, $set) => self::calculateForm($get, $set))
+                            ->suffix('EGY')
+                            ->hint(fn($state) => number_format($state ?? 0)),
+
+                        Forms\Components\TextInput::make('trip_days')
+                            ->label(__('truck.fields.trip_days.label'))
+                            ->numeric()
+                            ->readOnly()
+                            ->visible(fn($get) => self::hasValidDates($get)),
+
+                        Forms\Components\TextInput::make('diff_trip')
+                            ->label(__('truck.fields.diff_trip.label'))
+                            ->numeric()
+                            ->readOnly()
+                            ->visible(fn($get) => ($get('diff_trip') ?? 0) > 0),
+                    ]),
+
+                    Schemas\Components\Grid::make(2)->schema([
+                        Forms\Components\TextInput::make('delay_value')
+                            ->label(__('truck.fields.delay_value.label'))
+                            ->numeric()
+                            ->visible(fn($get) => ($get('diff_trip') ?? 0) > 0)
+                            ->hint(fn($state) => number_format($state ?? 0)),
+
+                        DecimalInput::make('truck_fare')
+                            ->label(__('truck.fields.truck_fare.label'))
+                            ->required()
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn($get, $set) => self::calculateTotal($get, $set)),
+                    ]),
+
+                    Forms\Components\TextInput::make('total_amount')
+                        ->label(__('truck.fields.total_amount.label'))
                         ->numeric()
-                        ->required()
-                        ->live(onBlur: true)
-                        ->afterStateUpdated(fn ($get, $set) => self::calculateForm($get, $set))
+                        ->readOnly()
                         ->suffix('EGY')
-                        ->hint(fn ($state) => number_format($state ?? 0)),
-
-                    Forms\Components\TextInput::make('trip_days')
-                        ->label(__('truck.fields.trip_days.label'))
-                        ->numeric()
-                        ->readOnly()
-                        ->visible(fn ($get) => self::hasValidDates($get)),
-
-                    Forms\Components\TextInput::make('diff_trip')
-                        ->label(__('truck.fields.diff_trip.label'))
-                        ->numeric()
-                        ->readOnly()
-                        ->visible(fn ($get) => ($get('diff_trip') ?? 0) > 0),
-                ]),
-
-                Schemas\Components\Grid::make(2)->schema([
-                    Forms\Components\TextInput::make('delay_value')
-                        ->label(__('truck.fields.delay_value.label'))
-                        ->numeric()
-                        ->visible(fn ($get) => ($get('diff_trip') ?? 0) > 0)
-                        ->hint(fn ($state) => number_format($state ?? 0)),
-
-                    DecimalInput::make('truck_fare')
-                        ->label(__('truck.fields.truck_fare.label'))
-                        ->required()
-                        ->live(onBlur: true)
-                        ->afterStateUpdated(fn ($get, $set) => self::calculateTotal($get, $set)),
-                ]),
-
-                Forms\Components\TextInput::make('total_amount')
-                    ->label(__('truck.fields.total_amount.label'))
-                    ->numeric()
-                    ->readOnly()
-                    ->suffix('EGY')
-                    ->helperText(fn ($state) => number_format($state ?? 0)),
-            ]);
+                        ->helperText(fn($state) => number_format($state ?? 0)),
+                ]);
     }
 
     /**
@@ -210,17 +210,17 @@ class TruckForm
     {
         return Schemas\Components\Section::make(__('truck.sections.status_info'))
             ->schema([
-                Forms\Components\ToggleButtons::make('truck_status')
-                    ->label(__('truck.fields.truck_status.label'))
-                    ->inline()
-                    ->default(TruckState::OnWay)
-                    ->options(TruckState::class)
-                    ->required(),
+                    Forms\Components\ToggleButtons::make('truck_status')
+                        ->label(__('truck.fields.truck_status.label'))
+                        ->inline()
+                        ->default(TruckState::OnWay)
+                        ->options(TruckState::class)
+                        ->required(),
 
-                Forms\Components\Textarea::make('note')
-                    ->label(__('truck.fields.note.label'))
-                    ->maxLength(190),
-            ]);
+                    Forms\Components\Textarea::make('note')
+                        ->label(__('truck.fields.note.label'))
+                        ->maxLength(190),
+                ]);
     }
 
     /**
@@ -228,7 +228,7 @@ class TruckForm
      */
     protected static function hasValidDates(Get $get): bool
     {
-        return ! is_null($get('pack_date')) && ! is_null($get('arrive_date'));
+        return !is_null($get('pack_date')) && !is_null($get('arrive_date'));
     }
 
     /**
@@ -237,9 +237,9 @@ class TruckForm
     public static function calculateForm(Get $get, Set $set): void
     {
 
-        $parseNumber = fn ($value) => (float) str_replace(',', '', $value ?? 0);
+        $parseNumber = fn($value) => (float) str_replace(',', '', $value ?? 0);
 
-        if (! self::hasValidDates($get)) {
+        if (!self::hasValidDates($get)) {
             return;
         }
 
@@ -270,7 +270,7 @@ class TruckForm
      */
     public static function calculateTotal(Get $get, Set $set): void
     {
-        $parseNumber = fn ($value) => (float) str_replace(',', '', $value ?? 0);
+        $parseNumber = fn($value) => (float) str_replace(',', '', $value ?? 0);
 
         $total = (int) $parseNumber($get('delay_value')) + (int) $parseNumber($get('truck_fare'));
         $set('total_amount', $total);

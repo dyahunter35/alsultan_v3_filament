@@ -21,16 +21,16 @@ class TruckForm
             Schemas\Components\Grid::make(1)
                 ->columnSpan(2)
                 ->schema([
-                    self::driverSection(),
-                    self::contractSection(),
-                ]),
+                        self::driverSection(),
+                        self::contractSection(),
+                    ]),
 
             Schemas\Components\Grid::make(1)
                 ->schema([
 
-                    // self::financialSection(),
-                    self::statusSection(),
-                ])->columnSpan(1),
+                        // self::financialSection(),
+                        self::statusSection(),
+                    ])->columnSpan(1),
         ])->columns(3);
     }
 
@@ -42,43 +42,43 @@ class TruckForm
         return Schemas\Components\Section::make(__('truck.sections.driver_info'))
             ->icon(Heroicon::Truck)
             ->schema([
-                Forms\Components\TextInput::make('driver_name')
-                    ->label(__('truck.fields.driver_name.label'))
-                    ->required()
-                    ->maxLength(190),
+                    Forms\Components\TextInput::make('driver_name')
+                        ->label(__('truck.fields.driver_name.label'))
+                        ->nullable()
+                        ->maxLength(190),
 
-                Forms\Components\TextInput::make('driver_phone')
-                    ->label(__('truck.fields.driver_phone.label'))
-                    ->tel()
-                    ->prefix('+')
-                    ->placeholder('999999999')
-                    ->required()
-                    ->maxLength(190),
+                    Forms\Components\TextInput::make('driver_phone')
+                        ->label(__('truck.fields.driver_phone.label'))
+                        ->tel()
+                        ->prefix('+')
+                        ->placeholder('999999999')
+                        ->nullable()
+                        ->maxLength(190),
 
-                Forms\Components\Select::make('category_id')
-                    ->label(__('truck.fields.category.label'))
-                    ->relationship('category', 'name')
-                    ->searchable()
-                    ->preload(),
+                    Forms\Components\Select::make('category_id')
+                        ->label(__('truck.fields.category.label'))
+                        ->relationship('category', 'name')
+                        ->searchable()
+                        ->preload(),
 
-                Forms\Components\TextInput::make('car_number')
-                    ->label(__('truck.fields.car_number.label'))
-                    ->required()
-                    ->maxLength(190),
+                    Forms\Components\TextInput::make('car_number')
+                        ->label(__('truck.fields.car_number.label'))
+                        ->required()
+                        ->maxLength(190),
 
-                Forms\Components\DatePicker::make('pack_date')
-                    ->label(__('truck.fields.pack_date.label'))
-                    ->required(),
+                    Forms\Components\DatePicker::make('pack_date')
+                        ->label(__('truck.fields.pack_date.label'))
+                        ->required(),
 
-                Forms\Components\DatePicker::make('arrive_date')
-                    ->label(__('truck.fields.arrive_date.label'))
-                    ->live(onBlur: true),
+                    Forms\Components\DatePicker::make('arrive_date')
+                        ->label(__('truck.fields.arrive_date.label'))
+                        ->live(onBlur: true),
 
-                Forms\Components\TextInput::make('truck_model')
-                    ->label(__('truck.fields.truck_model.label'))
-                    ->required()
-                    ->maxLength(190),
-            ])->columns(2);
+                    Forms\Components\TextInput::make('truck_model')
+                        ->label(__('truck.fields.truck_model.label'))
+                        ->required()
+                        ->maxLength(190),
+                ])->columns(2);
     }
 
     /**
@@ -91,25 +91,25 @@ class TruckForm
             ->columns(2)
             ->schema([
 
-                Forms\Components\Hidden::make('type')
-                    ->default(TruckType::Local->value),
+                    Forms\Components\Hidden::make('type')
+                        ->default(TruckType::Local->value),
 
-                Forms\Components\Hidden::make('from_type')
-                    ->default(Branch::class),
+                    Forms\Components\Hidden::make('from_type')
+                        ->default(Branch::class),
 
-                Forms\Components\Select::make('from_id')
-                    ->label(__('truck.fields.from_branch.label'))
-                    ->options(Branch::pluck('name', 'id'))
-                    ->required()
-                    ->searchable()
-                    ->preload(),
+                    Forms\Components\Select::make('from_id')
+                        ->label(__('truck.fields.from_branch.label'))
+                        ->options(Branch::pluck('name', 'id'))
+                        ->required()
+                        ->searchable()
+                        ->preload(),
 
-                Forms\Components\Select::make('branch_to')
-                    ->label(__('truck.fields.to.label'))
-                    ->options(Branch::pluck('name', 'id'))
-                    ->searchable()
-                    ->preload(),
-            ]);
+                    Forms\Components\Select::make('branch_to')
+                        ->label(__('truck.fields.to.label'))
+                        ->options(Branch::pluck('name', 'id'))
+                        ->searchable()
+                        ->preload(),
+                ]);
     }
 
     /**
@@ -128,27 +128,27 @@ class TruckForm
     {
         return Schemas\Components\Section::make(__('truck.sections.status_info'))
             ->schema([
-                Forms\Components\ToggleButtons::make('truck_status')
-                    ->label(__('truck.fields.truck_status.label'))
-                    ->inline()
-                    ->default(TruckState::OnWay)
-                    ->options([
-                        TruckState::OnWay->value => TruckState::OnWay->getLabel(),
-                        TruckState::reach->value => TruckState::reach->getLabel(),
-                    ])
-                    ->colors([
-                        TruckState::OnWay->value => TruckState::OnWay->getColor(),
-                        TruckState::reach->value => TruckState::reach->getColor(),
-                    ])
-                    ->icons([
-                        TruckState::OnWay->value => TruckState::OnWay->getIcon(),
-                        TruckState::reach->value => TruckState::reach->getIcon(),
-                    ])
-                    ->required(),
+                    Forms\Components\ToggleButtons::make('truck_status')
+                        ->label(__('truck.fields.truck_status.label'))
+                        ->inline()
+                        ->default(TruckState::OnWay)
+                        ->options([
+                                TruckState::OnWay->value => TruckState::OnWay->getLabel(),
+                                TruckState::reach->value => TruckState::reach->getLabel(),
+                            ])
+                        ->colors([
+                                TruckState::OnWay->value => TruckState::OnWay->getColor(),
+                                TruckState::reach->value => TruckState::reach->getColor(),
+                            ])
+                        ->icons([
+                                TruckState::OnWay->value => TruckState::OnWay->getIcon(),
+                                TruckState::reach->value => TruckState::reach->getIcon(),
+                            ])
+                        ->required(),
 
-                Forms\Components\Textarea::make('note')
-                    ->label(__('truck.fields.note.label'))
-                    ->maxLength(190),
-            ]);
+                    Forms\Components\Textarea::make('note')
+                        ->label(__('truck.fields.note.label'))
+                        ->maxLength(190),
+                ]);
     }
 }

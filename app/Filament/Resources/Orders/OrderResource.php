@@ -482,6 +482,7 @@ class OrderResource extends Resource
                 ->placeholder(__('order.fields.representative.placeholder'))
                 ->options(\App\Models\User::sales())
                 ->searchable()
+                ->required()
                 ->preload(),
 
             Section::make(__('order.sections.guest_customer.label'))
