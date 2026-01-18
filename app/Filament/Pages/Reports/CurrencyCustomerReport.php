@@ -91,7 +91,7 @@ class CurrencyCustomerReport extends Page implements Forms\Contracts\HasForms
                 ->schema([
                         Forms\Components\Select::make('customerId')
                             ->label('العميل')
-                            ->options(Customer::per(ExpenseGroup::DEBTORS)->pluck('name', 'id'))
+                            ->options(Customer::per(ExpenseGroup::CURRENCY)->pluck('name', 'id'))
                             ->searchable()
                             ->reactive()
                             ->afterStateUpdated(fn() => $this->loadLedger()),
