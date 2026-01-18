@@ -42,29 +42,29 @@ class Order extends Model
     protected $casts = [
         'status' => OrderStatus::class,
         'guest_customer' => GuestCustomer::class,
+        'paid' => 'float',
+        'shipping' => 'float',
+        'install' => 'float',
+        'discount' => 'float',
     ];
 
     protected static function booted(): void
     {
-        static::created(function (self $o) {
+        $callack = function ($order) {
+            // نتحقق أولاً أنه ليس ضيفاً وأن علاقة العميل موجودة فعلياً
+            if (!$order->is_guest && $order->customer) {
+                app(CustomerService::class)->updateCustomerBalance($order->customer);
+            }
+        };
 
-            if (!$o->is_guest)
-                app(CustomerService::class)->updateCustomerBalance(Customer::find($o->customer_id));
+        $callack2 = function ($order) {
 
-        });
+        };
 
-        static::updated(function (self $o) {
-            if (!$o->is_guest)
-                app(CustomerService::class)->updateCustomerBalance(Customer::find($o->customer_id));
 
-        });
-
-        static::deleted(function (self $o) {
-
-            if (!$o->is_guest)
-                app(CustomerService::class)->updateCustomerBalance(Customer::find($o->customer_id));
-
-        });
+        static::created($callack);
+        static::updated($callack);
+        static::deleted($callack);
     }
 
     public function branch(): BelongsTo

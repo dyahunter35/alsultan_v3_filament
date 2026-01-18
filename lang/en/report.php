@@ -84,13 +84,15 @@ return [
         'heading' => 'Customer Debt Report',
         'icon' => 'heroicon-m-user-group',
         'sort' => 10,
-
-
     ],
     'product_pricing' => [
         'heading' => 'Cargo Product Pricing Report',
         'icon' => 'heroicon-o-currency-dollar',
         'sort' => 9,
+    ],
+    'product-history-report' => [
+        'heading' => 'Product History Report',
+        'icon' => 'heroicon-m-chart-bar',
     ],
     'delegates_report' => [
         'heading' => 'Delegates Report',

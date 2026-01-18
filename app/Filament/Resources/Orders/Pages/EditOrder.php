@@ -32,6 +32,10 @@ class EditOrder extends EditRecord
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $data['caused_by'] = auth()->id();
+        $data['paid'] ??= 0;
+        $data['discount'] ??= 0;
+        $data['shipping'] ??= 0;
+        $data['install'] ??= 0;
         // If the order is for a registered customer...
         if ($data['is_guest'] === false) {
             // ...ensure the guest_customer field is null.
@@ -73,6 +77,7 @@ class EditOrder extends EditRecord
 
                 $oldQty = $originalItems[$productId]->qty ?? 0;
                 $newQty = $newItem->qty;
+                $newItem->sub_discount ??= 0;
 
                 // لو الكمية ما اتغيرت → تجاهل
                 if ($oldQty == $newQty) {
@@ -127,7 +132,7 @@ class EditOrder extends EditRecord
 
             // سجل تحديث الطلب
             $record->orderLogs()->create([
-                'log' => 'Invoice updated By: '.$currentUser->name,
+                'log' => 'Invoice updated By: ' . $currentUser->name,
                 'type' => 'updated',
             ]);
 

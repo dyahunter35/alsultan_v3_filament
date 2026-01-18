@@ -43,9 +43,10 @@ class CreateOrder extends CreateRecord
 
         DB::transaction(function () use ($inventoryService, $currentBranch, $currentUser, $order, $products) {
             foreach ($order->items as $item) {
+                $item->sub_discount ??= 0;
                 $product = $products->get($item->product_id);
 
-                if (! $product) {
+                if (!$product) {
                     // محصول غير موجود — rollback
                     Notification::make()
                         ->title(__('order.actions.create.notifications.missing_product'))
@@ -68,7 +69,7 @@ class CreateOrder extends CreateRecord
 
             // ملاحظة: لا نستدعي updateAllBranches هنا (ثقيل). إذا أردت إعادة حساب كامل، شغّله كسكجولد أو background job.
             $order->orderLogs()->create([
-                'log' => 'Invoice created By: '.($currentUser?->name ?? 'system'),
+                'log' => 'Invoice created By: ' . ($currentUser?->name ?? 'system'),
                 'type' => 'created',
             ]);
         });
@@ -91,6 +92,10 @@ class CreateOrder extends CreateRecord
                 $data['customer_id'] = null;
             }
         }
+        $data['paid'] ??= 0;
+        $data['discount'] ??= 0;
+        $data['shipping'] ??= 0;
+        $data['install'] ??= 0;
 
         $data['number'] = Order::generateInvoiceNumber();
         $data['caused_by'] = $currentUser->id;

@@ -84,6 +84,10 @@ return [
         'icon' => 'heroicon-o-currency-dollar',
         'sort' => 10,
     ],
+    'product_history_report' => [
+        'heading' => 'تقرير حركة المنتج',
+        'icon' => 'heroicon-m-chart-bar',
+    ],
     'delegates_report' => [
         'heading' => 'كشف حساب المناديب',
         'icon' => 'heroicon-m-user-group',

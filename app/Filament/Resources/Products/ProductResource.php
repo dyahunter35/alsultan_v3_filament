@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products;
 
+use App\Filament\Pages\Reports\ProductHistoryReport;
 use App\Filament\Resources\Products\Pages\CreateProduct;
 use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Filament\Resources\Products\Pages\ListProducts;
@@ -10,6 +11,7 @@ use App\Filament\Resources\Products\RelationManagers\HistoryRelationManager;
 use App\Models\Product;
 use App\Models\Scopes\IsVisibleScope;
 use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms;
@@ -291,22 +293,17 @@ class ProductResource extends Resource
                 ], layout: FiltersLayout::Modal)
             ->deferFilters()
             ->recordActions([
-                    EditAction::make(),
                     Action::make('stock')
-                        ->label(__('product.actions.stock.label'))
+                        ->label(__('report.product_history_report.heading'))
                         ->icon('heroicon-o-chart-bar')
-                        //->url(fn(Product $record) => ProductResource::getUrl('stock', ['record' => $record]))
+                        ->url(fn(Product $record) => ProductHistoryReport::getUrl(['productId' => $record->id]))
                         ->openUrlInNewTab()
                         ->color('secondary'),
+                    EditAction::make(),
+                    DeleteAction::make()
                 ])
             ->groupedBulkActions([
                     DeleteBulkAction::make()
-                        ->action(function () {
-                            Notification::make()
-                                ->title(__('product.actions.delete.notification'))
-                                ->warning()
-                                ->send();
-                        }),
                 ]);
     }
 

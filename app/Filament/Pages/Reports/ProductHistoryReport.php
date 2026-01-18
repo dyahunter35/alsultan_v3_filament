@@ -20,7 +20,6 @@ class ProductHistoryReport extends Page implements HasForms
 
     protected static ?int $navigationSort = 40;
     protected string $view = 'filament.pages.reports.product-history-report';
-    protected static ?string $navigationLabel = 'تقرير حركة المنتج';
 
     #[Url] public ?int $branchId = null;
     #[Url] public ?int $productId = null;
