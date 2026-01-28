@@ -107,4 +107,8 @@ return [
         'heading' => 'Supplying Report',
         'icon' => 'heroicon-o-currency-dollar',
     ],
+    'currency_logs_report' => [
+        'heading' => 'كشف حساب العملات الكامل',
+        'icon' => 'heroicon-m-currency-dollar',
+    ]
 ];

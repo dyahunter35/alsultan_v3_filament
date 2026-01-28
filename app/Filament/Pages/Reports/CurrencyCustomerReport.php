@@ -7,6 +7,7 @@ use App\Filament\Pages\Concerns\HasReport;
 use App\Models\Customer;
 use App\Services\CustomerService;
 use Filament\Forms;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Grid;
 use Illuminate\Contracts\Support\Htmlable;
@@ -107,6 +108,16 @@ class CurrencyCustomerReport extends Page implements Forms\Contracts\HasForms
                             ->afterStateUpdated(fn() => $this->loadLedger()),
                     ]),
         ];
+    }
+
+    public function updateBalances(): void
+    {
+        app(CustomerService::class)->updateCustomersBalance();
+        $this->loadLedger();
+        Notification::make()
+            ->title('تم تحديث بيانات العملاء')
+            ->success()
+            ->send();
     }
 }
 

@@ -4,43 +4,42 @@ namespace App\Filament\Pages\Reports;
 
 use App\Enums\ExpenseGroup;
 use App\Filament\Pages\Concerns\HasReport;
+use App\Models\Currency;
 use App\Models\CurrencyBalance;
 use App\Models\Customer;
 use App\Services\CurrencyLogsService;
+use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Grid;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Url;
+use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
 
 class CurrencyLogsReport extends Page implements Forms\Contracts\HasForms
 {
     use Forms\Concerns\InteractsWithForms;
     use HasReport;
 
-    protected static ?int $navigationSort = 34;
-    protected static ?string $navigationLabel = 'تقرير سجلات العملات';
-    protected static ?string $title = 'تقرير سجلات العملات';
-    protected ?string $subheading = 'تقرير تفصيلي لشراء وصرف العملات';
+    protected static ?int $navigationSort = 33;
 
     protected string $view = 'filament.pages.reports.currency-logs-report';
 
     #[Url]
     public ?int $customerId = null;
 
-    #[Url]
-    public ?string $startDate = null;
-
-    #[Url]
-    public ?string $endDate = null;
-
     public ?Customer $customer = null;
     public array $balances = [];
+
+    #[Url] public ?string $date_range = null;
+
     public Collection $purchaseTransactions;
     public Collection $paymentTransactions;
 
+    public Collection $currencys;
     public $reportData;
     public function getTitle(): string|Htmlable
     {
@@ -53,11 +52,11 @@ class CurrencyLogsReport extends Page implements Forms\Contracts\HasForms
     {
         $this->purchaseTransactions = collect();
         $this->paymentTransactions = collect();
+        $this->currencys = Currency::select('id', 'code', 'name')->get();
 
         $this->form->fill([
             'customerId' => $this->customerId,
-            'startDate' => $this->startDate,
-            'endDate' => $this->endDate,
+            'date_range' => $this->date_range,
         ]);
 
         $this->loadData();
@@ -77,15 +76,18 @@ class CurrencyLogsReport extends Page implements Forms\Contracts\HasForms
                             ->reactive()
                             ->afterStateUpdated(fn() => $this->loadData()),
 
-                        Forms\Components\DatePicker::make('startDate')
-                            ->label('من تاريخ')
-                            ->reactive()
-                            ->afterStateUpdated(fn() => $this->loadData()),
+                        DateRangePicker::make('date_range')
+                            ->label('الفترة الزمنية')
+                            //->disableClear(false)
+                            ->live()
+                            ->suffixAction(
+                                Action::make('clear')
+                                    ->label(__('filament-daterangepicker-filter::message.clear'))
+                                    ->icon('heroicon-m-calendar-days')
+                                    ->action(fn() => [$this->date_range = null, $this->loadData()])
+                            )
+                            ->afterStateUpdated(fn($state) => [$this->date_range = $state, $this->loadData()]),
 
-                        Forms\Components\DatePicker::make('endDate')
-                            ->label('إلى تاريخ')
-                            ->reactive()
-                            ->afterStateUpdated(fn() => $this->loadData()),
                     ]),
         ];
     }
@@ -95,7 +97,9 @@ class CurrencyLogsReport extends Page implements Forms\Contracts\HasForms
             $this->reportData = [];
             return;
         }
-        $this->reportData = app(CurrencyLogsService::class)->generateCurrencyLogsReport($this->customerId, $this->startDate, $this->endDate);
+        [$from, $to] = parseDateRange($this->date_range);
+
+        $this->reportData = app(CurrencyLogsService::class)->generateCurrencyLogsReport($this->customerId, $from, $to);
         // ربط أسعار الصرف للتعديل اللحظي 
         /* if (isset($this->reportData['purchase_transactions'])) {
             foreach ($this->reportData['purchase_transactions'] as $tr) {
@@ -106,10 +110,13 @@ class CurrencyLogsReport extends Page implements Forms\Contracts\HasForms
     public function refreshBalance()
     {
         if ($this->customerId) {
-            $customer = Customer::find($this->customerId);
-            app(CurrencyLogsService::class)->updateCustomerBalance($customer);
-            $this->loadData();
-            $this->dispatch('notify', ['message' => 'تم تحديث الأرصدة بنجاح']);
+            DB::transaction(function () {
+                $customer = Customer::find($this->customerId);
+                app(CurrencyLogsService::class)->updateCustomerBalance($customer);
+                CurrencyBalance::refreshBalances();
+                $this->loadData();
+                $this->dispatch('notify', ['message' => 'تم تحديث الأرصدة بنجاح']);
+            });
         }
     }
 }

@@ -106,4 +106,8 @@ return [
         'icon' => 'heroicon-m-clipboard-document-list',
         'sort' => 7,
     ],
+    'currency_logs_report' => [
+        'heading' => 'كشف حساب العملات الكامل',
+        'icon' => 'heroicon-m-currency-dollar',
+    ]
 ];

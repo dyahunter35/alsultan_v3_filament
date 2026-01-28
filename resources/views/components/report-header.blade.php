@@ -1,25 +1,25 @@
 @props(['label' => null, 'value' => null])
 
 @isset($label)
-    @section('title', $label . ' ' . $value)
+@section('title', $label . ' ' . $value)
 @endisset
 
 <header class="container mx-auto mb-6 print:mb-4">
     {{-- قسم الهوية البصرية --}}
-    <div class="flex flex-col items-center justify-center mb-4 space-y-1 text-center print:space-y-0">
+    <div class="flex flex-row gap-2 items-center justify-center mb-4 space-y-1 text-center print:space-y-0">
         <div class="p-2 mb-1">
             <img src="{{ asset('asset/logo.png') }}" width="90" alt="logo" class="h-auto" />
         </div>
 
         <div class="space-y-1">
-            <h1 class="text-2xl font-black tracking-tighter uppercase text-slate-800 print:text-xl">
+            <h1 class="text-xl font-black tracking-tighter uppercase text-slate-800 print:text-xl">
                 {{ __('app.name') }}
             </h1>
 
             <div
-                class="flex flex-col mt-2 items-center justify-center gap-4 text-l font-medium text-slate-500 print:text-[10px]">
+                class="flex flex-row mt-2 items-center justify-center gap-4 text-l font-medium text-slate-500 print:text-[10px]">
                 {{-- العنوان --}}
-                <p class="flex items-center gap-2">
+                <p class="flex items-center gap-1">
                     <svg class="w-4 h-4 print:w-3 print:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -43,11 +43,11 @@
 
     {{-- شريط معلومات التقرير --}}
     <div
-        class="relative p-4 overflow-hidden border-2 border-dashed rounded-xl border-slate-300 bg-slate-50/50 print:p-2 print:rounded-lg">
+        class="relative p-2 overflow-hidden border-2 border-dashed rounded-xl border-slate-300 bg-slate-50/50 print:p-2 print:rounded-lg">
         <div class="flex flex-row items-center justify-between">
 
             {{-- تسمية التقرير --}}
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
                 <div class="p-2 rounded-lg print:p-1">
                     <svg class="w-5 h-5 print:w-4 print:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -63,7 +63,7 @@
             </div>
 
             {{-- التاريخ --}}
-            <div class="flex items-center gap-5">
+            <div class="flex items-center gap-2">
                 <div class="p-2 mx-2 rounded-lg text-slate-600 print:hidden">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

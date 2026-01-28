@@ -21,21 +21,21 @@ trait HasCustomerFinancialReport
         // 🔹 أولًا نحسب الرصيد المرحل قبل التاريخ المحدد
         $openingBalance = 0;
 
-        $this->expensesAsPayer()->when($startDate, fn ($q) => $q->where('created_at', '<', $startDate))
+        $this->expensesAsPayer()->when($startDate, fn($q) => $q->where('created_at', '<', $startDate))
             ->get()
-            ->each(fn ($expense) => $openingBalance -= $expense->total_amount);
+            ->each(fn($expense) => $openingBalance -= $expense->total_amount);
 
-        $this->expensesAsBeneficiary()->when($startDate, fn ($q) => $q->where('created_at', '<', $startDate))
+        $this->expensesAsBeneficiary()->when($startDate, fn($q) => $q->where('created_at', '<', $startDate))
             ->get()
-            ->each(fn ($expense) => $openingBalance += $expense->total_amount);
+            ->each(fn($expense) => $openingBalance += $expense->total_amount);
 
-        $this->supplyings()->when($startDate, fn ($q) => $q->where('created_at', '<', $startDate))
+        $this->supplyings()->when($startDate, fn($q) => $q->where('created_at', '<', $startDate))
             ->get()
-            ->each(fn ($supply) => $openingBalance -= $supply->total_amount);
+            ->each(fn($supply) => $openingBalance -= $supply->total_amount);
 
-        $this->sales()->when($startDate, fn ($q) => $q->where('created_at', '<', $startDate))
+        $this->sales()->when($startDate, fn($q) => $q->where('created_at', '<', $startDate))
             ->get()
-            ->each(fn ($order) => $openingBalance += $order->total);
+            ->each(fn($order) => $openingBalance += $order->total);
 
         // إضافة الرصيد المرحل كأول بند
         $ledger->push([
@@ -48,9 +48,9 @@ trait HasCustomerFinancialReport
         ]);
 
         // 🔹 بعدها نجيب كل التحركات بدءًا من startDate
-        $this->expensesAsPayer()->when($startDate, fn ($q) => $q->where('created_at', '>=', $startDate))
+        $this->expensesAsPayer()->when($startDate, fn($q) => $q->where('created_at', '>=', $startDate))
             ->get()
-            ->each(fn ($expense) => $ledger->push([
+            ->each(fn($expense) => $ledger->push([
                 'type' => 'expense_paid',
                 'date' => $expense->created_at,
                 'description' => 'دفع مصروف',
@@ -58,9 +58,9 @@ trait HasCustomerFinancialReport
                 'amount_out' => $expense->total_amount,
             ]));
 
-        $this->expensesAsBeneficiary()->when($startDate, fn ($q) => $q->where('created_at', '>=', $startDate))
+        $this->expensesAsBeneficiary()->when($startDate, fn($q) => $q->where('created_at', '>=', $startDate))
             ->get()
-            ->each(fn ($expense) => $ledger->push([
+            ->each(fn($expense) => $ledger->push([
                 'type' => 'expense_received',
                 'date' => $expense->created_at,
                 'description' => 'استلام مصروف',
@@ -68,9 +68,9 @@ trait HasCustomerFinancialReport
                 'amount_out' => 0,
             ]));
 
-        $this->supplyings()->when($startDate, fn ($q) => $q->where('created_at', '>=', $startDate))
+        $this->supplyings()->when($startDate, fn($q) => $q->where('created_at', '>=', $startDate))
             ->get()
-            ->each(fn ($supply) => $ledger->push([
+            ->each(fn($supply) => $ledger->push([
                 'type' => 'supplying',
                 'date' => $supply->created_at,
                 'description' => 'توريد',
@@ -78,9 +78,9 @@ trait HasCustomerFinancialReport
                 'amount_out' => $supply->total_amount,
             ]));
 
-        $this->sales()->when($startDate, fn ($q) => $q->where('created_at', '>=', $startDate))
+        $this->sales()->when($startDate, fn($q) => $q->where('created_at', '>=', $startDate))
             ->get()
-            ->each(fn ($order) => $ledger->push([
+            ->each(fn($order) => $ledger->push([
                 'type' => 'sale',
                 'date' => $order->created_at,
                 'description' => 'بيع',
@@ -120,21 +120,21 @@ trait HasCustomerFinancialReport
         // حساب الرصيد المرحل قبل الفترة
         $openingBalance = 0;
 
-        $this->expensesAsPayer()->when($startDate, fn ($q) => $q->where('created_at', '<', $startDate))
+        $this->expensesAsPayer()->when($startDate, fn($q) => $q->where('created_at', '<', $startDate))
             ->get()
-            ->each(fn ($expense) => $openingBalance -= $expense->total_amount);
+            ->each(fn($expense) => $openingBalance -= $expense->total_amount);
 
-        $this->expensesAsBeneficiary()->when($startDate, fn ($q) => $q->where('created_at', '<', $startDate))
+        $this->expensesAsBeneficiary()->when($startDate, fn($q) => $q->where('created_at', '<', $startDate))
             ->get()
-            ->each(fn ($expense) => $openingBalance += $expense->total_amount);
+            ->each(fn($expense) => $openingBalance += $expense->total_amount);
 
-        $this->supplyings()->when($startDate, fn ($q) => $q->where('created_at', '<', $startDate))
+        $this->supplyings()->when($startDate, fn($q) => $q->where('created_at', '<', $startDate))
             ->get()
-            ->each(fn ($supply) => $openingBalance -= $supply->total_amount);
+            ->each(fn($supply) => $openingBalance -= $supply->total_amount);
 
-        $this->sales()->when($startDate, fn ($q) => $q->where('created_at', '<', $startDate))
+        $this->sales()->when($startDate, fn($q) => $q->where('created_at', '<', $startDate))
             ->get()
-            ->each(fn ($order) => $openingBalance += $order->total);
+            ->each(fn($order) => $openingBalance += $order->total);
 
         // إضافة الرصيد المرحل كبند أول
         $ledger->push([
@@ -147,10 +147,10 @@ trait HasCustomerFinancialReport
         ]);
 
         // جلب كل التحركات بين startDate و endDate
-        $this->expensesAsPayer()->when($startDate, fn ($q) => $q->where('created_at', '>=', $startDate))
-            ->when($endDate, fn ($q) => $q->where('created_at', '<=', $endDate))
+        $this->expensesAsPayer()->when($startDate, fn($q) => $q->where('created_at', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->where('created_at', '<=', $endDate))
             ->get()
-            ->each(fn ($expense) => $ledger->push([
+            ->each(fn($expense) => $ledger->push([
                 'type' => 'expense_paid',
                 'date' => $expense->created_at,
                 'description' => 'دفع مصروف',
@@ -158,10 +158,10 @@ trait HasCustomerFinancialReport
                 'amount_out' => $expense->total_amount,
             ]));
 
-        $this->expensesAsBeneficiary()->when($startDate, fn ($q) => $q->where('created_at', '>=', $startDate))
-            ->when($endDate, fn ($q) => $q->where('created_at', '<=', $endDate))
+        $this->expensesAsBeneficiary()->when($startDate, fn($q) => $q->where('created_at', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->where('created_at', '<=', $endDate))
             ->get()
-            ->each(fn ($expense) => $ledger->push([
+            ->each(fn($expense) => $ledger->push([
                 'type' => 'expense_received',
                 'date' => $expense->created_at,
                 'description' => 'استلام مصروف',
@@ -169,10 +169,10 @@ trait HasCustomerFinancialReport
                 'amount_out' => 0,
             ]));
 
-        $this->supplyings()->when($startDate, fn ($q) => $q->where('created_at', '>=', $startDate))
-            ->when($endDate, fn ($q) => $q->where('created_at', '<=', $endDate))
+        $this->supplyings()->when($startDate, fn($q) => $q->where('created_at', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->where('created_at', '<=', $endDate))
             ->get()
-            ->each(fn ($supply) => $ledger->push([
+            ->each(fn($supply) => $ledger->push([
                 'type' => 'supplying',
                 'date' => $supply->created_at,
                 'description' => 'توريد',
@@ -180,10 +180,10 @@ trait HasCustomerFinancialReport
                 'amount_out' => $supply->total_amount,
             ]));
 
-        $this->sales()->when($startDate, fn ($q) => $q->where('created_at', '>=', $startDate))
-            ->when($endDate, fn ($q) => $q->where('created_at', '<=', $endDate))
+        $this->sales()->when($startDate, fn($q) => $q->where('created_at', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->where('created_at', '<=', $endDate))
             ->get()
-            ->each(fn ($order) => $ledger->push([
+            ->each(fn($order) => $ledger->push([
                 'type' => 'sale',
                 'date' => $order->created_at,
                 'description' => 'بيع',
@@ -204,5 +204,12 @@ trait HasCustomerFinancialReport
         });
 
         return $ledger;
+    }
+
+
+    public function getCurrencyNetBalanceAttribute(): float
+    {
+        return ($this->total_orders + $this->total_received)
+            - ($this->total_paid + $this->total_supplyings);
     }
 }

@@ -49,7 +49,7 @@ class CurrencyLogsService
                 'index' => $index + 1,
                 'date' => $tr->created_at->format('Y-m-d'),
                 'currency_code' => $tr->currency?->code,
-                'amount' => $tr->amount,
+                'amount' => $tr->amount ?? '2000',
                 'rate' => $tr->rate,
                 'total' => $tr->total,
                 'running_balance' => $runningBalance,
@@ -68,6 +68,7 @@ class CurrencyLogsService
                 'amount' => $tr->amount,
                 'company' => $tr->party?->name ?? '-',
                 'note' => $tr->note,
+                'total' => $tr->total,
             ];
         })->toArray();
     }

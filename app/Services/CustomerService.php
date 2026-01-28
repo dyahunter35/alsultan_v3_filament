@@ -158,15 +158,40 @@ class CustomerService
     }
 
     /**
-     * 🔹 تحديث الرصيد النهائي للعميل في قاعدة البيانات
+     * تحديث الرصيد الفعلي للعميل بالسوداني (Source of Truth)
+     * الرصيد = (المبيعات + المصاريف المستلمة) - (التوريدات + المصاريف المدفوعة + مشتريات العملات)
      */
+
     public function updateCustomerBalance(Customer $customer): float
     {
-        $balance = $customer->net_balance;
+        //$balance = $customer->net_balance;
 
-        $customer->update(['balance' => $balance]);
+        // 1. المبالغ التي (تزيد) مديونية العميل (له/عليه حسب طبيعة الحساب)
+        $totalIn = 0;
+        $totalIn += $customer->sales()->sum('total'); // إجمالي فواتير البيع
+        $totalIn += $customer->expensesAsBeneficiary()->sum('total_amount'); // مصاريف استلمها
 
-        return $balance;
+        // 2. المبالغ التي (تخفض) المديونية
+        $totalOut = 0;
+        $totalOut += $customer->supplyings()->sum('total_amount'); // مبالغ وردها نقداً
+        $totalOut += $customer->expensesAsPayer()->sum('total_amount'); // مصاريف دفعها نيابة عنا
+
+        // 3. مشتريات العملات (المعادل السوداني)
+        // العميل عندما يشتري عملة، فإن القيمة المعادلة بالسوداني هي مبلغ "خارج" من حسابه
+        $totalOut += \App\Models\CurrencyTransaction::where('payer_id', $customer->id)
+            ->where('payer_type', get_class($customer))
+            ->where('type', \App\Enums\CurrencyType::SEND)
+            ->sum('total'); // مجموع عمود total (المعادل)
+
+        // الحساب النهائي
+        $finalBalance = $totalIn - $totalOut;
+
+        // تحديث قاعدة البيانات
+        $customer->update([
+            'balance' => $finalBalance
+        ]);
+
+        return (float) $finalBalance;
     }
 
     public function updateCustomersBalance(): void
