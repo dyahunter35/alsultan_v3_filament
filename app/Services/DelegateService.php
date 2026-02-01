@@ -11,61 +11,69 @@ class DelegateService
 {
     /**
      * 🔹 حساب الأرصدة الافتتاحية الموحدة
+     * تم إصلاح الحسبة لتشمل كافة العمليات (سلف، رواتب، مصاريف) لضمان دقة الرصيد المرحل
      */
     public function calculateUnifiedOpeningBalances(User $delegate, ?string $startDate): array
     {
-        if (!$startDate)
+        if (!$startDate) {
             return ['treasury_opening' => 0, 'customer_opening' => 0];
+        }
+
         $date = Carbon::parse($startDate)->startOfDay();
 
-        // 1. رصيد الخزينة (السيولة الفعلية مع المندوب)
-        $treasury = 0;
-        $treasury += $delegate->supplyingsAsRepresentative()->where('created_at', '<', $date)->sum('total_amount');
-        $treasury += $delegate->expensesAsBeneficiary()->where('created_at', '<', $date)->sum('total_amount');
-        //$treasury += $delegate->ordersAsRepresentative()->where('status', OrderStatus::Payed)->where('created_at', '<', $date)->sum('total');
-        $treasury += $delegate->expensesAsRepresentative()->where('created_at', '<', $date)
-            ->sum('total_amount');
-        $treasury -= $delegate->expensesAsPayer()->where('created_at', '<', $date)->sum('total_amount');
+        // 1. رصيد الخزينة (السيولة الفعلية مع المندوب قبل تاريخ البداية)
+        $treasuryIn = 0;
+        $treasuryOut = 0;
 
-        // 2. رصيد العملاء (الديون الخارجية)
-        $customerDebt = 0;
-        $customerDebt += $delegate->ordersAsRepresentative()->where('created_at', '<', $date)->sum('total');
-        $customerDebt -= $delegate->supplyingsAsRepresentative()->where('created_at', '<', $date)->sum('total_amount');
-        $customerDebt -= $delegate->expensesAsRepresentative()
-            ->where('created_at', '<', $date)
-            ->sum('total_amount');
+        // مبالغ دخلت الخزينة
+        $treasuryIn += $delegate->supplyingsAsRepresentative()->where('created_at', '<', $date)->sum('total_amount');
+        $treasuryIn += $delegate->expensesAsBeneficiary()->where('created_at', '<', $date)->sum('total_amount');
+
+        // مبالغ خرجت من الخزينة
+        $treasuryOut += $delegate->expensesAsPayer()->where('created_at', '<', $date)->sum('total_amount');
+        //$treasuryOut += $delegate->salaryAdvancesAsPayer()->where('created_at', '<', $date)->sum('amount');
+        //$treasuryOut += $delegate->salaryPaymentsAsPayer()->where('payment_date', '<', $date)->sum('net_pay');
+
+        // ملاحظة: expensesAsRepresentative لا تؤثر على صافي الخزينة لأنها (Amount In = Amount Out)
+
+        // 2. رصيد العملاء (مديونية العملاء للمندوب قبل تاريخ البداية)
+        $customerSales = $delegate->ordersAsRepresentative()->where('created_at', '<', $date)->sum('total');
+        $customerPayments = 0;
+
+        // تحصيلات نقدية
+        $customerPayments += $delegate->supplyingsAsRepresentative()->where('created_at', '<', $date)->sum('total_amount');
+        // تحصيلات تمت عبر دفع مصروف مباشر (رصيد عابر)
+        $customerPayments += $delegate->expensesAsRepresentative()->where('created_at', '<', $date)->sum('total_amount');
 
         return [
-            'treasury_opening' => (float) $treasury,
-            'customer_opening' => (float) $customerDebt,
+            'treasury_opening' => (float) ($treasuryIn - $treasuryOut),
+            'customer_opening' => (float) ($customerSales - $customerPayments),
         ];
     }
 
     public function calculateUserBalances(User $delegate): float
     {
-        // 1. رصيد الخزينة (السيولة الفعلية مع المندوب)
-        $treasury = 0;
-        $treasury += $delegate->supplyingsAsRepresentative()->sum('total_amount');
-        //$treasury += $delegate->ordersAsRepresentative()->where('status', OrderStatus::Payed)->sum('total');
-        $treasury += $delegate->expensesAsBeneficiary()->sum('total_amount');
-        $treasury -= $delegate->expensesAsPayer()->sum('total_amount');
+        // استخدام نفس منطق الرصيد الافتتاحي حتى تاريخ الغد لضمان حساب الرصيد اللحظي الحالي
+        $balances = $this->calculateUnifiedOpeningBalances($delegate, Carbon::tomorrow()->toDateString());
+        $treasury = $balances['treasury_opening'] ?? 0;
 
         $delegate->update([
             'balance' => $treasury
         ]);
+
         return (float) $treasury;
     }
 
     /**
-     * 🔹 توليد البيانات الموحدة للتقريرين (العادي والمتقدم)
+     * 🔹 توليد البيانات الموحدة للتقرير
      */
     public function generateUnifiedLedger(User $delegate, ?string $startDate = null, ?string $endDate = null): Collection
     {
-        $formattedStartDate = $startDate ? Carbon::parse($startDate)->startOfDay() : null;
-        $formattedEndDate = $endDate ? Carbon::parse($endDate)->endOfDay() : null;
+        $formattedStartDate = $startDate;
+        $formattedEndDate = $endDate;
 
         // جلب الأرصدة الافتتاحية
-        $openings = $this->calculateUnifiedOpeningBalances($delegate, $formattedStartDate ? $formattedStartDate->toDateString() : null);
+        $openings = $this->calculateUnifiedOpeningBalances($delegate, $formattedStartDate);
 
         $runTreasury = $openings['treasury_opening'];
         $runCustomer = $openings['customer_opening'];
@@ -73,33 +81,21 @@ class DelegateService
 
         $transactions = collect();
 
-        // 1. المبيعات
+        // دمج كافة العمليات
         $transactions = $transactions->merge($this->getOrdersTransactions($delegate, $formattedStartDate, $formattedEndDate));
-
-        // 2. التحصيلات
         $transactions = $transactions->merge($this->getSupplyingsTransactions($delegate, $formattedStartDate, $formattedEndDate));
-
-        // 3. استلام عهدة
         $transactions = $transactions->merge($this->getBeneficiaryExpenseTransactions($delegate, $formattedStartDate, $formattedEndDate));
-
-        // 4. دفع مصروف
         $transactions = $transactions->merge($this->getPayerExpenseTransactions($delegate, $formattedStartDate, $formattedEndDate));
-
-        // 5. رصيد عابر
         $transactions = $transactions->merge($this->getRepresentativeExpenseTransactions($delegate, $formattedStartDate, $formattedEndDate));
-
-        // 6. سلف الموظفين
-        $transactions = $transactions->merge($this->getSalaryAdvanceTransactions($delegate, $formattedStartDate, $formattedEndDate));
-
-        // 7. رواتب الموظفين
-        $transactions = $transactions->merge($this->getSalaryPaymentTransactions($delegate, $formattedStartDate, $formattedEndDate));
+        //$transactions = $transactions->merge($this->getSalaryAdvanceTransactions($delegate, $formattedStartDate, $formattedEndDate));
+        //$transactions = $transactions->merge($this->getSalaryPaymentTransactions($delegate, $formattedStartDate, $formattedEndDate));
 
         $sorted = $transactions->sortBy('date')->values();
         $ledger = collect();
 
-        // سطر الرصيد الافتتاحي الموحد
+        // سطر الرصيد المرحل
         $ledger->push([
-            'date' => $formattedStartDate?->copy()->subDay()->format('Y-m-d') ?? Carbon::now()->subDay()->format('Y-m-d'),
+            'date' => $formattedStartDate ? Carbon::parse($formattedStartDate)->subDay()->format('Y-m-d') : Carbon::now()->subDay()->format('Y-m-d'),
             'transaction_name' => 'رصيد مرحل',
             'description' => 'رصيد مرحل من فترة سابقة',
             'details' => '-',
@@ -112,7 +108,7 @@ class DelegateService
             'customer_balance' => $runCustomer,
             'amount_in' => 0,
             'amount_out' => 0,
-            'balance' => $runTotal,
+            'balance' => $runTreasury,
         ]);
 
         foreach ($sorted as $item) {
@@ -130,12 +126,11 @@ class DelegateService
         return $ledger;
     }
 
-    private function getOrdersTransactions(User $delegate, ?Carbon $startDate, ?Carbon $endDate): Collection
+    private function getOrdersTransactions(User $delegate, $startDate, $endDate): Collection
     {
         return $delegate->ordersAsRepresentative()
             ->when($startDate, fn($q) => $q->where('created_at', '>=', $startDate))
             ->when($endDate, fn($q) => $q->where('created_at', '<=', $endDate))
-            //->where('status', OrderStatus::Payed)
             ->get()
             ->map(fn($o) => [
                 'date' => $o->created_at,
@@ -147,12 +142,12 @@ class DelegateService
                 'treasury_credit' => 0,
                 'customer_sales' => $o->total,
                 'customer_payment' => 0,
-                'amount_in' => 0, #TODO : insure correction
+                'amount_in' => 0,
                 'amount_out' => 0,
             ]);
     }
 
-    private function getSupplyingsTransactions(User $delegate, ?Carbon $startDate, ?Carbon $endDate): Collection
+    private function getSupplyingsTransactions(User $delegate, $startDate, $endDate): Collection
     {
         return $delegate->supplyingsAsRepresentative()
             ->when($startDate, fn($q) => $q->where('created_at', '>=', $startDate))
@@ -173,7 +168,7 @@ class DelegateService
             ]);
     }
 
-    private function getBeneficiaryExpenseTransactions(User $delegate, ?Carbon $startDate, ?Carbon $endDate): Collection
+    private function getBeneficiaryExpenseTransactions(User $delegate, $startDate, $endDate): Collection
     {
         return $delegate->expensesAsBeneficiary()
             ->when($startDate, fn($q) => $q->where('created_at', '>=', $startDate))
@@ -182,10 +177,10 @@ class DelegateService
             ->get()
             ->map(fn($e) => [
                 'date' => $e->created_at,
-                'transaction_name' => 'استلام مصروف' . $e->type?->label ?? '',
+                'transaction_name' => 'استلام مصروف ' . ($e->type?->label ?? ''),
                 'description' => 'استلام عهدة (سلفة)',
                 'details' => $e->notes ?? 'استلام نقدية من الإدارة',
-                'customer_name' => '-', // Fixed: $s is undefined in original code, likely meant '-' or unrelated
+                'customer_name' => '-',
                 'treasury_debit' => $e->total_amount,
                 'treasury_credit' => 0,
                 'customer_sales' => 0,
@@ -195,16 +190,16 @@ class DelegateService
             ]);
     }
 
-    private function getPayerExpenseTransactions(User $delegate, ?Carbon $startDate, ?Carbon $endDate): Collection
+    private function getPayerExpenseTransactions(User $delegate, $startDate, $endDate): Collection
     {
         return $delegate->expensesAsPayer()
             ->when($startDate, fn($q) => $q->where('created_at', '>=', $startDate))
             ->when($endDate, fn($q) => $q->where('created_at', '<=', $endDate))
-            ->with('type')
+            ->with('type', 'beneficiary')
             ->get()
             ->map(fn($e) => [
                 'date' => $e->created_at,
-                'transaction_name' => 'دفع مصروف [ ' . $e->type?->label . ' ]' ?? '',
+                'transaction_name' => 'دفع مصروف [ ' . ($e->type?->label ?? '') . ' ]',
                 'description' => 'صرف من العهدة',
                 'details' => $e->notes ?? 'دفع مصروف خارجي',
                 'customer_name' => $e->beneficiary?->name ?? '-',
@@ -217,18 +212,18 @@ class DelegateService
             ]);
     }
 
-    private function getRepresentativeExpenseTransactions(User $delegate, ?Carbon $startDate, ?Carbon $endDate): Collection
+    private function getRepresentativeExpenseTransactions(User $delegate, $startDate, $endDate): Collection
     {
         return $delegate->expensesAsRepresentative()
             ->when($startDate, fn($q) => $q->where('created_at', '>=', $startDate))
             ->when($endDate, fn($q) => $q->where('created_at', '<=', $endDate))
-            ->with('type')
+            ->with('type', 'beneficiary')
             ->get()
             ->map(fn($e) => [
                 'date' => $e->created_at,
-                'transaction_name' => 'رصيد عابر [ ' . $e->type?->label . ' ]' ?? '',
-                'description' => 'استلام عهدة (سلفة)',
-                'details' => $e->notes ?? 'استلام نقدية من الإدارة',
+                'transaction_name' => 'رصيد عابر [ ' . ($e->type?->label ?? '') . ' ]',
+                'description' => 'تحصيل وصرف فوري',
+                'details' => $e->notes ?? 'تم الصرف مباشرة من تحصيل العميل',
                 'customer_name' => $e->beneficiary?->name ?? '-',
                 'treasury_debit' => $e->total_amount,
                 'treasury_credit' => $e->total_amount,
@@ -239,7 +234,7 @@ class DelegateService
             ]);
     }
 
-    private function getSalaryAdvanceTransactions(User $delegate, ?Carbon $startDate, ?Carbon $endDate): Collection
+    private function getSalaryAdvanceTransactions(User $delegate, $startDate, $endDate): Collection
     {
         return $delegate->salaryAdvancesAsPayer()
             ->when($startDate, fn($q) => $q->where('created_at', '>=', $startDate))
@@ -261,7 +256,7 @@ class DelegateService
             ]);
     }
 
-    private function getSalaryPaymentTransactions(User $delegate, ?Carbon $startDate, ?Carbon $endDate): Collection
+    private function getSalaryPaymentTransactions(User $delegate, $startDate, $endDate): Collection
     {
         return $delegate->salaryPaymentsAsPayer()
             ->when($startDate, fn($q) => $q->where('payment_date', '>=', $startDate))

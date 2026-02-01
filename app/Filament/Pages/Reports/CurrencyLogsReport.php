@@ -115,7 +115,10 @@ class CurrencyLogsReport extends Page implements Forms\Contracts\HasForms
                 app(CurrencyLogsService::class)->updateCustomerBalance($customer);
                 CurrencyBalance::refreshBalances();
                 $this->loadData();
-                $this->dispatch('notify', ['message' => 'تم تحديث الأرصدة بنجاح']);
+                Notification::make()
+                    ->title('تم تحديث بيانات العملاء')
+                    ->success()
+                    ->send();
             });
         }
     }

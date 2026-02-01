@@ -4,8 +4,11 @@ namespace App\Filament\Pages\Reports;
 
 use App\Enums\ExpenseGroup;
 use App\Filament\Pages\Concerns\HasReport;
+use App\Models\CurrencyBalance;
 use App\Models\Customer;
+use App\Services\CurrencyLogsService;
 use App\Services\CustomerService;
+use DB;
 use Filament\Forms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -81,7 +84,7 @@ class CurrencyCustomerReport extends Page implements Forms\Contracts\HasForms
             return;
         }
 
-        $this->ledger = app(CustomerService::class)
+        $this->ledger = app(CurrencyLogsService::class)
             ->generateLedger($customer, $this->startDate, $this->endDate);
     }
 
@@ -110,14 +113,21 @@ class CurrencyCustomerReport extends Page implements Forms\Contracts\HasForms
         ];
     }
 
-    public function updateBalances(): void
+    public function updateBalances()
     {
-        app(CustomerService::class)->updateCustomersBalance();
-        $this->loadLedger();
-        Notification::make()
-            ->title('تم تحديث بيانات العملاء')
-            ->success()
-            ->send();
+        if ($this->customerId) {
+            DB::transaction(function () {
+                $customer = Customer::find($this->customerId);
+                app(CurrencyLogsService::class)->updateCustomerBalance($customer);
+                //CurrencyBalance::refreshBalances();
+                $this->loadLedger();
+                Notification::make()
+                    ->title('تم تحديث بيانات العملاء')
+                    ->success()
+                    ->send();
+            });
+        }
     }
+
 }
 

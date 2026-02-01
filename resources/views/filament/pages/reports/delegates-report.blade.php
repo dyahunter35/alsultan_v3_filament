@@ -6,8 +6,8 @@
                 {{ $this->form }}
             </div>
             <div class="flex items-center gap-2">
-                <x-filament::button wire:click="loadData" color="gray" icon="heroicon-m-arrow-path">
-                    تحديث
+                <x-filament::button wire:click="updatePalance" color="info" icon="heroicon-m-arrow-path">
+                    تحديث حساب المندوب
                 </x-filament::button>
             </div>
         </div>
@@ -20,13 +20,16 @@
             <x-report-header :label="$this->getTitle()" :value="$delegate?->name ?? '—'" />
 
             {{-- 3. بطاقة بيانات المندوب --}}
-            <div class="grid grid-cols-1 overflow-hidden bg-white border shadow-sm md:grid-cols-3 print:grid-cols-3 rounded-xl print:shadow-none print:border-slate-300">
-                <div class="flex items-center justify-center gap-2 px-4 py-3 border-b md:border-b-0 md:border-l border-slate-100 print:border-l">
+            <div
+                class="grid grid-cols-1 overflow-hidden bg-white border shadow-sm md:grid-cols-3 print:grid-cols-3 rounded-xl print:shadow-none print:border-slate-300">
+                <div
+                    class="flex items-center justify-center gap-2 px-4 py-3 border-b md:border-b-0 md:border-l border-slate-100 print:border-l">
                     <x-filament::icon icon="heroicon-m-map-pin" class="w-4 h-4 text-slate-400" />
                     <span class="text-sm font-bold text-slate-400">العنوان:</span>
                     <span class="text-sm font-bold tabular-nums text-slate-700">{{ $delegate?->address ?? '-' }}</span>
                 </div>
-                <div class="flex items-center justify-center gap-2 px-4 py-3 border-b md:border-b-0 md:border-l border-slate-100 print:border-l">
+                <div
+                    class="flex items-center justify-center gap-2 px-4 py-3 border-b md:border-b-0 md:border-l border-slate-100 print:border-l">
                     <x-filament::icon icon="heroicon-m-user" class="w-4 h-4 text-slate-400" />
                     <span class="text-sm font-bold text-slate-400">المسمى:</span>
                     <span class="text-sm font-medium text-slate-700">مندوب مبيعات</span>
@@ -34,17 +37,19 @@
                 <div class="flex items-center justify-center gap-3 px-4 py-3 bg-slate-50/50 print:bg-slate-50">
                     <x-filament::icon icon="heroicon-m-credit-card" class="w-4 h-4 text-slate-400" />
                     <span class="text-sm font-bold text-slate-400">الرصيد الختامي:</span>
-                    
-                     <button wire:click="updatePalance">
-                         <span class="text-lg font-black tabular-nums {{ ($delegate?->balance ?? 0) < 0 ? 'text-red-600' : 'text-green-700' }}">
+
+                    <button wire:click="updatePalance">
+                        <span
+                            class="text-lg font-black tabular-nums {{ ($delegate?->balance ?? 0) < 0 ? 'text-red-600' : 'text-green-700' }}">
                             {{ number_format($delegate?->balance ?? 0, 2) }}
                         </span>
-                     </button> 
+                    </button>
                 </div>
             </div>
-            
+
             {{-- 4. جدول الأستاذ المطور --}}
-            <div class="overflow-x-auto bg-white border shadow-sm border-slate-200 rounded-xl print:border-slate-800 print:rounded-none">
+            <div
+                class="overflow-x-auto bg-white border shadow-sm border-slate-200 rounded-xl print:border-slate-800 print:rounded-none">
                 <table class="w-full text-center border-collapse text-[13px] print:text-[10px]">
                     <thead>
                         <tr class="font-bold text-white bg-slate-800">
@@ -60,12 +65,14 @@
                     <tbody class="divide-y divide-slate-200 tabular-nums">
                         @foreach ($ledger as $row)
                             <tr class="transition-colors hover:bg-slate-50/50">
-                                <td class="p-2 border border-slate-200 text-slate-500 font-medium">{{ \Carbon\Carbon::parse($row['date'])?->format('Y-m-d') }}</td>
-                                <td class="p-2 border border-slate-200 font-bold text-slate-700">{{ $row['transaction_name'] }}</td>
+                                <td class="p-2 border border-slate-200 text-slate-500 font-medium">
+                                    {{ \Carbon\Carbon::parse($row['date'])?->format('Y-m-d') }}</td>
+                                <td class="p-2 border border-slate-200 font-bold text-slate-700">{{ $row['transaction_name'] }}
+                                </td>
                                 <td class="p-2 border border-slate-200 font-medium">{{ $row['customer_name'] ?? '—' }}</td>
-                                
+
                                 {{-- عمود التفاصيل الموزون --}}
-                                
+
                                 <td class="p-2 text-right border border-slate-200 min-w-[150px] leading-snug">
                                     @if ($row['details'] instanceof \Illuminate\Support\Collection)
 
@@ -119,9 +126,12 @@
                         @endforeach
                         <tr class="font-black border-t-2 bg-slate-800 text-white border-slate-900">
                             <td colspan="4" class="p-2 px-6 text-left text-sm uppercase">إجمالي الحركة</td>
-                            <td class="p-2 border border-slate-700 bg-green-700/50">{{ number_format($ledger->sum('amount_in'), 2) }}</td>
-                            <td class="p-2 border border-slate-700 bg-red-700/50">{{ number_format($ledger->sum('amount_out'), 2) }}</td>
-                            <td class="p-2 text-sm border border-slate-700 bg-slate-900">{{ number_format($ledger->last()['balance'] ?? 0, 2) }}</td>
+                            <td class="p-2 border border-slate-700 bg-green-700/50">
+                                {{ number_format($ledger->sum('amount_in'), 2) }}</td>
+                            <td class="p-2 border border-slate-700 bg-red-700/50">
+                                {{ number_format($ledger->sum('amount_out'), 2) }}</td>
+                            <td class="p-2 text-sm border border-slate-700 bg-slate-900">
+                                {{ number_format($ledger->last()['balance'] ?? 0, 2) }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -142,14 +152,43 @@
     @endif
 
     <style>
-        @font-face { font-family: 'FlatJooza'; src: url('{{ asset('fonts/flat-jooza-regular.woff2') }}') format('woff2'); }
-        #report-content { font-family: 'FlatJooza', sans-serif; }
+        @font-face {
+            font-family: 'FlatJooza';
+            src: url('{{ asset('fonts/flat-jooza-regular.woff2') }}') format('woff2');
+        }
+
+        #report-content {
+            font-family: 'FlatJooza', sans-serif;
+        }
+
         @media print {
-            @page { size: A4 landscape; margin: 8mm; } {{-- Landscape أفضل لهذا الجدول العريض --}}
-            .no-print { display: none !important; }
-            body { background: white !important; -webkit-print-color-adjust: exact !important; }
-            thead { display: table-header-group; }
-            .tabular-nums { font-variant-numeric: tabular-nums; }
+            @page {
+                size: A4 landscape;
+                margin: 8mm;
+            }
+
+                {
+                    {
+                    -- Landscape أفضل لهذا الجدول العريض --
+                }
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                background: white !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            thead {
+                display: table-header-group;
+            }
+
+            .tabular-nums {
+                font-variant-numeric: tabular-nums;
+            }
         }
     </style>
 </x-filament-panels::page>

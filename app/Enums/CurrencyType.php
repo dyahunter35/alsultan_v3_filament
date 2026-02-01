@@ -11,9 +11,9 @@ enum CurrencyType: string implements HasColor, HasIcon, HasLabel
 {
     use EnumsKeys;
 
-    case Convert = 'convert';
-    case CompanyExpense = 'company';
-    case SEND = 'send';
+    case Convert = 'convert'; // تحويل داخلي بين العميل من عمله سودانية الي عمله حرة
+    case CompanyExpense = 'company'; //دفع منصرفات شركة
+    case SEND = 'send'; // ارسال عمله حرة لطرف ثاني
 
     public function getLabel(): ?string
     {

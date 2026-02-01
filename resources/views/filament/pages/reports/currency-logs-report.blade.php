@@ -45,13 +45,17 @@
                     <tr class="bg-gray-200 font-bold border-b-2 border-black">
                         <th class="border border-black" rowspan="2">#</th>
                         <th class="border border-black px-4" rowspan="2">التاريخ</th>
-                        <th class="border border-black px-2 bg-yellow-100" rowspan="2">المعادل (سوداني)</th>
-                        <th class="border border-black px-2 bg-gray-300" rowspan="2">الرصيد التراكمي</th>
+                        <!-- <th class="border border-black px-2 bg-gray-300" rowspan="2">الرصيد التراكمي</th> -->
+                        <!-- <th class="border border-black px-2 bg-yellow-100" rowspan="2">المعادل (سوداني)</th> -->
+                            <th class="border border-black" colspan="2">سوداني</th>
+
                         @foreach ($currencys as $c)
                             <th class="border border-black" colspan="2">{{ $c->name }}</th>
                         @endforeach
                     </tr>
                     <tr class="bg-gray-100 text-[9px]">
+                            <th class="border border-black">الرصيد</th><th class="border border-black">مبلغ. الشراء</th>
+
                         @foreach($currencys as $c)
                             <th class="border border-black">مبلغ</th><th class="border border-black">سعر الصرف</th>
                         @endforeach
@@ -62,8 +66,8 @@
                         <tr class="hover:bg-gray-50">
                             <td class="border border-black">{{ $tr['index'] }}</td>
                             <td class="border border-black whitespace-nowrap">{{ $tr['date'] }}</td>
-                            <td class="border border-black font-black bg-yellow-50 tabular-nums">{{ number_format($tr['total'], 2) }}</td>
                             <td class="border border-black font-black text-blue-800 bg-gray-100 tabular-nums">{{ number_format($tr['running_balance'], 2) }}</td>
+                            <td class="border border-black font-black bg-yellow-50 tabular-nums">{{ number_format($tr['total'], 2) }}</td>
                             @foreach($currencys as $c)
                                 <td class="border border-black tabular-nums">{{ $tr['currency_code'] == $c->code ? number_format($tr['amount'], 2) : '-' }}</td>
                                 <td class="border border-black text-gray-400 tabular-nums">{{ $tr['currency_code'] == $c->code ? number_format($tr['rate'], 2) : '-' }}</td>

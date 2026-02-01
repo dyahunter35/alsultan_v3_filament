@@ -157,8 +157,14 @@
     @else
         <div class="p-20 text-center bg-white border-2 border-gray-300 border-dashed shadow-sm rounded-xl">
             <x-filament::icon icon="heroicon-o-document-magnifying-glass" class="w-12 h-12 mx-auto mb-4 text-gray-300" />
-            <h3 class="text-xl font-bold tracking-tight text-gray-400">لا توجد حركات مالية مسجلة لهذا العميل في الفترة
-                المحددة</h3>
+            <h3 class="text-xl font-bold tracking-tight text-gray-400">
+                @if ($customerId == '')
+                    الرجاء اختيار العميل اولا
+                    @else
+ لا توجد حركات مالية مسجلة لهذا العميل في الفترة
+                المحددة
+                @endif
+               </h3>
         </div>
     @endif
 
