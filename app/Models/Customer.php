@@ -37,11 +37,16 @@ class Customer extends Model implements HasMedia
         return $query->where('permanent', $type);
     }
 
+    public function scopeSale($query)
+    {
+        return $query->where('permanent', ExpenseGroup::SALE);
+    }
+
     public function getNameAttribute($value): string
     {
 
         $permanentLabel = $this->permanent?->getLabel() ?? '';
 
-        return ($this->permanent == ExpenseGroup::SALE) ? $value : $value.($permanentLabel ? " ($permanentLabel)" : '');
+        return ($this->permanent == ExpenseGroup::SALE) ? $value : $value . ($permanentLabel ? " ($permanentLabel)" : '');
     }
 }

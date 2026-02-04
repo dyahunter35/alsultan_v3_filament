@@ -48,7 +48,16 @@ class SupplyReport extends Page implements Forms\Contracts\HasForms
             Schemas\Components\Grid::make(4)->schema([
                 Forms\Components\Select::make('customerId')
                     ->label('العميل')
-                    ->options(Customer::pluck('name', 'id'))
+                    ->options(Customer::sale()
+                        ->get()
+                        ->mapWithKeys(fn(Customer $customer) => [
+                            $customer->id => sprintf(
+                                '%s [%s]',
+                                $customer->name,
+                                $customer->address,
+
+                            ),
+                        ]))
                     ->searchable()
                     ->live()
                     ->afterStateUpdated(fn($state) => [$this->customerId = $state, $this->loadData()]),

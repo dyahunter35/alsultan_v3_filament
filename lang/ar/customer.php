@@ -35,6 +35,10 @@ return [
             'label' => 'الصورة',
             'placeholder' => 'رفع صورة العميل',
         ],
+        'address' => [
+            'label' => 'العنوان',
+            'placeholder' => '',
+        ],
         'created_at' => [
             'label' => 'تاريخ الإنشاء',
             'placeholder' => '',

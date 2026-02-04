@@ -7,8 +7,10 @@ use App\Models\User;
 use App\Services\DelegateService;
 use Filament\Actions\Action;
 use Filament\Forms;
+use Filament\Notifications\Notification;
 use Filament\Schemas;
 use Filament\Pages\Page;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Url;
 use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
@@ -91,6 +93,10 @@ class AdvancedDelegatesReport extends Page implements Forms\Contracts\HasForms
     {
         if ($this->delegateId) {
             app(DelegateService::class)->calculateUserBalances($this->delegate);
+            Notification::make('')
+                ->body('تم تحديث الحساب بنحاح')
+                ->icon(Heroicon::UserPlus)
+                ->send();
             //$this->loadData();
         }
     }

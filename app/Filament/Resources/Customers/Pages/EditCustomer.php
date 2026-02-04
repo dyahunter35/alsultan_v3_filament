@@ -15,7 +15,7 @@ class EditCustomer extends EditRecord
     protected function getHeaderWidgets(): array
     {
         return [
-            // Widgets\Companystate::make(['record', $this->record]),
+                // Widgets\Companystate::make(['record', $this->record]),
             Widgets\CustomerFinanceOverview::class,
             CurrencyWidget::class,
         ];
@@ -32,7 +32,7 @@ class EditCustomer extends EditRecord
     {
         return [
             // Widgets\Companystate::make(['record', $this->record]),
-            Widgets\CustomerFinancialLedgerWidget::class,
+            //Widgets\CustomerFinancialLedgerWidget::class,
         ];
     }
 }

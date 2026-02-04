@@ -28,6 +28,10 @@ return [
             'label' => 'Phone',
             'placeholder' => 'Enter phone number',
         ],
+        'address' => [
+            'label' => 'Address / Location',
+            'placeholder' => '',
+        ],
         'gender' => [
             'label' => 'Gender',
             'placeholder' => 'Select gender',

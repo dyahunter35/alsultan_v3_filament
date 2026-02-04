@@ -47,33 +47,38 @@ class CustomerResource extends Resource
 
         return $schema
             ->components([
-                Section::make()
-                    ->schema([
-                        TextInput::make('name')
-                            ->required()
-                            ->maxLength(255),
-                        TextInput::make('email')
-                            ->email()
-                            ->maxLength(255),
+                    Section::make()
+                        ->schema([
+                                TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('email')
+                                    ->email()
+                                    ->maxLength(255),
 
-                        TextInput::make('phone')
-                            ->tel()
-                            ->maxLength(255)
-                            ->default(null),
+                                TextInput::make('phone')
+                                    ->tel()
+                                    ->maxLength(255)
+                                    ->default(null),
 
-                        Select::make('permanent')
-                            ->options(ExpenseGroup::class)
-                            ->default(ExpenseGroup::SALE->value),
+                                TextInput::make('address')
+                                    ->maxLength(255)
+                                    ->default(null),
 
-                    ])->columnSpan(2)
-                    ->columns(2),
-                Section::make()
-                    ->schema([
-                        SpatieMediaLibraryFileUpload::make('photo')
-                            ->collection('customer_photos'),
-                    ])->columnSpan(1),
+                                Select::make('permanent')
+                                    ->searchable()
+                                    ->options(ExpenseGroup::class)
+                                    ->default(ExpenseGroup::SALE->value),
 
-            ])->columns(3);
+                            ])->columnSpan(2)
+                        ->columns(2),
+                    Section::make()
+                        ->schema([
+                                SpatieMediaLibraryFileUpload::make('photo')
+                                    ->collection('customer_photos'),
+                            ])->columnSpan(1),
+
+                ])->columns(3);
     }
 
     public static function table(Table $table): Table
@@ -82,65 +87,70 @@ class CustomerResource extends Resource
 
         return $table
             ->columns([
-                SpatieMediaLibraryImageColumn::make('photo')
-                    ->collection('customer_photos')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    SpatieMediaLibraryImageColumn::make('photo')
+                        ->collection('customer_photos')
+                        ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('name')
-                    ->searchable(),
-                TextColumn::make('email')
-                    ->searchable(),
-                TextColumn::make('phone')
-                    ->searchable(),
-                TextColumn::make('balance')
-                    // ->money('SDG')
-                    ->searchable(),
+                    TextColumn::make('name')
+                        ->searchable(),
+                    TextColumn::make('email')
+                        ->searchable(),
+                    TextColumn::make('phone')
+                        ->searchable(),
+                    TextColumn::make('balance')
+                        // ->money('SDG')
+                        ->searchable(),
 
-                TextColumn::make('permanent')
-                    ->badge()
-                    ->searchable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('deleted_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
+                    TextColumn::make('permanent')
+                        ->badge()
+                        ->searchable(),
+
+                    TextColumn::make('address')
+                        ->badge()
+                        ->searchable(),
+
+                    TextColumn::make('created_at')
+                        ->dateTime()
+                        ->sortable()
+                        ->toggleable(isToggledHiddenByDefault: true),
+                    TextColumn::make('updated_at')
+                        ->dateTime()
+                        ->sortable()
+                        ->toggleable(isToggledHiddenByDefault: true),
+                    TextColumn::make('deleted_at')
+                        ->dateTime()
+                        ->sortable()
+                        ->toggleable(isToggledHiddenByDefault: true),
+                ])
             ->filters([
-                SelectFilter::make('permanent')
-                    ->options(ExpenseGroup::class),
-                TrashedFilter::make()
-                    ->visible(auth()->user()->can('restore_customer')),
-            ])
+                    SelectFilter::make('permanent')
+                        ->options(ExpenseGroup::class),
+                    TrashedFilter::make()
+                        ->visible(auth()->user()->can('restore_customer')),
+                ])
             ->recordActions([
 
-                EditAction::make(),
-                DeleteAction::make()
-                    ->visible(fn ($record) => ! $record->deleted_at),
-                RestoreAction::make()
-                    ->visible(fn ($record) => $record->deleted_at),
-                ForceDeleteAction::make()
-                    ->visible(fn ($record) => $record->deleted_at),
+                    EditAction::make(),
+                    DeleteAction::make()
+                        ->visible(fn($record) => !$record->deleted_at),
+                    RestoreAction::make()
+                        ->visible(fn($record) => $record->deleted_at),
+                    ForceDeleteAction::make()
+                        ->visible(fn($record) => $record->deleted_at),
 
-                ActionGroup::make([
-                    Action::make('report')
-                        ->label(__('customer.reports.ledger.title'))
-                        ->url(fn (Customer $record): string => CustomersReport::getUrl(['customerId' => $record->id]))
-                        ->openUrlInNewTab(),
-                ]),
+                    ActionGroup::make([
+                        Action::make('report')
+                            ->label(__('customer.reports.ledger.title'))
+                            ->url(fn(Customer $record): string => CustomersReport::getUrl(['customerId' => $record->id]))
+                            ->openUrlInNewTab(),
+                    ]),
 
-            ])
+                ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+                    BulkActionGroup::make([
+                        DeleteBulkAction::make(),
+                    ]),
+                ]);
     }
 
     public static function getRelations(): array

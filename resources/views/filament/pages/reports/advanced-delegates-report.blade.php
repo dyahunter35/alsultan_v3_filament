@@ -6,34 +6,34 @@
                 {{ $this->form }}
             </div>
             <div class="flex items-center gap-2">
-                <x-filament::button wire:click="loadData" color="gray" icon="heroicon-m-arrow-path">
-                    تحديث البيانات
+                <x-filament::button wire:click="updatePalance" color="info" icon="heroicon-m-arrow-path">
+                    تحديث حساب المندوب
                 </x-filament::button>
             </div>
         </div>
     </x-filament::section>
 
     @if ($ledger && count($ledger))
-        <div id="report-content" class="space-y-6 print:m-0">
+        <div id="report-content" class="space-y-1 print:m-0">
             {{-- ترويسة التقرير الرسمية --}}
             <x-report-header :label="$this->getTitle()" :value="$delegate?->name ?? '—'" />
 
             {{-- 2. صناديق الملخص العلوي --}}
             <div
-                class="grid grid-cols-1 overflow-hidden bg-white border shadow-sm md:grid-cols-3 print:grid-cols-3 rounded-xl print:shadow-none print:border-slate-300">
+                class="grid grid-cols-3 overflow-hidden bg-white border shadow-sm print:grid-cols-3 rounded-xl print:shadow-none print:border-slate-300">
                 <div
-                    class="flex items-center justify-center gap-2 px-4 py-3 border-b md:border-b-0 md:border-l border-slate-100 print:border-l">
+                    class="flex items-center justify-center gap-2 px-1 py-1 border-b md:border-b-0 md:border-l border-slate-100 print:border-l">
                     <x-filament::icon icon="heroicon-m-map-pin" class="w-4 h-4 text-slate-400" />
                     <span class="text-sm font-bold text-slate-400">العنوان:</span>
                     <span class="text-sm font-bold tabular-nums text-slate-700">{{ $delegate?->address ?? '-' }}</span>
                 </div>
                 <div
-                    class="flex items-center justify-center gap-2 px-4 py-3 border-b md:border-b-0 md:border-l border-slate-100 print:border-l">
+                    class="flex items-center justify-center gap-1 px-1 py-1 border-b md:border-b-0 md:border-l border-slate-100 print:border-l">
                     <x-filament::icon icon="heroicon-m-user" class="w-4 h-4 text-slate-400" />
                     <span class="text-sm font-bold text-slate-400">المسمى:</span>
                     <span class="text-sm font-medium text-slate-700">مندوب مبيعات</span>
                 </div>
-                <div class="flex items-center justify-center gap-3 px-4 py-3 bg-slate-50/50 print:bg-slate-50">
+                <div class="flex items-center justify-center gap-3 px-1 py-1 bg-slate-50/50 print:bg-slate-50">
                     <x-filament::icon icon="heroicon-m-credit-card" class="w-4 h-4 text-slate-400" />
                     <span class="text-sm font-bold text-slate-400">الرصيد الختامي:</span>
 

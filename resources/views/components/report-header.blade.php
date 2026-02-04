@@ -4,9 +4,9 @@
 @section('title', $label . ' ' . $value)
 @endisset
 
-<header class="container mx-auto mb-6 print:mb-4">
+<header class="container mx-auto mb-2 print:mb-4">
     {{-- قسم الهوية البصرية --}}
-    <div class="flex flex-row gap-2 items-center justify-center mb-4 space-y-1 text-center print:space-y-0">
+    <div class="flex flex-row gap-2 items-center justify-center mb-2 space-y-1 text-center print:space-y-0">
         <div class="p-2 mb-1">
             <img src="{{ asset('asset/logo.png') }}" width="90" alt="logo" class="h-auto" />
         </div>
@@ -43,7 +43,7 @@
 
     {{-- شريط معلومات التقرير --}}
     <div
-        class="relative p-2 overflow-hidden border-2 border-dashed rounded-xl border-slate-300 bg-slate-50/50 print:p-2 print:rounded-lg">
+        class="relative px-4 overflow-hidden border-2 border-dashed rounded-xl border-slate-300 bg-slate-50/50 print:p-1 print:rounded-lg">
         <div class="flex flex-row items-center justify-between">
 
             {{-- تسمية التقرير --}}

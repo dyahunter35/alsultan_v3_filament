@@ -24,11 +24,11 @@ class CurrencyWidget extends StatsOverviewWidget
 
     protected function getStats(): array
     {
-        if (! $this->record) {
+        if (!$this->record) {
             return [];
         }
 
-        if ($this->record instanceof Customer && $this->record?->permanent != ExpenseGroup::DEBTORS) {
+        if ($this->record instanceof Customer && $this->record?->permanent != ExpenseGroup::CURRENCY) {
             return [];
         }
 
