@@ -11,8 +11,8 @@
             <x-report-header label="تقرير بيان شحنة رقم" :value="$truck->id" />
 
             {{-- 1. تفاصيل الشاحنة الأساسية --}}
-            <x-filament::section class="mb-4 print:shadow-none print:border-slate-300">
-                <dl class="grid grid-cols-3 gap-4 my-2 text-sm text-center md:grid-cols-3 print:my-0">
+            <x-filament::section class="mb-2 print:shadow-none print:border-slate-300">
+                <dl class="grid grid-cols-3 gap-4 my-1 text-sm text-center md:grid-cols-3 print:my-0">
                     <div class="print:border-l print:border-slate-200 last:border-0">
                         <dt class="font-bold text-gray-500 print:text-[10px]">رقم اللوحة</dt>
                         <dd class="text-lg font-black text-gray-800 print:text-base">{{ $truck->car_number }}</dd>
@@ -79,8 +79,6 @@
                                         مسجلة</td>
                                 </tr>
                             @endforelse
-                        </tbody>
-                        <tfoot>
                             <tr class="font-black border-t-2 bg-slate-100 text-slate-900 border-slate-400">
                                 <td colspan="2"
                                     class="p-2 text-right uppercase border border-slate-400 bg-slate-200">الإجمالي العام
@@ -91,7 +89,9 @@
                                     {{ number_format(array_sum(array_column($rows, 'weight_ton')), 3) }}</td>
                                 <td class="p-2 border border-slate-400">
                                     {{ number_format(array_sum(array_column($rows, 'quantity')), 2) }}</td>
+                                <td class="p-2 border border-slate-400"> </td>
                                 <td class="p-2 border border-slate-400">
+
                                     {{ number_format(array_sum(array_column($rows, 'real_quantity')), 2) }}</td>
                                 <td class="p-2 border border-slate-400"
                                     style="color: {{ array_sum(array_column($rows, 'dif')) >= 0 ? '#16a34a' : '#dc2626' }}">
@@ -99,16 +99,16 @@
                                 </td>
                                 <td class="p-2 border border-slate-400 bg-slate-200"></td>
                             </tr>
-                        </tfoot>
+                        </tbody>
+
                     </table>
                 </div>
             </x-filament::section>
 
             {{-- 3. المنصرفات وحسابات الترحيل (جنباً إلى جنب في الطباعة) --}}
-            <!-- <div class="grid grid-cols-1 gap-4 md:grid-cols-2 print:grid-cols-2">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 print:grid-cols-2">
 
-                {{-- جدول المنصرفات --}}
-                <x-filament::section class="print:shadow-none print:border-slate-300">
+                {{-- <x-filament::section class="print:shadow-none print:border-slate-300">
                     <x-slot name="heading">المنصرفات ( {{ $truck?->category?->name }} )</x-slot>
                     <table class="w-full text-xs text-center border-collapse border border-slate-400 print:text-[10px]">
                         <thead class="font-bold text-white bg-slate-800">
@@ -142,10 +142,9 @@
                             </tr>
                         </tfoot>
                     </table>
-                </x-filament::section>
+                </x-filament::section> --}}
 
-                {{-- جدول حسابات الترحيل --}}
-                <x-filament::section class="print:shadow-none print:border-slate-300">
+                {{-- <x-filament::section class="print:shadow-none print:border-slate-300">
                     <x-slot name="heading">📊 حسابات الترحيل </x-slot>
                     <div class="flex flex-col justify-between h-full">
                         <table class="w-full text-sm border border-slate-400 print:text-[11px]">
@@ -171,17 +170,19 @@
                                     </td>
                                 </tr>
                             </tbody>
-                        </table>
+                        </table> 
 
-                        {{-- ملاحظة التوقيع للطباعة --}}
-                        <div class="hidden print:flex justify-between mt-8 px-4 italic text-slate-400 text-[10px]">
-                            <div>توقيع المسؤول: ............................</div>
-                            <div>ختم الشركة: ............................</div>
-                        </div>
+                        
                     </div>
-                </x-filament::section>
-            </div> -->
+                </x-filament::section>--}}
 
+                
+            </div> 
+            {{-- ملاحظة التوقيع للطباعة --}}
+            <div class="hidden print:flex justify-between mt-8 px-4 italic text-slate-400 text-[10px]">
+                <div>توقيع المسؤول: ............................</div>
+                <div>ختم الشركة: ............................</div>
+            </div>
         </div>
 
         {{-- زر الطباعة (يختفي في الطباعة) --}}
@@ -194,7 +195,7 @@
     <style>
         @media print {
             @page {
-                size: A3 landscape;
+                /* size: A3 portrait; */
                 /* أو A4 landscape حسب رغبتك */
                 margin: 10mm;
             }

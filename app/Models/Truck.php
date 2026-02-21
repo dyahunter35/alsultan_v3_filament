@@ -26,7 +26,8 @@ class Truck extends Model implements HasMedia
 
     protected $casts = [
         'truck_status' => TruckState::class,
-        // 'arrive_date' =>  Carbon::class,
+        'arrive_date' => 'date',
+        'pack_date' => 'date',
         'type' => TruckType::class,
         'country' => Country::class,
     ];
@@ -224,7 +225,7 @@ class Truck extends Model implements HasMedia
     protected function totalWeight(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->cargos()->sum('weight'),
+            get: fn() => $this->cargos()->sum('weight'),
             // set: fn (string $value) => strtolower($value),
         );
     }
@@ -232,7 +233,7 @@ class Truck extends Model implements HasMedia
     protected function totalTonWeight(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->cargos()->sum('ton_weight'),
+            get: fn() => $this->cargos()->sum('ton_weight'),
             // set: fn (string $value) => strtolower($value),
         );
     }
@@ -244,7 +245,7 @@ class Truck extends Model implements HasMedia
         $totalExpenses = $nolon + $extraDaysCost;
 
         return Attribute::make(
-            get: fn () => $totalExpenses,
+            get: fn() => $totalExpenses,
             // set: fn (string $value) => strtolower($value),
         );
     }
@@ -258,7 +259,7 @@ class Truck extends Model implements HasMedia
 
         $nextNumber = self::getNextTruckNumberValue($type);
 
-        return $prefix.'-'.$date.'-'.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return $prefix . '-' . $date . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 
     public static function getNextTruckNumberValue(TruckType $type): int
