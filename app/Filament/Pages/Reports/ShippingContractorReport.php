@@ -51,7 +51,7 @@ class ShippingContractorReport extends Page implements HasForms
     protected function getFormSchema(): array
     {
         return [
-            Schemas\Components\Grid::make(3)->schema([
+            Schemas\Components\Grid::make(4)->schema([
                 Forms\Components\Select::make('contractorId')
                     ->label('المقاول')
                     ->options(Company::query()->contractor()->pluck('name', 'id'))

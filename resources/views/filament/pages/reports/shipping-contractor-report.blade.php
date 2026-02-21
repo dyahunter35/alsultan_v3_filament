@@ -45,8 +45,8 @@
                             <th class="p-2 border border-slate-300 bg-blue-50" colspan="3">السداد</th>
                         </tr>
                         <tr class="bg-gray-100 font-bold border-b border-slate-400">
-                            <th class="p-2 border border-slate-300 bg-blue-50">البيان</th>
                             <th class="p-2 border border-slate-300 bg-blue-50">التاريخ</th>
+                            <th class="p-2 border border-slate-300 bg-blue-50">البيان</th>
                             <th class="p-2 border border-slate-300 bg-blue-50">المبلغ</th>
                         </tr>
                     </thead>
@@ -69,8 +69,8 @@
                                         {{ number_format($row['total_amount'], 2) }}</td>
 
                                     {{-- Settlement columns for trip --}}
-                                    <td class="p-2 border border-slate-300 bg-blue-50/20">{{ $row['settlement_desc'] }}</td>
                                     <td class="p-2 border border-slate-300 bg-blue-50/20 text-xs">{{ $row['settlement_date'] }}</td>
+                                    <td class="p-2 border border-slate-300 bg-blue-50/20">{{ $row['settlement_desc'] }}</td>
                                     <td class="p-2 border border-slate-300 bg-blue-50/20 font-bold text-red-600 tabular-nums">
                                         {{ $row['settlement_amount'] > 0 ? number_format($row['settlement_amount'], 2) : '-' }}
                                     </td>
@@ -81,10 +81,11 @@
                                     <td class="p-2 border border-slate-300 italic" colspan="9">
                                         {{ $row['description'] }}
                                     </td>
-                                    <td class="p-2 border border-slate-300 bg-orange-100 text-orange-900">
-                                        {{ $row['settlement_desc'] }}</td>
                                     <td class="p-2 border border-slate-300 bg-orange-100 text-orange-900 text-xs">
                                         {{ $row['settlement_date'] }}</td>
+                                    <td class="p-2 border border-slate-300 bg-orange-100 text-orange-900">
+                                        {{ $row['settlement_desc'] }}</td>
+                                    
                                     <td class="p-2 border border-slate-300 bg-orange-200 text-red-800 tabular-nums">
                                         {{ number_format($row['settlement_amount'], 2) }}
                                     </td>
@@ -105,6 +106,7 @@
                     </tfoot>
                 </table>
             </div>
+            <x-print-button/>
         </div>
     @else
         <div
