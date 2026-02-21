@@ -44,6 +44,7 @@
                             <tr class="font-bold text-white bg-slate-800 print:bg-slate-800">
                                 <th class="p-2 border border-slate-400">#</th>
                                 <th class="p-2 text-right border border-slate-400">اسم المنتج</th>
+                                <th class="p-2 text-right border border-slate-400">المقاس</th>
                                 <th class="p-2 border border-slate-400">الوزن (جم)</th>
                                 <th class="p-2 border border-slate-400">الوزن (طن)</th>
                                 <th class="p-2 border border-slate-400">الكمية (طرد)</th>
@@ -59,6 +60,7 @@
                                     <td class="p-2 border border-slate-300 bg-slate-50">{{ $i + 1 }}</td>
                                     <td class="p-2 font-bold text-right border border-slate-300">
                                         {{ $row['product_name'] }}</td>
+                                    <td class="p-2 border border-slate-300">{{ $row['size'] }}</td>
                                     <td class="p-2 border border-slate-300">{{ number_format($row['weight_grams'], 2) }}
                                     </td>
                                     <td class="p-2 font-bold border border-slate-300">
@@ -83,8 +85,9 @@
                                 <td colspan="2"
                                     class="p-2 text-right uppercase border border-slate-400 bg-slate-200">الإجمالي العام
                                 </td>
-                                <td class="p-2 border border-slate-400">
+                                <td  colspan="2" class="p-2 border border-slate-400">
                                    </td>
+
                                 <td class="p-2 text-blue-900 border border-slate-400 bg-yellow-50">
                                     {{ number_format(array_sum(array_column($rows, 'weight_ton')), 3) }}</td>
                                 <td class="p-2 border border-slate-400">

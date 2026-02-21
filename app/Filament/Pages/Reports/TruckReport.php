@@ -71,6 +71,7 @@ class TruckReport extends Page implements HasForms
             $rows[] = [
                 'cargo_id' => $cargo->id,
                 'product_name' => $product->name,
+                'size' => $product->size,
                 'truck_name' => $cargo->truck?->name ?? 'N/A',
                 'weight_grams' => $cargo->weight ?? 0,
                 'weight_ton' => floatval($cargo->ton_weight ?? 0),
