@@ -23,6 +23,5 @@
             content: 'طباعة التقرير (Ctrl+P)',
             placement: 'right',
         }">
-
     </x-filament::button>
 </div>

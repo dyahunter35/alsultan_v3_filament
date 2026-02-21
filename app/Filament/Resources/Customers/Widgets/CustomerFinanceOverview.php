@@ -24,17 +24,17 @@ class CustomerFinanceOverview extends StatsOverviewWidget
     {
         $c = $this->record;
 
-        if (! $c) {
+        if (!$c) {
             return [];
         }
 
         return [
             Stat::make('Total Paid', number_format($c->total_paid ?? 0, 2))
-                ->color('primary')
+                ->color('danger')
                 ->description('المدفوعات'),
 
             Stat::make('Total Received', number_format($c->total_received ?? 0, 2))
-                ->color('primary')
+                ->color('info')
                 ->description('الاستلامات'),
 
             Stat::make('Total Supplyings', number_format($c->total_supplyings ?? 0, 2))
@@ -46,7 +46,7 @@ class CustomerFinanceOverview extends StatsOverviewWidget
                 ->description('المبيعات'),
 
             Stat::make('Net Balance', number_format($c->net_balance ?? 0, 2))
-                ->color(fn () => ($c->net_balance > 0) ? 'danger' : 'success')
+                ->color(fn() => ($c->net_balance > 0) ? 'danger' : 'success')
                 ->description('الصافي النهائي'),
         ];
     }

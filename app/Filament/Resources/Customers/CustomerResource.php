@@ -165,7 +165,6 @@ class CustomerResource extends Resource
         /** @var class-string<Model> $modelClass */
         return $modelClass = static::getEloquentQuery()->count();
 
-        return (string) Customer::count();
     }
 
     public static function getPages(): array

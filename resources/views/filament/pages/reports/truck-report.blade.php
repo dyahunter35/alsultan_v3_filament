@@ -47,6 +47,7 @@
                                 <th class="p-2 border border-slate-400">الوزن (جم)</th>
                                 <th class="p-2 border border-slate-400">الوزن (طن)</th>
                                 <th class="p-2 border border-slate-400">الكمية (طرد)</th>
+                                <th class="p-2 border border-slate-400">الكمية (عدد)</th>
                                 <th class="p-2 border border-slate-400">الكمية الفعلية</th>
                                 <th class="p-2 border border-slate-400">الفرق</th>
                                 <th class="p-2 border border-slate-400">ملاحظة</th>
@@ -62,8 +63,8 @@
                                     </td>
                                     <td class="p-2 font-bold border border-slate-300">
                                         {{ number_format($row['weight_ton'], 3) }}</td>
-                                    <td class="p-2 border border-slate-300">{{ number_format($row['quantity'], 2) }}
-                                    </td>
+                                    <td class="p-2 border border-slate-300">{{ number_format($row['quantity'], 2) }} </td>
+                                    <td class="p-2 border border-slate-300">{{ number_format($row['unit_quantity'], 2) }} </td>
                                     <td class="p-2 border border-slate-300">
                                         {{ number_format($row['real_quantity'], 2) }}</td>
                                     <td class="p-2 font-black border border-slate-300"
@@ -85,7 +86,7 @@
                                     class="p-2 text-right uppercase border border-slate-400 bg-slate-200">الإجمالي العام
                                 </td>
                                 <td class="p-2 border border-slate-400">
-                                    {{ number_format(array_sum(array_column($rows, 'weight_grams')), 2) }}</td>
+                                   </td>
                                 <td class="p-2 text-blue-900 border border-slate-400 bg-yellow-50">
                                     {{ number_format(array_sum(array_column($rows, 'weight_ton')), 3) }}</td>
                                 <td class="p-2 border border-slate-400">
@@ -104,7 +105,7 @@
             </x-filament::section>
 
             {{-- 3. المنصرفات وحسابات الترحيل (جنباً إلى جنب في الطباعة) --}}
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 print:grid-cols-2">
+            <!-- <div class="grid grid-cols-1 gap-4 md:grid-cols-2 print:grid-cols-2">
 
                 {{-- جدول المنصرفات --}}
                 <x-filament::section class="print:shadow-none print:border-slate-300">
@@ -179,7 +180,7 @@
                         </div>
                     </div>
                 </x-filament::section>
-            </div>
+            </div> -->
 
         </div>
 

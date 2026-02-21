@@ -1,11 +1,15 @@
 <x-filament-panels::page>
-    <x-filament::section class="mb-4 no-print shadow-sm border-slate-200">
-        {{ $this->form }}
+    <x-filament::section class="mb-4 shadow-sm no-print border-slate-200">
+        <div class="flex flex-col gap-4 md:flex-row md:items-end">
+            <div class="flex-1">{{ $this->form }}</div>
+            <x-filament::button wire:click="updateQty" color="gray"
+                icon="heroicon-m-arrow-path">تحديث الكميات</x-filament::button>
+        </div>
     </x-filament::section>
 
     @if ($reportData->isNotEmpty())
         <div id="report-content" class="space-y-6 print:m-0">
-            <x-report-header :label="$this->getNavigationLabel()" />
+            <x-report-header :label="$_label['name']"  />
 
             <div class="overflow-hidden bg-white border shadow-sm rounded-xl print:border-slate-800">
                 <div class="p-4 bg-slate-50/50 border-b flex justify-between items-center">
@@ -13,6 +17,7 @@
                         <h2 class="text-lg font-bold text-slate-800 italic">سجل حركات المخزون</h2>
                         <p class="text-xs text-gray-500">حركة الوارد والمنصرف والتعديلات</p>
                     </div>
+                    <span class="text-l font-mono bg-green-200 px-2 py-1 rounded">الكمية الحاليه :{{ $_label['qty']}} </span>
                     <span class="text-xs font-mono bg-slate-200 px-2 py-1 rounded">{{ $reportData->count() }} حركة</span>
                 </div>
 
@@ -25,7 +30,7 @@
                                 <th class="px-6 py-4 font-bold border-l border-slate-700">المنتج</th>
                                 <th class="px-6 py-4 font-bold border-l border-slate-700">نوع الحركة</th>
                                 <th class="px-6 py-4 font-bold border-l border-slate-700 text-center">الكمية</th>
-                                <th class="px-6 py-4 font-bold border-l border-slate-700 text-center">الرصيد بعد</th>
+                                <!-- <th class="px-6 py-4 font-bold border-l border-slate-700 text-center">الرصيد بعد</th> -->
                                 <th class="px-6 py-4 font-bold border-l border-slate-700">ملاحظات</th>
                                 <th class="px-6 py-4 font-bold bg-slate-900">المستخدم</th>
                             </tr>
@@ -50,12 +55,12 @@
                                         </x-filament::badge>
                                     </td>
                                     <td
-                                        class="px-6 py-4 text-center font-bold border-l border-slate-50 {{ $row->quantity_change > 0 ? 'text-success-600' : 'text-danger-600' }}">
-                                        {{ $row->quantity_change > 0 ? '+' : '' }}{{ number_format($row->quantity_change, 2) }}
+                                        class="px-6 py-4 text-center font-bold border-l border-slate-50 {{ $row->type->value == 'increase'  ? 'text-success-600' : 'text-danger-600' }}">
+                                        {{ $row->type->value == 'increase' ? '+' : '-' }}{{ number_format($row->quantity_change, 2) }}
                                     </td>
-                                    <td class="px-6 py-4 text-center font-black border-l border-slate-50 bg-slate-50/50">
+                                    <!-- <td class="px-6 py-4 text-center font-black border-l border-slate-50 bg-slate-50/50">
                                         {{ number_format($row->new_quantity, 2) }}
-                                    </td>
+                                    </td> -->
                                     <td class="px-6 py-4 text-xs border-l border-slate-50 max-w-xs truncate"
                                         title="{{ $row->notes }}">
                                         {{ $row->notes ?? '-' }}

@@ -41,7 +41,7 @@ class TruckReport extends Page implements HasForms
             Forms\Components\Select::make('truckId')
                 ->label('اختر الشاحنة')
                 ->options(Truck::query()->get()
-                    ->mapWithKeys(fn (Truck $truck) => [
+                    ->mapWithKeys(fn(Truck $truck) => [
                         $truck->id => sprintf(
                             '(%s) %s - %s',
                             $truck->id,
@@ -52,7 +52,7 @@ class TruckReport extends Page implements HasForms
                     ]))
                 ->searchable()
                 ->reactive()
-                ->afterStateUpdated(fn ($state) => $this->loadForTruck($state)),
+                ->afterStateUpdated(fn($state) => $this->loadForTruck($state)),
         ];
     }
 
@@ -75,6 +75,7 @@ class TruckReport extends Page implements HasForms
                 'weight_grams' => $cargo->weight ?? 0,
                 'weight_ton' => floatval($cargo->ton_weight ?? 0),
                 'quantity' => $qty,
+                'unit_quantity' => $cargo->unit_quantity,
                 'real_quantity' => $r_qty,
                 'dif' => $dif,
                 'note' => $cargo->note,

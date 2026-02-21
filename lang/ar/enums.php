@@ -71,7 +71,7 @@ return [
     'expense_group' => [
         'sale' => 'مبيعات',
         'debtors' => 'الدائنون',
-        'currency' => 'مرتبات وأجور',
+        'currency' => 'عميل عمله',
         'store' => 'مصروفات ترحيل',
         'customs' => 'جمارك',
         'certificates' => 'شهادات وارد',
