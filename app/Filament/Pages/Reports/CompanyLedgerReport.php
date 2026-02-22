@@ -21,6 +21,7 @@ class CompanyLedgerReport extends Page implements HasForms
     use InteractsWithForms;
 
     protected string $view = 'filament.pages.reports.company-ledger';
+
     protected static ?int $navigationSort = 51;
 
     #[Url()]
@@ -30,11 +31,18 @@ class CompanyLedgerReport extends Page implements HasForms
     #[Url()]
     public $date_range = null;
 
-    public $groups = []; // لعرض تفاصيل الشاحنات
-    public $report_lines = []; // لكشف الحساب التراكمي
+    public $combined_records = []; // البيانات المدمجة للجدول العلوي
+    public $report_lines = [];     // كشف الحساب التفصيلي
     public $opening_balance = 0;
     public $summary = ['total_debit' => 0, 'total_credit' => 0, 'final_balance' => 0];
 
+    public function mount()
+    {
+        if ($this->companyId) {
+            $this->_company = Company::find($this->companyId);
+            $this->loadData();
+        }
+    }
     protected function getFormSchema(): array
     {
         return [
@@ -54,23 +62,23 @@ class CompanyLedgerReport extends Page implements HasForms
         ];
     }
 
-    public function mount(): void
-    {
-        if ($this->companyId) {
-            $this->loadData();
-        }
-    }
-
     public function loadData(): void
     {
         if (!$this->companyId)
             return;
+
         $this->_company = Company::find($this->companyId);
 
-        // معالجة التاريخ
-        [$start, $end] = function_exists('parseDateRange') ? parseDateRange($this->date_range) : [null, null];
+        // استخراج تواريخ البداية والنهاية (بفرض وجود Helper Function لديك)
+        $start = null;
+        $end = null;
+        if ($this->date_range) {
+            $dates = explode(' - ', $this->date_range);
+            $start = $dates[0] ?? null;
+            $end = $dates[1] ?? null;
+        }
 
-        // 1. حساب الرصيد السابق (قبل فترة التقرير)
+        // 1. حساب الرصيد الافتتاحي (قبل تاريخ البداية)
         $this->opening_balance = 0;
         if ($start) {
             $prev_trucks_ids = Truck::where(fn($q) => $q->where('company_id', $this->companyId)->orWhere('contractor_id', $this->companyId))
@@ -80,61 +88,71 @@ class CompanyLedgerReport extends Page implements HasForms
 
             $prev_credit = CurrencyTransaction::where('party_id', $this->companyId)
                 ->where('party_type', Company::class)
-                ->where('created_at', '<', $start)->sum('total');
+                ->where('created_at', '<', $start)
+                ->sum('total');
 
             $this->opening_balance = $prev_debit - $prev_credit;
         }
 
-        // 2. جلب الشاحنات (الفواتير)
+        // 2. جلب الشحنات
         $trucks = Truck::with(['cargos.product'])
             ->where(fn($q) => $q->where('company_id', $this->companyId)->orWhere('contractor_id', $this->companyId))
             ->when($start && $end, fn($q) => $q->whereBetween('pack_date', [$start, $end]))
-            ->orderBy('pack_date')->get();
+            ->get();
 
-        $this->groups = [];
-        $lines = collect();
-
-        foreach ($trucks as $truck) {
-            $invoice_total = $truck->cargos->sum(fn($c) => $c->ton_price * $c->ton_weight);
-            $this->groups[] = [
-                'date' => $truck->pack_date,
-                'truck_id' => $truck->id,
-                'car_number' => $truck->car_number,
-                'cargos' => $truck->cargos,
-                'total_invoice' => $invoice_total,
-            ];
-            // إضافة كحركة مدين لكشف الحساب
-            $lines->push(['date' => $truck->pack_date, 'reference' => "شحنة #{$truck->id} ({$truck->car_number})", 'debit' => $invoice_total, 'credit' => 0]);
-        }
-
-        // 3. جلب كافة المدفوعات (مستقلة عن الشاحنات)
-        $payments = $this->_company->currencyTransactions()
+        // 3. جلب السندات (Currency Transactions)
+        $payments = CurrencyTransaction::where('party_id', $this->companyId)
+            ->where('party_type', Company::class)
             ->when($start && $end, fn($q) => $q->whereBetween('created_at', [$start, $end]))
             ->get();
 
-        foreach ($payments as $payment) {
-            $lines->push([
-                'date' => $payment->created_at->format('Y-m-d'),
-                'reference' => "سند سداد مالي #{$payment->id}",
-                'debit' => 0,
-                'credit' => $payment->total
+        // 4. دمج البيانات وترتيبها زمنياً
+        $combined = collect();
+
+        foreach ($trucks as $t) {
+            $combined->push([
+                'type' => 'truck',
+                'date' => $t->pack_date,
+                'id' => $t->id,
+                'cargos' => $t->cargos,
+                'total' => $t->cargos->sum(fn($c) => $c->ton_price * $c->ton_weight)
             ]);
         }
 
-        // 4. ترتيب كشف الحساب التراكمي
-        $sortedLines = $lines->sortBy('date')->values();
-        $runningBalance = $this->opening_balance;
+        foreach ($payments as $p) {
+            $combined->push([
+                'type' => 'payment',
+                'date' => $p->created_at->format('Y-m-d'),
+                'id' => $p->id,
+                'description' => $p->note ?? "سند سداد #{$p->id}",
+                'amount' => $p->total
+            ]);
+        }
 
-        $this->report_lines = $sortedLines->map(function ($l) use (&$runningBalance) {
-            $runningBalance += ($l['debit'] - $l['credit']);
-            $l['balance'] = $runningBalance;
-            return $l;
-        })->toArray();
+        $this->combined_records = $combined->sortBy('date')->values()->toArray();
+
+        // 5. بناء كشف الحساب التراكمي
+        $running = $this->opening_balance;
+        $this->report_lines = [];
+
+        foreach ($this->combined_records as $record) {
+            $debit = $record['type'] === 'truck' ? $record['total'] : 0;
+            $credit = $record['type'] === 'payment' ? $record['amount'] : 0;
+            $running += ($debit - $credit);
+
+            $this->report_lines[] = [
+                'date' => $record['date'],
+                'ref' => $record['type'] === 'truck' ? "شحنة #{$record['id']}" : $record['description'],
+                'debit' => $debit,
+                'credit' => $credit,
+                'balance' => $running
+            ];
+        }
 
         $this->summary = [
-            'total_debit' => $sortedLines->sum('debit'),
-            'total_credit' => $sortedLines->sum('credit'),
-            'final_balance' => $runningBalance
+            'total_debit' => collect($this->report_lines)->sum('debit'),
+            'total_credit' => collect($this->report_lines)->sum('credit'),
+            'final_balance' => $running
         ];
     }
 }

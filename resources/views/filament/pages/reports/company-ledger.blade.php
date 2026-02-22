@@ -1,123 +1,146 @@
 <x-filament-panels::page>
-    <x-filament::section class="mb-4 no-print">
+    <style>
+        .ledger-table th { background-color: #1e293b; color: white; border: 1px solid #475569; padding: 6px; font-size: 11px; }
+        .ledger-table td { border: 1px solid #cbd5e1; padding: 4px; font-size: 11px; vertical-align: middle; text-align: center; }
+        .bg-side-blue { background-color: #f8fafc; font-weight: bold; color: #1e293b; }
+        .row-group-total { background-color: #1e293b; color: white; font-weight: bold; }
+        .text-right-custom { text-align: right !important; padding-right: 10px !important; }
+        .payment-row { background-color: #f0fdf4; } /* لون أخضر خفيف للسداد */
+    </style>
+
+    <x-filament::section class="no-print mb-4">
         {{ $this->form }}
     </x-filament::section>
 
-    @if ($companyId)
-        <div id='report-content'>
-            <x-report-header label="كشف حساب شركة: " :value="$_company?->name" />
+    @if($companyId)
+    <div id="report-print-area">
+        <x-report-header label="كشف حساب شركة: " :value="$_company?->name" />
 
-            {{-- 1. جدول بيان شحنات الفترة (تفصيلي) --}}
-            <div class="mb-8">
-                <h3 class="text-lg font-bold mb-3 border-b-2 border-slate-800 pb-1">أولاً: بيان فواتير الشحن (الطلبيات)</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-[11px] text-center border-collapse border border-slate-800">
-                        <thead class="bg-slate-100 font-bold">
-                            <tr>
-                                <th class="p-2 border border-slate-800 w-24">التاريخ</th>
-                                <th class="p-2 border border-slate-800 w-8">#</th>
-                                <th class="p-2 border border-slate-800 text-right">الصنف</th>
-                                <th class="p-2 border border-slate-800">المقاس</th>
-                                <th class="p-2 border border-slate-800">و.الوحدة</th>
-                                <th class="p-2 border border-slate-800">الطرد</th>
-                                <th class="p-2 border border-slate-800">العدد</th>
-                                <th class="p-2 border border-slate-800 font-bold text-blue-800">الطن</th>
-                                <th class="p-2 border border-slate-800">س.الوحدة</th>
-                                <th class="p-2 border border-slate-800">س.الطن</th>
-                                <th class="p-2 border border-slate-800 bg-slate-800 text-white">إجمالي الفاتورة</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($groups as $group)
-                                @foreach ($group['cargos'] as $index => $cargo)
-                                    <tr class="border-b border-slate-300">
-                                        @if ($index === 0)
-                                            <td class="border border-slate-800 font-bold bg-white" rowspan="{{ count($group['cargos']) }}">
-                                                {{ $group['date'] }} <br>
-                                                <span class="text-[9px] text-blue-600 font-bold">شحنة #{{ $group['truck_id'] }}</span>
-                                            </td>
-                                        @endif
-                                        <td class="p-1 border border-slate-300 text-slate-400">{{ $index + 1 }}</td>
-                                        <td class="p-1 border border-slate-300 text-right font-medium">{{ $cargo->product->name ?? '-' }}</td>
-                                        <td class="p-1 border border-slate-300">{{ $cargo->size }}</td>
-                                        <td class="p-1 border border-slate-300">{{ number_format($cargo->weight, 2) }}</td>
-                                        <td class="p-1 border border-slate-300">{{ number_format($cargo->quantity, 2) }}</td>
-                                        <td class="p-1 border border-slate-300">{{ number_format($cargo->unit_quantity, 2) }}</td>
-                                        <td class="p-1 border border-slate-300 font-bold text-blue-700">{{ number_format($cargo->ton_weight, 3) }}</td>
-                                        <td class="p-1 border border-slate-300">{{ number_format($cargo->unit_price, 2) }}</td>
-                                        <td class="p-1 border border-slate-300">{{ number_format($cargo->ton_price, 2) }}</td>
-                                        @if ($index === 0)
-                                            <td class="border border-slate-800 font-black bg-slate-50 text-sm tabular-nums" rowspan="{{ count($group['cargos']) }}">
-                                                {{ number_format($group['total_invoice'], 2) }}
-                                            </td>
-                                        @endif
-                                    </tr>
-                                @endforeach
+        {{-- أولاً: جدول الفواتير والسداد المدمج --}}
+        <div class="mb-10">
+            <h3 class="font-bold text-sm mb-2 border-r-4 border-slate-800 pr-2">أولاً: بيان حركة الشحن والسداد (الطلبيات)</h3>
+            <table class="w-full ledger-table border-collapse" dir="rtl">
+                <thead>
+                    <tr>
+                        <th rowspan="3" class="bg-slate-200 border-slate-900 w-32 text-slate-900">التاريخ / البيان</th>
+                        <th colspan="10" class="border-slate-900 italic py-2">بيان الفاتورة (الطلبية)</th>
+                        <th colspan="2" rowspan="2" class="border-slate-900 italic py-2 bg-green-900">السداد</th>
+                    </tr>
+                    <tr>
+                        <th colspan="4" class="border-slate-900 italic py-2">بيان الصنف</th>
+                        <th colspan="3" class="border-slate-900 italic py-2">الكميات</th>
+                        <th colspan="3" class="border-slate-900 italic py-2">التسعير</th>
+                    </tr>
+                    <tr class="bg-slate-700 text-white">
+                        <th class="bg-slate-800">#</th>
+                        <th class="bg-slate-800 text-right px-4">الصنف</th>
+                        <th class="bg-slate-800">المقاس</th>
+                        <th class="bg-slate-800">و.الوحدة</th>
+                        <th class="bg-slate-800">الطرد</th>
+                        <th class="bg-slate-800">العدد</th>
+                        <th class="bg-slate-800 text-blue-400">الطن</th>
+                        <th class="bg-slate-800">س.الوحدة</th>
+                        <th class="bg-slate-800">س.الطن</th>
+                        <th class="bg-slate-800">المجموع</th>
+                        <th class="bg-green-800 w-24">البيان</th>
+                        <th class="bg-green-800 w-24">المبلغ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($combined_records as $record)
+                        @if($record['type'] === 'truck')
+                            {{-- صفوف الشحنة --}}
+                            @foreach($record['cargos'] as $index => $cargo)
+                                <tr>
+                                    @if($index === 0)
+                                    <td rowspan="{{ count($record['cargos']) + 1 }}" class="bg-white font-bold border-r-2 border-slate-900">
+                                        <div class="mb-1">{{ $record['date'] }}</div>
+                                        <span class="bg-blue-600 text-white px-2 py-0.5 rounded text-[9px]">شحنة #{{ $record['id'] }}</span>
+                                    </td>
+                                    @endif
+                                    <td>{{ $index + 1 }}</td>
+                                    <td class="text-right-custom font-medium">{{ $cargo->product->name ?? '-' }}</td>
+                                    <td>{{ $cargo->size ?? '-' }}</td>
+                                    <td>{{ number_format($cargo->weight, 2) }}</td>
+                                    <td>{{ number_format($cargo->unit_quantity, 2) }}</td>
+                                    <td>{{ number_format($cargo->quantity, 2) }}</td>
+                                    <td class="font-bold text-blue-800">{{ number_format($cargo->ton_weight, 3) }}</td>
+                                    <td class="text-slate-400">{{ number_format($cargo->unit_price, 2) }}</td>
+                                    <td class="text-slate-400">{{ number_format($cargo->ton_price, 2) }}</td>
+                                    <td class="font-bold">{{ number_format($cargo->ton_price * $cargo->ton_weight, 2) }}</td>
+                                    <td class="bg-slate-50 text-slate-300">-</td>
+                                    <td class="bg-slate-50 text-slate-300">-</td>
+                                </tr>
                             @endforeach
-                        </tbody>
-                        <tfoot class="bg-slate-800 text-white font-bold">
-                            <tr>
-                                <td colspan="10" class="p-2 text-left px-4 italic">إجمالي قيمة كافة فواتير الفترة:</td>
-                                <td class="p-2 bg-slate-900 text-sm">{{ number_format($summary['total_debit'], 2) }}</td>
+                            {{-- سطر إجمالي الشحنة --}}
+                            <tr class="row-group-total">
+                                <td colspan="7" class="text-right px-4 italic text-xs">إجمالي الشحنة #{{ $record['id'] }}</td>
+                                <td colspan="3" class="bg-slate-900 text-white text-left px-4">
+                                    {{ number_format($record['total'], 2) }}
+                                </td>
+                                <td colspan="2" class="bg-slate-800">-</td>
                             </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-
-            {{-- 2. جدول كشف الحساب التراكمي (الزيادة والنقصان) --}}
-            <div class="mt-10 no-break-inside">
-                <h3 class="text-lg font-bold mb-3 border-r-4 border-emerald-600 pr-3">ثانياً: ملخص حركة كشف الحساب (مدين / دائن)</h3>
-                <table class="w-full text-[13px] text-center border-collapse border border-slate-800">
-                    <thead class="bg-slate-700 text-white font-bold">
-                        <tr>
-                            <th class="p-2 border border-slate-600 w-32">التاريخ</th>
-                            <th class="p-2 border border-slate-600 text-right">البيان / المرجع</th>
-                            <th class="p-2 border border-slate-600 w-36 bg-slate-600">مدين (فواتير +)</th>
-                            <th class="p-2 border border-slate-600 w-36 bg-slate-600">دائن (سداد -)</th>
-                            <th class="p-2 border border-slate-600 w-40 bg-slate-900 text-yellow-400 font-black">الرصيد التراكمي</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{-- سطر الرصيد السابق --}}
-                        <tr class="bg-blue-50 font-bold italic border-b border-slate-400">
-                            <td class="p-2 border border-slate-300" colspan="2">رصيد افتتاحي مرحل من فترة سابقة</td>
-                            <td class="p-2 border border-slate-300">-</td>
-                            <td class="p-2 border border-slate-300">-</td>
-                            <td class="p-2 border border-slate-300 font-black">{{ number_format($opening_balance, 2) }}</td>
-                        </tr>
-
-                        @foreach ($report_lines as $line)
-                            <tr class="hover:bg-slate-50 border-b border-slate-200">
-                                <td class="p-2 border border-slate-300 tabular-nums">{{ $line['date'] }}</td>
-                                <td class="p-2 border border-slate-300 text-right font-medium">{{ $line['reference'] }}</td>
-                                <td class="p-2 border border-slate-300 font-bold text-slate-700">
-                                    {{ $line['debit'] > 0 ? number_format($line['debit'], 2) : '-' }}
+                        @else
+                            {{-- صف السداد (Currency Transaction) --}}
+                            <tr class="payment-row">
+                                <td class="bg-white font-bold border-r-2 border-slate-900">
+                                    <div class="mb-1">{{ $record['date'] }}</div>
+                                    <span class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[9px]">سداد نقدي</span>
                                 </td>
-                                <td class="p-2 border border-slate-300 font-bold text-red-600">
-                                    {{ $line['credit'] > 0 ? number_format($line['credit'], 2) : '-' }}
+                                <td colspan="10" class="text-right px-4 italic text-slate-400">
+                                    {{ $record['description'] }}
                                 </td>
-                                <td class="p-2 border border-slate-300 font-black bg-slate-50/50 tabular-nums">
-                                    {{ number_format($line['balance'], 2) }}
-                                </td>
+                                <td class="bg-green-100 font-bold text-emerald-700 text-[9px]">وصل #{{ $record['id'] }}</td>
+                                <td class="bg-green-200 font-bold text-emerald-900">{{ number_format($record['amount'], 2) }}</td>
                             </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot class="bg-slate-100 font-black border-t-2 border-slate-800">
-                        <tr>
-                            <td colspan="2" class="p-3 text-left">الخلاصة الختامية للحساب:</td>
-                            <td class="p-2 border border-slate-300 text-slate-800">{{ number_format($summary['total_debit'], 2) }}</td>
-                            <td class="p-2 border border-slate-300 text-red-600">{{ number_format($summary['total_credit'], 2) }}</td>
-                            <td class="p-2 bg-slate-800 text-white text-base">{{ number_format($summary['final_balance'], 2) }}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
+                        @endif
+                        <tr class="h-1 bg-slate-100"><td colspan="13"></td></tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
 
-        {{-- زر الطباعة --}}
-        <div class="fixed bottom-6 left-6 no-print">
-            <x-print-button />
+        {{-- ثانياً: كشف الحساب التراكمي --}}
+        <div class="mt-12">
+            <h3 class="font-bold text-sm mb-2 border-r-4 border-emerald-600 pr-2">ثانياً: حركة كشف الحساب التراكمي</h3>
+            <table class="w-full ledger-table border-collapse" dir="rtl">
+                <thead>
+                    <tr class="bg-slate-800 text-white">
+                        <th class="p-2 border border-slate-600">التاريخ</th>
+                        <th class="p-2 border border-slate-600 text-right px-4">البيان / المرجع</th>
+                        <th class="p-2 border border-slate-600 w-32 bg-slate-700">مدين (+) شحن</th>
+                        <th class="p-2 border border-slate-600 w-32 bg-slate-700">دائن (-) سداد</th>
+                        <th class="p-2 border border-slate-600 w-40 bg-slate-900 text-yellow-400">الرصيد المتبقي</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bg-blue-50 font-bold italic text-slate-900">
+                        <td class="p-2 border border-slate-300">{{ $start ?? '-' }}</td>
+                        <td class="p-2 text-right px-4">رصيد مدور من فترة سابقة</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td class="font-black tabular-nums">{{ number_format($opening_balance, 2) }}</td>
+                    </tr>
+                    @foreach ($report_lines as $line)
+                        <tr class="hover:bg-slate-50">
+                            <td>{{ $line['date'] }}</td>
+                            <td class="text-right px-4 font-medium">{{ $line['ref'] }}</td>
+                            <td class="font-bold tabular-nums">{{ $line['debit'] > 0 ? number_format($line['debit'], 2) : '-' }}</td>
+                            <td class="font-bold text-red-600 tabular-nums">{{ $line['credit'] > 0 ? number_format($line['credit'], 2) : '-' }}</td>
+                            <td class="font-black bg-slate-50 tabular-nums">{{ number_format($line['balance'], 2) }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+                <tfoot class="row-group-total">
+                    <tr>
+                        <td colspan="2" class="text-left px-4 py-3">الإجماليات الختامية:</td>
+                        <td class="tabular-nums">{{ number_format($summary['total_debit'], 2) }}</td>
+                        <td class="text-red-400 tabular-nums">{{ number_format($summary['total_credit'], 2) }}</td>
+                        <td class="bg-yellow-500 text-slate-900 text-lg tabular-nums">{{ number_format($summary['final_balance'], 2) }}</td>
+                    </tr>
+                </tfoot>
+            </table>
         </div>
+    </div>
     @endif
 </x-filament-panels::page>
