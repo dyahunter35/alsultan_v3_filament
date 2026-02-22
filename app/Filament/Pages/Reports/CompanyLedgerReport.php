@@ -10,8 +10,8 @@ use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
-use Filament\Schemas;
-use Illuminate\Support\Carbon;
+use Filament\Schemas\Components\Grid;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Url;
 use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
 
@@ -21,134 +21,120 @@ class CompanyLedgerReport extends Page implements HasForms
     use InteractsWithForms;
 
     protected string $view = 'filament.pages.reports.company-ledger';
-
-    protected static ?int $navigationSort = 33;
+    protected static ?int $navigationSort = 51;
 
     #[Url()]
     public ?int $companyId = null;
-
     public ?Company $_company = null;
 
     #[Url()]
-    public $date_range;
-    // البيانات للمعالجة
-    public $groups = [];
+    public $date_range = null;
 
-    public $summary = [
-        'total_claims' => 0,
-        'total_paid' => 0,
-        'balance' => 0, // تأكد من وجود هذا المفتاح يدوياً
-    ];
+    public $groups = []; // لعرض تفاصيل الشاحنات
+    public $report_lines = []; // لكشف الحساب التراكمي
+    public $opening_balance = 0;
+    public $summary = ['total_debit' => 0, 'total_credit' => 0, 'final_balance' => 0];
 
     protected function getFormSchema(): array
     {
         return [
-
-            Schemas\Components\Grid::make(3)->schema([
+            Grid::make(3)->schema([
                 Forms\Components\Select::make('companyId')
-                    ->label('الشركة')
-                    ->options(Company::company()->latest()->pluck('name', 'id'))
+                    ->label('الشركة / المقاول')
+                    ->options(Company::query()->latest()->pluck('name', 'id'))
                     ->searchable()
                     ->reactive()
                     ->afterStateUpdated(fn() => $this->loadData()),
 
                 DateRangePicker::make('date_range')
                     ->label('الفترة الزمنية')
-                    ->disableClear(false)
                     ->reactive()
-                    ->afterStateUpdated(function ($state) {
-                        $this->date_range = $state;
-                        $this->loadData();
-                    }),
+                    ->afterStateUpdated(fn() => $this->loadData()),
             ]),
-
         ];
     }
 
     public function mount(): void
     {
         if ($this->companyId) {
-            $this->_company = Company::findOrFail($this->companyId);
             $this->loadData();
         }
     }
 
     public function loadData(): void
     {
-        [$start, $end] = parseDateRange($this->date_range);
+        if (!$this->companyId)
+            return;
+        $this->_company = Company::find($this->companyId);
 
-        // 1. جلب الشاحنات المرتبطة بالشركة (كشركة أو كمقاول)
+        // معالجة التاريخ
+        [$start, $end] = function_exists('parseDateRange') ? parseDateRange($this->date_range) : [null, null];
+
+        // 1. حساب الرصيد السابق (قبل فترة التقرير)
+        $this->opening_balance = 0;
+        if ($start) {
+            $prev_trucks_ids = Truck::where(fn($q) => $q->where('company_id', $this->companyId)->orWhere('contractor_id', $this->companyId))
+                ->where('pack_date', '<', $start)->pluck('id');
+
+            $prev_debit = DB::table('cargos')->whereIn('truck_id', $prev_trucks_ids)->sum(DB::raw('ton_price * ton_weight'));
+
+            $prev_credit = CurrencyTransaction::where('party_id', $this->companyId)
+                ->where('party_type', Company::class)
+                ->where('created_at', '<', $start)->sum('total');
+
+            $this->opening_balance = $prev_debit - $prev_credit;
+        }
+
+        // 2. جلب الشاحنات (الفواتير)
         $trucks = Truck::with(['cargos.product'])
-            ->where(function ($q) {
-                $q->where('company_id', $this->companyId)
-                    ->orWhere('contractor_id', $this->companyId);
-            })
-            ->when($start && $end, function ($q) use ($start, $end) {
-                $q->whereBetween('created_at', [$start, $end]);
-            })
-            // ->whereBetween('pack_date', [$start, $end])
-            ->orderBy('pack_date')
-            ->get();
+            ->where(fn($q) => $q->where('company_id', $this->companyId)->orWhere('contractor_id', $this->companyId))
+            ->when($start && $end, fn($q) => $q->whereBetween('pack_date', [$start, $end]))
+            ->orderBy('pack_date')->get();
 
-        $allGroups = [];
-        $totalClaims = 0; // إجمالي المطالبات
-        $totalPayments = 0; // إجمالي المدفوعات
+        $this->groups = [];
+        $lines = collect();
 
         foreach ($trucks as $truck) {
-            // حساب إجمالي الشحنة من الـ Cargos
-
-            $total_weight_tons = $truck->cargos->sum(
-                fn($item) => $item->ton_weight // > 0 ? $item->ton_weight : ($item->weight * $item->unit_quantity) / 1000000
-            );
-
-            $cargos = $truck->cargos->map(function ($item, $index) use ($total_weight_tons) {
-                $weight_ton = $item->ton_weight; // > 0 ? $item->ton_weight : ($item->weight * $item->unit_quantity) / 1000000;
-                $weight_ratio = $total_weight_tons > 0 ? ($weight_ton / $total_weight_tons) : 0;
-
-                // التكلفة بالعملة الأجنبية (EGP أو غيرها)
-                $base_total_foreign = $item->ton_price * $weight_ton;
-
-                return (object) [
-                    'cargo_id' => $item->id,
-                    'index' => $index + 1,
-                    'product_name' => $item->product->name ?? 'منتج غير معروف',
-                    'size' => $item->size,
-                    'unit_weight' => $item->weight,
-                    'quantity' => $item->quantity,
-                    'unit_quantity' => $item->unit_quantity,
-                    'weight_ton' => $weight_ton,
-                    'unit_price' => $item->unit_price,
-                    'ton_price' => $item->ton_price,
-                    'base_total_foreign' => $base_total_foreign,
-                ];
-            });
-
-            $cargoTotalValue = $cargos->sum('base_total_foreign');
-
-            // جلب المعاملات المالية المرتبطة بهذه الشحنة تحديداً (إذا كنت تربطها بـ truck_id)
-            // أو جلب المعاملات التي تمت في تاريخ الشحنة
-            $payments = CurrencyTransaction::where('truck_id', $truck->id)->get();
-            $paymentValue = $payments->sum('total');
-            $allGroups[] = [
+            $invoice_total = $truck->cargos->sum(fn($c) => $c->ton_price * $c->ton_weight);
+            $this->groups[] = [
                 'date' => $truck->pack_date,
                 'truck_id' => $truck->id,
                 'car_number' => $truck->car_number,
-                'cargos' => $cargos,
-                'payments' => $payments,
-                'total_invoice' => $cargoTotalValue,
-                'total_paid' => $paymentValue,
-                'balance' => $cargoTotalValue - $paymentValue,
+                'cargos' => $truck->cargos,
+                'total_invoice' => $invoice_total,
             ];
-
-            $totalClaims += $cargoTotalValue;
-            $totalPayments += $payments->sum('total');
+            // إضافة كحركة مدين لكشف الحساب
+            $lines->push(['date' => $truck->pack_date, 'reference' => "شحنة #{$truck->id} ({$truck->car_number})", 'debit' => $invoice_total, 'credit' => 0]);
         }
 
-        $this->groups = $allGroups;
+        // 3. جلب كافة المدفوعات (مستقلة عن الشاحنات)
+        $payments = $this->_company->currencyTransactions()
+            ->when($start && $end, fn($q) => $q->whereBetween('created_at', [$start, $end]))
+            ->get();
+
+        foreach ($payments as $payment) {
+            $lines->push([
+                'date' => $payment->created_at->format('Y-m-d'),
+                'reference' => "سند سداد مالي #{$payment->id}",
+                'debit' => 0,
+                'credit' => $payment->total
+            ]);
+        }
+
+        // 4. ترتيب كشف الحساب التراكمي
+        $sortedLines = $lines->sortBy('date')->values();
+        $runningBalance = $this->opening_balance;
+
+        $this->report_lines = $sortedLines->map(function ($l) use (&$runningBalance) {
+            $runningBalance += ($l['debit'] - $l['credit']);
+            $l['balance'] = $runningBalance;
+            return $l;
+        })->toArray();
+
         $this->summary = [
-            'total_claims' => $totalClaims,
-            'total_paid' => $totalPayments,
-            'balance' => $totalClaims - $totalPayments,
+            'total_debit' => $sortedLines->sum('debit'),
+            'total_credit' => $sortedLines->sum('credit'),
+            'final_balance' => $runningBalance
         ];
     }
 }
