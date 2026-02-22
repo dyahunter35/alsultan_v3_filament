@@ -19,10 +19,6 @@ class CurrencyCustomersReport extends Page implements Forms\Contracts\HasForms
     use HasReport;
 
     protected static ?int $navigationSort = 33;
-    protected static ?string $navigationLabel = 'تقرير عملاء العملة';
-    protected static ?string $title = 'تقرير عملاء العملة';
-    protected ?string $subheading = 'تقرير شامل لحركة العملاء والعملات';
-
     protected string $view = 'filament.pages.reports.currency-customers-report';
 
     #[Url]
@@ -39,10 +35,7 @@ class CurrencyCustomersReport extends Page implements Forms\Contracts\HasForms
     public array $summary = [];
     public Collection $accountsSummary;
 
-    public function getTitle(): string|Htmlable
-    {
-        return 'تقرير عملاء العملة';
-    }
+
 
     public function mount(): void
     {

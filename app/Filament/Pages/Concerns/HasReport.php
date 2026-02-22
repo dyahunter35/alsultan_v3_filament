@@ -36,7 +36,7 @@ trait HasReport
     public static function getReportData(): array
     {
         $key = static::getReportKey();
-        $fullPath = 'report.'.$key;
+        $fullPath = 'report.' . $key;
 
         $reportData = trans($fullPath);
 
@@ -51,16 +51,17 @@ trait HasReport
 
     // --- الدوال الخاصة بالتنقل والعناوين ---
 
-    /* public static function getNavigationSort(): ?int
+    public static function getNavigationSort(): ?int
     {
-        return data_get(static::getReportData(), 'sort');
-    } */
+        return (int) data_get(static::getReportData(), 'sort');
+    }
 
     public static function getNavigationGroup(): string|UnitEnum|null
     {
-        $group = __('report.group');
+        //$group = __('report.group');
+        return data_get(static::getReportData(), 'group');
 
-        return is_string($group) && $group !== 'report.group' ? $group : null;
+        //return is_string($group) && $group !== 'report.group' ? $group : null;
     }
 
     /**

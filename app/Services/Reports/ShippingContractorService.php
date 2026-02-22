@@ -11,7 +11,7 @@ class ShippingContractorService
 {
     public function getReportData(int $contractorId, ?string $dateRange = null): array
     {
-        [$start, $end] = $this->parseDateRange($dateRange);
+        [$start, $end] = parseDateRange($dateRange);
 
         // 1. Fetch Trucks for this contractor
         $trucks = Truck::query()
@@ -107,16 +107,5 @@ class ShippingContractorService
         ];
     }
 
-    protected function parseDateRange(?string $dateRange): array
-    {
-        if (!$dateRange || !str_contains($dateRange, ' - ')) {
-            return [null, null];
-        }
 
-        [$start, $end] = explode(' - ', $dateRange);
-        return [
-            Carbon::parse($start)->startOfDay(),
-            Carbon::parse($end)->endOfDay(),
-        ];
-    }
 }
