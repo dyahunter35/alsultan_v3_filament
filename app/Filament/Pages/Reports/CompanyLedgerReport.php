@@ -77,8 +77,6 @@ class CompanyLedgerReport extends Page implements HasForms
     {
         [$start, $end] = parseDateRange($this->date_range);
 
-        //dd($start, $end);
-        //$this->date_range = $start . '-' . $end;
         // 1. جلب الشاحنات المرتبطة بالشركة (كشركة أو كمقاول)
         $trucks = Truck::with(['cargos.product'])
             ->where(function ($q) {
