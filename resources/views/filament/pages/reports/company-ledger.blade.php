@@ -26,6 +26,7 @@
                         <th class="p-2 border border-slate-600 text-right px-4">البيان / المرجع</th>
                         <th class="p-2 border border-slate-600 w-32 bg-slate-700">مدين (+) شحن</th>
                         <th class="p-2 border border-slate-600 w-32 bg-slate-700">دائن (-) سداد</th>
+                        <th class="p-2 border border-slate-600 w-32 bg-slate-700">المعامل</th>
                         <th class="p-2 border border-slate-600 w-40 bg-slate-900 text-yellow-400">الرصيد المتبقي</th>
                     </tr>
                 </thead>
@@ -33,6 +34,8 @@
                     <tr class="bg-blue-50 font-bold italic text-slate-900">
                         <td class="p-2 border border-slate-300">{{ $start ?? '-' }}</td>
                         <td class="p-2 text-right px-4">رصيد مدور من فترة سابقة</td>
+                        <td>-</td>
+                        <td>-</td>
                         <td>-</td>
                         <td>-</td>
                         <td class="font-black tabular-nums">{{ number_format($opening_balance, 2) }}</td>
@@ -44,6 +47,7 @@
                             <td class="text-right px-4 font-medium">{{ $line['ref'] }}</td>
                             <td class="font-bold tabular-nums">{{ $line['debit'] > 0 ? number_format($line['debit'], 2) : '-' }}</td>
                             <td class="font-bold text-red-600 tabular-nums">{{ $line['credit'] > 0 ? number_format($line['credit'], 2) : '-' }}</td>
+                            <td class="font-bold text-red-600 tabular-nums"><input type="text" value="" class="w-32"></td>
                             <td class="font-black bg-slate-50 tabular-nums">{{ number_format($line['balance'], 2) }}</td>
                         </tr>
                     @endforeach
