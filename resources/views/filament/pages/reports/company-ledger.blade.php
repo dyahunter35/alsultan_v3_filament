@@ -13,7 +13,7 @@
     </x-filament::section>
 
     @if($companyId)
-    <div id="report-print-area">
+    <div id="report-content">
         <x-report-header label="كشف حساب شركة: " :value="$_company?->name" />
 
         <div class="mt-12">
