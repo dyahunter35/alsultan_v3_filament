@@ -37,7 +37,6 @@
                         <td>-</td>
                         <td>-</td>
                         <td>-</td>
-                        <td>-</td>
                         <td class="font-black tabular-nums">{{ number_format($opening_balance, 2) }}</td>
                     </tr>
                     @foreach ($report_lines as $index => $line)
@@ -57,6 +56,7 @@
                         <td colspan="3" class="text-left px-4 py-3">الإجماليات الختامية:</td>
                         <td class="tabular-nums">{{ number_format($summary['total_debit'], 2) }}</td>
                         <td class="text-red-400 tabular-nums">{{ number_format($summary['total_credit'], 2) }}</td>
+                        <td></td>
                         <td class="bg-yellow-500 text-slate-900 text-lg tabular-nums">{{ number_format($summary['final_balance'], 2) }}</td>
                     </tr>
                 </tfoot>
