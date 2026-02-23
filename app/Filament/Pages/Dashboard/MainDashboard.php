@@ -40,6 +40,7 @@ class MainDashboard extends BaseDashboard
     protected function getHeaderWidgets(): array
     {
         return [
+            //\App\Filament\Widgets\CompanyFinancialStats::class,
             // StatsWidget::class,
             /*DashoardLinks::class,
             SalesStats::class,

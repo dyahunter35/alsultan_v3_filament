@@ -5,7 +5,7 @@
         .bg-side-blue { background-color: #f8fafc; font-weight: bold; color: #1e293b; }
         .row-group-total { background-color: #1e293b; color: white; font-weight: bold; }
         .text-right-custom { text-align: right !important; padding-right: 10px !important; }
-        .payment-row { background-color: #f0fdf4; } /* لون أخضر خفيف للسداد */
+        .payment-row { background-color: transparent; } /* لون أخضر خفيف للسداد */
     </style>
 
     <x-filament::section class="no-print mb-4">
@@ -36,8 +36,8 @@
                         <th class="bg-slate-800 text-right px-4">الصنف</th>
                         <th class="bg-slate-800">المقاس</th>
                         <th class="bg-slate-800">و.الوحدة</th>
-                        <th class="bg-slate-800">الطرد</th>
                         <th class="bg-slate-800">العدد</th>
+                        <th class="bg-slate-800">الطرد</th>
                         <th class="bg-slate-800 text-blue-400">الطن</th>
                         <th class="bg-slate-800">س.الوحدة</th>
                         <th class="bg-slate-800">س.الطن</th>
@@ -55,7 +55,13 @@
                                     @if($index === 0)
                                     <td rowspan="{{ count($record['cargos']) + 1 }}" class="bg-white font-bold border-r-2 border-slate-900">
                                         <div class="mb-1">{{ $record['date'] }}</div>
-                                        <span class="bg-blue-600 text-white px-2 py-0.5 rounded text-[9px]">شحنة #{{ $record['id'] }}</span>
+                                        <a href="{{ \App\Filament\Resources\Trucks\TruckResource::getUrl('edit', ['record' => $record['id']]) }}" 
+   target="_blank" 
+   class="text-blue-600 hover:underline flex items-center justify-center gap-1">
+    <x-heroicon-o-eye class="w-4 h-4"/>
+                                            <span class="bg-blue-600 text-white px-2 py-0.5 rounded text-[9px]" wire:click.prevent="viewTruck({{ $record['id'] }})" style="cursor: pointer;">شحنة #{{ $record['id'] }}</span>
+
+</a>
                                     </td>
                                     @endif
                                     <td>{{ $index + 1 }}</td>
@@ -74,11 +80,10 @@
                             @endforeach
                             {{-- سطر إجمالي الشحنة --}}
                             <tr class="row-group-total">
-                                <td colspan="7" class="text-right px-4 italic text-xs">إجمالي الشحنة #{{ $record['id'] }}</td>
-                                <td colspan="3" class="bg-slate-900 text-white text-left px-4">
+                                <td colspan="10" class="text-right px-4 italic text-xs">إجمالي الشحنة #{{ $record['id'] }}</td>
+                                <td colspan="2" class="bg-slate-900 text-white text-left px-4">
                                     {{ number_format($record['total'], 2) }}
                                 </td>
-                                <td colspan="2" class="bg-slate-800">-</td>
                             </tr>
                         @else
                             {{-- صف السداد (Currency Transaction) --}}
@@ -90,7 +95,7 @@
                                 <td colspan="10" class="text-right px-4 italic text-slate-400">
                                     {{ $record['description'] }}
                                 </td>
-                                <td class="bg-green-100 font-bold text-emerald-700 text-[9px]">وصل #{{ $record['id'] }}</td>
+                                <td class=" font-bold text-emerald-700 text-[9px]">وصل #{{ $record['id'] }}</td>
                                 <td class="bg-green-200 font-bold text-emerald-900">{{ number_format($record['amount'], 2) }}</td>
                             </tr>
                         @endif

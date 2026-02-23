@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\Reports;
 
 use App\Filament\Pages\Concerns\HasReport;
+use App\Filament\Resources\Trucks\TruckResource;
 use App\Models\Company;
 use App\Models\CurrencyTransaction;
 use App\Models\Truck;
@@ -154,5 +155,15 @@ class CompanyLedgerReport extends Page implements HasForms
             'total_credit' => collect($this->report_lines)->sum('credit'),
             'final_balance' => $running
         ];
+    }
+    public function viewTruck($id)
+    {
+        // open in new tab use filament action
+        return \Filament\Actions\Action::make('viewTruck')
+            ->label('عرض')
+            ->icon('heroicon-o-eye')
+            ->color('primary')
+            ->url(TruckResource::getUrl('edit', ['record' => $id]))
+            ->openUrlInNewTab();
     }
 }
