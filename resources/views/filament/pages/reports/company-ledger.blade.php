@@ -16,98 +16,8 @@
     <div id="report-print-area">
         <x-report-header label="كشف حساب شركة: " :value="$_company?->name" />
 
-        {{-- أولاً: جدول الفواتير والسداد المدمج --}}
-        <div class="mb-10">
-            <h3 class="font-bold text-sm mb-2 border-r-4 border-slate-800 pr-2">أولاً: بيان حركة الشحن والسداد (الطلبيات)</h3>
-            <table class="w-full ledger-table border-collapse" dir="rtl">
-                <thead>
-                    <tr>
-                        <th rowspan="3" class="bg-slate-200 border-slate-900 w-32 text-slate-900">التاريخ / البيان</th>
-                        <th colspan="10" class="border-slate-900 italic py-2">بيان الفاتورة (الطلبية)</th>
-                        <th colspan="2" rowspan="2" class="border-slate-900 italic py-2 bg-green-900">السداد</th>
-                    </tr>
-                    <tr>
-                        <th colspan="4" class="border-slate-900 italic py-2">بيان الصنف</th>
-                        <th colspan="3" class="border-slate-900 italic py-2">الكميات</th>
-                        <th colspan="3" class="border-slate-900 italic py-2">التسعير</th>
-                    </tr>
-                    <tr class="bg-slate-700 text-white">
-                        <th class="bg-slate-800">#</th>
-                        <th class="bg-slate-800 text-right px-4">الصنف</th>
-                        <th class="bg-slate-800">المقاس</th>
-                        <th class="bg-slate-800">و.الوحدة</th>
-                        <th class="bg-slate-800">العدد</th>
-                        <th class="bg-slate-800">الطرد</th>
-                        <th class="bg-slate-800 text-blue-400">الطن</th>
-                        <th class="bg-slate-800">س.الوحدة</th>
-                        <th class="bg-slate-800">س.الطن</th>
-                        <th class="bg-slate-800">المجموع</th>
-                        <th class="bg-green-800 w-24">البيان</th>
-                        <th class="bg-green-800 w-24">المبلغ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($combined_records as $record)
-                        @if($record['type'] === 'truck')
-                            {{-- صفوف الشحنة --}}
-                            @foreach($record['cargos'] as $index => $cargo)
-                                <tr>
-                                    @if($index === 0)
-                                    <td rowspan="{{ count($record['cargos']) + 1 }}" class="bg-white font-bold border-r-2 border-slate-900">
-                                        <div class="mb-1">{{ $record['date'] }}</div>
-                                        <a href="{{ \App\Filament\Resources\Trucks\TruckResource::getUrl('edit', ['record' => $record['id']]) }}" 
-   target="_blank" 
-   class="text-blue-600 hover:underline flex items-center justify-center gap-1">
-    <x-heroicon-o-eye class="w-4 h-4"/>
-                                            <span class="bg-blue-600 text-white px-2 py-0.5 rounded text-[9px]" wire:click.prevent="viewTruck({{ $record['id'] }})" style="cursor: pointer;">شحنة #{{ $record['id'] }}</span>
-
-</a>
-                                    </td>
-                                    @endif
-                                    <td>{{ $index + 1 }}</td>
-                                    <td class="text-right-custom font-medium">{{ $cargo->product->name ?? '-' }}</td>
-                                    <td>{{ $cargo->size ?? '-' }}</td>
-                                    <td>{{ number_format($cargo->weight, 2) }}</td>
-                                    <td>{{ number_format($cargo->unit_quantity, 2) }}</td>
-                                    <td>{{ number_format($cargo->quantity, 2) }}</td>
-                                    <td class="font-bold text-blue-800">{{ number_format($cargo->ton_weight, 3) }}</td>
-                                    <td class="text-slate-400">{{ number_format($cargo->unit_price, 2) }}</td>
-                                    <td class="text-slate-400">{{ number_format($cargo->ton_price, 2) }}</td>
-                                    <td class="font-bold">{{ number_format($cargo->ton_price * $cargo->ton_weight, 2) }}</td>
-                                    <td class="bg-slate-50 text-slate-300">-</td>
-                                    <td class="bg-slate-50 text-slate-300">-</td>
-                                </tr>
-                            @endforeach
-                            {{-- سطر إجمالي الشحنة --}}
-                            <tr class="row-group-total">
-                                <td colspan="10" class="text-right px-4 italic text-xs">إجمالي الشحنة #{{ $record['id'] }}</td>
-                                <td colspan="2" class="bg-slate-900 text-white text-left px-4">
-                                    {{ number_format($record['total'], 2) }}
-                                </td>
-                            </tr>
-                        @else
-                            {{-- صف السداد (Currency Transaction) --}}
-                            <tr class="payment-row">
-                                <td class="bg-white font-bold border-r-2 border-slate-900">
-                                    <div class="mb-1">{{ $record['date'] }}</div>
-                                    <span class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[9px]">سداد نقدي</span>
-                                </td>
-                                <td colspan="10" class="text-right px-4 italic text-slate-400">
-                                    {{ $record['description'] }}
-                                </td>
-                                <td class=" font-bold text-emerald-700 text-[9px]">وصل #{{ $record['id'] }}</td>
-                                <td class="bg-green-200 font-bold text-emerald-900">{{ number_format($record['amount'], 2) }}</td>
-                            </tr>
-                        @endif
-                        <tr class="h-1 bg-slate-100"><td colspan="13"></td></tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-
-        {{-- ثانياً: كشف الحساب التراكمي --}}
         <div class="mt-12">
-            <h3 class="font-bold text-sm mb-2 border-r-4 border-emerald-600 pr-2">ثانياً: حركة كشف الحساب التراكمي</h3>
+            <h3 class="font-bold text-sm mb-2 border-r-4 border-emerald-600 pr-2">اولا: حركة كشف الحساب التراكمي</h3>
             <table class="w-full ledger-table border-collapse" dir="rtl">
                 <thead>
                     <tr class="bg-slate-800 text-white">
@@ -146,6 +56,98 @@
                 </tfoot>
             </table>
         </div>
+        {{-- أولاً: جدول الفواتير والسداد المدمج --}}
+        <div class="mb-10">
+            <h3 class="font-bold text-sm mb-2 border-r-4 border-slate-800 pr-2">ثانيا: بيان حركة الشحن والسداد (الطلبيات)</h3>
+            <table class="w-full ledger-table border-collapse" dir="rtl">
+                <thead>
+                    <tr>
+                        <th rowspan="3" class="bg-slate-200 border-slate-900 w-32 text-slate-900">التاريخ / البيان</th>
+                        <th colspan="10" class="border-slate-900 italic py-2">بيان الفاتورة (الطلبية)</th>
+                        <th colspan="2" rowspan="2" class="border-slate-900 italic py-2 bg-green-900">السداد</th>
+                    </tr>
+                    <tr>
+                        <th colspan="4" class="border-slate-900 italic py-2">بيان الصنف</th>
+                        <th colspan="3" class="border-slate-900 italic py-2">الكميات</th>
+                        <th colspan="3" class="border-slate-900 italic py-2">التسعير</th>
+                    </tr>
+                    <tr class="bg-slate-700 text-white">
+                        <th class="bg-slate-800">#</th>
+                        <th class="bg-slate-800 text-right px-4">الصنف</th>
+                        <th class="bg-slate-800">المقاس</th>
+                        <th class="bg-slate-800">و.الوحدة</th>
+                        <th class="bg-slate-800">العدد</th>
+                        <th class="bg-slate-800">الطرد</th>
+                        <th class="bg-slate-800 text-blue-400">الطن</th>
+                        <th class="bg-slate-800">س.الوحدة</th>
+                        <th class="bg-slate-800">س.الطن</th>
+                        <th class="bg-slate-800">المجموع</th>
+                        <th class="bg-green-800 w-24">البيان</th>
+                        <th class="bg-green-800 w-24">المبلغ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($combined_records as $record)
+                        @if($record['type'] === 'truck')
+                            {{-- صفوف الشحنة --}}
+                            @foreach($record['cargos'] as $index => $cargo)
+                                <tr>
+                                    @if($index === 0)
+                                    <td id="row-{{ $record['id'] }}" rowspan="{{ count($record['cargos']) + 1 }}" class="bg-white font-bold border-r-2 border-slate-900">
+                                        <div class="mb-1">{{ $record['date'] }}</div>
+                                        <a href="{{ \App\Filament\Resources\Trucks\TruckResource::getUrl('edit', ['record' => $record['id']]) }}" 
+   target="_blank" 
+   class="text-blue-600 hover:underline flex items-center justify-center gap-1">
+    <x-heroicon-o-eye class="w-4 h-4"/>
+                                            <span class="bg-blue-600 text-white px-2 py-0.5 rounded text-[9px]" wire:click.prevent="viewTruck({{ $record['id'] }})" style="cursor: pointer;">شحنة #{{ $record['id'] }}</span>
+
+</a>
+                                    </td>
+                                    @endif
+                                    <td>{{ $index + 1 }}</td>
+                                    <td class="text-right-custom font-medium">{{ $cargo->product->name ?? '-' }}</td>
+                                    <td>{{ $cargo->size ?? '-' }}</td>
+                                    <td>{{ number_format($cargo->weight, 2) }}</td>
+                                    <td>{{ number_format($cargo->unit_quantity, 2) }}</td>
+                                    <td>{{ number_format($cargo->quantity, 2) }}</td>
+                                    <td class="font-bold text-blue-800">{{ number_format($cargo->ton_weight, 3) }}</td>
+                                    <td class="text-slate-400">{{ number_format($cargo->unit_price, 2) }}</td>
+                                    <td class="text-slate-400">{{ number_format($cargo->ton_price, 2) }}</td>
+                                    <td class="font-bold">{{ number_format($cargo->ton_price * $cargo->ton_weight, 2) }}</td>
+                                    <td class="bg-slate-50 text-slate-300">-</td>
+                                    <td class="bg-slate-50 text-slate-300">-</td>
+                                </tr>
+                            @endforeach
+                            {{-- سطر إجمالي الشحنة --}}
+                            <tr class="row-group-total">
+                                <td colspan="10" class="text-right px-4 italic text-xs">إجمالي الشحنة #{{ $record['id'] }}</td>
+                                <td colspan="2" class="bg-slate-900 text-white text-left px-4">
+                                    {{ number_format($record['total'], 2) }}
+                                </td>
+                            </tr>
+                        @else
+                            {{-- صف السداد (Currency Transaction) --}}
+                            <!-- <tr class="payment-row">
+                                <td class="bg-white font-bold border-r-2 border-slate-900">
+                                    <div class="mb-1">{{ $record['date'] }}</div>
+                                    <span class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[9px]">سداد نقدي</span>
+                                </td>
+                                <td colspan="10" class="text-right px-4 italic text-slate-400">
+                                    {{ $record['description'] }}
+                                </td>
+                                <td class=" font-bold text-emerald-700 text-[9px]">وصل #{{ $record['id'] }}</td>
+                                <td class="bg-green-200 font-bold text-emerald-900">{{ number_format($record['amount'], 2) }}</td>
+                            </tr> -->
+                        @endif
+                        <tr class="h-1 bg-slate-100"><td colspan="13"></td></tr>
+                    @endforeach
+                </tbody>
+            </table>
+            <x-print-button/>
+        </div>
+
+        {{-- ثانياً: كشف الحساب التراكمي --}}
+        
     </div>
     @endif
 </x-filament-panels::page>

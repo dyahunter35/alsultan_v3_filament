@@ -142,9 +142,11 @@ class CompanyLedgerReport extends Page implements HasForms
             $running += ($debit - $credit);
 
             $this->report_lines[] = [
+                'id' => $record['id'],
                 'date' => $record['date'],
                 'ref' => $record['type'] === 'truck' ? "شحنة #{$record['id']}" : $record['description'],
                 'debit' => $debit,
+                'type' => $record['type'],
                 'credit' => $credit,
                 'balance' => $running
             ];
