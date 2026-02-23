@@ -21,6 +21,7 @@
             <table class="w-full ledger-table border-collapse" dir="rtl">
                 <thead>
                     <tr class="bg-slate-800 text-white">
+                        <th class="p-2 border border-slate-600">#</th>
                         <th class="p-2 border border-slate-600">التاريخ</th>
                         <th class="p-2 border border-slate-600 text-right px-4">البيان / المرجع</th>
                         <th class="p-2 border border-slate-600 w-32 bg-slate-700">مدين (+) شحن</th>
@@ -36,8 +37,9 @@
                         <td>-</td>
                         <td class="font-black tabular-nums">{{ number_format($opening_balance, 2) }}</td>
                     </tr>
-                    @foreach ($report_lines as $line)
+                    @foreach ($report_lines as $index => $line)
                         <tr class="hover:bg-slate-50">
+                            <td>{{ ++$index }}</td>
                             <td>{{ $line['date'] }}</td>
                             <td class="text-right px-4 font-medium">{{ $line['ref'] }}</td>
                             <td class="font-bold tabular-nums">{{ $line['debit'] > 0 ? number_format($line['debit'], 2) : '-' }}</td>
@@ -48,7 +50,7 @@
                 </tbody>
                 <tfoot class="row-group-total">
                     <tr>
-                        <td colspan="2" class="text-left px-4 py-3">الإجماليات الختامية:</td>
+                        <td colspan="3" class="text-left px-4 py-3">الإجماليات الختامية:</td>
                         <td class="tabular-nums">{{ number_format($summary['total_debit'], 2) }}</td>
                         <td class="text-red-400 tabular-nums">{{ number_format($summary['total_credit'], 2) }}</td>
                         <td class="bg-yellow-500 text-slate-900 text-lg tabular-nums">{{ number_format($summary['final_balance'], 2) }}</td>

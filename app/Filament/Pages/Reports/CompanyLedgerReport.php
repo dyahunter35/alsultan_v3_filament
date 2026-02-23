@@ -125,7 +125,7 @@ class CompanyLedgerReport extends Page implements HasForms
                 'type' => 'payment',
                 'date' => $p->created_at->format('Y-m-d'),
                 'id' => $p->id,
-                'description' => $p->note ?? "سند سداد #{$p->id}",
+                'description' => $p->note ?? $p->payer?->name,
                 'amount' => $p->total
             ]);
         }
