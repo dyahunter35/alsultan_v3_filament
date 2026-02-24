@@ -44,7 +44,7 @@ class TruckReport extends Page implements HasForms
                     ->mapWithKeys(fn(Truck $truck) => [
                         $truck->id => sprintf(
                             '(%s) %s - %s',
-                            $truck->id,
+                            $truck->code,
                             $truck->driver_name,
                             $truck->from?->name,
 
@@ -69,7 +69,7 @@ class TruckReport extends Page implements HasForms
             $product = $cargo->product;
 
             $rows[] = [
-                'cargo_id' => $cargo->id,
+                'cargo_id' => $cargo->code,
                 'product_name' => $product->name,
                 'size' => $cargo->size,
                 'truck_name' => $cargo->truck?->name ?? 'N/A',

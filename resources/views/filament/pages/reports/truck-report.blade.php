@@ -8,7 +8,7 @@
         <div id="report-content" class="m-0 print:m-0">
 
             {{-- الهيدر الاحترافي --}}
-            <x-report-header label="تقرير بيان شحنة رقم" :value="$truck->id" />
+            <x-report-header label="تقرير بيان شحنة رقم" :value="$truck->code" />
 
             {{-- 1. تفاصيل الشاحنة الأساسية --}}
             <x-filament::section class="mb-2 print:shadow-none print:border-slate-300">

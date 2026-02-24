@@ -27,11 +27,14 @@ Route::get('/errors/{code}', function ($code): string {
 
         //dd($nextNumber);
         foreach ($trucks as $truck) {
-            $yearMonth = date('Y');
+
+            $prefix = ($truck->type === TruckType::Local) ? 'L' : 'T';
+
+            $date = date('y');
             //if (!$truck->code) {
-            $date = $yearMonth . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+            $data = $prefix . $date . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
             $truck->update([
-                'code' => $date
+                'code' => $data
             ]);
             //}
             $nextNumber++;

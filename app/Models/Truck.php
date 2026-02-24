@@ -251,16 +251,26 @@ class Truck extends Model implements HasMedia
         );
     }
 
+    // داخل Model الشحنة (Shipment.php)
+
+    public function code(): Attribute
+    {
+        // الحرف \u200E هو الـ LRM الذي يجبر الاتجاه من اليسار لليمين
+        return Attribute::make(
+            get: fn($value) => "\u{200E}" . $value,
+        );
+    }
+
     public static function generateTruckNumber(TruckType $type): string
     {
 
-        //$prefix = ($type === TruckType::Local) ? 'TL' : 'TO';
+        $prefix = ($type === TruckType::Local) ? 'L' : 'T';
 
-        $date = date('Y');
+        $date = date('y');
 
         $nextNumber = self::getNextTruckNumberValue($type);
 
-        return $date . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return $prefix . $date . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 
     public static function getNextTruckNumberValue(TruckType $type): int

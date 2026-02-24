@@ -35,278 +35,281 @@ class TrucksTable
             ->query(Truck::out())
             ->columns([
 
-                Tables\Columns\TextColumn::make('id')
-                    ->getStateUsing(fn ($record): string => 'شاحنة رقم : '.$record->id)->html(),
-                Tables\Columns\TextColumn::make('code')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('driver_name')
-                    ->getStateUsing(fn ($record) => $record->driver_name ?? ''.'<br>'.$record->driver_phone ?? '')->html()
-                    ->searchable(),
+                    Tables\Columns\TextColumn::make('id')
+                    // ->getStateUsing(fn ($record): string => 'شاحنة رقم : '.$record->id)->html()
+                    ,
+                    Tables\Columns\TextColumn::make('code')
+                        ->sortable()
+                        ->searchable(),
+                    Tables\Columns\TextColumn::make('driver_name')
+                        ->getStateUsing(fn($record) => $record->driver_name ?? '' . '<br>' . $record->driver_phone ?? '')->html()
+                        ->searchable(),
 
-                Tables\Columns\TextColumn::make('car_details')
-                    ->getStateUsing(callback: fn ($record) => $record->truck_model.'<br>'.$record->car_number)->html()
-                    ->searchable(),
+                    Tables\Columns\TextColumn::make('car_details')
+                        ->getStateUsing(callback: fn($record) => $record->truck_model . '<br>' . $record->car_number)->html()
+                        ->searchable(),
 
-                Tables\Columns\TextColumn::make('pack_date')
-                    ->date()
-                    ->sortable(),
+                    Tables\Columns\TextColumn::make('pack_date')
+                        ->date()
+                        ->sortable(),
 
-                Tables\Columns\TextColumn::make('truck_status')
-                    ->badge()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('total_amount')
-                    ->badge()
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->sortable()
-                    ->summarize([
-                        Tables\Columns\Summarizers\Sum::make()
-                            ->money(),
-                    ]),
-                Tables\Columns\TextColumn::make('contractorInfo.name')
-                    ->label(__('truck.fields.contractor_id.label'))
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    Tables\Columns\TextColumn::make('truck_status')
+                        ->badge()
+                        ->sortable(),
+                    Tables\Columns\TextColumn::make('total_amount')
+                        ->badge()
+                        ->toggleable(isToggledHiddenByDefault: true)
+                        ->sortable()
+                        ->summarize([
+                                Tables\Columns\Summarizers\Sum::make()
+                                    ->money(),
+                            ]),
+                    Tables\Columns\TextColumn::make('contractorInfo.name')
+                        ->label(__('truck.fields.contractor_id.label'))
+                        ->toggleable(isToggledHiddenByDefault: true)
 
-                    ->searchable(),
+                        ->searchable(),
 
-                Tables\Columns\TextColumn::make('companyId.name')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('from.name')
-                    ->badge()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('toBranch.name')
-                    ->label(__('truck.fields.to.label')),
-                Tables\Columns\TextColumn::make('arrive_date')
-                    ->date()
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->sortable(),
+                    Tables\Columns\TextColumn::make('companyId.name')
+                        ->toggleable(isToggledHiddenByDefault: true)
+                        ->sortable(),
+                    Tables\Columns\TextColumn::make('from.name')
+                        ->badge()
+                        ->sortable(),
+                    Tables\Columns\TextColumn::make('toBranch.name')
+                        ->label(__('truck.fields.to.label')),
+                    Tables\Columns\TextColumn::make('arrive_date')
+                        ->date()
+                        ->toggleable(isToggledHiddenByDefault: true)
+                        ->sortable(),
 
-                Tables\Columns\IconColumn::make('is_converted')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('note')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
+                    Tables\Columns\IconColumn::make('is_converted')
+                        ->toggleable(isToggledHiddenByDefault: true)
+                        ->boolean(),
+                    Tables\Columns\TextColumn::make('note')
+                        ->searchable()
+                        ->toggleable(isToggledHiddenByDefault: true),
+                    Tables\Columns\TextColumn::make('created_at')
+                        ->dateTime()
+                        ->sortable()
+                        ->toggleable(isToggledHiddenByDefault: true),
+                    Tables\Columns\TextColumn::make('updated_at')
+                        ->dateTime()
+                        ->sortable()
+                        ->toggleable(isToggledHiddenByDefault: true),
+                ])
             ->filters([
-                SelectFilter::make('toStore')
-                    ->label(__('truck.filters.toStore.label'))
-                    ->relationship('toBranch', 'name'),
+                    SelectFilter::make('toStore')
+                        ->label(__('truck.filters.toStore.label'))
+                        ->relationship('toBranch', 'name'),
 
-                SelectFilter::make('country')
-                    ->label(__('truck.filters.country.label'))
-                    ->options(Country::class),
+                    SelectFilter::make('country')
+                        ->label(__('truck.filters.country.label'))
+                        ->options(Country::class),
 
-                DateRangeFilter::make('pack_date')
-                    ->label(__('truck.filters.pack_date.label'))->opens(OpenDirection::RIGHT),
-                DateRangeFilter::make('arrive_date')
-                    ->label(__('truck.filters.arrive_date.label'))->opens(OpenDirection::RIGHT),
+                    DateRangeFilter::make('pack_date')
+                        ->label(__('truck.filters.pack_date.label'))->opens(OpenDirection::RIGHT),
+                    DateRangeFilter::make('arrive_date')
+                        ->label(__('truck.filters.arrive_date.label'))->opens(OpenDirection::RIGHT),
 
-            ])
+                ])
             ->recordActions([
 
-                Actions\ActionGroup::make([
                     Actions\ActionGroup::make([
+                        Actions\ActionGroup::make([
 
-                        Actions\Action::make('report')
-                            ->label(__('truck.actions.report.label'))
-                            ->icon(__('truck.actions.report.icon'))
-                            ->action(fn (Truck $record) => redirect(TruckReport::getUrl(['truckId' => $record->id]))),
+                            Actions\Action::make('report')
+                                ->label(__('truck.actions.report.label'))
+                                ->icon(__('truck.actions.report.icon'))
+                                ->action(fn(Truck $record) => redirect(TruckReport::getUrl(['truckId' => $record->id]))),
 
-                        Actions\Action::make('product_price_report')
-                            ->label(__('truck.actions.product_price_report.label'))
-                            ->icon(__('truck.actions.product_price_report.icon'))
-                            ->action(fn (Truck $record) => redirect(ProductPricing::getUrl(['truck' => $record->id]))),
+                            Actions\Action::make('product_price_report')
+                                ->label(__('truck.actions.product_price_report.label'))
+                                ->icon(__('truck.actions.product_price_report.icon'))
+                                ->action(fn(Truck $record) => redirect(ProductPricing::getUrl(['truck' => $record->id]))),
 
-                    ])
-                        ->label(__('truck.actions.reports.label'))
-                       ,
-                    Actions\Action::make('reload_cargo')
-                        ->requiresConfirmation()
-                        ->modalDescription(__('truck.actions.reload_cargo.message'))
-                        ->label(__('truck.actions.reload_cargo.label'))
-                        ->icon('heroicon-m-truck')
-                        ->color('danger')
-                        ->action(function (Truck $record) {
-                            // إعادة تعيين حالة الشاحنة إلى "في الطريق"
-                            $record->stockHistory()->delete();
-
-                            $record->update([
-                                'is_converted' => 0,
-                            ]);
-
-                            Notification::make()
-                                ->title('تمت إعادة تحميل الحمولة بنجاح')
-                                ->success()
-                                ->send();
-                        })->visible(fn (Truck $record) => $record->is_converted),
-
-                    Actions\Action::make('unload_cargo')
-                        ->label(__('truck.actions.unload_cargo.label'))
-                        ->label(__('truck.actions.unload_cargo.label'))
-                        ->icon('heroicon-m-arrow-down-tray')
-                        ->color('success')
-                        // 1. تعبئة النموذج بالبيانات الموجودة مسبقاً في الشاحنة
-                        ->fillForm(fn (Truck $record): array => [
-                            'cargos' => $record->cargos->map(function ($cargo) {
-                                return [
-                                    'id' => $cargo->id,
-                                    'product_id' => $cargo->product_id,
-                                    'quantity' => $cargo->quantity,
-                                    'real_quantity' => $cargo->real_quantity, // في حال تم إدخالها سابقاً
-                                    'note' => $cargo->note, // في حال تم إدخالها سابقاً
-                                ];
-                            })->toArray(),
-                            'brunch_id' => $record->branch_to,
-                            'arrive_date' => $record->arrive_date,
                         ])
-                        // 2. تصميم النافذة (Modal)
-                        ->schema([
+                            ->label(__('truck.actions.reports.label'))
+                        ,
+                        Actions\Action::make('reload_cargo')
+                            ->requiresConfirmation()
+                            ->modalDescription(__('truck.actions.reload_cargo.message'))
+                            ->label(__('truck.actions.reload_cargo.label'))
+                            ->icon('heroicon-m-truck')
+                            ->color('danger')
+                            ->action(function (Truck $record) {
+                                // إعادة تعيين حالة الشاحنة إلى "في الطريق"
+                                $record->stockHistory()->delete();
 
-                            Grid::make(columns: 2)
-                                ->schema([
+                                $record->update([
+                                    'is_converted' => 0,
+                                ]);
 
-                                    Select::make('brunch_id')
-                                        ->label('المخزن الوجهة')
-                                        ->options(Branch::pluck('name', 'id'))
-                                        ->required(),
+                                Notification::make()
+                                    ->title('تمت إعادة تحميل الحمولة بنجاح')
+                                    ->success()
+                                    ->send();
+                            })->visible(fn(Truck $record) => $record->is_converted),
 
-                                    DatePicker::make('arrive_date')
-                                        ->required(),
-                                    Repeater::make('cargos')
-                                        ->label('قائمة البضائع على الشاحنة')
-                                        ->addable(false)
-                                        ->deletable(false)
-                                        ->columnSpanFull()
-                                        ->reorderable(false)
-                                        ->grid(columns: 2)
-                                        ->schema([
-                                            Grid::make(columns: 2)
+                        Actions\Action::make('unload_cargo')
+                            ->label(__('truck.actions.unload_cargo.label'))
+                            ->label(__('truck.actions.unload_cargo.label'))
+                            ->icon('heroicon-m-arrow-down-tray')
+                            ->color('success')
+                            // 1. تعبئة النموذج بالبيانات الموجودة مسبقاً في الشاحنة
+                            ->fillForm(fn(Truck $record): array => [
+                                'cargos' => $record->cargos->map(function ($cargo) {
+                                    return [
+                                        'id' => $cargo->id,
+                                        'product_id' => $cargo->product_id,
+                                        'quantity' => $cargo->quantity,
+                                        'real_quantity' => $cargo->real_quantity, // في حال تم إدخالها سابقاً
+                                        'note' => $cargo->note, // في حال تم إدخالها سابقاً
+                                    ];
+                                })->toArray(),
+                                'brunch_id' => $record->branch_to,
+                                'arrive_date' => $record->arrive_date,
+                            ])
+                            // 2. تصميم النافذة (Modal)
+                            ->schema([
+
+                                Grid::make(columns: 2)
+                                    ->schema([
+
+                                            Select::make('brunch_id')
+                                                ->label('المخزن الوجهة')
+                                                ->options(Branch::pluck('name', 'id'))
+                                                ->required(),
+
+                                            DatePicker::make('arrive_date')
+                                                ->required(),
+                                            Repeater::make('cargos')
+                                                ->label('قائمة البضائع على الشاحنة')
+                                                ->addable(false)
+                                                ->deletable(false)
                                                 ->columnSpanFull()
+                                                ->reorderable(false)
+                                                ->grid(columns: 2)
                                                 ->schema([
+                                                        Grid::make(columns: 2)
+                                                            ->columnSpanFull()
+                                                            ->schema([
 
-                                                    // عرض اسم المنتج (للقراءة فقط)
-                                                    Select::make('product_id')
-                                                        ->label('المنتج')
-                                                        ->options(Product::pluck('name', 'id'))
-                                                        ->disabled()
-                                                        ->dehydrated(), // مهم جداً لإرسال القيمة حتى لو كان الحقل معطل
+                                                                    // عرض اسم المنتج (للقراءة فقط)
+                                                                    Select::make('product_id')
+                                                                        ->label('المنتج')
+                                                                        ->options(Product::pluck('name', 'id'))
+                                                                        ->disabled()
+                                                                        ->dehydrated(), // مهم جداً لإرسال القيمة حتى لو كان الحقل معطل
 
-                                                    // الكمية المسجلة (المتوقعة)
-                                                    TextInput::make('quantity')
-                                                        ->label('الكمية المسجلة')
-                                                        ->readOnly()
-                                                        ->dehydrated(),
+                                                                    // الكمية المسجلة (المتوقعة)
+                                                                    TextInput::make('quantity')
+                                                                        ->label('الكمية المسجلة')
+                                                                        ->readOnly()
+                                                                        ->dehydrated(),
 
-                                                    // الكمية الفعلية (يكتبها المستخدم)
-                                                    TextInput::make('real_quantity')
-                                                        ->label('الكمية الفعلية')
-                                                        ->helperText('اتركه فارغاً إذا كانت الكمية مطابقة')
-                                                        ->numeric(),
+                                                                    // الكمية الفعلية (يكتبها المستخدم)
+                                                                    TextInput::make('real_quantity')
+                                                                        ->label('الكمية الفعلية')
+                                                                        ->helperText('اتركه فارغاً إذا كانت الكمية مطابقة')
+                                                                        ->numeric(),
 
-                                                    TextInput::make('note')
-                                                        ->label('ملاحظة'),
+                                                                    TextInput::make('note')
+                                                                        ->label('ملاحظة'),
 
-                                                    // حقل مخفي لتمرير الـ ID الخاص بالبضاعة
-                                                    Hidden::make('id'),
-                                                ]),
+                                                                    // حقل مخفي لتمرير الـ ID الخاص بالبضاعة
+                                                                    Hidden::make('id'),
+                                                                ]),
 
-                                        ])
-                                        ->columns(3), // تنسيق العرض في 3 أعمدة
-                                ]),
+                                                    ])
+                                                ->columns(3), // تنسيق العرض في 3 أعمدة
+                                        ]),
 
-                        ])
-                        // 3. معالجة البيانات بعد الضغط على زر الحفظ
-                        ->action(function (array $data, Truck $record) {
+                            ])
+                            // 3. معالجة البيانات بعد الضغط على زر الحفظ
+                            ->action(function (array $data, Truck $record) {
 
-                            $inventoryService = app(InventoryService::class);
-                            $targetBranch = Branch::find($data['brunch_id']);
-                            $causer = auth()->user();
+                                $inventoryService = app(InventoryService::class);
+                                $targetBranch = Branch::find($data['brunch_id']);
+                                $causer = auth()->user();
 
-                            if (! $targetBranch) {
-                                Notification::make()->title('خطأ: لم يتم تحديد المخزن.')->danger()->send();
+                                if (!$targetBranch) {
+                                    Notification::make()->title('خطأ: لم يتم تحديد المخزن.')->danger()->send();
 
-                                return;
-                            }
-
-                            foreach ($data['cargos'] as $item) {
-                                $productId = $item['product_id'];
-                                $expectedQty = (float) $item['quantity'];
-                                $realQtyInput = (float) $item['real_quantity'];
-
-                                // تحديد الكمية النهائية التي ستدخل المخزن
-                                // (إذا كان real_quantity غير فارغ و أكبر من 0، استخدمه، وإلا استخدم الكمية المسجلة)
-                                $quantityToMove = ($realQtyInput > 0) ? $realQtyInput : $expectedQty;
-
-                                if ($quantityToMove <= 0) {
-                                    continue;
+                                    return;
                                 }
 
-                                // تحديث سجل الـ truck_cargos بالكمية الفعلية المدخلة
-                                $cargoModel = TruckCargo::find($item['id']);
-                                if ($cargoModel) {
-                                    $cargoModel->update([
-                                        'real_quantity' => $quantityToMove,
-                                        'note' => $item['note']]
-                                    );
-                                }
+                                foreach ($data['cargos'] as $item) {
+                                    $productId = $item['product_id'];
+                                    $expectedQty = (float) $item['quantity'];
+                                    $realQtyInput = (float) $item['real_quantity'];
 
-                                // استدعاء خدمة المخزون لنقل الكمية
-                                $product = Product::find($productId);
+                                    // تحديد الكمية النهائية التي ستدخل المخزن
+                                    // (إذا كان real_quantity غير فارغ و أكبر من 0، استخدمه، وإلا استخدم الكمية المسجلة)
+                                    $quantityToMove = ($realQtyInput > 0) ? $realQtyInput : $expectedQty;
 
-                                if ($product) {
-                                    try {
-                                        $inventoryService->addStockForBranch(
-                                            product: $product,
-                                            branch: $targetBranch,
-                                            quantity: $quantityToMove,
-                                            type: StockCase::Increase,
-                                            notes: "وصول شحنة رقم #{$record->id} إلى {$targetBranch->name}",
-                                            causer: $causer,
-                                            truck: $record
+                                    if ($quantityToMove <= 0) {
+                                        continue;
+                                    }
+
+                                    // تحديث سجل الـ truck_cargos بالكمية الفعلية المدخلة
+                                    $cargoModel = TruckCargo::find($item['id']);
+                                    if ($cargoModel) {
+                                        $cargoModel->update(
+                                            [
+                                                'real_quantity' => $quantityToMove,
+                                                'note' => $item['note']
+                                            ]
                                         );
-                                    } catch (Exception $e) {
-                                        Notification::make()
-                                            ->title("فشل نقل المنتج {$product->name}")
-                                            ->body('الرجاء التحقق من سجل الأخطاء.')
-                                            ->danger()
-                                            ->send();
+                                    }
+
+                                    // استدعاء خدمة المخزون لنقل الكمية
+                                    $product = Product::find($productId);
+
+                                    if ($product) {
+                                        try {
+                                            $inventoryService->addStockForBranch(
+                                                product: $product,
+                                                branch: $targetBranch,
+                                                quantity: $quantityToMove,
+                                                type: StockCase::Increase,
+                                                notes: "وصول شحنة رقم #{$record->id} إلى {$targetBranch->name}",
+                                                causer: $causer,
+                                                truck: $record
+                                            );
+                                        } catch (Exception $e) {
+                                            Notification::make()
+                                                ->title("فشل نقل المنتج {$product->name}")
+                                                ->body('الرجاء التحقق من سجل الأخطاء.')
+                                                ->danger()
+                                                ->send();
+                                        }
                                     }
                                 }
-                            }
-                            // تحديث حالة الشاحنة
-                            $record->update([
-                                'truck_status' => TruckState::reach,
-                                'arrive_date' => $data['arrive_date'],
-                                'is_converted' => 1,
-                            ]);
+                                // تحديث حالة الشاحنة
+                                $record->update([
+                                    'truck_status' => TruckState::reach,
+                                    'arrive_date' => $data['arrive_date'],
+                                    'is_converted' => 1,
+                                ]);
 
-                            Notification::make()
-                                ->title('تمت عملية الجرد ونقل البضائع للمخزن بنجاح')
-                                ->success()
-                                ->send();
-                        })
-                        ->visible(fn (Truck $record) => ! $record->is_converted),
+                                Notification::make()
+                                    ->title('تمت عملية الجرد ونقل البضائع للمخزن بنجاح')
+                                    ->success()
+                                    ->send();
+                            })
+                            ->visible(fn(Truck $record) => !$record->is_converted),
 
-                    Actions\ViewAction::make(),
-                    Actions\EditAction::make(),
-                    Actions\DeleteAction::make(),
-                ]),
+                        Actions\ViewAction::make(),
+                        Actions\EditAction::make(),
+                        Actions\DeleteAction::make(),
+                    ]),
 
-            ])
+                ])
             ->groupedBulkActions([
-                Actions\BulkActionGroup::make([
-                    Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+                    Actions\BulkActionGroup::make([
+                        Actions\DeleteBulkAction::make(),
+                    ]),
+                ]);
     }
 }
