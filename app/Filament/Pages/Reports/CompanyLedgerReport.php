@@ -32,10 +32,21 @@ class CompanyLedgerReport extends Page implements HasForms
     #[Url()]
     public $date_range = null;
 
+    public $withRates = false;
+
     public $combined_records = []; // البيانات المدمجة للجدول العلوي
     public $report_lines = [];     // كشف الحساب التفصيلي
     public $opening_balance = 0;
-    public $summary = ['total_debit' => 0, 'total_credit' => 0, 'final_balance' => 0];
+    public $factors = [];          // معاملات التحويل لكل سطر
+    public $opening_factor = 1;     // معامل التحويل للرصيد الافتتاحي
+    public $summary = [
+        'total_debit' => 0,
+        'total_credit' => 0,
+        'final_balance' => 0,
+        'total_debit_eq' => 0,
+        'total_credit_eq' => 0,
+        'final_balance_eq' => 0
+    ];
 
     public function mount()
     {
@@ -44,22 +55,42 @@ class CompanyLedgerReport extends Page implements HasForms
             $this->loadData();
         }
     }
+
+    public function updatedFactors()
+    {
+        $this->loadData();
+    }
+
+    public function updatedOpeningFactor()
+    {
+        $this->loadData();
+    }
     protected function getFormSchema(): array
     {
         return [
-            Grid::make(3)->schema([
-                Forms\Components\Select::make('companyId')
-                    ->label('الشركة / المقاول')
-                    ->options(Company::query()->latest()->pluck('name', 'id'))
-                    ->searchable()
-                    ->reactive()
-                    ->afterStateUpdated(fn() => $this->loadData()),
+            Grid::make(3)
+                ->columnSpanFull()
+                ->schema([
+                        Forms\Components\Select::make('companyId')
+                            ->label('الشركة / المقاول')
+                            ->options(Company::query()->latest()->pluck('name', 'id'))
+                            ->searchable()
+                            ->reactive()
+                            ->afterStateUpdated(fn() => $this->loadData()),
 
-                DateRangePicker::make('date_range')
-                    ->label('الفترة الزمنية')
-                    ->reactive()
-                    ->afterStateUpdated(fn() => $this->loadData()),
-            ]),
+                        DateRangePicker::make('date_range')
+                            ->label('الفترة الزمنية')
+                            ->reactive()
+                            ->afterStateUpdated(fn() => $this->loadData()),
+
+                        Forms\Components\ToggleButtons::make('withRates')
+                            ->label('عرض المعاملات')
+                            ->inline()
+                            ->boolean()
+                            ->grouped()
+                            ->reactive()
+                            ->afterStateUpdated(fn($state) => [$this->withRates = $state, $this->loadData()]),
+                    ]),
         ];
     }
 
@@ -116,6 +147,7 @@ class CompanyLedgerReport extends Page implements HasForms
                 'date' => $t->pack_date,
                 'id' => $t->id,
                 'cargos' => $t->cargos,
+                'ref' => $t->code,
                 'total' => $t->cargos->sum(fn($c) => $c->ton_price * $c->ton_weight)
             ]);
         }
@@ -125,6 +157,7 @@ class CompanyLedgerReport extends Page implements HasForms
                 'type' => 'payment',
                 'date' => $p->created_at->format('Y-m-d'),
                 'id' => $p->id,
+                'ref' => $p->payer?->name . ' - ' . $p->note,
                 'description' => $p->note ?? $p->payer?->name,
                 'amount' => $p->total
             ]);
@@ -134,28 +167,46 @@ class CompanyLedgerReport extends Page implements HasForms
 
         // 5. بناء كشف الحساب التراكمي
         $running = $this->opening_balance;
+        $running_eq = $this->opening_balance * $this->opening_factor;
         $this->report_lines = [];
 
-        foreach ($this->combined_records as $record) {
+        foreach ($this->combined_records as $index => $record) {
+            // تهيئة المعامل إذا لم يكن موجوداً
+            if (!isset($this->factors[$index])) {
+                $this->factors[$index] = 1;
+            }
+
+            $factor = floatval($this->factors[$index]);
             $debit = $record['type'] === 'truck' ? $record['total'] : 0;
             $credit = $record['type'] === 'payment' ? $record['amount'] : 0;
+
+            $debit_eq = $debit * $factor;
+            $credit_eq = $credit * $factor;
+
             $running += ($debit - $credit);
+            $running_eq += ($debit_eq - $credit_eq);
 
             $this->report_lines[] = [
                 'id' => $record['id'],
                 'date' => $record['date'],
-                'ref' => $record['type'] === 'truck' ? "شحنة #{$record['id']}" : $record['description'],
+                'ref' => $record['ref'],
                 'debit' => $debit,
-                'type' => $record['type'],
                 'credit' => $credit,
-                'balance' => $running
+                'debit_eq' => $debit_eq,
+                'credit_eq' => $credit_eq,
+                'balance' => $running,
+                'balance_eq' => $running_eq,
+                'type' => $record['type'],
             ];
         }
 
         $this->summary = [
             'total_debit' => collect($this->report_lines)->sum('debit'),
             'total_credit' => collect($this->report_lines)->sum('credit'),
-            'final_balance' => $running
+            'final_balance' => $running,
+            'total_debit_eq' => collect($this->report_lines)->sum('debit_eq'),
+            'total_credit_eq' => collect($this->report_lines)->sum('credit_eq'),
+            'final_balance_eq' => $running_eq
         ];
     }
     public function viewTruck($id)

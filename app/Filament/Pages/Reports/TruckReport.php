@@ -8,6 +8,8 @@ use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Utilities\Get;
 use Livewire\Attributes\Url;
 
 class TruckReport extends Page implements HasForms
@@ -21,8 +23,8 @@ class TruckReport extends Page implements HasForms
     // protected static ?string $navigationLabel = 'تقرير الشاحنة';
     protected string $view = 'filament.pages.reports.truck-report';
 
-    #[Url]
-    public ?int $truckId = null;
+    #[Url] public ?int $truckId = null;
+    #[Url] public ?string $type = 'outer';
 
     public array $rows = [];
 
@@ -31,34 +33,62 @@ class TruckReport extends Page implements HasForms
     public function mount(): void
     {
         if ($this->truckId) {
-            $this->loadForTruck($this->truckId);
+            $this->loadForTruck();
         }
     }
 
     protected function getFormSchema(): array
     {
         return [
-            Forms\Components\Select::make('truckId')
-                ->label('اختر الشاحنة')
-                ->options(Truck::query()->get()
-                    ->mapWithKeys(fn(Truck $truck) => [
-                        $truck->id => sprintf(
-                            '(%s) %s - %s',
-                            $truck->code,
-                            $truck->driver_name,
-                            $truck->from?->name,
+            Grid::make(3)
+                ->schema([
 
-                        ),
-                    ]))
-                ->searchable()
-                ->reactive()
-                ->afterStateUpdated(fn($state) => $this->loadForTruck($state)),
+                        Forms\Components\Select::make('truckId')
+                            ->label('اختر الشاحنة')
+                            ->options(
+                                function (Get $get) {
+                                    $type = $get('type');
+
+                                    if (!$type)
+                                        return [];
+
+                                    return Truck::query()
+                                        ->where('type', $type)
+                                        ->get()
+                                        ->mapWithKeys(fn(Truck $truck) => [
+                                            $truck->id => sprintf(
+                                                "\u{200E}(%s) %s - %s", // أضفت الـ LRM هنا أيضاً لضمان التنسيق في القائمة
+                                                $truck->code,
+                                                $truck->driver_name,
+                                                $truck->from?->name ?? 'بدون منطقة'
+                                            ),
+                                        ]);
+                                }
+                            )
+                            ->searchable()
+                            ->reactive()
+                            ->afterStateUpdated(fn($state) => [$this->truckId = $state, $this->loadForTruck()]),
+
+                        Forms\Components\Select::make('type')
+                            ->label('نوع الشاحنة')
+                            ->options([
+                                    'outer' => 'خارجية',
+                                    'local' => 'داخلية',
+                                ])
+                            ->searchable()
+                            ->reactive()
+                            ->afterStateUpdated(fn($state) => [$this->truckId = null, $this->loadForTruck()]),
+                    ])
+
         ];
     }
 
-    public function loadForTruck(int $truckId): void
+    public function loadForTruck(): void
     {
-        $this->truck = Truck::with(['cargos.truck', 'expenses'])->findOrFail($truckId);
+        if (!$this->truckId)
+            return;
+
+        $this->truck = Truck::with(['cargos.truck', 'expenses'])->findOrFail($this->truckId);
 
         $rows = [];
 

@@ -4,7 +4,7 @@
         {{ $this->form }}
     </div>
 
-    @if ($truck)
+    @if ($truckId)
         <div id="report-content" class="m-0 print:m-0">
 
             {{-- الهيدر الاحترافي --}}
