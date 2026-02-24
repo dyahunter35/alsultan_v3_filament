@@ -26,10 +26,10 @@ Route::get('/errors/{code}', function ($code): string {
 
         //dd($nextNumber);
         foreach ($trucks as $truck) {
-            $prefix = 'TO';
-            $yearMonth = date('Ym');
+            $yearMonth = date('Y');
             if (!$truck->code) {
-                $truck->code = $prefix . '-' . $yearMonth . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+                $date = $yearMonth . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+                $truck->code = $date;
                 $truck->save();
             }
             $nextNumber++;
