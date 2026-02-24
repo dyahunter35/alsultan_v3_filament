@@ -23,14 +23,17 @@ Route::get('/errors/{code}', function ($code): string {
             return;
         }
 
+        $nextNumber = 1;
+
         //dd($nextNumber);
         foreach ($trucks as $truck) {
             $yearMonth = date('Y');
-            if (!$truck->code) {
-                $date = $yearMonth . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
-                $truck->code = $date;
-                $truck->save();
-            }
+            //if (!$truck->code) {
+            $date = $yearMonth . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+            $truck->update([
+                'code' => $date
+            ]);
+            //}
             $nextNumber++;
         }
     });
