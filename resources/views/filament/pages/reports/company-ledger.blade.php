@@ -123,7 +123,7 @@
                             @endforeach
                             {{-- سطر إجمالي الشحنة --}}
                             <tr class="row-group-total">
-                                <td colspan="10" class="text-right px-4 italic text-xs">إجمالي الشحنة #{{ $record['id'] }}</td>
+                                <td colspan="8" class="text-right px-4 italic text-xs">إجمالي الشحنة #{{ $record['id'] }}</td>
                                 <td colspan="2" class="bg-slate-900 text-white text-left px-4">
                                     {{ number_format($record['total'], 2) }}
                                 </td>
