@@ -14,11 +14,10 @@ Route::get('/errors/{code}', function ($code): string {
         if ($code == 1) {
 
             $trucks = Truck::out()->get();
-
             // جلب الرقم مع القفل (سيتم قفل السجل الأخير حتى تنتهي الحلقة بالكامل)
             $nextNumber = Truck::getNextTruckNumberValue(TruckType::Outer);
         } else if ($code == 2) {
-            $trucks = TruckCargo::local()->get();
+            $trucks = Truck::local()->get();
             $nextNumber = Truck::getNextTruckNumberValue(TruckType::Local);
         } else {
             return;
