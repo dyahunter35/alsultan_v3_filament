@@ -34,7 +34,7 @@ return [
             'placeholder' => 'أدخل البيان',
         ],
         'payment_reference' => [
-            'label' => 'مرجع الدفع',
+            'label' => 'رقم الاشعار',
             'placeholder' => 'أدخل مرجع الدفع',
         ],
         'total_amount' => [

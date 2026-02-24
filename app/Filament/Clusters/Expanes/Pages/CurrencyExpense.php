@@ -166,7 +166,7 @@ class CurrencyExpense extends Page implements HasActions, HasTable
                                 ->label('من حساب')
                                 ->models([
                                         'user' => \App\Models\User::class,
-                                        'customer' => \App\Models\Customer::per(ExpenseGroup::CURRENCY->value)->get(),
+                                        'customer' => fn() => \App\Models\Customer::per(ExpenseGroup::CURRENCY->value)->get(),
                                     ])
                                 ->required(),
 

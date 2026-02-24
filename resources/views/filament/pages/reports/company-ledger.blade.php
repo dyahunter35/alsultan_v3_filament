@@ -43,7 +43,11 @@
                         <tr class="hover:bg-slate-50">
                             <td>{{ ++$index }}</td>
                             <td>{{ $line['date'] }}</td>
-                            <td class="text-right px-4 font-medium">{{ $line['ref'] }}</td>
+                            <td class="text-right px-4 font-medium"> @if ($line['type']=='truck')
+                            <a href="#"
+                            @endif
+                            {{ $line['ref'] }}
+                            </td>
                             <td class="font-bold tabular-nums">{{ $line['debit'] > 0 ? number_format($line['debit'], 2) : '-' }}</td>
                             <td class="font-bold text-red-600 tabular-nums">{{ $line['credit'] > 0 ? number_format($line['credit'], 2) : '-' }}</td>
                             <td class="font-bold text-red-600 tabular-nums"><input type="text" value="" class="w-32"></td>
@@ -123,8 +127,8 @@
                             @endforeach
                             {{-- سطر إجمالي الشحنة --}}
                             <tr class="row-group-total">
-                                <td colspan="8" class="text-right px-4 italic text-xs">إجمالي الشحنة #{{ $record['id'] }}</td>
-                                <td colspan="2" class="bg-slate-900 text-white text-left px-4">
+                                <td colspan="9" class="text-right px-4 italic text-xs">إجمالي الشحنة #{{ $record['id'] }}</td>
+                                <td colspan="1" class="bg-slate-900 text-white text-left px-4">
                                     {{ number_format($record['total'], 2) }}
                                 </td>
                             </tr>

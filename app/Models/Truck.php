@@ -253,20 +253,19 @@ class Truck extends Model implements HasMedia
     public static function generateTruckNumber(TruckType $type): string
     {
 
-        $prefix = ($type === TruckType::Local) ? 'TL' : 'TO';
+        //$prefix = ($type === TruckType::Local) ? 'TL' : 'TO';
 
-        $date = date('Ym');
+        $date = date('Y');
 
         $nextNumber = self::getNextTruckNumberValue($type);
 
-        return $prefix . '-' . $date . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return $date . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 
     public static function getNextTruckNumberValue(TruckType $type): int
     {
         $lastInvoice = self::whereYear('created_at', date('Y'))
             ->where('type', $type)
-            ->whereMonth('created_at', date('m'))
             ->orderBy('id', 'desc')
             ->where('code', '!=', '')
             ->withoutGlobalScope(SoftDeletingScope::class)

@@ -44,16 +44,17 @@ class SupplyingForm
                                     ->default(null),
 
                                 TextInput::make('statement')
-                                    ->required(),
+                                ,
 
                                 TextInput::make('payment_reference')
-                                    ->default(null),
+                                    ->default(null)
+                                    ->required(),
 
                                 DecimalInput::make('total_amount')
                                     ->required()
                                     ->million(),
 
-                                DecimalInput::make('paid_amount')
+                                Hidden::make('paid_amount')
                                     ->required(fn(?Model $record) => $record != null),
 
                             ]),
