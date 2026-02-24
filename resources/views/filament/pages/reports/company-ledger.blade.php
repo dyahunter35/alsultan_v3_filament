@@ -64,13 +64,12 @@
         </div>
         {{-- أولاً: جدول الفواتير والسداد المدمج --}}
         <div class="mb-10">
-            <h3 class="font-bold text-sm mb-2 border-r-4 border-slate-800 pr-2">ثانيا: بيان حركة الشحن والسداد (الطلبيات)</h3>
+            <h3 class="font-bold text-sm mb-2 border-r-4 border-slate-800 pr-2">ثانيا:تفاصيل الشحنات</h3>
             <table class="w-full ledger-table border-collapse" dir="rtl">
                 <thead>
                     <tr>
                         <th rowspan="3" class="bg-slate-200 border-slate-900 w-32 text-slate-900">التاريخ / البيان</th>
                         <th colspan="10" class="border-slate-900 italic py-2">بيان الفاتورة (الطلبية)</th>
-                        <th colspan="2" rowspan="2" class="border-slate-900 italic py-2 bg-green-900">السداد</th>
                     </tr>
                     <tr>
                         <th colspan="4" class="border-slate-900 italic py-2">بيان الصنف</th>
@@ -88,8 +87,7 @@
                         <th class="bg-slate-800">س.الوحدة</th>
                         <th class="bg-slate-800">س.الطن</th>
                         <th class="bg-slate-800">المجموع</th>
-                        <th class="bg-green-800 w-24">البيان</th>
-                        <th class="bg-green-800 w-24">المبلغ</th>
+                        
                     </tr>
                 </thead>
                 <tbody>
@@ -120,8 +118,7 @@
                                     <td class="text-slate-400">{{ number_format($cargo->unit_price, 2) }}</td>
                                     <td class="text-slate-400">{{ number_format($cargo->ton_price, 2) }}</td>
                                     <td class="font-bold">{{ number_format($cargo->ton_price * $cargo->ton_weight, 2) }}</td>
-                                    <td class="bg-slate-50 text-slate-300">-</td>
-                                    <td class="bg-slate-50 text-slate-300">-</td>
+                                    
                                 </tr>
                             @endforeach
                             {{-- سطر إجمالي الشحنة --}}
