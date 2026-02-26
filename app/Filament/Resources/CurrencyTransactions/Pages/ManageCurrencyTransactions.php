@@ -44,6 +44,7 @@ class ManageCurrencyTransactions extends ManageRecords
                 ->modalHeading('إرسال عملة حرة لطرف ثانٍ/عميل')
                 ->icon('heroicon-m-paper-airplane')
                 ->color('warning')
+                ->visible(false)
                 ->form(CurrencyTransactionResource::formSchema(CurrencyType::SEND))
                 ->mutateFormDataUsing(function (array $data): array {
                     $data['type'] = CurrencyType::SEND;

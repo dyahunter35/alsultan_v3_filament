@@ -136,8 +136,9 @@ class CurrencyTransactionResource extends Resource
 
     public static function formSchema($type = CurrencyType::Convert): array
     {
+        $columns = $type === CurrencyType::Convert ? 2 : 1;
         return [
-            Grid::make(2)
+            Grid::make($columns)
                 ->columnSpanFull()
                 ->schema([
                         Grid::make(1)->schema([
@@ -220,6 +221,8 @@ class CurrencyTransactionResource extends Resource
                                                 ->label('سعر الصرف النهائي')
                                                 ->required()
                                                 ->default(1)
+                                                ->hidden(fn(callable $get) => in_array($type, [CurrencyType::SEND, CurrencyType::CompanyExpense]))
+
                                                 ->live(onBlur: true)
                                                 ->afterStateUpdated(fn($set, $get) => self::updateTotal($set, $get)),
                                         ]),
@@ -228,64 +231,68 @@ class CurrencyTransactionResource extends Resource
                                             ->required()
                                             ->million() // سيقوم بضرب القيمة في مليون عند الحفظ تلقائياً
                                             ->readOnly()
+                                            ->hidden(fn(callable $get) => in_array($type, [CurrencyType::SEND, CurrencyType::CompanyExpense]))
                                             ->extraAttributes(['class' => 'bg-slate-50 font-bold']),
                                     ]),
                         ]),
                         // ... داخل formSchema ...
-                        Grid::make(1)->schema([
-                            Section::make('أداة التحويل السريع (للحساب فقط)')
-                                ->schema([
-                                        Grid::make(2)->schema([
-                                            DecimalInput::make('converter_rate')
-                                                ->label('سعر الصرف (للأداة)')
-                                                ->live(),
+                        Grid::make(1)
+                            ->hidden(fn(callable $get) => in_array($type, [CurrencyType::SEND, CurrencyType::CompanyExpense]))
 
-                                            DecimalInput::make('converter_amount')
-                                                ->label('المبلغ المراد تحويله')
-                                                ->million()
-                                                ->placeholder('مثلاً: 1.5') // المستخدم يدخل القيمة مقسومة كما يراها دائماً
-                                            ,
-                                        ]),
+                            ->schema([
+                                    Section::make('أداة التحويل السريع (للحساب فقط)')
+                                        ->schema([
+                                                Grid::make(2)->schema([
+                                                    DecimalInput::make('converter_rate')
+                                                        ->label('سعر الصرف (للأداة)')
+                                                        ->live(),
 
-                                        Radio::make('conversion_direction')
-                                            ->options([
-                                                    'to_sdg' => 'من أجنبي إلى سوداني',
-                                                    'from_sdg' => 'من سوداني إلى أجنبي',
-                                                ])
-                                            ->default('to_sdg')
-                                            ->inline()
-                                            ->live(),
+                                                    DecimalInput::make('converter_amount')
+                                                        ->label('المبلغ المراد تحويله')
+                                                        ->million()
+                                                        ->placeholder('مثلاً: 1.5') // المستخدم يدخل القيمة مقسومة كما يراها دائماً
+                                                    ,
+                                                ]),
 
-                                        Actions::make([
-                                            Action::make('apply_conversion')
-                                                ->label('تطبيق الحساب')
-                                                ->color('warning')
-                                                ->icon('heroicon-m-calculator')
-                                                ->action(function ($set, $get) {
-                                                    // تحويل النصوص إلى أرقام نقية لإجراء العمليات الحسابية
-                                                    $rate = (float) str_replace(',', '', $get('converter_rate') ?? 0);
-                                                    $inputAmount = (float) str_replace(',', '', $get('converter_amount') ?? 0);
+                                                Radio::make('conversion_direction')
+                                                    ->options([
+                                                            'to_sdg' => 'من أجنبي إلى سوداني',
+                                                            'from_sdg' => 'من سوداني إلى أجنبي',
+                                                        ])
+                                                    ->default('to_sdg')
+                                                    ->inline()
+                                                    ->live(),
 
-                                                    if ($get('conversion_direction') === 'to_sdg') {
-                                                        // الحالة: أدخلنا مبلغاً أجنبياً ونريد الإجمالي بالسوداني
-                                                        $set('amount', $inputAmount);
-                                                        $set('rate', $rate);
-                                                        $set('total', $inputAmount * $rate);
-                                                    } else {
-                                                        // الحالة: أدخلنا مبلغاً سودانياً ونريد معرفة كم يساوي بالأجنبي
-                                                        $foreignAmount = $rate > 0 ? ($inputAmount / $rate) : 0;
-                                                        $set('amount', $foreignAmount);
-                                                        $set('rate', $rate);
-                                                        $set('total', $inputAmount);
-                                                    }
-                                                })
-                                        ])->fullWidth(),
-                                    ])
-                                ->collapsible(),
+                                                Actions::make([
+                                                    Action::make('apply_conversion')
+                                                        ->label('تطبيق الحساب')
+                                                        ->color('warning')
+                                                        ->icon('heroicon-m-calculator')
+                                                        ->action(function ($set, $get) {
+                                                            // تحويل النصوص إلى أرقام نقية لإجراء العمليات الحسابية
+                                                            $rate = (float) str_replace(',', '', $get('converter_rate') ?? 0);
+                                                            $inputAmount = (float) str_replace(',', '', $get('converter_amount') ?? 0);
+
+                                                            if ($get('conversion_direction') === 'to_sdg') {
+                                                                // الحالة: أدخلنا مبلغاً أجنبياً ونريد الإجمالي بالسوداني
+                                                                $set('amount', $inputAmount);
+                                                                $set('rate', $rate);
+                                                                $set('total', $inputAmount * $rate);
+                                                            } else {
+                                                                // الحالة: أدخلنا مبلغاً سودانياً ونريد معرفة كم يساوي بالأجنبي
+                                                                $foreignAmount = $rate > 0 ? ($inputAmount / $rate) : 0;
+                                                                $set('amount', $foreignAmount);
+                                                                $set('rate', $rate);
+                                                                $set('total', $inputAmount);
+                                                            }
+                                                        })
+                                                ])->fullWidth(),
+                                            ])
+                                        ->collapsible(),
 
 
 
-                        ]),
+                                ]),
 
                     ]),
 
