@@ -70,7 +70,6 @@ class CurrencyCustomersService
         $usdCurrency = Currency::where('code', '=', 'USD')->first();
         $usd = 0;
         if ($usdCurrency) {
-            // نحتاج لحساب رصيد الدولار حتى التاريخ المحدد
             $customers = Customer::all();
             foreach ($customers as $customer) {
                 $usd += $customer->currencyBalance()
@@ -101,7 +100,6 @@ class CurrencyCustomersService
     {
         $transactions = collect();
 
-        // بناء استعلام العملاء حسب النوع
         $customersQuery = Customer::query();
         if ($customerType) {
             $customersQuery->where('permanent', $customerType);
@@ -260,9 +258,6 @@ class CurrencyCustomersService
         return $transactions->sortBy('date')->values();
     }
 
-    /**
-     * تحديد نوع الحساب من نوع العميل
-     */
     private function getAccountTypeFromCustomerType($customerType): string
     {
         return match ($customerType) {
@@ -272,9 +267,6 @@ class CurrencyCustomersService
         };
     }
 
-    /**
-     * حساب الأرصدة الجارية لكل معاملة
-     */
     private function calculateRunningBalances(Collection $transactions, array $openingBalances): Collection
     {
         $runningDebtors = $openingBalances['debtors'];
@@ -283,7 +275,6 @@ class CurrencyCustomersService
 
         $ledger = collect();
 
-        // إضافة سطر الرصيد الافتتاحي
         $ledger->push([
             'date' => Carbon::now()->subDay(),
             'type' => 'opening',
@@ -303,7 +294,6 @@ class CurrencyCustomersService
             'debtors_others_balance' => $runningDebtorsOthers,
         ]);
 
-        // حساب الأرصدة الجارية
         foreach ($transactions as $transaction) {
             $runningDebtors += ($transaction['debtors_debit'] - $transaction['debtors_credit']);
             $runningUsd += ($transaction['usd_debit'] - $transaction['usd_credit']);
@@ -320,29 +310,25 @@ class CurrencyCustomersService
     }
 
     /**
-     * حساب الملخص النهائي
+     * حساب الملخص النهائي - تم إصلاح مشكلة المفاتيح المفقودة
      */
     private function calculateSummary(Collection $ledger, array $openingBalances): array
     {
         $lastRow = $ledger->last();
 
+        // جلب الأرصدة الحالية من آخر سطر في الـ Ledger، أو استخدام الرصيد الافتتاحي إذا لم توجد معاملات
+        $debtorsBalance = $lastRow['debtors_balance'] ?? $openingBalances['debtors'];
+        $usdBalance = $lastRow['usd_balance'] ?? $openingBalances['usd'];
+        $othersBalance = $lastRow['debtors_others_balance'] ?? $openingBalances['debtors_others'];
+
         return [
-            'debtors_balance' => $lastRow['debtors_balance'] ?? $openingBalances['debtors'],
-            'usd_balance' => $lastRow['usd_balance'] ?? $openingBalances['usd'],
-            'companies_balance' => $lastRow['companies_balance'] ?? $openingBalances['companies'],
-            'suppliers_balance' => $openingBalances['suppliers'],
-            'employees_balance' => $openingBalances['employees'],
-            'total_balance' => ($lastRow['debtors_balance'] ?? $openingBalances['debtors']) +
-                ($lastRow['usd_balance'] ?? $openingBalances['usd']) +
-                ($lastRow['companies_balance'] ?? $openingBalances['companies']) +
-                $openingBalances['suppliers'] +
-                $openingBalances['employees'],
+            'debtors_balance' => $debtorsBalance,
+            'usd_balance' => $usdBalance,
+            'debtors_others_balance' => $othersBalance,
+            'total_balance' => $debtorsBalance + $usdBalance + $othersBalance,
         ];
     }
 
-    /**
-     * الحصول على ملخص الحسابات
-     */
     private function getAccountsSummary(Collection $ledger): Collection
     {
         $lastRow = $ledger->last();

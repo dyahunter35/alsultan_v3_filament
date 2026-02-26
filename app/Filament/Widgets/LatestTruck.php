@@ -46,6 +46,7 @@ class LatestTruck extends BaseWidget
                     ->toggleable(isToggledHiddenByDefault: true), // إخفاءه افتراضياً لتقليل الزحام
 
             ])
+            ->paginated(false)
             ->recordActions([
                     Action::make('view')
                         ->label('عرض')
