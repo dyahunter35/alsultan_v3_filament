@@ -113,7 +113,8 @@ class CurrencyTransactionResource extends Resource
                         ->options(CurrencyType::class),
                 ])
             ->recordActions([
-                    EditAction::make(),
+                    EditAction::make()
+                        ->form(fn($record) => self::formSchema($record?->type)),
                     DeleteAction::make(),
                     ForceDeleteAction::make(),
                     RestoreAction::make(),
@@ -136,7 +137,7 @@ class CurrencyTransactionResource extends Resource
 
     public static function formSchema($type = CurrencyType::Convert): array
     {
-        $columns = $type === CurrencyType::Convert ? 2 : 1;
+        $columns = 2;//$type === CurrencyType::Convert ? 2 : 2;
         return [
             Grid::make($columns)
                 ->columnSpanFull()
@@ -233,6 +234,10 @@ class CurrencyTransactionResource extends Resource
                                             ->readOnly()
                                             ->hidden(fn(callable $get) => in_array($type, [CurrencyType::SEND, CurrencyType::CompanyExpense]))
                                             ->extraAttributes(['class' => 'bg-slate-50 font-bold']),
+
+                                        Hidden::make('total')
+                                            ->visible(fn(callable $get) => in_array($type, [CurrencyType::SEND, CurrencyType::CompanyExpense]))
+                                            ->required(),
                                     ]),
                         ]),
                         // ... داخل formSchema ...
@@ -302,7 +307,7 @@ class CurrencyTransactionResource extends Resource
     {
         // تنظيف القيم من الفواصل قبل الحساب لضمان الدقة
         $amount = (float) str_replace(',', '', $get('amount') ?? 0);
-        $rate = (float) str_replace(',', '', $get('rate') ?? 0);
+        $rate = (float) str_replace(',', '', $get('rate') ?? 1);
 
         $set('total', $amount * $rate);
     }

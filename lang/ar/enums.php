@@ -63,9 +63,9 @@ return [
     ],
 
     'currency_type' => [
-        'send' => 'ارسال الي',
-        'convert' => 'شراء عمله',
-        'company' => 'دفع عمله',
+        'send' => 'ارسال عمله',
+        'convert' => 'تحويل عمله',
+        'company' => 'دفع مصروفات',
     ],
 
     'expense_group' => [
