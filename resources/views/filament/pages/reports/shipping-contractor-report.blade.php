@@ -80,7 +80,7 @@
                             @else
                                 {{-- Standalone payment row --}}
                                 <tr class="bg-orange-100 font-bold">
-                                    <td class="p-2 border border-slate-300 italic" colspan="9">
+                                    <td class="p-2 border border-slate-300 italic" colspan="10">
                                         {{ $row['description'] }}
                                     </td>
                                     <td class="p-2 border border-slate-300 bg-orange-100 text-orange-900 text-xs">
