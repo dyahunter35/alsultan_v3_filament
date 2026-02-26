@@ -51,6 +51,7 @@ class CompanyResource extends Resource
     public static function getRelations(): array
     {
         return [
+            RelationManagers\CurrencyTransactionsRelationManager::class,
             RelationManagers\TrucksAsCompanyRelationManager::class,
             RelationManagers\TrucksAsContractorRelationManager::class,
         ];

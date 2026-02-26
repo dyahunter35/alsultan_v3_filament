@@ -129,19 +129,19 @@ return [
         'sort' => 52,
     ],
     'truck_report' => [
-        'heading' => 'كشف الشاحنات',
+        'heading' => 'تفاصيل الشحنة',
         'icon' => 'heroicon-m-truck',
         'group' => 'الشحن والشركات',
         'sort' => 53,
     ],
     'truck_tracking_report' => [
-        'heading' => 'تقرير تتبع الشاحنات',
+        'heading' => 'تقرير الشحن ',
         'icon' => 'heroicon-m-truck',
         'group' => 'الشحن والشركات',
         'sort' => 54,
     ],
     'shipping_contractor_report' => [
-        'heading' => 'تقرير شركات الشحن',
+        'heading' => 'مقاول الشحن',
         'icon' => 'heroicon-m-truck',
         'group' => 'الشحن والشركات',
         'sort' => 55,

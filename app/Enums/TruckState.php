@@ -4,10 +4,12 @@ namespace App\Enums;
 
 use App\Traits\EnumsKeys;
 use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasDescription;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
+use Illuminate\Contracts\Support\Htmlable;
 
-enum TruckState: string implements HasColor, HasIcon, HasLabel
+enum TruckState: string implements HasColor, HasIcon, HasLabel, HasDescription
 {
     use EnumsKeys;
     case OnWay = 'on_way';
@@ -17,7 +19,7 @@ enum TruckState: string implements HasColor, HasIcon, HasLabel
 
     public function arabic(): string
     {
-        return __('enums.truck_state.'.$this->value);
+        return __('enums.truck_state.' . $this->value);
     }
 
     public function getLabel(): ?string
@@ -42,6 +44,16 @@ enum TruckState: string implements HasColor, HasIcon, HasLabel
             self::reach => 'heroicon-o-check-circle',
             self::barn => 'heroicon-o-home',
             self::port => 'heroicon-o-home',
+        };
+    }
+
+    public function getDescription(): string|Htmlable|null
+    {
+        return match ($this) {
+            self::OnWay => 'في الطريق',
+            self::reach => 'وصلت الي المخزن ',
+            self::barn => 'في الحظيرة',
+            self::port => 'في الميناء',
         };
     }
 }

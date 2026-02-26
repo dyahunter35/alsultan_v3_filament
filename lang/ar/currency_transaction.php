@@ -19,14 +19,14 @@ return [
             'placeholder' => '',
         ],
         'party' => [
-            'label' => 'الجهة المستفيدة',
+            'label' => 'الجهة المستلمة',
         ],
         'payer' => [
-            'label' => 'جهه الدفع',
+            'label' => 'من سيدفع',
             'placeholder' => '',
         ],
         'party_id' => [
-            'label' => 'المعرف للجهة',
+            'label' => 'الجهة',
             'placeholder' => '',
         ],
         'amount' => [

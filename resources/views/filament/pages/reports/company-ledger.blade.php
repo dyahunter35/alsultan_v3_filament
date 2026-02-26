@@ -155,7 +155,7 @@
                                 <tr class="hover:bg-slate-50">
                                     <td>{{ ++$index }}</td>
                                     <td>{{ $line['date'] }}</td>
-                                    <td class="text-right px-4 font-medium"> 
+                                    <td class="text-right px-4 font-medium  text-center"> 
                                         @if ($line['type']=='truck')
                                             <a href="#row-{{ $line['id'] }}" class="text-blue-600 hover:underline">{{ $line['ref'] }}</a>
                                         @else

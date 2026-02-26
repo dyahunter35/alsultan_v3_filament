@@ -37,6 +37,7 @@ class TruckTrackingReport extends Page implements HasForms
 
     #[Url]
     public ?string $dateRange = null;
+    public ?string $status_label = null;
 
     public $trucks;
 
@@ -94,6 +95,7 @@ class TruckTrackingReport extends Page implements HasForms
     {
         [$start, $end] = parseDateRange($this->dateRange);
 
+        $this->status_label = ($this->status) ? 'للشاحنات التي  : ' . TruckState::tryFrom($this->status)?->getDescription() ?? '' : '';
         $query = Truck::query()
             ->with(['contractorInfo', 'from', 'toBranch', 'cargos.product', 'companyId'])
             ->out();

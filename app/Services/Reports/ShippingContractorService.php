@@ -59,7 +59,7 @@ class ShippingContractorService
             $rows[] = [
                 'type' => 'trip',
                 'date' => $truck->created_at, // Use created_at or shipment_date
-                'truck_id' => $truck->id,
+                'truck_id' => $truck->code,
                 'car_number' => $truck->car_number,
                 'driver_name' => $truck->driver_name,
                 'driver_phone' => $truck->driver_phone,

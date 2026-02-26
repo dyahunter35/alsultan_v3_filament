@@ -57,6 +57,7 @@ class CurrencyTransactionResource extends Resource
             ->components(self::formSchema());
     }
 
+
     public static function table(Table $table): Table
     {
         self::translateConfigureTable();
@@ -139,76 +140,97 @@ class CurrencyTransactionResource extends Resource
             Grid::make(2)
                 ->columnSpanFull()
                 ->schema([
-                        Section::make('بيانات المستفيد')
-                            ->columns(2)
-                            ->schema([
-                                    Select::make('type')
-                                        ->options(\App\Enums\CurrencyType::class)
-                                        ->default($type)
-                                        ->live()
-                                        ->columnSpanFull()
-                                        ->afterStateUpdated(function (callable $set, $state) {
-                                            $set('amount', 0);
-                                            $set('rate', 0);
-                                            $set('total', 0);
-                                        })
-                                        ->required(),
+                        Grid::make(1)->schema([
+                            Section::make('بيانات المستفيد')
+                                ->columns(2)
+                                ->schema([
+                                        Hidden::make('type')
+                                            ->default($type),
 
-                                    ViewField::make('payer_currencies')
-                                        ->label('Currencies')
-                                        ->view('filament.resources.customers.forms.customer-currencies-table')
-                                        ->reactive()
-                                        ->hidden(fn(callable $get) => empty($get('payer_currencies')))
-                                        ->columnSpanFull(),
+                                        ViewField::make('payer_currencies')
+                                            ->label('Currencies')
+                                            ->view('filament.resources.customers.forms.customer-currencies-table')
+                                            ->reactive()
+                                            ->hidden(fn(callable $get) => empty($get('payer_currencies')))
+                                            ->columnSpanFull(),
 
-                                    Select::make('payer_id')
-                                        ->options(
+                                        Select::make('payer_id')
+                                            ->label(__('currency_transaction.fields.payer.label'))
+                                            ->options(
 
-                                            \App\Models\Customer::select('name', 'id', 'balance')->where('permanent', ExpenseGroup::DEBTORS->value)->get()
-                                                ->mapWithKeys(fn(\App\Models\Customer $customer) => [
-                                                    $customer->id => sprintf(
-                                                        '%s (%s SDG)',
-                                                        $customer->name,
-                                                        number_format($customer->balance, 2)
-                                                    ),
+                                                \App\Models\Customer::select('name', 'id', 'balance')->where('permanent', ExpenseGroup::CURRENCY->value)->get()
+                                                    ->mapWithKeys(fn(\App\Models\Customer $customer) => [
+                                                        $customer->id => sprintf(
+                                                            '%s (%s SDG)',
+                                                            $customer->name,
+                                                            number_format($customer->balance, 2)
+                                                        ),
+                                                    ])
+
+                                            )
+                                            ->reactive()
+                                            ->afterStateUpdated(function (callable $set, $state) {
+                                                $currencies = CurrencyBalance::where('owner_type', \App\Models\Customer::class)
+                                                    ->where('owner_id', $state)
+                                                    ->get();
+
+                                                $set('payer_currencies', $currencies);
+                                            }),
+
+                                        Hidden::make('payer_type')
+                                            ->default(\App\Models\Customer::class)
+                                            ->required(),
+
+                                        MorphSelect::make('party')
+                                            ->label(__('currency_transaction.fields.party.label'))
+                                            ->models([
+                                                    'company' => \App\Models\Company::class,
+                                                    'customer' => fn() => \App\Models\Customer::where('permanent', ExpenseGroup::CURRENCY->value)->get(),
                                                 ])
+                                            ->live()
+                                            ->hidden(fn(callable $get) => in_array($type, [CurrencyType::Convert])),
 
-                                        )
-                                        ->reactive()
-                                        ->afterStateUpdated(function (callable $set, $state) {
-                                            $currencies = CurrencyBalance::where('owner_type', \App\Models\Customer::class)
-                                                ->where('owner_id', $state)
-                                                ->get();
+                                        Hidden::make('party_type')
+                                            ->hidden(fn(callable $get) => in_array($type, [CurrencyType::Convert])),
 
-                                            $set('payer_currencies', $currencies);
-                                        }),
+                                        Hidden::make('party_id')
+                                            ->hidden(condition: fn(callable $get) => in_array($type, [CurrencyType::Convert])),
 
-                                    Hidden::make('payer_type')
-                                        ->default(\App\Models\Customer::class)
-                                        ->required(),
+                                        Select::make('currency_id')
+                                            ->label(__('currency_transaction.fields.currency.label'))
+                                            ->relationship('currency', 'name')
+                                            ->required(),
 
-                                    MorphSelect::make('party')
-                                        ->models([
-                                                'company' => \App\Models\Company::class,
-                                                'customer' => fn() => \App\Models\Customer::where('permanent', ExpenseGroup::DEBTORS->value)->get(),
-                                            ])
-                                        ->live()
-                                        ->hidden(fn(callable $get) => in_array($get('type'), [CurrencyType::Convert])),
+                                        TextInput::make('note')
+                                            ->label(__('currency_transaction.fields.note.label'))
+                                            ->default(null)->columnSpanFull(),
+                                    ]),
 
-                                    Hidden::make('party_type')
-                                        ->hidden(fn(callable $get) => in_array($get('type'), [CurrencyType::Convert])),
+                            Section::make()
+                                ->schema([
+                                        Grid::make(1)->schema([
+                                            DecimalInput::make('amount')
+                                                ->label('المبلغ بالأجنبي')
+                                                ->required()
+                                                ->million() // سيقوم بضرب القيمة في مليون عند الحفظ تلقائياً
+                                                ->live(onBlur: true)
+                                                ->afterStateUpdated(fn($set, $get) => self::updateTotal($set, $get)),
 
-                                    Hidden::make('party_id')
-                                        ->hidden(condition: fn(callable $get) => in_array($get('type'), [CurrencyType::Convert])),
-
-                                    Select::make('currency_id')
-                                        ->relationship('currency', 'name')
-                                        ->required(),
-
-                                    TextInput::make('note')
-                                        ->default(null)->columnSpanFull(),
-                                ]),
-
+                                            DecimalInput::make('rate')
+                                                ->label('سعر الصرف النهائي')
+                                                ->required()
+                                                ->default(1)
+                                                ->live(onBlur: true)
+                                                ->afterStateUpdated(fn($set, $get) => self::updateTotal($set, $get)),
+                                        ]),
+                                        DecimalInput::make('total')
+                                            ->label('المجموع (بالسوداني)')
+                                            ->required()
+                                            ->million() // سيقوم بضرب القيمة في مليون عند الحفظ تلقائياً
+                                            ->readOnly()
+                                            ->extraAttributes(['class' => 'bg-slate-50 font-bold']),
+                                    ]),
+                        ]),
                         // ... داخل formSchema ...
                         Grid::make(1)->schema([
                             Section::make('أداة التحويل السريع (للحساب فقط)')
@@ -261,30 +283,7 @@ class CurrencyTransactionResource extends Resource
                                     ])
                                 ->collapsible(),
 
-                            Section::make('بيانات العملية النهائية (للحفظ)')
-                                ->schema([
-                                        Grid::make(2)->schema([
-                                            DecimalInput::make('amount')
-                                                ->label('المبلغ بالأجنبي')
-                                                ->required()
-                                                ->million() // سيقوم بضرب القيمة في مليون عند الحفظ تلقائياً
-                                                ->live(onBlur: true)
-                                                ->afterStateUpdated(fn($set, $get) => self::updateTotal($set, $get)),
 
-                                            DecimalInput::make('rate')
-                                                ->label('سعر الصرف النهائي')
-                                                ->required()
-                                                ->default(1)
-                                                ->live(onBlur: true)
-                                                ->afterStateUpdated(fn($set, $get) => self::updateTotal($set, $get)),
-                                        ]),
-                                        DecimalInput::make('total')
-                                            ->label('المجموع (بالسوداني)')
-                                            ->required()
-                                            ->million() // سيقوم بضرب القيمة في مليون عند الحفظ تلقائياً
-                                            ->readOnly()
-                                            ->extraAttributes(['class' => 'bg-slate-50 font-bold']),
-                                    ]),
 
                         ]),
 

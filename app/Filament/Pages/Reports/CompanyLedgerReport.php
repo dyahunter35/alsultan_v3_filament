@@ -144,7 +144,7 @@ class CompanyLedgerReport extends Page implements HasForms
         foreach ($trucks as $t) {
             $combined->push([
                 'type' => 'truck',
-                'date' => $t->pack_date,
+                'date' => $t->pack_date->format('Y-m-d'),
                 'id' => $t->id,
                 'cargos' => $t->cargos,
                 'ref' => $t->code,
@@ -157,7 +157,7 @@ class CompanyLedgerReport extends Page implements HasForms
                 'type' => 'payment',
                 'date' => $p->created_at->format('Y-m-d'),
                 'id' => $p->id,
-                'ref' => $p->payer?->name . ' - ' . $p->note,
+                'ref' => ($p->payer?->name ?? 'دفع مباشر') . ($p->note ? " - " . $p->note : ''),
                 'description' => $p->note ?? $p->payer?->name,
                 'amount' => $p->total
             ]);
