@@ -61,10 +61,12 @@ class ShippingContractorService
                 'date' => $truck->created_at, // Use created_at or shipment_date
                 'truck_id' => $truck->id,
                 'car_number' => $truck->car_number,
+                'driver_name' => $truck->driver_name,
+                'driver_phone' => $truck->driver_phone,
                 'shipment_date' => $truck->created_at?->format('Y-m-d'), // Placeholder for shipment date
                 'discharge_date' => $truck->arrive_date?->format('Y-m-d'),
                 'duration' => $truck->trip_days,
-                'factory' => $truck->from?->name ?? 'N/A',
+                'factory' => $truck->companyId?->name ?? 'N/A',
                 'items' => $truck->cargos->map(fn($c) => $c->note)->filter()->implode(', '),
                 'fare' => $fare,
                 'delay' => $delay,

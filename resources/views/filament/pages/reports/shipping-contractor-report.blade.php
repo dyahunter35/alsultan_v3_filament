@@ -35,6 +35,7 @@
                         <tr class="bg-gray-100 font-bold border-b border-slate-400">
                             <th class="p-2 border border-slate-300" rowspan="2">رقم الشحنة</th>
                             <th class="p-2 border border-slate-300" rowspan="2">رقم اللوحة</th>
+                            <th class="p-2 border border-slate-300" rowspan="2">السائق</th>
                             <th class="p-2 border border-slate-300" rowspan="2">تاريخ الشحن</th>
                             <th class="p-2 border border-slate-300" rowspan="2">تاريخ التفريغ</th>
                             <th class="p-2 border border-slate-300" rowspan="2">المدة بالايام</th>
@@ -56,6 +57,7 @@
                                 <tr class="hover:bg-slate-50 transition-colors bg-white">
                                     <td class="p-2 border border-slate-300">{{ $row['truck_id'] }}</td>
                                     <td class="p-2 border border-slate-300">{{ $row['car_number'] }}</td>
+                                    <td class="p-2 border border-slate-300">{{ $row['driver_name'] }}<br>{{ $row['driver_phone'] }}</td>
                                     <td class="p-2 border border-slate-300">{{ $row['shipment_date'] }}</td>
                                     <td class="p-2 border border-slate-300">{{ $row['discharge_date'] }}</td>
                                     <td class="p-2 border border-slate-300">{{ $row['duration'] }} يوم</td>
@@ -95,7 +97,7 @@
                     </tbody>
                     <tfoot>
                         <tr class="bg-slate-800 text-white font-bold">
-                            <td colspan="6" class="p-2 text-right">الإجمالي الكلي</td>
+                            <td colspan="7" class="p-2 text-right">الإجمالي الكلي</td>
                             <td colspan="1" class="p-2 border border-slate-600">-</td>
                             <td colspan="1" class="p-2 border border-slate-600">-</td>
                             <td class="p-2 border border-slate-600 tabular-nums">

@@ -30,6 +30,8 @@ class CurrencyCustomersReport extends Page implements Forms\Contracts\HasForms
     #[Url]
     public ?string $customerType = null;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     public array $reportData = [];
     public Collection $ledger;
     public array $summary = [];
