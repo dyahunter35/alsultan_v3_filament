@@ -66,7 +66,7 @@ trait HasReport
 
     public function getReportSubject(): ?string
     {
-        return null;
+        return $this->getHeading();
     }
 
     /**

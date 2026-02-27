@@ -86,6 +86,8 @@ class NetBranchProductReport extends Page implements HasForms
     {
         $this->branches = Branch::when($this->branchId, fn($q) => $q->whereIn('id', $this->branchId))->get();
 
+        $this->js("document.title = '{$this->getReportSubject()}'");
+
         $products = Product::query()
             ->withOutGlobalScope(IsVisibleScope::class)
             ->with([

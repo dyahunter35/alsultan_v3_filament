@@ -12,7 +12,9 @@ use Filament\Actions\Action;
 use Filament\Pages\Page;
 use Filament\Forms;
 use Filament\Schemas;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Collection;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
 use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
 
@@ -31,13 +33,48 @@ class OrdersReport extends Page implements Forms\Contracts\HasForms
     public $summary = [];
     public $orders;
 
+    #[Computed]
+    public function customer()
+    {
+        return $this->customerId ? Customer::find($this->customerId) : null;
+    }
+
+    #[Computed]
+    public function representative()
+    {
+        return $this->representative_id ? User::find($this->representative_id) : null;
+    }
+
+    #[Computed]
+    public function branch()
+    {
+        return $this->branch_id ? Branch::find($this->branch_id) : null;
+    }
+
+    public function getTitle(): string|Htmlable
+    {
+        return $this->getReportSubject();
+    }
+    public function getReportSubject(): ?string
+    {
+        // if customerId is excist usr customer also with represtative and branch 
+        return "تقرير مبيعات " . collect([
+            $this->customer?->name,
+            $this->representative?->name,
+            $this->branch?->name,
+            // $this->date_range ? "الفترة: {$this->date_range}" : null,
+        ])
+            ->filter() // يحذف أي قيمة null أو فارغة تلقائياً
+            ->implode(' - ') ?: 'تقرير مبيعات'; // يدمجهم بفاصل، وإذا كان الكل فارغاً يعيد "تقرير عام"
+    }
+
     protected function getFormSchema(): array
     {
         return [
             Schemas\Components\Grid::make(4)->schema([
                 Forms\Components\Select::make('customerId')
                     ->label('العميل')
-                    ->options(Customer::pluck('name', 'id'))
+                    ->options(Customer::sale()->pluck('name', 'id'))
                     ->searchable()
                     ->live()
                     ->afterStateUpdated(fn($state) => [$this->customerId = $state, $this->loadData()]),
@@ -114,5 +151,7 @@ class OrdersReport extends Page implements Forms\Contracts\HasForms
         ];
 
         $this->orders = $query->orderBy('created_at', 'desc')->get();
+
+        $this->js("document.title = '{$this->getPrintTitle()}'");
     }
 }

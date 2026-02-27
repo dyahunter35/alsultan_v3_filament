@@ -19,7 +19,7 @@
 
     {{-- زر الطباعة --}}
     <x-filament::button color="success" icon="heroicon-o-printer" :key-bindings="['command+p', 'ctrl+p']"
-        x-on:click="printReport('report-content',false,'{{ $this->getPrintTitle() }}')" x-tooltip="{
+        x-on:click="window.print()" x-tooltip="{
             content: 'طباعة التقرير (Ctrl+P)',
             placement: 'right',
         }">

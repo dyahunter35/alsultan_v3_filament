@@ -142,5 +142,8 @@ class TruckTrackingReport extends Page implements HasForms
         }
 
         $this->trucks = $query->orderBy('pack_date', 'desc')->get();
+
+        $this->js("document.title = '{$this->getPrintTitle()}'");
+
     }
 }

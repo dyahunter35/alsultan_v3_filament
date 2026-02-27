@@ -122,5 +122,8 @@ class TruckReport extends Page implements HasForms
         }
 
         $this->rows = $rows;
+
+        $this->js("document.title = '{$this->getPrintTitle()}'");
+
     }
 }

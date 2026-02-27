@@ -26,6 +26,7 @@ class CompaniesDetails extends Page implements HasForms
     // ملاحظة: الـ Widgets تتوقع وجود متغير باسم record في الغالب
     public ?Company $company = null;
 
+
     public $transactions = [];
 
     public $totals = [
@@ -34,6 +35,14 @@ class CompaniesDetails extends Page implements HasForms
         'balance' => 0,
     ];
 
+    public function getReportSubject(): string
+    {
+        $title = 'تقرير تفاصيل شركة ' . $this->_company->name;
+        /* if ($this->date_range) {
+            $title .= ' للفترة (' . $this->date_range . ')';
+        } */
+        return $title;
+    }
     // 1. تعريف الفورم بشكل صحيح في فيلامينت 3/4
     protected function getFormSchema(): array
     {
@@ -64,7 +73,7 @@ class CompaniesDetails extends Page implements HasForms
 
     public function loadData(): void
     {
-        if (! $this->companyId) {
+        if (!$this->companyId) {
             $this->company = null;
             return;
         }
@@ -76,7 +85,8 @@ class CompaniesDetails extends Page implements HasForms
             'expenses',
         ])->find($this->companyId);
 
-        if (! $this->company) return;
+        if (!$this->company)
+            return;
 
         $tx = $this->company->currencyTransactions->sortByDesc('created_at')->values();
 
@@ -99,6 +109,7 @@ class CompaniesDetails extends Page implements HasForms
 
         // 2. إرسال حدث لتحديث الـ Widgets إذا كانت تستمع
         $this->dispatch('updateCompany', companyId: $this->companyId);
+        $this->js("document.title = '{$this->getReportSubject()}'");
     }
 
     // 3. لضمان عرض الودجات في الصفحة

@@ -36,6 +36,10 @@ class CustomersReport extends Page implements Forms\Contracts\HasForms
         $this->loadLedger();
     }
 
+    public function getReportSubject(): string
+    {
+        return ($this->customer ? 'كشف حساب العميل : ' . $this->customer->name : 'كشف حساب');
+    }
     protected function getFormSchema(): array
     {
         return [
@@ -72,6 +76,7 @@ class CustomersReport extends Page implements Forms\Contracts\HasForms
 
         $this->customer = Customer::find($this->customerId);
         $this->ledger = app(CustomerService::class)->generateLedger($this->customer, $from, $to);
+        $this->js("document.title = '{$this->getReportSubject()}'");
     }
     public function updateBalances(): void
     {

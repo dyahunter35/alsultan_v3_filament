@@ -70,6 +70,8 @@ class BranchProductStockReport extends Page implements HasForms
             ->when(!$this->withZero, function ($collection) {
                 return $collection->where('current_balance', '!=', 0);
             });
+
+        $this->js("document.title = '{$this->getReportSubject()}'");
     }
 
     protected function getFormSchema(): array

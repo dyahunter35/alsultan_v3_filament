@@ -28,9 +28,12 @@ class CompaniesReport extends Page
 
     public function loadData(): void
     {
-        $this->companies = Company::with(['currencyTransactions' => function ($q) {
-            $q->orderBy('created_at', 'desc');
-        }, 'currencyTransactions.currency'])->get()->map(function ($company) {
+        $this->companies = Company::with([
+            'currencyTransactions' => function ($q) {
+                $q->orderBy('created_at', 'desc');
+            },
+            'currencyTransactions.currency'
+        ])->get()->map(function ($company) {
             $tx = $company->currencyTransactions;
 
             // Totals by sign
@@ -63,5 +66,6 @@ class CompaniesReport extends Page
                 'currencies' => $currencies,
             ];
         })->toArray();
+        $this->js("document.title = '{$this->getReportSubject()}'");
     }
 }

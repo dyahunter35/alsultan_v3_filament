@@ -48,6 +48,15 @@ class CompanyLedgerReport extends Page implements HasForms
         'final_balance_eq' => 0
     ];
 
+    public function getReportSubject(): string
+    {
+        $title = 'كشف حساب شركة ' . $this->_company->name;
+        /* if ($this->date_range) {
+            $title .= ' للفترة (' . $this->date_range . ')';
+        } */
+        return $title;
+    }
+
     public function mount()
     {
         if ($this->companyId) {
@@ -116,7 +125,7 @@ class CompanyLedgerReport extends Page implements HasForms
             $prev_trucks_ids = Truck::where(fn($q) => $q->where('company_id', $this->companyId)->orWhere('contractor_id', $this->companyId))
                 ->where('pack_date', '<', $start)->pluck('id');
 
-            $prev_debit = DB::table('cargos')->whereIn('truck_id', $prev_trucks_ids)->sum(DB::raw('ton_price * ton_weight'));
+            $prev_debit = DB::table('truck_cargos')->whereIn('truck_id', $prev_trucks_ids)->sum(DB::raw('ton_price * ton_weight'));
 
             $prev_credit = CurrencyTransaction::where('party_id', $this->companyId)
                 ->where('party_type', Company::class)
@@ -208,6 +217,9 @@ class CompanyLedgerReport extends Page implements HasForms
             'total_credit_eq' => collect($this->report_lines)->sum('credit_eq'),
             'final_balance_eq' => $running_eq
         ];
+
+        $this->js("document.title = '{$this->getPrintTitle()}'");
+
     }
     public function viewTruck($id)
     {

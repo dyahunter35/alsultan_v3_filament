@@ -33,6 +33,11 @@ class DelegatesReport extends Page implements Forms\Contracts\HasForms
     public ?User $delegate = null;
     public Collection $ledger;
 
+    public function getReportSubject(): string
+    {
+        return ($this->delegate ? 'كشف حساب المندوب : ' . $this->delegate->name : 'كشف حساب');
+    }
+
     public function mount(): void
     {
         $this->ledger = collect();
@@ -86,6 +91,7 @@ class DelegatesReport extends Page implements Forms\Contracts\HasForms
                 $to
             );
         }
+        $this->js("document.title = '{$this->getReportSubject()}'");
     }
     public function updatePalance(): void
     {

@@ -47,6 +47,10 @@ class CurrencySummaryReport extends Page implements Forms\Contracts\HasForms
     #[Url(except: '')]
     public ?string $date = null;
 
+    public function getReportSubject(): string
+    {
+        return $this->getTitle();
+    }
     /* public function loadData()
     {
         $this->companies = Company::query()
@@ -92,6 +96,8 @@ class CurrencySummaryReport extends Page implements Forms\Contracts\HasForms
 
         // استخدام دالة محدثة للتاريخ لضمان تدفق الحساب الصحيح
         $this->updatedDate($this->date);
+
+
     }
 
     public function updatedType($type): void
@@ -108,7 +114,7 @@ class CurrencySummaryReport extends Page implements Forms\Contracts\HasForms
 
     public function loadLedger($type = 'customers'): void
     {
-        if (! $type) {
+        if (!$type) {
             $this->ledger = collect();
 
             return;
@@ -123,6 +129,8 @@ class CurrencySummaryReport extends Page implements Forms\Contracts\HasForms
         } else {
             $this->ledger = Company::get();
         }
+
+        $this->js("document.title = '{$this->getPrintTitle()}'");
 
         // ملاحظة: إذا كان `$user->balance` و `$user->currencyValue($id)` يعتمد على التاريخ،
         // يجب تمرير `$this->date` لتلك الدوال.
@@ -234,23 +242,23 @@ class CurrencySummaryReport extends Page implements Forms\Contracts\HasForms
         return [
             Grid::make(4)
                 ->schema([
-                    Forms\Components\Select::make('type')
-                        ->label('عرض')
-                        ->options([
-                            'customers' => __('customer.navigation.plural_label'),
-                            'companies' => __('company.navigation.plural_label'),
-                        ])
-                        ->searchable()
-                        ->reactive(),
+                        Forms\Components\Select::make('type')
+                            ->label('عرض')
+                            ->options([
+                                    'customers' => __('customer.navigation.plural_label'),
+                                    'companies' => __('company.navigation.plural_label'),
+                                ])
+                            ->searchable()
+                            ->reactive(),
 
-                    // التحسين رقم 3: إضافة حقل التاريخ
-                    DatePicker::make('date')
-                        ->label('عرض الأرصدة حتى تاريخ')
-                        ->default(now()->format('Y-m-d'))
-                        ->reactive()
-                        ->required()
-                        ->columnSpan(2),
-                ]),
+                        // التحسين رقم 3: إضافة حقل التاريخ
+                        DatePicker::make('date')
+                            ->label('عرض الأرصدة حتى تاريخ')
+                            ->default(now()->format('Y-m-d'))
+                            ->reactive()
+                            ->required()
+                            ->columnSpan(2),
+                    ]),
         ];
     }
 }

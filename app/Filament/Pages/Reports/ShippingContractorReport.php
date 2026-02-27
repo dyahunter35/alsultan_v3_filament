@@ -41,6 +41,11 @@ class ShippingContractorReport extends Page implements HasForms
 
     public ?Company $contractor = null;
 
+    public function getReportSubject(): ?string
+    {
+        return "المقاول : " . $this->contractor?->name ?? 'تقرير مقاولي الشحن';
+    }
+
     public function mount(): void
     {
         if ($this->contractorId) {
@@ -87,5 +92,7 @@ class ShippingContractorReport extends Page implements HasForms
 
         $this->rows = $data['rows'];
         $this->summary = $data['summary'];
+        $this->js("document.title = '{$this->getPrintTitle()}'");
+
     }
 }

@@ -30,6 +30,10 @@ class ProductHistoryReport extends Page implements HasForms
     #[Url] public ?int $productId = null;
     #[Url] public ?string $date_range = null;
 
+    public function getReportSubject(): ?string
+    {
+        return $this->_label['name'] ?? '';
+    }
     public Collection $reportData;
 
     public function mount(): void
@@ -71,6 +75,9 @@ class ProductHistoryReport extends Page implements HasForms
             ->when($to, fn($q) => $q->whereDate('created_at', '<=', $to))
             ->latest()
             ->get();
+
+        $this->js("document.title = '{$this->getPrintTitle()}'");
+
     }
 
     protected function getFormSchema(): array

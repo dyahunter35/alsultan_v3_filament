@@ -86,6 +86,7 @@
                     @endforelse
                 </tbody>
             </table>
+            <x-print-button/>
         </div>
 
         {{-- 4. ذيل التقرير للطباعة --}}

@@ -53,6 +53,9 @@ class CustomerDebtReport extends Page implements HasForms
                     'balance' => $customer->balance,
                 ]
             );
+
+        $this->js("document.title = '{$this->getPrintTitle()}'");
+
     }
 
     public function updateBalances(): void

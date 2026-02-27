@@ -37,6 +37,10 @@ class CurrencyCustomersReport extends Page implements Forms\Contracts\HasForms
     public array $summary = [];
     public Collection $accountsSummary;
 
+    public function getReportSubject(): string
+    {
+        return $this->getTitle();
+    }
 
 
     public function mount(): void
@@ -63,6 +67,8 @@ class CurrencyCustomersReport extends Page implements Forms\Contracts\HasForms
         $this->ledger = $this->reportData['ledger'] ?? collect();
         $this->summary = $this->reportData['summary'] ?? [];
         $this->accountsSummary = $this->reportData['accounts_summary'] ?? collect();
+
+        $this->js("document.title = '{$this->getPrintTitle()}'");
     }
 
     protected function getFormSchema(): array

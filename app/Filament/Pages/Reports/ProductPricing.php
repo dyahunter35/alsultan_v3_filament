@@ -46,44 +46,49 @@ class ProductPricing extends Page implements HasForms
 
     public $profit_percent = 1;
 
+    public function getReportSubject(): ?string
+    {
+        return "تقرير تسعير المنتجات";
+    }
+
     protected function getFormSchema(): array
     {
         return [
             Schemas\Components\Section::make('خيارات العرض')
                 ->schema([
-                    Schemas\Components\Grid::make(4)->schema([
-                        Forms\Components\Select::make('truck_id')
-                            ->label('عرض شاحنة محددة')
-                            ->options(Truck::query()->latest()->get()->mapWithKeys(fn ($t) => [$t->id => "شحنة رقم : ($t->id)"]))
-                            ->searchable()
-                            ->reactive()
-                            ->afterStateUpdated(fn () => $this->company_id = null),
+                        Schemas\Components\Grid::make(4)->schema([
+                            Forms\Components\Select::make('truck_id')
+                                ->label('عرض شاحنة محددة')
+                                ->options(Truck::query()->latest()->get()->mapWithKeys(fn($t) => [$t->id => "شحنة رقم : ($t->id)"]))
+                                ->searchable()
+                                ->reactive()
+                                ->afterStateUpdated(fn() => $this->company_id = null),
 
-                        Forms\Components\Select::make('company_id')
-                            ->label('عرض تقرير شركة (جميع شاحناتها)')
-                            ->options(Company::all()->pluck('name', 'id'))
-                            ->searchable()
-                            ->reactive()
-                            ->afterStateUpdated(fn () => $this->truck_id = null),
+                            Forms\Components\Select::make('company_id')
+                                ->label('عرض تقرير شركة (جميع شاحناتها)')
+                                ->options(Company::all()->pluck('name', 'id'))
+                                ->searchable()
+                                ->reactive()
+                                ->afterStateUpdated(fn() => $this->truck_id = null),
 
-                        Forms\Components\TextInput::make('exchange_rate')
-                            ->label('سعر الصرف')
-                            ->numeric()
-                            ->step(0.01)
-                            ->reactive(),
+                            Forms\Components\TextInput::make('exchange_rate')
+                                ->label('سعر الصرف')
+                                ->numeric()
+                                ->step(0.01)
+                                ->reactive(),
 
-                        DateRangePicker::make('date_range')
-                            ->label('النطاق الزمني')
-                            ->visible(fn () => $this->company_id)
-                            ->disableClear(false)
-                            ->live()
-                            // التعديل الثاني: استخدام منطق afterStateUpdated بدقة أكبر
-                            ->afterStateUpdated(function ($state) {
-                                $this->date_range = $state;
-                                $this->loadInitialData();
-                            }),
-                    ]),
-                ])->collapsible(),
+                            DateRangePicker::make('date_range')
+                                ->label('النطاق الزمني')
+                                ->visible(fn() => $this->company_id)
+                                ->disableClear(false)
+                                ->live()
+                                // التعديل الثاني: استخدام منطق afterStateUpdated بدقة أكبر
+                                ->afterStateUpdated(function ($state) {
+                                    $this->date_range = $state;
+                                    $this->loadInitialData();
+                                }),
+                        ]),
+                    ])->collapsible(),
         ];
     }
 
@@ -109,7 +114,7 @@ class ProductPricing extends Page implements HasForms
      */
     protected function prepareDateFilter(): ?\Closure
     {
-        if (! $this->date_range) {
+        if (!$this->date_range) {
             return null;
         }
 
@@ -122,7 +127,7 @@ class ProductPricing extends Page implements HasForms
             $fromDate = Carbon::createFromFormat('d/m/Y', trim($dates[0]))->startOfDay();
             $toDate = Carbon::createFromFormat('d/m/Y', trim($dates[1]))->endOfDay();
 
-            return fn ($query) => $query->whereBetween('created_at', [$fromDate, $toDate]);
+            return fn($query) => $query->whereBetween('created_at', [$fromDate, $toDate]);
         } catch (\Exception $e) {
             return null;
         }
@@ -161,7 +166,7 @@ class ProductPricing extends Page implements HasForms
 
         foreach ($trucks->filter() as $truck) {
             foreach ($truck->cargos as $cargo) {
-                if (! isset($this->profit_percents[$cargo->id])) {
+                if (!isset($this->profit_percents[$cargo->id])) {
                     $this->profit_percents[$cargo->id] = $this->profit_percent;
                 }
             }
@@ -198,8 +203,9 @@ class ProductPricing extends Page implements HasForms
         if ($trucksList->isEmpty()) {
             return null;
         }
+        $this->js("document.title = '{$this->getPrintTitle()}'");
 
-        return $trucksList->map(fn ($truck) => $this->calculateTruckData($truck));
+        return $trucksList->map(fn($truck) => $this->calculateTruckData($truck));
     }
     private function calculateTruckData($truck)
     {
@@ -216,7 +222,7 @@ class ProductPricing extends Page implements HasForms
 
         // حساب إجمالي الأطنان (يدوي أو محسوب)
         $total_weight_tons = $cargos->sum(
-            fn ($item) => $item->ton_weight // > 0 ? $item->ton_weight : ($item->weight * $item->unit_quantity) / 1000000
+            fn($item) => $item->ton_weight // > 0 ? $item->ton_weight : ($item->weight * $item->unit_quantity) / 1000000
         );
 
         $rows = $cargos->map(function ($item, $index) use ($total_weight_tons, $customs_foreign, $total_transport, $exchange) {

@@ -46,17 +46,17 @@ class JournalEntriesReport extends Page implements HasForms
                 ToggleButtons::make('include_previous')
                     ->label('عرض الرصيد السابق؟')
                     ->options([
-                        true => 'نعم (تراكمي)',
-                        false => 'لا (حركة اليوم فقط)',
-                    ])
+                            true => 'نعم (تراكمي)',
+                            false => 'لا (حركة اليوم فقط)',
+                        ])
                     ->colors([
-                        true => 'success',
-                        false => 'gray',
-                    ])
+                            true => 'success',
+                            false => 'gray',
+                        ])
                     ->icons([
-                        true => 'heroicon-m-check-circle',
-                        false => 'heroicon-m-x-circle',
-                    ])
+                            true => 'heroicon-m-check-circle',
+                            false => 'heroicon-m-x-circle',
+                        ])
                     ->default(true)
                     ->live()
                     ->inline()
@@ -68,7 +68,7 @@ class JournalEntriesReport extends Page implements HasForms
 
     public function mount()
     {
-        if (! $this->date) {
+        if (!$this->date) {
             $this->date = now()->toDateString();
         }
 
@@ -82,7 +82,8 @@ class JournalEntriesReport extends Page implements HasForms
     /** 🔵 الرصيد الافتتاحي (قبل التاريخ المحدد) */
     public function getOpeningBalance()
     {
-        if (!$this->date) return 0;
+        if (!$this->date)
+            return 0;
 
         $targetDate = Carbon::parse($this->date)->startOfDay();
 
@@ -105,7 +106,8 @@ class JournalEntriesReport extends Page implements HasForms
     /** 🔵 صافي حركة اليوم المحدد */
     public function getTodayProfit()
     {
-        if (!$this->date) return 0;
+        if (!$this->date)
+            return 0;
         $day = Carbon::parse($this->date);
 
         // التدفقات النقدية الداخلة
@@ -130,9 +132,11 @@ class JournalEntriesReport extends Page implements HasForms
     /** 🔵 جلب قيود اليومية */
     public function getJournalEntries()
     {
-        if (!$this->date) return collect();
+        if (!$this->date)
+            return collect();
         $day = Carbon::parse($this->date);
 
+        $this->js("document.title = '{$this->getReportSubject()}'");
         return collect([
             Expense::selectRaw("'مصروف' AS type, notes AS description, total_amount AS debit, 0 AS credit, created_at")
                 ->whereDate('created_at', $day),

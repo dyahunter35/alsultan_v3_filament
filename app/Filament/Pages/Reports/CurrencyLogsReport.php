@@ -41,6 +41,11 @@ class CurrencyLogsReport extends Page implements Forms\Contracts\HasForms
 
     public Collection $currencys;
     public $reportData;
+
+    public function getReportSubject(): string
+    {
+        return $this->getTitle();
+    }
     public function getTitle(): string|Htmlable
     {
         return $this->customer
@@ -106,6 +111,9 @@ class CurrencyLogsReport extends Page implements Forms\Contracts\HasForms
                 $this->editableRates[$tr['id']] = $tr['rate'];
             }
         } */
+        $this->js("document.title = '{$this->getPrintTitle()}'");
+
+
     }
     public function refreshBalance()
     {

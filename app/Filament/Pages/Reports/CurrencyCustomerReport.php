@@ -37,7 +37,13 @@ class CurrencyCustomerReport extends Page implements Forms\Contracts\HasForms
     #[Url]
     public ?string $endDate = null;
 
+
     public ?Collection $ledger = null;
+
+    public function getReportSubject(): string
+    {
+        return $this->getTitle();
+    }
 
     public function getTitle(): string|Htmlable
     {
@@ -86,6 +92,10 @@ class CurrencyCustomerReport extends Page implements Forms\Contracts\HasForms
 
         $this->ledger = app(CurrencyLogsService::class)
             ->generateLedger($customer, $this->startDate, $this->endDate);
+
+        $this->js("document.title = '{$this->getPrintTitle()}'");
+
+
     }
 
     protected function getFormSchema(): array

@@ -98,6 +98,7 @@ class ExpenseReport extends Page implements Forms\Contracts\HasForms
             ->orderBy('created_at', 'desc')
             ->get();
 
+        $this->js("document.title = '{$this->getReportSubject()}'");
         //dd($this->expenses);
     }
 }

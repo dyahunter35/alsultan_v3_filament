@@ -101,5 +101,8 @@ class SupplyReport extends Page implements Forms\Contracts\HasForms
             ->when($endDate, fn($q) => $q->where('created_at', '<=', $endDate))
             ->orderBy('created_at', 'desc')
             ->get();
+
+        $this->js("document.title = '{$this->getPrintTitle()}'");
+
     }
 }
