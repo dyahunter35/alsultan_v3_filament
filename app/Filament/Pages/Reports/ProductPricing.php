@@ -41,7 +41,6 @@ class ProductPricing extends Page implements HasForms
 
     public $currency_name;
 
-    // مصفوفة نسب الأرباح مرتبطة بـ ID الشحنة (cargo_id)
     public $profit_percents = [];
 
     public $profit_percent = 1;
@@ -59,7 +58,7 @@ class ProductPricing extends Page implements HasForms
                         Schemas\Components\Grid::make(4)->schema([
                             Forms\Components\Select::make('truck_id')
                                 ->label('عرض شاحنة محددة')
-                                ->options(Truck::query()->latest()->get()->mapWithKeys(fn($t) => [$t->id => "شحنة رقم : ($t->id)"]))
+                                ->options(Truck::query()->latest()->get()->mapWithKeys(fn($t) => [$t->id => "شحنة رقم : ($t->code)"]))
                                 ->searchable()
                                 ->reactive()
                                 ->afterStateUpdated(fn() => $this->company_id = null),
@@ -117,16 +116,8 @@ class ProductPricing extends Page implements HasForms
         if (!$this->date_range) {
             return null;
         }
-
-        $dates = explode(' - ', $this->date_range);
-        if (count($dates) !== 2) {
-            return null;
-        }
-
         try {
-            $fromDate = Carbon::createFromFormat('d/m/Y', trim($dates[0]))->startOfDay();
-            $toDate = Carbon::createFromFormat('d/m/Y', trim($dates[1]))->endOfDay();
-
+            [$fromDate, $toDate] = parseDateRange($this->date_range);
             return fn($query) => $query->whereBetween('created_at', [$fromDate, $toDate]);
         } catch (\Exception $e) {
             return null;

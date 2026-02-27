@@ -14,7 +14,7 @@
             {{-- 2. الهيدر العام والمعادل --}}
             <x-filament::section class="mb-4 print:shadow-none print:border-slate-300 print:mb-2">
                 @if ($truck_id)
-                    <x-report-header label="تقرير الشحنة رقم :" :value="$reports[0]['truck']?->id ?? '-'" />
+                    <x-report-header label="تقرير الشحنة رقم :" :value="$reports[0]['truck']?->code ?? '-'" />
                 @else
                     <x-report-header label="اسم الشركة:" :value="$_company?->name ?? '-'" />
                 @endif
@@ -52,13 +52,13 @@
                                         <span>الشركة: {{ $data['truck']->companyId?->name ?? '' }}</span>
                                     @else
                                         <x-filament::icon icon="heroicon-m-truck" class="w-5 h-5 text-blue-600" />
-                                        <span>بيان الشحنة رقم: {{ $data['truck']->id }}</span>
+                                        <span>بيان الشحنة رقم: {{ $data['truck']->code }}</span>
                                     @endif
                                 </h2>
                                 <p class="mt-1 font-bold text-gray-600 text-sm print:text-[10px]">
                                     رقم اللوحة: <span class="text-slate-900">{{ $data['truck']->car_number }}</span>
                                     | تاريخ الشحنة: <span
-                                        class="text-slate-900">{{ $data['truck']->created_at->format('Y-m-d') }}</span>
+                                        class="text-slate-900">{{ $data['truck']->pack_date->format('Y-m-d') }}</span>
                                 </p>
                             </div>
                         </div>
