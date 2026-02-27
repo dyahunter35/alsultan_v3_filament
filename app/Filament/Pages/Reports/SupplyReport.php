@@ -30,6 +30,10 @@ class SupplyReport extends Page implements Forms\Contracts\HasForms
     public Collection $supplyings;
     public ?Customer $customer = null; // لإظهار بيانات العميل في الهيدر
 
+    public function getReportSubject(): ?string
+    {
+        return $this->customer ? 'تقرير التوريدات من العميل  ' . $this->customer?->name : 'تقرير التوريدات';
+    }
     public function mount(): void
     {
         $this->supplyings = collect();

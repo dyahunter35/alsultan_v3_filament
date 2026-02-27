@@ -164,7 +164,7 @@
                             <h3 class="font-bold text-sm border-r-4 border-emerald-600 pr-2 text-gray-800">اولا: حركة كشف
                                 الحساب التراكمي</h3>
                             <x-filament::button color="gray" icon="heroicon-m-printer" size="sm" outlined tag="button"
-                                onclick="printWithHeader('print-section-1')">
+                                onclick="printReport('print-section-1',true,'{{ now()->format('Y_m_d') }} حركة كشف الحساب التراكمي لشركة {{ $_company->name }}')">
                                 طباعة هذا الجدول فقط
                             </x-filament::button>
                         </div>
@@ -275,7 +275,7 @@
                             <h3 class="font-bold text-sm border-r-4 border-slate-800 pr-2 text-gray-800">ثانيا: تفاصيل
                                 الشحنات</h3>
                             <x-filament::button color="gray" icon="heroicon-m-printer" size="sm" outlined tag="button"
-                                onclick="printWithHeader('print-section-2')">
+                                onclick="printReport('print-section-2',true,'{{ now()->format('Y_m_d') }}تفاصيل الشحنات لشركة {{ $_company->name }}')">
                                 طباعة هذا الجدول فقط
                             </x-filament::button>
                         </div>

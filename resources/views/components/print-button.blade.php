@@ -1,4 +1,4 @@
-<div class="fixed bottom-6 left-6 no-print flex flex-col gap-3 z-50">
+<div class="fixed bottom-6 left-6 no-print flex flex-col gap-3 z-50" wire:ignore>
     {{-- زر العودة للأعلى --}}
     <x-filament::button color="gray" icon="heroicon-o-chevron-double-up" {{-- ملاحظة: Filament يقبل المصفوفة أو النص
         للاختصارات --}} :key-bindings="['command+up', 'ctrl+shift+up']"
@@ -19,7 +19,7 @@
 
     {{-- زر الطباعة --}}
     <x-filament::button color="success" icon="heroicon-o-printer" :key-bindings="['command+p', 'ctrl+p']"
-        onclick="printWithHeader2('report-content','{{ $this->getPrintTitle() }}')" x-tooltip="{
+        x-on:click="printReport('report-content',false,'{{ $this->getPrintTitle() }}')" x-tooltip="{
             content: 'طباعة التقرير (Ctrl+P)',
             placement: 'right',
         }">
