@@ -64,6 +64,11 @@ trait HasReport
         //return is_string($group) && $group !== 'report.group' ? $group : null;
     }
 
+    public function getReportSubject(): ?string
+    {
+        return null;
+    }
+
     /**
      * العنوان الرئيسي للتقرير
      * (التحسين هنا: تمرير البارامترات $params إلى دالة __() بعد جلب مفتاح الترجمة)
@@ -137,5 +142,19 @@ trait HasReport
         }
 
         return $title;
+    }
+
+    public function getPrintTitle(): string
+    {
+        // 1. الحصول على العنوان المترجم (بدون تاغات HTML إذا وجدت)
+        //$heading = strip_tags($this->getHeading());
+
+        // 2. تنظيف العنوان من المسافات والرموز غير المسموحة في أسماء الملفات
+        $cleanHeading = $this->getReportSubject(); //Str::slug($heading, '_', 'ar');
+
+        // 3. إضافة الوقت والتاريخ (مثلاً: 2026_02_27_02_00)
+        $timestamp = now()->format('Y_m_d');
+
+        return "{$timestamp}_{$cleanHeading}";
     }
 }

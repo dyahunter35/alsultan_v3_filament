@@ -41,16 +41,18 @@
                     <tr class="bg-slate-950 text-white">
                         <th class="p-2 border border-slate-700 w-12" rowspan="2">#</th>
                         <th class="p-2 border border-slate-700" rowspan="2">رقم الشحنة</th>
-                        <th class="p-2 border border-slate-700 bg-slate-800" colspan="3">بيانات الناقل والشاحنة</th>
-                        <th class="p-2 border border-slate-700 bg-emerald-900" colspan="7">تفاصيل الحمولة والمسار الجمركي</th>
+                        <th class="p-2 border border-slate-700 bg-slate-800" colspan="4">بيانات الناقل والشاحنة</th>
+                        <th class="p-2 border border-slate-700 bg-emerald-900" colspan="8">تفاصيل الحمولة والمسار الجمركي</th>
                     </tr>
                     {{-- Row 2: Detail Headers --}}
                     <tr class="bg-slate-100 font-bold border-b-2 border-slate-950 text-slate-900">
                         <th class="p-1.5 border border-slate-400">المقاول</th>
+                        <th class="p-1.5 border border-slate-400">السائق</th>
                         <th class="p-1.5 border border-slate-400">النوع</th>
                         <th class="p-1.5 border border-slate-400">رقم اللوحة</th>
 
                         <th class="p-1.5 border border-slate-400 bg-emerald-50">نوع الحمولة</th>
+                        <th class="p-1.5 border border-slate-400 bg-emerald-50">البلد</th>
                         <th class="p-1.5 border border-slate-400 bg-emerald-50">المصنع</th>
                         <th class="p-1.5 border border-slate-400 bg-emerald-50">موقع التحميل</th>
                         <th class="p-1.5 border border-slate-400 bg-emerald-50 text-blue-800">تاريخ الشحن</th>
@@ -65,10 +67,12 @@
                             <td class="p-2 border-x border-slate-300 bg-slate-50/50 text-slate-400">{{ $index + 1 }}</td>
                             <td class="p-2 border-x border-slate-300 font-black text-slate-900 uppercase">{{ $truck->code ?? $truck->id }}</td>
                             <td class="p-2 border-x border-slate-200 text-right font-bold">{{ $truck->contractorInfo?->name ?? 'N/A' }}</td>
-                            <td class="p-2 border-x border-slate-200 text-[9px] text-slate-500">{{ $truck->truck_model ?? 'تريلة 13 متر' }}</td>
+                            <td class="p-2 border-x border-slate-200 text-[9px] text-slate-900">{{ $truck->driver_name ?? 'N/A' }}<br>{{ $truck->driver_phone ?? 'N/A' }}</td>
+                            <td class="p-2 border-x border-slate-200 text-[9px] text-slate-900">{{ $truck->truck_model ?? 'تريلة 13 متر' }}</td>
                             <td class="p-2 border-x border-slate-200 font-black tracking-widest">{{ $truck->car_number }}</td>
 
                             <td class="p-2 border-x border-slate-200 font-bold">{{ $truck->category?->name }}</td>
+                            <td class="p-2 border-x border-slate-200 text-[10px]">{{ $truck->country?->getLabel() ?? 'N/A' }}</td>
                             <td class="p-2 border-x border-slate-200 text-[10px]">{{ $truck->companyId?->name ?? 'N/A' }}</td>
                             <td class="p-2 border-x border-slate-200">{{ $truck->city }}</td>
                             <td class="p-2 border-x border-slate-200 text-blue-700 font-bold">{{ $truck->pack_date?->format('Y-m-d') }}</td>

@@ -37,6 +37,11 @@ class TruckReport extends Page implements HasForms
         }
     }
 
+    public function getReportSubject(): ?string
+    {
+        return '';//$this->truck?->driver_name ?? 'تقرير الشاحنة';
+    }
+
     protected function getFormSchema(): array
     {
         return [
@@ -88,7 +93,10 @@ class TruckReport extends Page implements HasForms
         if (!$this->truckId)
             return;
 
+
         $this->truck = Truck::with(['cargos.truck', 'expenses'])->findOrFail($this->truckId);
+
+        $this->getReportSubject();
 
         $rows = [];
 

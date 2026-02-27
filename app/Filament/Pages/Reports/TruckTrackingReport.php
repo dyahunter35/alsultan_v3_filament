@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages\Reports;
 
+use App\Enums\Country;
 use App\Enums\TruckState;
 use App\Filament\Pages\Concerns\HasReport;
 use App\Models\Branch;
@@ -34,12 +35,18 @@ class TruckTrackingReport extends Page implements HasForms
     #[Url]
     public ?int $contractorId = null;
     public ?array $branches = [];
+    public ?array $countries = [];
 
     #[Url]
     public ?string $dateRange = null;
     public ?string $status_label = null;
 
     public $trucks;
+
+    public function getReportSubject(): ?string
+    {
+        return $this->status_label;
+    }
 
     public function mount(): void
     {
@@ -77,6 +84,20 @@ class TruckTrackingReport extends Page implements HasForms
                     )
                     ->afterStateUpdated(fn() => $this->loadData()),
 
+                Forms\Components\Select::make('countries')
+                    ->label('الدول')
+                    ->options(Country::class)
+                    ->multiple()
+                    ->searchable()
+                    ->reactive()
+                    ->suffixAction(
+                        Action::make('clearB')
+                            ->label(__('filament-daterangepicker-filter::message.clear'))
+                            ->icon('heroicon-m-x-mark')
+                            ->action(fn() => [$this->countries = [], $this->loadData()])
+                    )
+                    ->afterStateUpdated(fn() => $this->loadData()),
+
                 DateRangePicker::make('dateRange')
                     ->label('الفترة الزمنية (تاريخ الشحن)')
                     ->reactive()
@@ -95,7 +116,7 @@ class TruckTrackingReport extends Page implements HasForms
     {
         [$start, $end] = parseDateRange($this->dateRange);
 
-        $this->status_label = ($this->status) ? 'للشاحنات التي  : ' . TruckState::tryFrom($this->status)?->getDescription() ?? '' : '';
+        $this->status_label = ($this->status) ? 'للشاحنات التي  : ' . TruckState::tryFrom($this->status)?->getDescription() ?? '' : 'تقرير الشحن';
         $query = Truck::query()
             ->with(['contractorInfo', 'from', 'toBranch', 'cargos.product', 'companyId'])
             ->out();
@@ -110,6 +131,10 @@ class TruckTrackingReport extends Page implements HasForms
 
         if ($this->branches) {
             $query->whereIn('branch_to', $this->branches);
+        }
+
+        if ($this->countries) {
+            $query->whereIn('country', $this->countries);
         }
 
         if ($start && $end) {
