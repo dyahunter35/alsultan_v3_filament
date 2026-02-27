@@ -39,7 +39,7 @@ class TruckReport extends Page implements HasForms
 
     public function getReportSubject(): ?string
     {
-        return '';//$this->truck?->driver_name ?? 'تقرير الشاحنة';
+        return "الشاحنة : " . $this->truck?->code ?? 'تقرير الشاحنة';
     }
 
     protected function getFormSchema(): array
