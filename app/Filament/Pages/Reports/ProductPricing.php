@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages\Reports;
 
+use App\Enums\CargoPriority;
 use App\Filament\Pages\Concerns\HasReport;
 use App\Models\Company;
 use App\Models\Truck;
@@ -222,7 +223,7 @@ class ProductPricing extends Page implements HasForms
             $weight_ratio = $total_weight_tons > 0 ? ($weight_ton / $total_weight_tons) : 0;
 
             // التكلفة بالعملة الأجنبية (EGP أو غيرها)
-            $base_total_foreign = $item->ton_price * $weight_ton; // $weight_ton * $item->unit_price;
+            $base_total_foreign = ($item->priority == CargoPriority::Weight) ? $item->ton_price * $weight_ton : $item->quantity * $item->unit_price; // $weight_ton * $item->unit_price;
             $item_customs_cost = $customs_foreign * $weight_ratio;
             $item_transport_cost = $total_transport * $weight_ratio;
             $total_cost_foreign = $base_total_foreign + $item_customs_cost + $item_transport_cost;

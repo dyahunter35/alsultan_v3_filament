@@ -17,9 +17,9 @@ return [
             'placeholder' => '',
         ],
         'unit_quantity' => [
-            'label' => ' الكمية بالوحدة',
+            'label' => ' الكمية بالعدد',
             'placeholder' => '',
-            'helper_text' => 'الكميات بالوحدة وليس الطرد',
+            'helper_text' => 'الكميات بالعدد وليس الطرد',
         ],
         'real_quantity' => [
             'label' => 'الكمية الفعلية',
@@ -38,12 +38,12 @@ return [
             'label' => 'سعر الوحدة',
             'placeholder' => '',
         ],
-        'ton_price'=>[
-            'label'=>'سعر الطن',
+        'ton_price' => [
+            'label' => 'سعر الطن',
 
         ],
-        'ton_weight'=>[
-            'label'=>'الكمية بالطن',
+        'ton_weight' => [
+            'label' => 'الكمية بالطن',
 
         ],
         'note' => [

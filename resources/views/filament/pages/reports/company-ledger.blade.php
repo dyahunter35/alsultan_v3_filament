@@ -175,18 +175,13 @@
                                     <th class="p-2 border border-slate-600">#</th>
                                     <th class="p-2 border border-slate-600">التاريخ</th>
                                     <th class="p-2 border border-slate-600 text-right px-4">البيان / المرجع</th>
-                                    <th class="p-2 border border-slate-600 w-32 bg-slate-700">مدين (+) شحن</th>
-                                    <th class="p-2 border border-slate-600 w-32 bg-slate-700">دائن (-) سداد</th>
+                                    <th class="p-2 border border-slate-600 w-32 bg-slate-700">المطالبات</th>
+                                    <th class="p-2 border border-slate-600 w-32 bg-slate-700">المبلغ المستلم</th>
+                                    <th class="p-2 border border-slate-600 w-32 bg-emerald-800">العملة</th>
                                     <th class="p-2 border border-slate-600 w-32 bg-emerald-800">المعامل</th>
+                                    <th class="p-2 border border-slate-600 w-32 bg-emerald-800">الدائن سداد</th>
                                     <th class="p-2 border border-slate-600 w-40 bg-emerald-950 text-yellow-100">الرصيد
-                                        المعادل</th>
-
-                                    @if ($withRates)
-                                        <th class="p-2 border border-slate-600 w-40 bg-slate-900 text-yellow-400">الرصيد بدون
-                                            معادل</th>
-                                        <th class="p-2 border border-slate-600 w-32 bg-emerald-900">المعادل (+) مدين</th>
-                                        <th class="p-2 border border-slate-600 w-32 bg-emerald-900">المعادل (-) دائن</th>
-                                    @endif
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -196,18 +191,16 @@
                                     <td>-</td>
                                     <td>-</td>
                                     <td>-</td>
+                                    <td>-</td>
                                     <td class="bg-emerald-50">
-                                        <input type="number" step="0.0001" wire:model.live="opening_factor"
+                                        <input type="number" step="0.0001" wire:model.blur="opening_factor"
                                             class="w-24 border-none bg-transparent text-center no-print font-bold text-emerald-700 focus:ring-0"
                                             placeholder="1.0">
                                     </td>
+                                    <td>-</td>
                                     <td class="font-black tabular-nums bg-emerald-100 text-emerald-900">
                                         {{ number_format($opening_balance * $opening_factor, 2) }}</td>
-                                    @if ($withRates)
-                                        <td class="font-black tabular-nums">{{ number_format($opening_balance, 2) }}</td>
-                                        <td class="bg-emerald-50">-</td>
-                                        <td class="bg-emerald-50">-</td>
-                                    @endif
+                                    
                                 </tr>
                                 @foreach ($report_lines as $index => $line)
                                     <tr class="hover:bg-slate-50">
@@ -225,23 +218,18 @@
                                             {{ $line['debit'] > 0 ? number_format($line['debit'], 2) : '-' }}</td>
                                         <td class="font-bold text-red-600 tabular-nums">
                                             {{ $line['credit'] > 0 ? number_format($line['credit'], 2) : '-' }}</td>
-
-                                        <td class="bg-emerald-50 border-r-2 border-emerald-200">
-                                            <input type="number" step="0.0001" wire:model.live="factors.{{ $index - 1 }}"
-                                                class="w-24 border-none bg-transparent text-center no-print font-bold text-emerald-700 focus:ring-0"
-                                                placeholder="1.0">
+                                        <td class="text-right px-4 font-medium  text-center">
+                                            {{ $line['currency'] }}
                                         </td>
+                                        <td class="bg-emerald-50 border-r-2 border-emerald-200">
+                                            <input type="number" step="0.0001" wire:model.blur="factors.{{ $index - 1 }}"
+                                                class="w-24 border-none bg-transparent text-center font-bold text-emerald-700 focus:ring-0"
+                                                placeholder="1.0" min="0.0001">
+                                        </td>
+                                        <td class="font-bold text-red-600 tabular-nums bg-emerald-50">
+                                                {{ $line['credit_eq'] > 0 ? number_format($line['credit_eq'], 2) : '-' }}</td>
                                         <td class="font-black bg-emerald-100 text-emerald-900 tabular-nums">
                                             {{ number_format($line['balance_eq'], 2) }}</td>
-
-                                        @if ($withRates)
-                                            <td class="font-black bg-slate-50 tabular-nums">{{ number_format($line['balance'], 2) }}
-                                            </td>
-                                            <td class="font-bold tabular-nums bg-emerald-50">
-                                                {{ $line['debit_eq'] > 0 ? number_format($line['debit_eq'], 2) : '-' }}</td>
-                                            <td class="font-bold text-red-600 tabular-nums bg-emerald-50">
-                                                {{ $line['credit_eq'] > 0 ? number_format($line['credit_eq'], 2) : '-' }}</td>
-                                        @endif
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -252,18 +240,12 @@
                                     </td>
                                     <td class="text-red-400 tabular-nums bg-slate-800">
                                         {{ number_format($summary['total_credit'], 2) }}</td>
-                                    <td class="bg-emerald-900 border-r-2 border-emerald-700"></td>
-
+                                    <td class=""></td>
+                                    <td></td>
+                                    <td></td>
                                     <td class="bg-emerald-500 text-white text-lg tabular-nums">
                                         {{ number_format($summary['final_balance_eq'], 2) }}</td>
-                                    @if ($withRates)
-                                        <td class="bg-yellow-500 text-slate-900 text-lg tabular-nums">
-                                            {{ number_format($summary['final_balance'], 2) }}</td>
-                                        <td class="tabular-nums bg-emerald-800 text-emerald-200">
-                                            {{ number_format($summary['total_debit_eq'], 2) }}</td>
-                                        <td class="text-red-300 tabular-nums bg-emerald-800">
-                                            {{ number_format($summary['total_credit_eq'], 2) }}</td>
-                                    @endif
+                                   
                                 </tr>
                             </tfoot>
                         </table>
@@ -332,7 +314,7 @@
                                                 <td class="font-bold text-blue-800">{{ number_format($cargo->ton_weight, 3) }}</td>
                                                 <td class="text-slate-400">{{ number_format($cargo->unit_price, 2) }}</td>
                                                 <td class="text-slate-400">{{ number_format($cargo->ton_price, 2) }}</td>
-                                                <td class="font-bold">{{ number_format($cargo->ton_price * $cargo->ton_weight, 2) }}
+                                                <td class="font-bold">{{ number_format($cargo->base_total_foreign, 2) }}
                                                 </td>
                                             </tr>
                                         @endforeach

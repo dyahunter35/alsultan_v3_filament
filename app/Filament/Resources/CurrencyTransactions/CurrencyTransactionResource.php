@@ -308,8 +308,12 @@ class CurrencyTransactionResource extends Resource
         // تنظيف القيم من الفواصل قبل الحساب لضمان الدقة
         $amount = (float) str_replace(',', '', $get('amount') ?? 0);
         $rate = (float) str_replace(',', '', $get('rate') ?? 1);
+        $milion = 1;
+        if (in_array($get('type'), [CurrencyType::CompanyExpense, CurrencyType::SEND])) {
+            $milion = 1000000;
+        }
 
-        $set('total', $amount * $rate);
+        $set('total', $amount * $rate * $milion);
     }
 
     public static function getRecordRouteBindingEloquentQuery(): Builder

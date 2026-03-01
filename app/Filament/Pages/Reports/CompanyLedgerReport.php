@@ -92,13 +92,13 @@ class CompanyLedgerReport extends Page implements HasForms
                             ->reactive()
                             ->afterStateUpdated(fn() => $this->loadData()),
 
-                        Forms\Components\ToggleButtons::make('withRates')
+                        /* Forms\Components\ToggleButtons::make('withRates')
                             ->label('عرض المعاملات')
                             ->inline()
                             ->boolean()
                             ->grouped()
                             ->reactive()
-                            ->afterStateUpdated(fn($state) => [$this->withRates = $state, $this->loadData()]),
+                            ->afterStateUpdated(fn($state) => [$this->withRates = $state, $this->loadData()]),*/
                     ]),
         ];
     }
@@ -111,13 +111,7 @@ class CompanyLedgerReport extends Page implements HasForms
         $this->_company = Company::find($this->companyId);
 
         // استخراج تواريخ البداية والنهاية (بفرض وجود Helper Function لديك)
-        $start = null;
-        $end = null;
-        if ($this->date_range) {
-            $dates = explode(' - ', $this->date_range);
-            $start = $dates[0] ?? null;
-            $end = $dates[1] ?? null;
-        }
+        [$start, $end] = parseDateRange($this->date_range);
 
         // 1. حساب الرصيد الافتتاحي (قبل تاريخ البداية)
         $this->opening_balance = 0;
@@ -157,7 +151,9 @@ class CompanyLedgerReport extends Page implements HasForms
                 'id' => $t->id,
                 'cargos' => $t->cargos,
                 'ref' => $t->code,
-                'total' => $t->cargos->sum(fn($c) => $c->ton_price * $c->ton_weight)
+                'currency' => '',
+                //'total' => $t->cargos->sum(fn($c) => $c->ton_price * $c->ton_weight)
+                'total' => $t->cargos->sum(fn($c) => $c->base_total_foreign)
             ]);
         }
 
@@ -166,6 +162,7 @@ class CompanyLedgerReport extends Page implements HasForms
                 'type' => 'payment',
                 'date' => $p->created_at->format('Y-m-d'),
                 'id' => $p->id,
+                'currency' => $p->currency?->name,
                 'ref' => ($p->payer?->name ?? 'دفع مباشر') . ($p->note ? " - " . $p->note : ''),
                 'description' => $p->note ?? $p->payer?->name,
                 'amount' => $p->total
@@ -185,12 +182,16 @@ class CompanyLedgerReport extends Page implements HasForms
                 $this->factors[$index] = 1;
             }
 
-            $factor = floatval($this->factors[$index]);
+            $factor = floatval($this->factors[$index]) ?? 1;
+            if ($factor == 0) {
+                $factor = 1;
+            }
             $debit = $record['type'] === 'truck' ? $record['total'] : 0;
             $credit = $record['type'] === 'payment' ? $record['amount'] : 0;
 
+
             $debit_eq = $debit * $factor;
-            $credit_eq = $credit * $factor;
+            $credit_eq = $credit / $factor ?? 1;
 
             $running += ($debit - $credit);
             $running_eq += ($debit_eq - $credit_eq);
@@ -201,6 +202,7 @@ class CompanyLedgerReport extends Page implements HasForms
                 'ref' => $record['ref'],
                 'debit' => $debit,
                 'credit' => $credit,
+                'currency' => $record['currency'],
                 'debit_eq' => $debit_eq,
                 'credit_eq' => $credit_eq,
                 'balance' => $running,
