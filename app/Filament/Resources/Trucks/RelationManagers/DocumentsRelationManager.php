@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Trucks\RelationManagers;
 
 use App\Filament\Pages\Concerns\HasRelationManager;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -16,10 +17,14 @@ use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\SpatieMediaLibraryImageEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ViewEntry;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -40,40 +45,40 @@ class DocumentsRelationManager extends RelationManager
 
         return $form
             ->schema([
-                Schemas\Components\Section::make()
-                    ->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->maxLength(255),
+                    Schemas\Components\Section::make()
+                        ->schema([
+                                Forms\Components\TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255),
 
-                        Forms\Components\DatePicker::make('issuance_date')
-                            ->required(),
+                                Forms\Components\DatePicker::make('issuance_date')
+                                    ->required(),
 
-                        Forms\Components\TextInput::make('type')
-                            ->maxLength(255)
-                            ->columnSpanFull(),
-                        Forms\Components\Textarea::make('note')
-                            ->maxLength(255)
-                            ->columnSpanFull(),
-                    ])
-                    ->columnSpan(2)
-                    ->columns(2),
+                                Forms\Components\TextInput::make('type')
+                                    ->maxLength(255)
+                                    ->columnSpanFull(),
+                                Forms\Components\Textarea::make('note')
+                                    ->maxLength(255)
+                                    ->columnSpanFull(),
+                            ])
+                        ->columnSpan(2)
+                        ->columns(2),
 
-                Schemas\Components\Section::make()
-                    ->schema([
-                        Forms\Components\SpatieMediaLibraryFileUpload::make('file')
-                            ->collection('truck_docs')
-                            ->multiple()
-                            ->required()
-                            ->columnSpanFull()
-                            ->openable()
-                            // ->deletable(true)
-                            // ->model(fn() => $this->ownerRecord)
-                            ->maxSize(10240) // 10MB
-                            ->downloadable(),
-                    ])->columnSpan(1),
+                    Schemas\Components\Section::make()
+                        ->schema([
+                                Forms\Components\SpatieMediaLibraryFileUpload::make('file')
+                                    ->collection('truck_docs')
+                                    ->multiple()
+                                    ->required()
+                                    ->columnSpanFull()
+                                    ->openable()
+                                    // ->deletable(true)
+                                    // ->model(fn() => $this->ownerRecord)
+                                    ->maxSize(10240) // 10MB
+                                    ->downloadable(),
+                            ])->columnSpan(1),
 
-            ])->columns(3);
+                ])->columns(3);
     }
 
     public function infolist(Schema $schema): Schema
@@ -82,15 +87,28 @@ class DocumentsRelationManager extends RelationManager
 
         return $schema
             ->components([
+                    Grid::make(2)
+                        ->components([
+                                TextEntry::make('name')
+                                    ->label('اسم المستند'),
 
-                TextEntry::make('name'),
-                TextEntry::make('issuance_date')->date(),
-                SpatieMediaLibraryImageEntry::make('file')
-                    ->label('File')
-                    ->collection('truck_docs')
+                                TextEntry::make('issuance_date')
+                                    ->label('تاريخ الإصدار')
+                                    ->date(),
+                            ]),
+                    // عرض الملفات كقائمة روابط
+                    Section::make('المرفقات')
+                        ->description('عرض وتحميل المستندات الخاصة بالشاحنة')
+                        ->schema([
+                                // هنا يتم استدعاء ملف الـ Blade المخصص
+                                ViewEntry::make('media')
+                                    ->label('')
+                                    ->view('filament.components.document-viewer')
+                                    ->columnSpanFull()
+                                    ->getStateUsing(fn($record) => $record->getMedia('truck_docs')),
+                            ]),
 
-                    ->conversion('thumb'),
-            ]);
+                ])->columns(1);
     }
 
     public function table(Table $table): Table
@@ -100,48 +118,60 @@ class DocumentsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\SpatieMediaLibraryImageColumn::make('file')
-                    ->collection('truck_docs')
-                    ->conversion('thumbnail')
-                    ->circular()
-                    ->height(50)
-                    ->width(50),
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('type')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('issuance_date')
-                    ->date()
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('note')
-                    ->searchable(),
-            ])->filters([
-                DateRangeFilter::make('issuance_date')->opens(OpenDirection::RIGHT),
-            ])
+                    Tables\Columns\SpatieMediaLibraryImageColumn::make('file')
+                        ->collection('truck_docs')
+                        ->conversion('thumbnail')
+                        ->circular()
+                        ->height(50)
+                        ->width(50),
+                    Tables\Columns\TextColumn::make('name')
+                        ->searchable(),
+                    Tables\Columns\TextColumn::make('type')
+                        ->searchable(),
+                    Tables\Columns\TextColumn::make('issuance_date')
+                        ->date()
+                        ->sortable()
+                        ->searchable(),
+                    Tables\Columns\TextColumn::make('note')
+                        ->searchable(),
+                ])->filters([
+                    DateRangeFilter::make('issuance_date')->opens(OpenDirection::RIGHT),
+                ])
             ->headerActions([
-                CreateAction::make(),
-            ])
+                    CreateAction::make(),
+                    Action::make('view_all_docs')
+                        ->label('عرض كافة المستندات')
+                        ->icon('heroicon-o-rectangle-stack')
+                        ->color('gray')
+                        ->modalHeading('أرشيف مستندات الشاحنة')
+                        ->modalWidth('5xl')
+                        ->modalSubmitAction(false)
+                        ->slideOver()
+                        ->modalCancelActionLabel('إغلاق')
+                        ->modalContent(fn($livewire) => view('filament.components.documents-viewer', [
+                            'documents' => $livewire->getOwnerRecord()->documents()->with('media')->get()
+                        ])),
+                ])
 
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-                // DetachAction::make(),
-                DeleteAction::make(),
-                // ForceDeleteAction::make(),
-                // RestoreAction::make(),
-            ])
+                    ViewAction::make(),
+                    EditAction::make(),
+                    // DetachAction::make(),
+                    DeleteAction::make(),
+                    // ForceDeleteAction::make(),
+                    // RestoreAction::make(),
+                ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    // DetachBulkAction::make(),
-                    DeleteBulkAction::make(),
-                    // ForceDeleteBulkAction::make(),
-                    // RestoreBulkAction::make(),
-                ]),
-            ])
-            ->modifyQueryUsing(fn (Builder $query) => $query
+                    BulkActionGroup::make([
+                        // DetachBulkAction::make(),
+                        DeleteBulkAction::make(),
+                        // ForceDeleteBulkAction::make(),
+                        // RestoreBulkAction::make(),
+                    ]),
+                ])
+            ->modifyQueryUsing(fn(Builder $query) => $query
                 ->withoutGlobalScopes([
-                    SoftDeletingScope::class,
-                ]));
+                        SoftDeletingScope::class,
+                    ]));
     }
 }
