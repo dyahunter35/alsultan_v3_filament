@@ -11,8 +11,9 @@
             </div>
 
             <div class="flex items-center gap-2">
-                <x-filament::button wire:click="loadData" icon="heroicon-m-arrow-path" color="gray" size="sm">
-                    تحديث البيانات
+                <x-filament::button wire:click="updateCurrencyBalance" icon="heroicon-m-arrow-path" color="gray"
+                    size="sm">
+                    تحديث الأرصدة
                 </x-filament::button>
             </div>
         </div>
@@ -25,15 +26,16 @@
                     <tr class="divide-x divide-x-reverse divide-slate-700">
                         <th class="px-3 py-3 font-bold border border-slate-600">#</th>
                         <th class="px-3 py-3 font-bold border border-slate-600 text-right min-w-[150px]">اسم الشركة</th>
-                        <th class="px-3 py-3 font-bold border border-slate-600 bg-slate-700">المجموع الوارد</th>
-                        <th class="px-3 py-3 font-bold border border-slate-600 bg-slate-700">المجموع الصادر</th>
-                        <th class="px-3 py-3 font-bold border border-slate-600">المدفوع</th>
-                        <th class="px-3 py-3 font-bold border border-slate-600">مصروفات الشركة</th>
-                        <th class="px-3 py-3 font-bold text-blue-200 border border-slate-600">التحويلات (SDG)</th>
-                        <th class="px-3 py-3 italic font-bold border border-slate-600 bg-slate-900">الرصيد (عام)</th>
-                        <th class="px-3 py-3 italic font-bold border border-slate-600 bg-slate-900">الرصيد (صيغة)</th>
+                        <th class="px-3 py-3 font-bold border border-slate-600 bg-slate-700">إجمالي الشحن (SDG)</th>
+                        <th class="px-3 py-3 font-bold border border-slate-600 bg-slate-700">المسدد / المحول (SDG)</th>
+                        <th
+                            class="px-3 py-3 italic font-bold border border-slate-600 bg-slate-900 border-x-2 border-x-yellow-600 text-yellow-400">
+                            الرصيد الختامي (SDG)</th>
+                        @foreach($all_currencies as $currency)
+                            <th class="px-3 py-3 font-bold border border-slate-600 bg-slate-900 text-blue-200">
+                                {{ $currency->code }}</th>
+                        @endforeach
                         <th class="px-3 py-3 font-bold border border-slate-600">حركات</th>
-                        <th class="px-3 py-3 font-bold text-left border border-slate-600">العملات</th>
                     </tr>
                 </thead>
 
@@ -41,42 +43,43 @@
                     @forelse($companies as $company)
                         <tr class="transition-colors border-b border-gray-300 hover:bg-slate-50">
                             <td class="px-2 py-2 font-bold text-gray-600 border border-gray-300 bg-gray-50">
-                                {{ $company['id'] }}</td>
+                                {{ $company['id'] }}
+                            </td>
                             <td class="px-2 py-2 font-black text-right border border-gray-300 text-slate-800">
-                                {{ $company['name'] }}</td>
-                            <td class="px-2 py-2 font-bold text-green-700 border border-gray-300">
-                                {{ number_format($company['total_in'], 2) }}</td>
+                                {{ $company['name'] }}
+                            </td>
+
+                            {{-- SDG Charges --}}
+                            <td class="px-2 py-2 font-bold text-blue-700 border border-gray-300">
+                                {{ number_format($company['sdg_charges'], 2) }}
+                            </td>
+
+                            {{-- SDG Payments --}}
                             <td class="px-2 py-2 font-bold text-red-700 border border-gray-300">
-                                {{ number_format($company['total_out'], 2) }}</td>
-                            <td class="px-2 py-2 font-medium border border-gray-300">
-                                {{ number_format($company['paid'], 2) }}</td>
-                            <td class="px-2 py-2 text-orange-700 border border-gray-300">
-                                {{ number_format($company['company_expense'], 2) }}</td>
-                            <td class="px-2 py-2 border border-gray-300 bg-blue-50/50">
-                                {{ number_format($company['converted'], 2) }}</td>
-
-                            {{-- رصيد عام --}}
-                            <td
-                                class="px-2 py-2 border border-gray-300 font-black text-[14px] print:text-[11px] {{ $company['generic_balance'] < 0 ? 'text-red-600 bg-red-50' : 'text-green-700 bg-green-50' }}">
-                                {{ number_format($company['generic_balance'], 2) }}
+                                {{ number_format($company['sdg_payments'], 2) }}
                             </td>
 
-                            {{-- رصيد صيغة --}}
+                            {{-- الرصيد الختامي SDG --}}
                             <td
-                                class="px-2 py-2 border border-gray-300 font-black text-[14px] print:text-[11px] {{ $company['formula_balance'] < 0 ? 'text-red-600 bg-red-50' : 'text-green-700 bg-green-50' }}">
-                                {{ number_format($company['formula_balance'], 2) }}
+                                class="px-2 py-2 border-x-2 border-x-gray-400 border-y border-y-gray-300 font-black text-[14px] print:text-[11px] {{ $company['sdg_balance'] > 0 ? 'text-red-600 bg-red-50' : 'text-green-700 bg-green-50' }}">
+                                {{ number_format($company['sdg_balance'], 2) }}
                             </td>
+
+                            {{-- العملات الأخرى --}}
+                            @foreach($all_currencies as $currency)
+                                <td
+                                    class="px-2 py-2 border border-gray-300 font-bold {{ ($company['currency_balances'][$currency->id] ?? 0) > 0 ? 'text-green-700 bg-green-50' : 'text-slate-500' }}">
+                                    {{ number_format($company['currency_balances'][$currency->id] ?? 0, 2) }}
+                                </td>
+                            @endforeach
 
                             <td class="px-2 py-2 text-gray-500 border border-gray-300">
-                                {{ $company['transactions_count'] }}</td>
-                            <td
-                                class="px-2 py-2 border border-gray-300 text-left text-[10px] font-medium text-slate-400">
-                                {{ implode(', ', $company['currencies'] ?: ['-']) }}
+                                {{ $company['transactions_count'] }}
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="11"
+                            <td colspan="{{ 6 + count($all_currencies) }}"
                                 class="px-4 py-10 text-sm italic tracking-widest text-center text-gray-400 uppercase bg-gray-50">
                                 <x-filament::icon icon="heroicon-o-exclamation-circle"
                                     class="w-10 h-10 mx-auto mb-2 text-gray-300" />
@@ -86,7 +89,7 @@
                     @endforelse
                 </tbody>
             </table>
-            <x-print-button/>
+            <x-print-button />
         </div>
 
         {{-- 4. ذيل التقرير للطباعة --}}

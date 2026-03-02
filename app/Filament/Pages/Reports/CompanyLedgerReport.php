@@ -10,6 +10,7 @@ use App\Models\Truck;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Grid;
 use Illuminate\Support\Facades\DB;
@@ -232,5 +233,15 @@ class CompanyLedgerReport extends Page implements HasForms
             ->color('primary')
             ->url(TruckResource::getUrl('edit', ['record' => $id]))
             ->openUrlInNewTab();
+    }
+
+    public function updateCurrencyBalance()
+    {
+        \App\Models\CurrencyBalance::refreshBalances();
+        app(\App\Services\CustomerService::class)->updateCustomersBalance();
+        Notification::make()
+            ->title('تم تحديث أرصدة العملات')
+            ->success()
+            ->send();
     }
 }

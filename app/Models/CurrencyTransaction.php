@@ -46,7 +46,6 @@ class CurrencyTransaction extends Model
         static::updated(function (self $tx) {
             \App\Models\CurrencyBalance::refreshBalances();
             app(CustomerService::class)->updateCustomersBalance();
-
         });
 
         static::deleted(function (self $tx) {

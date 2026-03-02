@@ -1,96 +1,137 @@
 @php
     $documents = $documents ?? [];
+    // جلب السنوات المتوفرة فقط من المستندات
+    $years = $documents->map(fn($doc) => $doc->issuance_date?->format('Y'))->filter()->unique()->sortDesc();
+    
+    // مصفوفة الشهور العربية
+    $months = [
+        '01' => 'يناير', '02' => 'فبراير', '03' => 'مارس', '04' => 'أبريل',
+        '05' => 'مايو', '06' => 'يونيو', '07' => 'يوليو', '08' => 'أغسطس',
+        '09' => 'سبتمبر', '10' => 'أكتوبر', '11' => 'نوفمبر', '12' => 'ديسمبر',
+    ];
 @endphp
 
 <div x-data="{ 
     search: '',
-    {{-- دالة بسيطة للتحقق مما إذا كان المستند يطابق البحث --}}
-    filterDoc(name, type) {
-        if (this.search === '') return true;
-        const term = this.search.toLowerCase();
-        return name.toLowerCase().includes(term) || type.toLowerCase().includes(term);
+    selectedYear: '',
+    selectedMonth: '',
+    {{-- دالة الفلترة الشاملة --}}
+    filterDoc(name, type, date) {
+        if (!date) return this.search === '' && this.selectedYear === '' && this.selectedMonth === '';
+        
+        const matchesSearch = this.search === '' || 
+                            name.toLowerCase().includes(this.search.toLowerCase()) || 
+                            type.toLowerCase().includes(this.search.toLowerCase());
+        
+        const matchesYear = this.selectedYear === '' || date.startsWith(this.selectedYear);
+        
+        // التحقق من الشهر (بافتراض أن التاريخ بصيغة Y-m-d)
+        const docMonth = date.split('-')[1]; 
+        const matchesMonth = this.selectedMonth === '' || docMonth === this.selectedMonth;
+        
+        return matchesSearch && matchesYear && matchesMonth;
+    },
+    resetFilters() {
+        this.search = '';
+        this.selectedYear = '';
+        this.selectedMonth = '';
     }
 }" class="space-y-6">
 
-    {{-- شريط البحث العلوي --}}
+    {{-- شريط الفلاتر --}}
     <div class="sticky top-0 z-10 bg-white dark:bg-gray-900 pb-4 border-b border-gray-100 dark:border-gray-800">
-        <div class="relative">
-            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                <x-filament::icon icon="heroicon-m-magnifying-glass" class="w-5 h-5 text-gray-400" />
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+            {{-- البحث النصي --}}
+            <div class="md:col-span-2">
+                <x-filament::input.wrapper prefix-icon="heroicon-m-magnifying-glass">
+                    <x-filament::input x-model="search" type="text" placeholder="ابحث بالاسم أو النوع..." />
+                </x-filament::input.wrapper>
             </div>
-            <x-filament-forms::text-input 
-                x-model="search" 
-                type="text" 
-                placeholder="ابحث باسم المستند أو النوع (مثلاً: رخصة، تأمين...)" 
-                class="block w-full ps-10 p-2.5 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:border-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-        ></x-filament-forms::text-input>
+
+            {{-- فلتر السنة --}}
+            <div>
+                <x-filament::input.wrapper prefix-icon="heroicon-m-calendar">
+                    <x-filament::input.select x-model="selectedYear">
+                        <option value="">كل السنوات</option>
+                        @foreach($years as $year)
+                            <option value="{{ $year }}">{{ $year }}</option>
+                        @endforeach
+                    </x-filament::input.select>
+                </x-filament::input.wrapper>
+            </div>
+
+            {{-- فلتر الشهر --}}
+            <div class="relative flex items-center gap-2">
+                <x-filament::input.wrapper prefix-icon="heroicon-m-calendar-days" class="flex-1">
+                    <x-filament::input.select x-model="selectedMonth">
+                        <option value="">كل الشهور</option>
+                        @foreach($months as $num => $name)
+                            <option value="{{ $num }}">{{ $name }}</option>
+                        @endforeach
+                    </x-filament::input.select>
+                </x-filament::input.wrapper>
+                
+                {{-- زر إعادة الضبط --}}
+                <x-filament::icon-button 
+                    icon="heroicon-m-x-mark" 
+                    color="gray" 
+                    label="مسح"
+                    x-show="search !== '' || selectedYear !== '' || selectedMonth !== ''"
+                    x-on:click="resetFilters()"
+                />
+            </div>
         </div>
     </div>
 
-    {{-- شبكة المستندات --}}
-    <div class="space-y-8 p-2">
+    {{-- عرض النتائج --}}
+    <div class="space-y-6">
         @forelse($documents as $doc)
-            <div 
-                x-show="filterDoc('{{ addslashes($doc->name) }}', '{{ addslashes($doc->type ?? '') }}')"
-                x-transition:enter="transition ease-out duration-300"
-                x-transition:enter-start="opacity-0 transform scale-95"
-                x-transition:enter-end="opacity-100 transform scale-100"
-                class="border-b border-gray-100 dark:border-gray-800 pb-4"
-            >
-                {{-- عنوان المستند --}}
-                <div class="flex items-center justify-between mb-4">
+            <div x-show="filterDoc('{{ addslashes($doc->name) }}', '{{ addslashes($doc->type ?? '') }}', '{{ $doc->issuance_date?->format('Y-m-d') }}')"
+                x-transition class="p-4 border border-gray-100 dark:border-gray-800 rounded-xl bg-white dark:bg-gray-900/50 shadow-sm">
+                
+                <div class="flex justify-between items-start mb-4">
                     <div>
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ $doc->name }}</h3>
-                        <span class="text-xs text-gray-500 italic">
-                            {{ $doc->type ?? 'مستند عام' }} | {{ $doc->issuance_date?->format('Y-m-d') }}
-                        </span>
-                    </div>
-                    <div class="px-3 py-1 bg-primary-50 dark:bg-primary-400/10 text-primary-600 rounded-full text-xs font-medium">
-                        {{ $doc->media->count() }} ملفات
+                        <h4 class="font-bold text-gray-900 dark:text-white">{{ $doc->name }}</h4>
+                        <div class="flex gap-2 mt-1">
+                            <x-filament::badge color="gray" size="sm">{{ $doc->type ?? 'عام' }}</x-filament::badge>
+                            <x-filament::badge color="primary" icon="heroicon-m-calendar" size="sm">
+                                {{ $doc->issuance_date?->format('d M, Y') }}
+                            </x-filament::badge>
+                        </div>
                     </div>
                 </div>
 
-                {{-- المرفقات --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {{-- شبكة المرفقات --}}
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     @foreach($doc->media as $file)
-                        {{-- كود عرض الملف (نفس الكود السابق الذي صممناه) --}}
-                        <div class="flex items-center p-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-lg group hover:border-primary-500 transition-colors">
-                            <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded bg-white dark:bg-gray-800 shadow-sm">
-                                @if(str_contains($file->mime_type, 'image'))
-                                    <img src="{{ $file->getUrl() }}" class="w-10 h-10 object-cover rounded">
-                                @else
+                        <a href="{{ $file->getUrl() }}" target="_blank" class="group relative block aspect-video rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 border dark:border-gray-700">
+                            @if(str_contains($file->mime_type, 'image'))
+                                <img src="{{ $file->getUrl() }}" class="w-full h-full object-cover transition group-hover:scale-110">
+                            @else
+                                <div class="w-full h-full flex flex-col items-center justify-center p-2">
                                     <x-filament::icon 
                                         :icon="str_contains($file->mime_type, 'pdf') ? 'heroicon-o-document-text' : 'heroicon-o-document'" 
-                                        class="w-6 h-6 {{ str_contains($file->mime_type, 'pdf') ? 'text-danger-500' : 'text-primary-500' }}" 
+                                        class="w-8 h-8 mb-1 {{ str_contains($file->mime_type, 'pdf') ? 'text-danger-500' : 'text-primary-500' }}" 
                                     />
-                                @endif
+                                    <span class="text-[10px] text-gray-500 truncate w-full text-center">{{ $file->file_name }}</span>
+                                </div>
+                            @endif
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold">
+                                معاينة
                             </div>
-                            <div class="ms-3 flex-1 min-w-0">
-                                <p class="text-xs font-medium truncate text-gray-700 dark:text-gray-300">{{ $file->file_name }}</p>
-                                <p class="text-[10px] text-gray-500 uppercase">{{ $file->human_readable_size }}</p>
-                            </div>
-                            <div class="flex space-x-1 rtl:space-x-reverse">
-                                <a href="{{ $file->getUrl() }}" target="_blank" class="p-1 text-gray-400 hover:text-primary-500">
-                                    <x-filament::icon icon="heroicon-m-eye" class="w-4 h-4" />
-                                </a>
-                            </div>
-                        </div>
+                        </a>
                     @endforeach
                 </div>
             </div>
         @empty
-            <div class="flex flex-col items-center justify-center py-12 text-gray-400">
-                <p>لا توجد مستندات مسجلة</p>
-            </div>
+            <div class="text-center py-20 text-gray-400">لا توجد بيانات</div>
         @endforelse
 
-        {{-- رسالة تظهر عند عدم وجود نتائج للبحث --}}
-        <div 
-            x-show="search !== '' && $el.parentElement.querySelectorAll('[x-show*=\'filterDoc\']:not([style*=\'display: none\'])').length === 0" 
-            class="text-center py-10 text-gray-500"
-            style="display: none;"
-        >
-            لا توجد نتائج مطابقة لبحثك..
+        {{-- رسالة "لم يتم العثور على نتائج" --}}
+        <div x-cloak x-show="[...$el.parentElement.children].filter(el => el.style.display !== 'none').length === 0" 
+             class="text-center py-12">
+            <x-filament::icon icon="heroicon-o-face-frown" class="w-12 h-12 mx-auto text-gray-300 mb-2" />
+            <p class="text-gray-500 italic">لا توجد مستندات تطابق اختياراتك في هذا الشهر/السنة..</p>
         </div>
     </div>
 </div>

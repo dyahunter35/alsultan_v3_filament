@@ -76,9 +76,19 @@
             </style>
 
             {{-- قسم الفلاتر --}}
-            <x-filament::section class="no-print mb-4">
+<x-filament::section class="mb-6 no-print border-slate-200 shadow-none bg-slate-50/50">
+        <div class="flex flex-col gap-4 md:flex-row md:items-end">
+            <div class="flex-1">
                 {{ $this->form }}
-            </x-filament::section>
+            </div>
+            <div class="flex items-center gap-2">
+                <x-filament::button wire:click="updateCurrencyBalance" color="gray" variant="outline" icon="heroicon-m-arrow-path">
+                    تحديث الارصدة
+                </x-filament::button>
+            </div>
+        </div>
+    </x-filament::section>
+            
 
             @if($companyId)
                 {{-- الترويسة الرئيسية - سنعطيها ID لنسخها في الطباعة --}}
