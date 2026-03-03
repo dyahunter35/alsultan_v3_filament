@@ -57,7 +57,7 @@ class SupplyReport extends Page implements Forms\Contracts\HasForms
                         ->mapWithKeys(fn(Customer $customer) => [
                             $customer->id => sprintf(
                                 '%s [%s]',
-                                $customer->name,
+                                $customer->display_name,
                                 $customer->address,
 
                             ),
@@ -68,7 +68,7 @@ class SupplyReport extends Page implements Forms\Contracts\HasForms
 
                 Forms\Components\Select::make('delegateId')
                     ->label('المندوب')
-                    ->options(User::role('sales')->pluck('name', 'id'))
+                    ->options(User::sales())
                     ->searchable()
                     ->live()
                     ->afterStateUpdated(fn($state) => [$this->delegateId = $state, $this->loadData()]),

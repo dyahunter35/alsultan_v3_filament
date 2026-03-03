@@ -74,7 +74,7 @@ class OrdersReport extends Page implements Forms\Contracts\HasForms
             Schemas\Components\Grid::make(4)->schema([
                 Forms\Components\Select::make('customerId')
                     ->label('العميل')
-                    ->options(Customer::sale()->pluck('name', 'id'))
+                    ->options(Customer::sale()->get()->pluck('display_name', 'id'))
                     ->searchable()
                     ->live()
                     ->afterStateUpdated(fn($state) => [$this->customerId = $state, $this->loadData()]),

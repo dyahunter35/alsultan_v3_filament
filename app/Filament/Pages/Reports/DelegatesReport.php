@@ -51,7 +51,7 @@ class DelegatesReport extends Page implements Forms\Contracts\HasForms
             Schemas\Components\Grid::make(3)->schema([
                 Forms\Components\Select::make('delegateId')
                     ->label('المندوب')
-                    ->options(User::role('sales')->pluck('name', 'id')) // Filter by sales role
+                    ->options(User::sales()) // Filter by sales role
                     ->searchable()
                     ->reactive()
                     ->afterStateUpdated(fn($state) => [$this->delegateId = $state, $this->loadLedger()]),

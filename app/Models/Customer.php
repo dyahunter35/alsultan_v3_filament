@@ -8,6 +8,7 @@ use App\Traits\HasCustomerFinancialReport;
 use App\Traits\HasCustomerFinancials;
 use App\Traits\HasFinancialRelations;
 use App\Traits\HasLedger;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -42,11 +43,19 @@ class Customer extends Model implements HasMedia
         return $query->where('permanent', ExpenseGroup::SALE);
     }
 
-    public function getNameAttribute($value): string
+    protected function displayName(): Attribute
     {
+        return Attribute::make(
+            get: function () {
+                $value = $this->name;
+                $permanentLabel = $this->permanent?->getLabel();
 
-        $permanentLabel = $this->permanent?->getLabel() ?? '';
+                if ($this->permanent === ExpenseGroup::SALE) {
+                    return $value;
+                }
 
-        return ($this->permanent == ExpenseGroup::SALE) ? $value : $value . ($permanentLabel ? " ($permanentLabel)" : '');
+                return $permanentLabel ? "{$value} ({$permanentLabel})" : $value;
+            }
+        );
     }
 }

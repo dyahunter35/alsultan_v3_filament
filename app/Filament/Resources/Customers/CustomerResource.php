@@ -49,9 +49,10 @@ class CustomerResource extends Resource
             ->components([
                     Section::make()
                         ->schema([
-                                TextInput::make('name')
+                                TextInput::make('display_name')
                                     ->required()
                                     ->maxLength(255),
+
                                 TextInput::make('email')
                                     ->email()
                                     ->maxLength(255),

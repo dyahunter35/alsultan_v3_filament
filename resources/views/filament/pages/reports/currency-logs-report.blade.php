@@ -1,9 +1,14 @@
 <x-filament-panels::page>
-    <x-filament::section class="mb-4 no-print">
-        <div class="flex flex-col gap-4 md:flex-row md:items-end" dir="rtl">
-            <div class="flex-1">{{ $this->form }}</div>
-            <x-filament::button wire:click="refreshBalance" color="primary" icon="heroicon-m-arrow-path">
-                تحديث حسابات الأرصدة
+    {{-- منطقة الفلاتر والتحكم --}}
+    <x-filament::section class="mb-6 no-print border-none shadow-sm bg-gray-50/50">
+        <div class="flex flex-col gap-4 md:flex-row md:items-end justify-between" dir="rtl">
+            <div class="flex-1 max-w-2xl">{{ $this->form }}</div>
+            <x-filament::button wire:click="refreshBalance" 
+                color="gray" 
+                variant="outline"
+                icon="heroicon-m-arrow-path" 
+                class="shadow-sm">
+                تحديث الحسابات
             </x-filament::button>
         </div>
     </x-filament::section>
@@ -16,172 +21,193 @@
             $payments = $reportData['payment_transactions'];
         @endphp
 
-        <div id="report-content" class="p-6 bg-white text-black" dir="rtl">
-            {{-- ترويسة احترافية --}}
-            <x-report-header label="كشف حساب سجلات العملات" :value='$customer->name'/>
+        <div id="report-content" class="p-8 bg-white text-slate-900 mx-auto max-w-[210mm] shadow-lg print:shadow-none print:p-0" dir="rtl">
+            
+            {{-- ترويسة احترافية 
+            <div class="flex justify-between items-start border-b-2 border-slate-800 pb-4 mb-6">
+                <div>
+                    <h1 class="text-2xl font-black text-slate-800 mb-1">كشف حساب سجلات العملات</h1>
+                    <p class="text-sm text-slate-500 italic">تقرير مالي تفصيلي لحركة الحساب</p>
+                </div>
+                <div class="text-left text-sm">
+                    <div class="font-bold text-lg text-primary-600">{{ $customer->name }}</div>
+                    <div class="text-slate-400">تاريخ الاستخراج: {{ now()->format('Y/m/d H:i') }}</div>
+                </div>
+            </div>--}}
+            <x-report-header title="كشف حساب سجلات العملات" :value="$customer->name . ' - ' . now()->format('Y/m/d H:i')" />
 
-            {{-- ملخص الأرصدة العلوية --}}
-            <table class="w-full text-center border-collapse border-2 border-black mb-6">
-                <tr class="bg-black text-white font-black text-[11px]">
-                    <td class="border border-black p-2 w-24">البيان</td>
-                    @foreach ($currencys as $c)
-                        <td class="border border-black p-2">{{ $c->name }} ({{ $c->code }})</td>
-                    @endforeach
-                    <td class="border border-black p-2 bg-gray-600">سوداني (SDG)</td>
-                </tr>
-                <tr class="font-bold text-lg bg-gray-50">
-                    <td class="border border-black p-2 bg-gray-200 text-sm">الرصيد الحالي</td>
-                    @foreach ($currencys as $c)
-                        <td class="border border-black p-2 tabular-nums">{{ number_format($balances[$c->code] ?? 0, 2) }}</td>
-                    @endforeach
-                    <td class="border border-black p-2 tabular-nums">{{ number_format($balances['sd'] ?? 0, 2) }}</td>
-                </tr>
-            </table>
+            {{-- ملخص الأرصدة (بطاقات بدلاً من جدول ضخم) --}}
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                @foreach ($currencys as $c)
+                <div class="border border-slate-200 p-3 rounded-lg bg-slate-50/50 text-center">
+                    <span class="block text-[10px] text-slate-500 uppercase font-bold">{{ $c->name }}</span>
+                    <span class="text-lg font-black tabular-nums">{{ number_format($balances[$c->code] ?? 0, 2) }}</span>
+                </div>
+                @endforeach
+                <div class="border-2 border-slate-800 p-3 rounded-lg bg-slate-800 text-white text-center">
+                    <span class="block text-[10px] opacity-80 font-bold">الرصيد الإجمالي (سوداني)</span>
+                    <span class="text-lg font-black tabular-nums">{{ number_format($balances['sd'] ?? 0, 2) }}</span>
+                </div>
+            </div>
 
-            {{-- جدول الشراء --}}
-            <div class="text-right font-bold my-2 px-2 text-sm border-r-4 border-yellow-500 mr-1">| سجل مشتريات العملات (المكتسبة)</div>
-            <table class="w-full text-[10px] text-center border-collapse border-2 border-black mb-8">
-                <thead>
-                    <tr class="bg-gray-200 font-bold border-b-2 border-black">
-                        <th class="border border-black" rowspan="2">#</th>
-                        <th class="border border-black px-4" rowspan="2">التاريخ</th>
-                        <!-- <th class="border border-black px-2 bg-gray-300" rowspan="2">الرصيد التراكمي</th> -->
-                        <!-- <th class="border border-black px-2 bg-yellow-100" rowspan="2">المعادل (سوداني)</th> -->
-                            <th class="border border-black" colspan="2">سوداني</th>
-
-                        @foreach ($currencys as $c)
-                            <th class="border border-black" colspan="2">{{ $c->name }}</th>
-                        @endforeach
-                    </tr>
-                    <tr class="bg-gray-100 text-[9px]">
-                            <th class="border border-black">الرصيد</th><th class="border border-black">مبلغ. الشراء</th>
-
-                        @foreach($currencys as $c)
-                            <th class="border border-black">مبلغ</th><th class="border border-black">سعر الصرف</th>
-                        @endforeach
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($purchases as $tr)
-                        <tr class="hover:bg-gray-50">
-                            <td class="border border-black">{{ $tr['index'] }}</td>
-                            <td class="border border-black whitespace-nowrap">{{ $tr['date'] }}</td>
-                            <td class="border border-black font-black text-blue-800 bg-gray-100 tabular-nums">{{ number_format($tr['running_balance'], 2) }}</td>
-                            <td class="border border-black font-black bg-yellow-50 tabular-nums">{{ number_format($tr['total'], 2) }}</td>
-                            @foreach($currencys as $c)
-                                <td class="border border-black tabular-nums">{{ $tr['currency_code'] == $c->code ? number_format($tr['amount'], 2) : '-' }}</td>
-                                <td class="border border-black text-gray-400 tabular-nums">{{ $tr['currency_code'] == $c->code ? number_format($tr['rate'], 2) : '-' }}</td>
+            {{-- جدول المشتريات --}}
+            <div class="mb-8">
+                <h3 class="flex items-center gap-2 font-bold mb-3 text-slate-700">
+                    <span class="w-1 h-5 bg-emerald-600"></span>
+                    سجل العملات المكتسبة (المشتريات)
+                </h3>
+                <table class="w-full text-[11px] border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 border-y border-slate-300">
+                            <th class="p-2 text-right">#</th>
+                            <th class="p-2 text-right">التاريخ</th>
+                            <th class="p-2 text-center bg-slate-200/50 italic">الرصيد التراكمي (SDG)</th>
+                            <th class="p-2 text-center font-bold">المبلغ (SDG)</th>
+                            @foreach ($currencys as $c)
+                                <th class="p-2 text-center border-r border-slate-200">{{ $c->code }}</th>
+                                <th class="p-2 text-center text-[9px] text-slate-400">سعر الصرف</th>
                             @endforeach
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 border-b border-slate-300">
+                        @foreach ($purchases as $tr)
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="p-2 text-slate-500">{{ $tr['index'] }}</td>
+                            <td class="p-2 whitespace-nowrap">{{ $tr['date'] }}</td>
+                            <td class="p-2 text-center font-medium bg-slate-50/50 tabular-nums">{{ number_format($tr['running_balance'], 2) }}</td>
+                            <td class="p-2 text-center font-bold tabular-nums text-emerald-700">{{ number_format($tr['total'], 2) }}</td>
+                            @foreach($currencys as $c)
+                                <td class="p-2 text-center tabular-nums border-r border-slate-100">
+                                    {{ $tr['currency_code'] == $c->code ? number_format($tr['amount'], 2) : '-' }}
+                                </td>
+                                <td class="p-2 text-center text-slate-400 tabular-nums">
+                                    {{ $tr['currency_code'] == $c->code ? number_format($tr['rate'], 2) : '-' }}
+                                </td>
+                            @endforeach
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
             {{-- جدول الصرف --}}
-            <div class="text-right font-bold my-4 px-2 text-sm border-r-4 border-red-600 mr-1">| سجل صرف العملات (المنفقة)</div>
-            <table class="w-full text-[10px] text-center border-collapse border-2 border-black mb-8">
-                <thead>
-                    <tr class="bg-gray-200 font-bold border-b-2 border-black">
-                        <th class="border border-black p-1">#</th>
-                        <th class="border border-black p-1">التاريخ</th>
-                        <th class="border border-black p-1 w-1/3 text-right pr-4">البيان</th>
-                        <th class="border border-black p-1">اسم الشركة</th>
-                        @foreach($currencys as $c)
-                            <th class="border border-black p-1">{{ $c->name }}</th>
-                        @endforeach
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($payments as $tr)
-                        <tr class="odd:bg-white even:bg-gray-50">
-                            <td class="border border-black">{{ $tr['index'] }}</td>
-                            <td class="border border-black tabular-nums">{{ $tr['date'] }}</td>
-                            <td class="border border-black text-right px-2 leading-tight">{{ $tr['note'] }}</td>
-                            <td class="border border-black font-bold">{{ $tr['company'] }}</td>
+            <div class="mb-8">
+                <h3 class="flex items-center gap-2 font-bold mb-3 text-slate-700">
+                    <span class="w-1 h-5 bg-rose-600"></span>
+                    سجل العملات المنفقة (المدفوعات)
+                </h3>
+                <table class="w-full text-[11px] border-collapse">
+                    <thead class="bg-slate-800 text-white">
+                        <tr>
+                            <th class="p-2 text-right">#</th>
+                            <th class="p-2 text-right">التاريخ</th>
+                            <th class="p-2 text-right w-1/3">البيان / الملاحظات</th>
+                            <th class="p-2 text-right">الجهة / الشركة</th>
                             @foreach($currencys as $c)
-                                <td class="border border-black tabular-nums">{{ $tr['currency_code'] == $c->code ? number_format($tr['amount'], 2) : '-' }}</td>
+                                <th class="p-2 text-center">{{ $c->code }}</th>
                             @endforeach
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-
-            {{-- جديد: جدول مقارنة العملات (الملخص المالي) --}}
-            <div class="text-right font-bold my-4 px-2 text-sm border-r-4 border-blue-900 mr-1">| مقارنة العملات المكتسبة والمنفقة (صافي الحركة)</div>
-            <table class="w-full text-center border-collapse border-2 border-black mb-8">
-                <thead>
-                    <tr class="bg-blue-900 text-white font-bold text-xs">
-                        <th class="border border-white p-2">العملة</th>
-                        <th class="border border-white p-2">إجمالي المكتسب (شراء)</th>
-                        <th class="border border-white p-2">إجمالي المنفق (صرف)</th>
-                        <th class="border border-white p-2">الصافي (خلال الفترة)</th>
-                        <th class="border border-white p-2 bg-blue-800">حالة الرصيد</th>
-                    </tr>
-                </thead>
-                <tbody class="text-sm font-bold">
-                    @foreach ($currencys as $c)
-                        @php
-                            $totalPurchased = collect($purchases)->where('currency_code', $c->code)->sum('amount');
-                            $totalSpent = collect($payments)->where('currency_code', $c->code)->sum('amount');
-                            $net = $totalPurchased - $totalSpent;
-                        @endphp
-                        <tr>
-                            <td class="border border-black bg-gray-100 p-2">{{ $c->name }}</td>
-                            <td class="border border-black p-2 tabular-nums text-green-700">{{ number_format($totalPurchased, 2) }}</td>
-                            <td class="border border-black p-2 tabular-nums text-red-700">{{ number_format($totalSpent, 2) }}</td>
-                            <td class="border border-black p-2 tabular-nums {{ $net < 0 ? 'text-red-600' : 'text-blue-700' }}">
-                                {{ number_format($net, 2) }}
-                            </td>
-                            <td class="border border-black p-2 text-[10px]">
-                                @if($net > 0)
-                                    <span class="text-green-600">زيادة في المخزون (+)</span>
-                                @elseif($net < 0)
-                                    <span class="text-red-600">عجز/سحب من الرصيد (-)</span>
-                                @else
-                                    <span class="text-gray-500">متعادل</span>
-                                @endif
-                            </td>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 border-b border-slate-300">
+                        @foreach ($payments as $tr)
+                        <tr class="odd:bg-white even:bg-slate-50/50">
+                            <td class="p-2 text-slate-500">{{ $tr['index'] }}</td>
+                            <td class="p-2 tabular-nums">{{ $tr['date'] }}</td>
+                            <td class="p-2 text-right leading-tight text-slate-600">{{ $tr['note'] }}</td>
+                            <td class="p-2 font-bold">{{ $tr['company'] }}</td>
+                            @foreach($currencys as $c)
+                                <td class="p-2 text-center tabular-nums {{ $tr['currency_code'] == $c->code ? 'font-bold text-rose-700' : 'text-slate-300' }}">
+                                    {{ $tr['currency_code'] == $c->code ? number_format($tr['amount'], 2) : '-' }}
+                                </td>
+                            @endforeach
                         </tr>
-                    @endforeach
-                </tbody>
-                <tfoot>
-                    <tr class="bg-gray-200 font-black">
-                        <td class="border border-black p-2" colspan="1">المعادل الكلي (سوداني)</td>
-                        <td class="border border-black p-2 tabular-nums" colspan="1">
-                            {{ number_format(collect($purchases)->sum('total'), 2) }}
-                        </td>
-                        <td class="border border-black p-2 text-gray-400 italic text-[10px]" colspan="3">
-                            * الإجمالي المكتسب محسوب بالمعادل السوداني لحظة العملية
-                        </td>
-                    </tr>
-                </tfoot>
-            </table>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
-            {{-- التوقيعات --}}
-            <div class="mt-12 hidden print:flex justify-between px-10 font-bold text-xs">
-                <div class="text-center border-t border-black pt-2 w-32">توقيع المحاسب</div>
-                <div class="text-center border-t border-black pt-2 w-32">المدير المالي</div>
-                <div class="text-center border-t border-black pt-2 w-32">ختم الشركة</div>
+            {{-- ملخص مالي ختامي --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start mt-10">
+                <div>
+                    <table class="w-full text-[11px] border border-slate-300">
+                        <tr class="bg-slate-50 font-bold border-b border-slate-300 text-slate-700">
+                            <td class="p-2">مقارنة العملات</td>
+                            <td class="p-2 text-center">إجمالي الداخل</td>
+                            <td class="p-2 text-center">إجمالي الخارج</td>
+                            <td class="p-2 text-center">الصافي</td>
+                        </tr>
+                        @foreach ($currencys as $c)
+                            @php
+                                $totalPurchased = collect($purchases)->where('currency_code', $c->code)->sum('amount');
+                                $totalSpent = collect($payments)->where('currency_code', $c->code)->sum('amount');
+                                $net = $totalPurchased - $totalSpent;
+                            @endphp
+                            <tr class="border-b border-slate-200">
+                                <td class="p-2 font-bold">{{ $c->name }}</td>
+                                <td class="p-2 text-center tabular-nums">{{ number_format($totalPurchased, 2) }}</td>
+                                <td class="p-2 text-center tabular-nums">{{ number_format($totalSpent, 2) }}</td>
+                                <td class="p-2 text-center tabular-nums {{ $net < 0 ? 'text-rose-600' : 'text-emerald-600' }}">
+                                    {{ number_format($net, 2) }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </table>
+                </div>
+
+                {{-- التوقيعات --}}
+                <div class="grid grid-cols-3 gap-4 text-center text-[10px] font-bold mt-4">
+                    <div class="space-y-8 italic">
+                        <p>توقيع المحاسب</p>
+                        <div class="border-b border-slate-400 w-24 mx-auto"></div>
+                    </div>
+                    <div class="space-y-8 italic">
+                        <p>المدير المالي</p>
+                        <div class="border-b border-slate-400 w-24 mx-auto"></div>
+                    </div>
+                    <div class="space-y-8">
+                        <p>ختم المؤسسة</p>
+                        <div class="w-16 h-16 border-2 border-dashed border-slate-300 rounded-full mx-auto flex items-center justify-center text-[8px] text-slate-300 uppercase">
+                            Official Stamp
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <div class="no-print mt-4">
-            <x-print-button/>
+        <div class="no-print mt-6 flex justify-center">
+            <x-filament::button 
+                onclick="window.print()" 
+                icon="heroicon-m-printer" 
+                size="lg"
+                class="shadow-xl">
+                طباعة التقرير الرسمي
+            </x-filament::button>
         </div>
     @endif
 
     <style>
-        #report-content table td { tabular-nums: true; }
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;700&display=swap');
+
+        #report-content {
+            font-family: 'Inter', 'Amiri', serif;
+        }
+
         @media print {
-            @page { size: A4 landscape; margin: 8mm; }
+            @page { 
+                size: A4 landscape; 
+            }
+            body { background: white !important; }
             .no-print { display: none !important; }
-            #report-content { border: 2px solid black !important; padding: 5mm !important; }
-            table { border: 1.5px solid black !important; width: 100% !important; }
-            th, td { border: 1px solid black !important; }
-            .bg-gray-100, .bg-gray-200, .bg-gray-300 { background-color: #f3f4f6 !important; -webkit-print-color-adjust: exact; }
-            .bg-yellow-100 { background-color: #fef9c3 !important; -webkit-print-color-adjust: exact; }
-            .bg-black { background-color: #000 !important; color: #fff !important; -webkit-print-color-adjust: exact; }
-            .bg-blue-900 { background-color: #1e3a8a !important; color: #fff !important; -webkit-print-color-adjust: exact; }
+            #report-content { 
+                border: none !important; 
+                box-shadow: none !important; 
+                width: 100% !important;
+                max-width: none !important;
+            }
+            .bg-slate-100 { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; }
+            .bg-slate-800 { background-color: #1e293b !important; color: white !important; -webkit-print-color-adjust: exact; }
+            .text-emerald-700 { color: #047857 !important; }
+            .text-rose-700 { color: #be123c !important; }
         }
     </style>
 </x-filament-panels::page>

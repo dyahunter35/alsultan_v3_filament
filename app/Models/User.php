@@ -55,6 +55,7 @@ class User extends Authenticatable implements HasTenants
         'remember_token',
     ];
 
+    public const ROLE_SALES = 'مندوب';
     /**
      * Get the attributes that should be cast.
      *
@@ -70,7 +71,7 @@ class User extends Authenticatable implements HasTenants
 
     public function scopeSales($query)
     {
-        return User::role('sales')->pluck('name', 'id');
+        return $query->role(self::ROLE_SALES)->get()->pluck('display_name', 'id');
     }
 
     public function scopeValut($query)
@@ -78,16 +79,29 @@ class User extends Authenticatable implements HasTenants
         return $query->where('is_valut', true);
     }
 
-    protected function name(): Attribute
+    protected function displayName(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                // نستخدم الثابت، ونتحقق من الصلاحية
+                if ($this->hasRole(self::ROLE_SALES)) {
+                    return $this->name . ' (مندوب)';
+                }
+
+                return $this->name;
+            }
+        );
+    }
+    /* protected function name(): Attribute
     {
         return Attribute::make(
             // Accessor (للعرض في كل مكان):
-            get: fn(string $value) => $this->hasRole('sales') ? $value . ' (مندوب)' : $value,
+            get: fn(string $value) => $this->hasRole(self::ROLE_SALES) ? $value . ' (مندوب)' : $value,
 
             // Mutator (للتنظيف عند الحفظ):
             set: fn(string $value) => str_replace(' (مندوب)', '', $value),
         );
-    }
+    } */
 
     public function branch(): BelongsToMany
     {

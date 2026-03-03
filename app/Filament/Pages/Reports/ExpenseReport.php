@@ -55,7 +55,7 @@ class ExpenseReport extends Page implements Forms\Contracts\HasForms
 
                 Forms\Components\Select::make('delegateId')
                     ->label('المندوب')
-                    ->options(User::role('sales')->pluck('name', 'id'))
+                    ->options(User::sales())
                     ->placeholder('كل المناديب')
                     ->live()
                     ->afterStateUpdated(fn() => $this->loadData()),
