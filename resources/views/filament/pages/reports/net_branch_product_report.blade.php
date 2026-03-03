@@ -35,6 +35,7 @@
                                 <th class="px-6 py-4 font-bold text-center border-l border-slate-700 bg-slate-700">إجمالي الفروع</th>
                                 <th class="px-6 py-4 font-bold text-center border-l border-slate-700 bg-orange-700/50">في الحظيرة</th>
                                 <th class="px-6 py-4 font-bold text-center border-l border-slate-700 bg-blue-700/50">في الميناء</th>
+                                <th class="px-6 py-4 font-bold text-center border-l border-slate-700 bg-blue-700/50"> علي الطريق</th>
                                 <th class="px-6 py-4 font-black text-center bg-slate-900 text-green-400">الإجمالي العام</th>
                             </tr>
                         </thead>
@@ -62,6 +63,9 @@
                                     </td>
                                     <td class="px-6 py-4 text-center border-l bg-blue-50/50 text-blue-800 font-semibold">
                                         {{ number_format($row->port_qty, 2) }}
+                                    </td>
+                                    <td class="px-6 py-4 text-center border-l bg-blue-50/50 text-blue-800 font-semibold">
+                                        {{ number_format($row->on_way_qty, 2) }}
                                     </td>
 
                                     {{-- المجموع الكلي الشامل --}}

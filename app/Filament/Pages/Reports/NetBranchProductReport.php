@@ -110,12 +110,13 @@ class NetBranchProductReport extends Page implements HasForms
             // جلب كميات الشاحنات (Cargo)
             $truckQuantities = \App\Models\TruckCargo::where('product_id', $product->id)
                 ->whereHas('truck', function ($q) {
-                    $q->whereIn('truck_status', [TruckState::barn->value, TruckState::port->value]);
+                    $q->whereIn('truck_status', [TruckState::barn->value, TruckState::port->value, TruckState::OnWay->value]);
                 })
                 ->get();
 
             $barnQty = $truckQuantities->where('truck.truck_status', TruckState::barn->value)->sum('quantity');
             $portQty = $truckQuantities->where('truck.truck_status', TruckState::port->value)->sum('quantity');
+            $onWayQty = $truckQuantities->where('truck.truck_status', TruckState::OnWay->value)->sum('quantity');
             $branchesTotal = array_sum($balances);
 
             return (object) [
@@ -123,9 +124,10 @@ class NetBranchProductReport extends Page implements HasForms
                 'balances' => $balances,
                 'barn_qty' => $barnQty,
                 'port_qty' => $portQty,
+                'on_way_qty' => $onWayQty,
                 'branches_total' => $branchesTotal,
                 // المجموع الشامل لكل شيء
-                'grand_total' => $branchesTotal + $barnQty + $portQty,
+                'grand_total' => $branchesTotal + $barnQty + $portQty + $onWayQty,
             ];
         })
             // --- المنطق المطلوب هنا ---
