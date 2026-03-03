@@ -74,16 +74,18 @@ class TruckCargo extends Model
     protected function tonWeight(): Attribute
     {
         return Attribute::make(
-            get: fn(mixed $value, array $attributes) => $value ?: (($attributes['weight'] * ($attributes['unit_quantity'] ?? 0)) / 1000000),
+            get: fn(mixed $value, array $attributes) => $value ?: (($attributes['weight'] * ($attributes['quantity'] ?? 0)) / 1000000),
 
-            set: fn(mixed $value, array $attributes) => $value ?: (($attributes['weight'] * ($attributes['unit_quantity'] ?? 0)) / 1000000),
+            set: fn(mixed $value, array $attributes) => $value ?: (($attributes['weight'] * ($attributes['quantity'] ?? 0)) / 1000000),
         );
     }
     //$base_total_foreign = ($item->priority == CargoPriority::Weight) ? $item->ton_price * $weight_ton : $item->quantity * $item->unit_price; // $weight_ton * $item->unit_price;
     protected function baseTotalForeign(): Attribute
     {
         return Attribute::make(
-            get: fn(mixed $value, array $attributes) => $value ?: ($attributes['priority'] == CargoPriority::Weight ? $attributes['ton_price'] * $attributes['ton_weight'] : $attributes['quantity'] * $attributes['unit_price']),
+            get: fn(mixed $value, array $attributes) => $value ?: ($attributes['priority'] == CargoPriority::Weight ?
+                $attributes['ton_price'] * $attributes['ton_weight']
+                : $attributes['quantity'] * $attributes['unit_price']),
             //set: fn(mixed $value, array $attributes) => $value ?: ($attributes['priority'] == CargoPriority::Weight ? $attributes['ton_price'] * $attributes['ton_weight'] : $attributes['quantity'] * $attributes['unit_price']),
         );
     }
