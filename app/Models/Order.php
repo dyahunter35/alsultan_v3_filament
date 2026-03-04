@@ -61,6 +61,13 @@ class Order extends Model
             }
         });
         $callack = function ($order) {
+            if ($order && $order->wasChanged('is_guest')) {
+                if ($order->is_guest) {
+                    $order->customer_id = null;
+                } else {
+                    $order->guest_customer = null;
+                }
+            }
             // نتحقق أولاً أنه ليس ضيفاً وأن علاقة العميل موجودة فعلياً
             if (!$order->is_guest && $order->registeredCustomer) {
                 app(CustomerService::class)->updateCustomerBalance($order->registeredCustomer);
