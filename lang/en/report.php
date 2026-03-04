@@ -146,4 +146,10 @@ return [
         'group' => 'Shipping & Companies',
         'sort' => 55,
     ],
+    'company_currency_report' => [
+        'heading' => 'Company Currency Report',
+        'icon' => 'heroicon-m-currency-dollar',
+        'group' => 'Shipping & Companies',
+        'sort' => 56,
+    ],
 ];

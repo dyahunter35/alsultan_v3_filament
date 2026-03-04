@@ -118,20 +118,26 @@ class DocumentsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                    Tables\Columns\SpatieMediaLibraryImageColumn::make('file')
+                    /* Tables\Columns\SpatieMediaLibraryImageColumn::make('file')
                         ->collection('truck_docs')
                         ->conversion('thumbnail')
                         ->circular()
                         ->height(50)
-                        ->width(50),
+                        ->width(50), */
                     Tables\Columns\TextColumn::make('name')
                         ->searchable(),
                     Tables\Columns\TextColumn::make('type')
+                        ->badge()
+                        ->color('primary')
                         ->searchable(),
                     Tables\Columns\TextColumn::make('issuance_date')
                         ->date()
                         ->sortable()
                         ->searchable(),
+                    // count of media
+                    Tables\Columns\TextColumn::make('media_count')
+                        ->label('عدد الملفات')
+                        ->getStateUsing(fn($record) => $record->getMedia('truck_docs')->count()),
                     Tables\Columns\TextColumn::make('note')
                         ->searchable(),
                 ])->filters([

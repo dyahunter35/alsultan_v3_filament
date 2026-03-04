@@ -46,6 +46,10 @@ return [
             'label' => 'الفرع',
             'placeholder' => 'اختر الفرع',
         ],
+        'is_valut' => [
+            'label' => 'مندوب',
+            'placeholder' => '',
+        ],
         'created_at' => [
             'label' => 'تاريخ الإنشاء',
             'placeholder' => '',

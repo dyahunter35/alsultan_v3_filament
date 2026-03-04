@@ -55,35 +55,36 @@ class ShipmentExpenseRelationManager extends RelationManager
                 ShipmentExpense::expenseTableColumns()
             )
             ->filters([
-                TrashedFilter::make(),
-            ])
+                    TrashedFilter::make(),
+                ])
             ->headerActions([
-                CreateAction::make()
-                    ->preserveFormDataWhenCreatingAnother(
-                        fn (array $data): array => another_expense($data)
-                    ),
-                // AssociateAction::make(),
-            ])
+                    CreateAction::make()
+                        ->preserveFormDataWhenCreatingAnother(
+                            fn(array $data): array => another_expense($data)
+                        ),
+                    // AssociateAction::make(),
+                ])
             ->recordActions([
-                EditAction::make(),
-                // DissociateAction::make(),
-                ReplicateAction::make()
-                    ->schema(ShipmentExpense::expenseForm($this->ownerRecord->id)),
-                DeleteAction::make(),
-                ForceDeleteAction::make(),
-                RestoreAction::make(),
-            ])
+                    EditAction::make(),
+                    // DissociateAction::make(),
+                    ReplicateAction::make()
+                        ->schema(ShipmentExpense::expenseForm($this->ownerRecord->id)),
+                    DeleteAction::make(),
+                    ForceDeleteAction::make()
+                    ,
+                    RestoreAction::make(),
+                ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    // DissociateBulkAction::make(),
-                    DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                ]),
-            ])
-            ->modifyQueryUsing(fn (Builder $query) => $query
+                    BulkActionGroup::make([
+                        // DissociateBulkAction::make(),
+                        DeleteBulkAction::make(),
+                        ForceDeleteBulkAction::make(),
+                        RestoreBulkAction::make(),
+                    ]),
+                ])
+            ->modifyQueryUsing(fn(Builder $query) => $query
                 ->withoutGlobalScopes([
-                    SoftDeletingScope::class,
-                ]));
+                        SoftDeletingScope::class,
+                    ]));
     }
 }

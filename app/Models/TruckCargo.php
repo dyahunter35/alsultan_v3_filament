@@ -24,6 +24,7 @@ class TruckCargo extends Model
         'ton_weight',
         'ton_price',
         'note',
+        'base_total_foreign',
         'priority',
     ];
 
@@ -45,20 +46,52 @@ class TruckCargo extends Model
     }
 
 
-    protected function unitPrice(): Attribute
+
+    /* protected function unitPrice(): Attribute
     {
         return Attribute::make(
             get: function (mixed $value, array $attributes) {
-                if ($value)
+                if ($value > 0)
                     return $value;
+
+                $tonPrice = $attributes['ton_price'] ?? 0;
                 $weight = $attributes['weight'] ?? 0;
-                return $weight > 0 ? ($attributes['ton_price'] * $weight / 1000000) : 0;
+
+                return $weight > 0 ? ($tonPrice * $weight / 1000000) : 0;
             },
-            set: fn(mixed $value, array $attributes) => $value ?: (($attributes['ton_price'] * ($attributes['weight'] ?? 1) / 1000000)),
+            set: fn(mixed $value, array $attributes) => $value ?: (
+                (($attributes['ton_price'] ?? 0) * ($attributes['weight'] ?? 0) / 1000000)
+            ),
         );
     }
 
-    protected function tonPrice(): Attribute
+    protected function tonWeight(): Attribute
+    {
+        return Attribute::make(
+            // استخدام $this يضمن الوصول للقيم المصبوبة والافتراضية بشكل أفضل
+            get: function (mixed $value, array $attributes) {
+                $weight = $attributes['weight'] ?? 0;
+                $quantity = $attributes['unit_quantity'] ?? 0;
+                return ($weight * $quantity) / 1000000;
+            },
+            // التخزين في قاعدة البيانات يفضل أن يكون محسوباً دائماً لضمان دقة التقارير
+            set: fn(mixed $value, array $attributes) => ($attributes['weight'] ?? 0) * ($attributes['unit_quantity'] ?? 0) / 1000000,
+        );
+    } */
+
+    /* protected function baseTotalForeign(): Attribute
+    {
+        return Attribute::make(
+            get: function (mixed $value, array $attributes) {
+                // الوصول للقيمة عبر $this->priority للتعامل مع الـ Enum بشكل صحيح
+                if ($this->priority === CargoPriority::Weight) {
+                    return ($attributes['ton_price'] ?? 0) * $this->ton_weight;
+                }
+                return ($attributes['unit_quantity'] ?? 0) * ($attributes['unit_price'] ?? 0);
+            },
+        );
+    } */
+    /* protected function tonPrice(): Attribute
     {
         return Attribute::make(
             get: function (mixed $value, array $attributes) {
@@ -69,25 +102,6 @@ class TruckCargo extends Model
             },
             set: fn(mixed $value, array $attributes) => $value ?: (($attributes['unit_price'] / ($attributes['weight'] ?? 1) * 1000000)),
         );
-    }
-
-    protected function tonWeight(): Attribute
-    {
-        return Attribute::make(
-            get: fn(mixed $value, array $attributes) => $value ?: (($attributes['weight'] * ($attributes['quantity'] ?? 0)) / 1000000),
-
-            set: fn(mixed $value, array $attributes) => $value ?: (($attributes['weight'] * ($attributes['quantity'] ?? 0)) / 1000000),
-        );
-    }
-    //$base_total_foreign = ($item->priority == CargoPriority::Weight) ? $item->ton_price * $weight_ton : $item->quantity * $item->unit_price; // $weight_ton * $item->unit_price;
-    protected function baseTotalForeign(): Attribute
-    {
-        return Attribute::make(
-            get: fn(mixed $value, array $attributes) => $value ?: ($attributes['priority'] == CargoPriority::Weight ?
-                $attributes['ton_price'] * $attributes['ton_weight']
-                : $attributes['quantity'] * $attributes['unit_price']),
-            //set: fn(mixed $value, array $attributes) => $value ?: ($attributes['priority'] == CargoPriority::Weight ? $attributes['ton_price'] * $attributes['ton_weight'] : $attributes['quantity'] * $attributes['unit_price']),
-        );
-    }
+    } */
 
 }

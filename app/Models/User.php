@@ -71,7 +71,7 @@ class User extends Authenticatable implements HasTenants
 
     public function scopeSales($query)
     {
-        return $query->role(self::ROLE_SALES)->get()->pluck('display_name', 'id');
+        return $query->role(self::ROLE_SALES)->orWhere('is_valut', true)->get()->pluck('display_name', 'id');
     }
 
     public function scopeValut($query)

@@ -146,4 +146,10 @@ return [
         'group' => 'الشحن والشركات',
         'sort' => 55,
     ],
+    'company_currency_report' => [
+        'heading' => 'تقرير العملات للشركات',
+        'icon' => 'heroicon-m-currency-dollar',
+        'group' => 'الشحن والشركات',
+        'sort' => 56,
+    ],
 ];

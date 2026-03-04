@@ -7,12 +7,10 @@ use App\Enums\TruckType;
 use App\Filament\Forms\Components\DecimalInput;
 use App\Filament\Pages\Concerns\HasRelationManager;
 use App\Models\Product;
-use Filament\Actions\AssociateAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\DissociateAction;
 use Filament\Actions\DissociateBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Hidden;
@@ -36,111 +34,121 @@ class CargosRelationManager extends RelationManager
         self::translateConfigureForm();
 
         return $schema
+            ->columns(1)
             ->components([
-                    /* Select::make('type')
-                        ->options(TruckType::class)
-                        ->required(), */
+                    Hidden::make('type')->default(TruckType::Outer->value),
 
-                    Hidden::make('type')
-                        ->default(state: TruckType::Outer->value),
+                    Section::make()->columns(2)->schema([
+                        Select::make('product_id')
+                            ->options(Product::all()->pluck('name', 'id'))
+                            ->preload()->searchable()->required(),
+                        TextInput::make('size')->default(null),
+                    ]),
 
-                    Section::make()
-                        ->schema([
+                    Section::make('الأوزان والكميات')->columns(4)->schema([
+                        DecimalInput::make('unit_quantity')
+                            ->label('عدد الوحدات')
+                            ->required()
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn($get, $set) => self::refreshCalculations($get, $set)),
 
-                                Select::make('product_id')
-                                    ->options(
-                                        Product::get()
-                                            ->mapWithKeys(fn(Product $product) => [
-                                                $product->id => sprintf(
-                                                    '%s - %s (%s) ',
-                                                    $product->name,
-                                                    $product->category?->name,
-                                                    $product->unit?->name
-                                                ),
-                                            ])
-                                    )->preload()
-                                    ->searchable()
-                                    ->required(),
+                        DecimalInput::make('weight')
+                            ->label('وزن الوحدة (جرام)')
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn($get, $set) => self::refreshCalculations($get, $set)),
 
-                                TextInput::make('size')
-                                    ->default(null),
-                            ]),
-                    Section::make()
-                        ->schema([
-                                DecimalInput::make('unit_quantity')
-                                    ->required()
-                                    ->live(onBlur: true)
-                                    ->afterStateUpdated(function ($get, $set) {
-                                        $unitQuantity = clean_number($get('unit_quantity') ?? 1); // وزن الوحدة (مثلاً 50 كجم)
-                                        $weight = clean_number($get('weight') ?? 1); // الكمية (مثلاً 200 جوال)
-                                        $unit_price = clean_number($get('unit_price')); // الكمية (مثلاً 200 جوال)
-                            
-                                        // الحسبة الافتراضية: (الكمية × وزن الوحدة) / 1000 للحصول على الأطنان
-                                        $tonWeight = ($weight * $unitQuantity) / 1000000;
+                        DecimalInput::make('ton_weight')
+                            ->label('إجمالي الأطنان (يدوي/آلي)')
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function ($get, $set, $state) {
+                                // إذا تم تعديل الأطنان يدوياً، نحسب وزن الوحدة (weight)
+                                $unitQty = clean_number($get('unit_quantity'));
+                                if ($unitQty > 0) {
+                                    $newWeight = (clean_number($state) * 1000000) / $unitQty;
+                                    $set('weight', round($newWeight, 2));
+                                }
+                                self::refreshCalculations($get, $set);
+                            }),
 
-                                        // الحسبة الافتراضية: (الكمية × وزن الوحدة) / 1000 للحصول على الأطنان
-                                        $ton_price = ($unit_price * $unitQuantity);
+                        DecimalInput::make('quantity')
+                            ->default(0),
+                    ]),
 
-                                        // تحديث الحقل في الواجهة
-                                        // $set('ton_price', number_format($ton_price, 2, '.', ''));
-                            
-                                        $set('ton_weight', number_format($tonWeight, 2, '.', ''));
-                                    }),
-                                DecimalInput::make('quantity')
-                                    ->required(),
+                    Section::make('الأسعار')->columns(3)->schema([
+                        DecimalInput::make('unit_price')
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function ($get, $set, $state) {
+                                $weight = clean_number($get('weight'));
+                                if ($weight > 0) {
+                                    $tonPrice = (clean_number($state) / $weight) * 1000000;
+                                    $set('ton_price', round($tonPrice, 2));
+                                }
+                                self::refreshCalculations($get, $set);
+                            }),
 
-                            ]),
-                    Section::make()
-                        ->schema([
+                        DecimalInput::make('ton_price')
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function ($get, $set, $state) {
+                                $weight = clean_number($get('weight'));
+                                if ($weight > 0) {
+                                    $unitPrice = (clean_number($state) * $weight) / 1000000;
+                                    $set('unit_price', round($unitPrice, 2));
+                                }
+                                self::refreshCalculations($get, $set);
+                            }),
 
-                                DecimalInput::make('weight')
-                                    ->default(null)
-                                    ->live(onBlur: true)
-                                    ->afterStateUpdated(function ($get, $set) {
-                                        $unitQuantity = clean_number($get('unit_quantity')); // وزن الوحدة (مثلاً 50 كجم)
-                                        $weight = clean_number($get('weight')); // الكمية (مثلاً 200 جوال)
-                            
-                                        // الحسبة الافتراضية: (الكمية × وزن الوحدة) / 1000 للحصول على الأطنان
-                                        $tonWeight = ($weight * $unitQuantity) / 1000000;
+                        DecimalInput::make('base_total_foreign')
+                            ->label('الإجمالي النهائي')
+                            ->readonly()
+                            ->extraAttributes(['class' => 'font-bold text-primary-600'])
+                            ->dehydrated(true),
+                    ]),
 
-                                        // تحديث الحقل في الواجهة
-                                        $set('ton_weight', number_format($tonWeight, 2, '.', ''));
-                                    }),
+                    Section::make()->columnSpanFull()->columns(2)->schema([
+                        ToggleButtons::make('priority')
+                            ->options(CargoPriority::class)
+                            ->inline()->grouped()
+                            ->live()
+                            ->afterStateUpdated(fn($get, $set) => self::refreshCalculations($get, $set))
+                            ->default(CargoPriority::Qty->value)
+                            ->required(),
 
-                                DecimalInput::make('ton_weight')
-                                    ->default(null),
-                            ]),
-                    Section::make()
-                        ->schema([
-                                DecimalInput::make('unit_price')
-                                    ->default(null)
-                                    ->live(onBlur: true)
-                                    ->required(fn($get) => empty($get('ton_price')))
-                                    ->validationAttribute('سعر الوحدة')
-                                ,
-
-                                DecimalInput::make('ton_price')
-                                    ->default(null)
-                                    ->live(onBlur: true)
-                                    ->required(fn($get) => empty($get('unit_price')))
-                                    ->validationAttribute('سعر الطن')
-                                ,
-                            ]),
-                    Section::make()
-                        ->columnSpanFull()
-                        ->columns(2)
-                        ->schema([
-                                ToggleButtons::make('priority')
-                                    ->options(CargoPriority::class)
-                                    ->inline()
-                                    ->grouped()
-                                    ->default(CargoPriority::Qty->value)
-                                    ->required(),
-
-                                TextInput::make(name: 'note')
-                                    ->default(null),
-                            ]),
+                        TextInput::make('note')->default(null),
+                    ]),
                 ]);
+    }
+
+    /**
+     * الحسابات المركزية باستخدام helper: clean_number
+     */
+    protected static function refreshCalculations($get, $set): void
+    {
+        $unitQty = clean_number($get('unit_quantity'));
+        $weight = clean_number($get('weight'));
+        $unitPrice = clean_number($get('unit_price'));
+        $tonPrice = clean_number($get('ton_price'));
+        $tonWeight = clean_number($get('ton_weight')); // نأخذ القيمة الحالية من الحقل
+        $priority = $get('priority');
+
+        // تحديث إجمالي الأطنان في حال لم يتم تحديثه في الـ afterStateUpdated
+        // (لضمان المزامنة عند تغيير unit_quantity مثلاً)
+        if ($unitQty > 0 && $weight > 0 && empty($get('ton_weight'))) {
+            $tonWeight = ($unitQty * $weight) / 1000000;
+            $set('ton_weight', round($tonWeight, 4));
+        }
+
+        // حساب الإجمالي النهائي بناءً على الأولوية
+        $isWeightPriority = ($priority instanceof CargoPriority)
+            ? $priority === CargoPriority::Weight
+            : $priority === CargoPriority::Weight->value;
+
+        if ($isWeightPriority) {
+            $total = $tonWeight * $tonPrice;
+        } else {
+            $total = $unitQty * $unitPrice;
+        }
+
+        $set('base_total_foreign', round($total, 2));
     }
 
     public function table(Table $table): Table
@@ -150,62 +158,25 @@ class CargosRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('product_id')
             ->columns([
-                    /* TextColumn::make('type')
-                        ->badge(), */
-
-                    TextColumn::make('product.name')
-
-                        ->sortable(),
-                    TextColumn::make('unit_quantity')
+                    TextColumn::make('product.name')->sortable(),
+                    TextColumn::make('unit_quantity')->numeric()->sortable(),
+                    TextColumn::make('quantity')->numeric()->sortable()
+                    ,
+                    TextColumn::make('weight')->numeric()->sortable(),
+                    TextColumn::make('unit_price')->numeric()->sortable(),
+                    TextColumn::make('ton_price')->numeric()->sortable(),
+                    TextColumn::make('ton_weight')->numeric()->sortable()
+                        ->summarize(\Filament\Tables\Columns\Summarizers\Sum::make()->label('Total Ton Weight')),
+                    TextColumn::make('base_total_foreign')
+                        ->label('Total')
                         ->numeric()
                         ->sortable(),
-                    TextColumn::make('quantity')
-                        ->numeric()
-                        ->sortable(),
-                    TextColumn::make('real_quantity')
-                        ->numeric()
-                        ->sortable(),
-                    TextColumn::make('weight')
-                        ->numeric()
-                        ->sortable(),
-
-                    TextColumn::make('size')
-                        ->searchable(),
-
-                    TextColumn::make('unit_price')
-                        ->numeric()
-                        ->sortable(),
-                    TextColumn::make('ton_price')
-                        ->numeric()
-                        ->sortable(),
-                    TextColumn::make('note')
-                        ->searchable(),
-                    TextColumn::make('created_at')
-                        ->dateTime()
-                        ->sortable()
-                        ->toggleable(isToggledHiddenByDefault: true),
-                    TextColumn::make('updated_at')
-                        ->dateTime()
-                        ->sortable()
-                        ->toggleable(isToggledHiddenByDefault: true),
+                    TextColumn::make('note')->searchable(),
                 ])
-            ->filters([
-                    //
-                ])
-            ->headerActions([
-                    CreateAction::make(),
-                    // AssociateAction::make(),
-                ])
-            ->recordActions([
-                    EditAction::make(),
-                    // DissociateAction::make(),
-                    DeleteAction::make(),
-                ])
+            ->headerActions([CreateAction::make()])
+            ->recordActions([EditAction::make(), DeleteAction::make()])
             ->toolbarActions([
-                    BulkActionGroup::make([
-                        DissociateBulkAction::make(),
-                        DeleteBulkAction::make(),
-                    ]),
+                    BulkActionGroup::make([DeleteBulkAction::make()]),
                 ]);
     }
 }

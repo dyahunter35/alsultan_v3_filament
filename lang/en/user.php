@@ -49,6 +49,10 @@ return [
         'balance' => [
             'label' => 'Balance',
         ],
+        'is_valut' => [
+            'label' => 'sales rep',
+            'placeholder' => '',
+        ],
         'created_at' => [
             'label' => 'Created at',
             'placeholder' => '',

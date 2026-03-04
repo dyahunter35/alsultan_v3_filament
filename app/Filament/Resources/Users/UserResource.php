@@ -17,9 +17,11 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
@@ -95,6 +97,13 @@ class UserResource extends Resource
                                     )->dehydrated(fn($state) => filled($state))  // حفظ فقط إذا تم تعبئتها
                                     ->dehydrateStateUsing(fn($state) => Hash::make($state)), // تشفير قبل الحفظ
                                 // ->helperText('يجب أن تحتوي كلمة السر على 8 أحرف على الأقل، أحرف كبيرة وصغيرة، أرقام ورموز.')
+                                ToggleButtons::make('is_valut')
+                                    ->inline()
+                                    ->boolean()
+                                    ->grouped()
+                                    ->default(false)
+                                    ->label(__('user.fields.is_valut.label'))
+                                    ->required(),
 
                             ])->columnSpan(2)
                         ->columns(2),
@@ -120,7 +129,7 @@ class UserResource extends Resource
                                     ->saveRelationshipsUsing(function (Model $record, $state) {
                                         $record->branch()->sync($state);
                                     })
-                                    ->rules(['array', 'min:1'])
+                                    ->rules(['array', 'min:0'])
                                     // (اختياري ولكن موصى به) رسالة خطأ مخصصة
                                     ->multiple()
                                     ->preload()
@@ -147,6 +156,11 @@ class UserResource extends Resource
                         ->label(__('user.fields.roles.label'))
                         ->searchable()
                         ->badge()
+                        ->sortable(),
+                    IconColumn::make('is_valut')
+                        ->label(__('user.fields.is_valut.label'))
+                        ->searchable()
+                        ->boolean()
                         ->sortable(),
                     TextColumn::make('branch.name')
                         ->label(__('user.fields.branch.label'))
