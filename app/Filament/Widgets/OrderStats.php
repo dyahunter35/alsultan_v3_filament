@@ -60,12 +60,14 @@ class OrderStats extends BaseWidget
                     ->color('success'),
             ];
         } catch (\Exception $e) {
+
             Notification::make('error')
                 ->body($e->getMessage())
                 ->send();
+
             return [
                 Stat::make('Orders', 0)
-                    ->label(__('order.widgets.stats.orders.label'))
+                    ->label($e->getMessage())
                     ->icon('heroicon-o-shopping-cart'),
 
                 Stat::make('Open orders', 0)
