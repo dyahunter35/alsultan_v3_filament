@@ -60,6 +60,7 @@ class EditOrder extends EditRecord
      * This is the main logic for handling the update process.
      * Overriding this gives us full control over the stock management transaction.
      */
+
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         $inventoryService = new InventoryService;
@@ -148,3 +149,4 @@ class EditOrder extends EditRecord
         });
     }
 }
+

@@ -38,6 +38,12 @@ return [
         'group' => 'التقارير المالية',
         'sort' => 25,
     ],
+    'inventory_summary_report' => [
+        'heading' => 'تقرير ملخص المخزون',
+        'icon' => 'heroicon-m-archive-box',
+        'group' => 'التقارير المالية',
+        'sort' => 26,
+    ],
 
     // --- مجموعة تقارير العملاء والمناديب (تبدأ من 30) ---
     'customers_report' => [
@@ -152,4 +158,5 @@ return [
         'group' => 'الشحن والشركات',
         'sort' => 56,
     ],
+
 ];

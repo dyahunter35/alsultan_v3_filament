@@ -17,10 +17,11 @@ enum OrderStatus: string implements HasColor, HasIcon, HasLabel
     case Delivered = 'delivered';
 
     case Cancelled = 'cancelled';
+    case Proforma = 'proforma';
 
     public function getLabel(): string
     {
-        return __('order.fields.status.options.'.$this->value);
+        return __('order.fields.status.options.' . $this->value);
     }
 
     public function getColor(): string|array|null
@@ -28,8 +29,10 @@ enum OrderStatus: string implements HasColor, HasIcon, HasLabel
         return match ($this) {
             self::New => 'info',
             self::Processing => 'warning',
-            self::Delivered,self::Payed => 'success',
+            self::Delivered, self::Payed => 'success',
             self::Cancelled => 'danger',
+            self::Proforma => 'info'
+
         };
     }
 
@@ -41,6 +44,7 @@ enum OrderStatus: string implements HasColor, HasIcon, HasLabel
             self::Delivered => 'heroicon-m-truck',
             self::Payed => 'heroicon-m-credit-card',
             self::Cancelled => 'heroicon-m-x-circle',
+            self::Proforma => 'heroicon-m-document',
         };
     }
 }

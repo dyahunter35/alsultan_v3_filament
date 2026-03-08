@@ -38,6 +38,12 @@ return [
         'group' => 'Financial Reports',
         'sort' => 25,
     ],
+    'inventory_summary_report' => [
+        'heading' => 'Inventory Summary Report',
+        'icon' => 'heroicon-m-archive-box',
+        'group' => 'Financial Reports',
+        'sort' => 26,
+    ],
 
     // --- Customers & Delegates Group (Starts at 30) ---
     'customers_report' => [

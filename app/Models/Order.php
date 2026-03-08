@@ -53,6 +53,7 @@ class Order extends Model
 
     protected static function booted(): void
     {
+        // أولاً: تنظيف البيانات قبل الحفظ (تطبق في الإنشاء والتحديث)
         static::saving(function ($order) {
             if ($order->is_guest) {
                 $order->customer_id = null;
@@ -60,23 +61,32 @@ class Order extends Model
                 $order->guest_customer = null;
             }
         });
-        $callack = function ($order) {
-            if ($order && $order->wasChanged('is_guest')) {
-                if ($order->is_guest) {
-                    $order->customer_id = null;
-                } else {
-                    $order->guest_customer = null;
-                }
-            }
-            // نتحقق أولاً أنه ليس ضيفاً وأن علاقة العميل موجودة فعلياً
-            if (!$order->is_guest && $order->registeredCustomer) {
-                app(CustomerService::class)->updateCustomerBalance($order->registeredCustomer);
-            }
-        };
 
-        static::created($callack);
-        static::updated($callack);
-        static::deleted($callack);
+        // ثانياً: معالجة الآثار الجانبية (تحديث الرصيد)
+        // نستخدم saved ليشمل الـ created والـ updated معاً
+        static::saved(function ($order) {
+            static::refreshCustomerBalance($order);
+        });
+
+        static::deleted(function ($order) {
+            static::refreshCustomerBalance($order);
+        });
+    }
+
+    /**
+     * دالة مساعدة لتحديث رصيد العميل إذا لم يكن الطلب لضيف
+     */
+    protected static function refreshCustomerBalance($order): void
+    {
+        // نتحقق أن الطلب ليس لضيف وأن هناك عميل مسجل مرتبط به
+        if (!$order->is_guest && $order->customer_id) {
+            // نستخدم البحث عن العميل لضمان الحصول على أحدث بيانات حتى لو لم تكن العلاقة محملة
+            $customer = \App\Models\Customer::find($order->customer_id);
+
+            if ($customer) {
+                app(CustomerService::class)->updateCustomerBalance($customer);
+            }
+        }
     }
 
     public function branch(): BelongsTo

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Orders\Pages;
 
+use App\Enums\OrderStatus;
 use App\Filament\Resources\Orders\OrderResource;
 use App\Models\Order;
 use App\Models\Product;
@@ -41,7 +42,11 @@ class CreateOrder extends CreateRecord
         $productIds = $order->items->pluck('product_id')->unique()->values()->all();
         $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
 
+
+
         DB::transaction(function () use ($inventoryService, $currentBranch, $currentUser, $order, $products) {
+            $isDeducting = !in_array($order->status, [OrderStatus::Proforma, OrderStatus::Cancelled]);
+
             foreach ($order->items as $item) {
                 $item->sub_discount ??= 0;
                 $product = $products->get($item->product_id);
@@ -58,13 +63,15 @@ class CreateOrder extends CreateRecord
                 }
 
                 // هنا نفترض أنه مسموح للوصول إلى رصيد سالب — ننفّذ الخصم مباشرةً
-                $inventoryService->deductStockForBranch(
-                    $product,
-                    $currentBranch,
-                    $item->qty,
-                    "Order #{$order->number}",
-                    $currentUser
-                );
+                if ($isDeducting) {
+                    $inventoryService->deductStockForBranch(
+                        $product,
+                        $currentBranch,
+                        $item->qty,
+                        "Order #{$order->number}",
+                        $currentUser
+                    );
+                }
             }
 
             // ملاحظة: لا نستدعي updateAllBranches هنا (ثقيل). إذا أردت إعادة حساب كامل، شغّله كسكجولد أو background job.

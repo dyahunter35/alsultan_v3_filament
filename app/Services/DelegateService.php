@@ -64,6 +64,14 @@ class DelegateService
         return (float) $treasury;
     }
 
+    public function calculateAllUserBalances(): void
+    {
+        $users = User::valut()->role(User::ROLE_SALES)->get();
+        foreach ($users as $user) {
+            $this->calculateUserBalances($user);
+        }
+    }
+
     /**
      * 🔹 توليد البيانات الموحدة للتقرير
      */
