@@ -1,16 +1,15 @@
 <div class="fixed bottom-6 left-6 no-print flex flex-col gap-3 z-50" wire:ignore>
     {{-- زر العودة للأعلى --}}
     <x-filament::button color="gray" icon="heroicon-o-chevron-double-up" {{-- ملاحظة: Filament يقبل المصفوفة أو النص
-        للاختصارات --}} :key-bindings="['command+up', 'ctrl+shift+up']"
-        onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" x-tooltip="{
-            content: 'العودة للأعلى',
+        للاختصارات --}} :key-bindings="['ctrl+shift+up']" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
+        x-tooltip="{
+            content: 'إلى أعلى التقرير (ctrl+shift+up)',
             placement: 'right',
         }">
     </x-filament::button>
 
     {{-- زر التمرير للأسفل --}}
-    <x-filament::button color="gray" icon="heroicon-o-chevron-double-down"
-        :key-bindings="['command+down', 'ctrl+shift+down']"
+    <x-filament::button color="gray" icon="heroicon-o-chevron-double-down" :key-bindings="['ctrl+shift+down']"
         onclick="window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })" x-tooltip="{
             content: 'إلى أسفل التقرير (ctrl+shift+down)',
             placement: 'right',
@@ -18,9 +17,9 @@
     </x-filament::button>
 
     {{-- زر الطباعة --}}
-    <x-filament::button color="success" icon="heroicon-o-printer" :key-bindings="['command+p', 'ctrl+p']"
-        x-on:click="window.print()" x-tooltip="{
-            content: 'طباعة التقرير (Ctrl+P)',
+    <x-filament::button color="success" icon="heroicon-o-printer" :key-bindings="['p']" x-on:click="window.print()"
+        x-tooltip="{
+            content: 'طباعة التقرير (P)',
             placement: 'right',
         }">
     </x-filament::button>
