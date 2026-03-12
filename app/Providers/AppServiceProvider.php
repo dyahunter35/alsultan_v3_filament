@@ -7,6 +7,8 @@ use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
 use BezhanSalleh\LanguageSwitch\LanguageSwitch;
+use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Resources\Resource;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Tables\Columns\TextColumn;
@@ -47,6 +49,23 @@ class AppServiceProvider extends ServiceProvider
                 ->visible(outsidePanels: true)
                 ->locales(['ar', 'en']); // also accepts a closure
         });
+
+        Action::configureUsing(function (Action $action): void {
+            $action
+                ->closeByClickingAway(false)
+                ->closeByEscaping(false);
+        });
+
+        // 2. تطبيق الإعداد على أزرار الجداول (Table Actions)
+
+
+        // 3. تطبيق الإعداد على إجراءات الحذف/التعديل الجماعي (Bulk Actions)
+        BulkAction::configureUsing(function (BulkAction $action): void {
+            $action
+                ->closeByClickingAway(false)
+                ->closeByEscaping(false);
+        });
+
 
         app(PermissionRegistrar::class)
             ->setPermissionClass(Permission::class)
