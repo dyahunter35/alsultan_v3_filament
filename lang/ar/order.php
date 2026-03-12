@@ -77,6 +77,7 @@ return [
                 'delivered' => 'تم التوصيل',
                 'installed' => 'تم التركيب',
                 'cancelled' => 'ملغي',
+                'proforma' => 'فاتورة مبدئية',
             ],
         ],
         'currency' => [
