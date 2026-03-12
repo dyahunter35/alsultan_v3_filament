@@ -14,6 +14,10 @@
                     <div class="w-60">
                         {{ $this->form }}
                     </div>
+
+                </div>
+                
+                <div class="flex items-center gap-2">
                     @foreach(App\Models\Currency::all() as $currency)
                         <div class="flex items-center gap-2">
                             <span class="text-sm font-bold text-gray-500">{{ $currency->name }}:</span>
@@ -28,9 +32,7 @@
                     <x-filament::button color="gray" size="sm" icon="heroicon-o-arrow-path" wire:click="updatePalance">
                         تحديث الحسابات
                     </x-filament::button>
-                    <x-filament::button color="gray" size="sm" icon="heroicon-o-printer" onclick="window.print()">
-                        طباعة
-                    </x-filament::button>
+                    
                 </div>
             </div>
         </div>
@@ -63,7 +65,7 @@
                                 {{ number_format($row['value'], 2) }}
                             </td>
                             <td class="p-3 text-center font-mono tabular-nums text-gray-500">
-                                {{ $exchangeRates[(int)$targetCurrencyId] ?? 1 }}
+                                {{ $exchangeRates[(int) $targetCurrencyId] ?? 1 }}
                             </td>
                             <td
                                 class="p-3 text-center font-mono tabular-nums font-bold text-primary-700 dark:text-primary-400 bg-primary-50/30 dark:bg-primary-900/5">
@@ -119,7 +121,7 @@
                                 {{ number_format($row['balance'], 2) }}
                             </td>
                             <td class="p-3 text-center font-mono tabular-nums text-gray-500">
-                                {{ $exchangeRates[(int)$targetCurrencyId] ?? 1 }}
+                                {{ $exchangeRates[(int) $targetCurrencyId] ?? 1 }}
                             </td>
                             <td
                                 class="p-3 text-center font-mono tabular-nums font-bold text-primary-700 dark:text-primary-400 bg-primary-50/30 dark:bg-primary-900/5">
@@ -174,7 +176,7 @@
                                 {{ number_format($row['balance'], 2) }}
                             </td>
                             <td class="p-3 text-center font-mono tabular-nums text-gray-500">
-                                {{ $exchangeRates[(int)$targetCurrencyId] ?? 1 }}
+                                {{ $exchangeRates[(int) $targetCurrencyId] ?? 1 }}
                             </td>
                             <td
                                 class="p-3 text-center font-mono tabular-nums font-bold text-primary-700 dark:text-primary-400 bg-primary-50/30 dark:bg-primary-900/5">
@@ -233,7 +235,7 @@
                                 {{ number_format($row['balance'], 2) }}
                             </td>
                             <td class="p-3 text-center font-mono tabular-nums text-gray-500">
-                                {{ $exchangeRates[(int)$targetCurrencyId] ?? 1 }}
+                                {{ $exchangeRates[(int) $targetCurrencyId] ?? 1 }}
                             </td>
                             <td
                                 class="p-3 text-center font-mono tabular-nums font-bold text-primary-700 dark:text-primary-400 bg-primary-50/30 dark:bg-primary-900/5">
@@ -254,6 +256,7 @@
                     </tr>
                 </tfoot>
             </table>
+            <x-print-button/>
         </div>
 
         {{-- ═══════════════════════════════════════════════════ --}}
