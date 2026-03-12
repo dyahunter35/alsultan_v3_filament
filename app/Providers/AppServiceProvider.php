@@ -50,10 +50,10 @@ class AppServiceProvider extends ServiceProvider
                 ->locales(['ar', 'en']); // also accepts a closure
         });
 
-        /* Action::configureUsing(function (Action $action): void {
+        Action::configureUsing(function (Action $action): void {
             $action
-                ->closeByClickingAway(false)
-                ->closeByEscaping(false);
+                ->closeModalByClickingAway(false)
+                ->closeModalByEscaping(false);
         });
 
         // 2. تطبيق الإعداد على أزرار الجداول (Table Actions)
@@ -62,9 +62,9 @@ class AppServiceProvider extends ServiceProvider
         // 3. تطبيق الإعداد على إجراءات الحذف/التعديل الجماعي (Bulk Actions)
         BulkAction::configureUsing(function (BulkAction $action): void {
             $action
-                ->closeByClickingAway(false)
-                ->closeByEscaping(false);
-        }); */
+                ->closeModalByClickingAway(false)
+                ->closeModalByEscaping(false);
+        });
 
 
         app(PermissionRegistrar::class)

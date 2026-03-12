@@ -37,7 +37,7 @@ class CompaniesDetails extends Page implements HasForms
 
     public function getReportSubject(): string
     {
-        $title = 'تقرير تفاصيل شركة ' . $this->_company->name;
+        $title = 'تقرير تفاصيل شركة ' . $this->company?->name;
         /* if ($this->date_range) {
             $title .= ' للفترة (' . $this->date_range . ')';
         } */
