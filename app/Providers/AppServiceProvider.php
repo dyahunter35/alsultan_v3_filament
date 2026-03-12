@@ -50,7 +50,7 @@ class AppServiceProvider extends ServiceProvider
                 ->locales(['ar', 'en']); // also accepts a closure
         });
 
-        Action::configureUsing(function (Action $action): void {
+        /* Action::configureUsing(function (Action $action): void {
             $action
                 ->closeByClickingAway(false)
                 ->closeByEscaping(false);
@@ -64,7 +64,7 @@ class AppServiceProvider extends ServiceProvider
             $action
                 ->closeByClickingAway(false)
                 ->closeByEscaping(false);
-        });
+        }); */
 
 
         app(PermissionRegistrar::class)
