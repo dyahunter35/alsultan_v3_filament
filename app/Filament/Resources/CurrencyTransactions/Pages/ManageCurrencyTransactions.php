@@ -16,7 +16,7 @@ class ManageCurrencyTransactions extends ManageRecords
         return [
             // 1. زر تحويل عملة (Convert)
             Actions\CreateAction::make('convert')
-                ->label('تحويل عملة (داخلي)')
+                ->label(__('currency_transaction.actions.convert'))
                 ->modalHeading('إجراء عملية تحويل عملة لعميل')
                 ->icon('heroicon-m-arrows-right-left')
                 ->color('success')
@@ -28,7 +28,7 @@ class ManageCurrencyTransactions extends ManageRecords
 
             // 2. زر منصرفات شركة (Company Expense)
             Actions\CreateAction::make('company_expense')
-                ->label('دفع منصرفات شركة')
+                ->label(__('currency_transaction.actions.company_expense'))
                 ->modalHeading('تسجيل منصرفات لشركة/مقاول')
                 ->icon('heroicon-m-building-office')
                 ->color('info')

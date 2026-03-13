@@ -62,4 +62,10 @@ return [
             'placeholder' => '',
         ],
     ],
+    'actions' => [
+        'convert' => 'Convert',
+        'company_expense' => 'Pay',
+        'create' => 'Add CurrencyTransaction',
+        'edit' => 'Edit CurrencyTransaction',
+    ],
 ];

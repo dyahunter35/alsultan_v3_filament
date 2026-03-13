@@ -3,26 +3,26 @@
 return [
     'navigation' => [
         'group' => 'المالية',
-        'label' => 'المعاملات بالعملات',
-        'plural_label' => 'المعاملات بالعملات',
-        'model_label' => 'معاملة عملة',
+        'label' => ' التحويلات ',
+        'plural_label' => 'التحويلات ',
+        'model_label' => 'تحويل عملة',
         'icon' => 'heroicon-m-building-office-2',
     ],
     'breadcrumbs' => [
-        'index' => 'المعاملات بالعملات',
+        'index' => ' بالعملات',
         'create' => 'إضافة معاملة عملة',
         'edit' => 'تعديل معاملة عملة',
     ],
     'fields' => [
         'currency' => [
-            'label' => 'العملة',
+            'label' => 'نوع العمله',
             'placeholder' => '',
         ],
         'party' => [
             'label' => 'الجهة المستلمة',
         ],
         'payer' => [
-            'label' => 'من سيدفع',
+            'label' => 'العميل',
             'placeholder' => '',
         ],
         'party_id' => [
@@ -61,5 +61,11 @@ return [
             'label' => 'تاريخ الحذف',
             'placeholder' => '',
         ],
+    ],
+    'actions' => [
+        'convert' => 'شراء',
+        'company_expense' => 'دفع',
+        'create' => 'إضافة معاملة عملة',
+        'edit' => 'تعديل معاملة عملة',
     ],
 ];
