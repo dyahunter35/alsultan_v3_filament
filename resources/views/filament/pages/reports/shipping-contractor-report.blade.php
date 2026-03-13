@@ -46,7 +46,7 @@
                         <tr class="bg-slate-900 text-white">
                             <th colspan="7" class="p-2 border border-slate-700 uppercase tracking-widest">تفاصيل الرحلات والشحنات</th>
                             <th colspan="3" class="p-2 border border-slate-700 bg-slate-800 uppercase tracking-widest">المبالغ المستحقة</th>
-                            <th colspan="3" class="p-2 border border-slate-700 bg-blue-900 uppercase tracking-widest">حالة السداد</th>
+                            <th colspan="2" class="p-2 border border-slate-700 bg-blue-900 uppercase tracking-widest"> الرصيد</th>
                         </tr>
                         {{-- الرأس الثاني --}}
                         <tr class="bg-slate-100 font-bold border-b-2 border-slate-400 text-slate-700">
@@ -62,9 +62,8 @@
                             <th class="p-2 border border-slate-300">العطلة</th>
                             <th class="p-2 border border-slate-300 bg-slate-200 font-black">الإجمالي</th>
 
-                            <th class="p-2 border border-slate-300 bg-blue-50/50">تاريخ السداد</th>
-                            <th class="p-2 border border-slate-300 bg-blue-50/50">البيان</th>
                             <th class="p-2 border border-slate-300 bg-blue-100 font-black text-rose-700">المبلغ</th>
+                            <th class="p-2 border border-slate-300 bg-blue-100 font-black text-rose-700">الرصيد</th>
                         </tr>
                     </thead>
                     <tbody class="tabular-nums">
@@ -88,9 +87,8 @@
                                     </td>
                                     <td class="p-2 border-x border-slate-300 bg-slate-50/50 font-black">{{ number_format($row['total_amount'], 2) }}</td>
 
-                                    <td class="p-2 border-x border-slate-200 text-[9px] text-blue-700">{{ $row['settlement_date'] ?: '-' }}</td>
-                                    <td class="p-2 border-x border-slate-200 text-[9px] text-slate-500">{{ $row['settlement_desc'] ?: '-' }}</td>
-                                    <td class="p-2 border-x border-slate-200 font-bold text-rose-600">
+                                    
+                                     <td class="p-2 border-x border-slate-200 font-bold text-rose-600">
                                         {{ $row['settlement_amount'] > 0 ? number_format($row['settlement_amount'], 2) : '-' }}
                                     </td>
                                 </tr>
@@ -100,11 +98,9 @@
                                     <td class="p-3 text-right text-blue-900 italic" colspan="10">
                                         <div class="flex items-center gap-2">
                                             <span class="w-2 h-2 bg-blue-600 rounded-full"></span>
-                                            سند صرف نقدية / تحويل بنكي: {{ $row['description'] }}
+                                            سند صرف نقدية / تحويل بنكي: {{ $row['description'] }} - {{ $row['settlement_date'] }}
                                         </div>
                                     </td>
-                                    <td class="p-2 border-x border-blue-100 text-[9px] text-blue-800 uppercase">{{ $row['settlement_date'] }}</td>
-                                    <td class="p-2 border-x border-blue-100 text-[9px] text-blue-800">{{ $row['settlement_desc'] }}</td>
                                     <td class="p-2 border-x border-blue-200 bg-blue-100 text-rose-800 text-base font-black">
                                         {{ number_format($row['settlement_amount'], 2) }}
                                     </td>
@@ -119,7 +115,6 @@
                             <td class="p-3 border-l border-slate-700 bg-slate-800 text-lg tabular-nums">
                                 {{ number_format($summary['total_claims'], 2) }}
                             </td>
-                            <td colspan="2" class="p-3 border-l border-slate-700 bg-blue-950 text-left">إجمالي المسدد</td>
                             <td class="p-3 bg-rose-900 text-lg tabular-nums">{{ number_format($summary['total_paid'], 2) }}</td>
                         </tr>
                     </tfoot>

@@ -235,7 +235,7 @@ class CompanyLedgerReport extends Page implements HasForms
             ->openUrlInNewTab();
     }
 
-    public static function updateCurrencyBalance()
+    public function updateCurrencyBalance()
     {
         \App\Models\CurrencyBalance::refreshBalances();
         app(\App\Services\CustomerService::class)->updateCustomersBalance();

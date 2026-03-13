@@ -135,7 +135,7 @@ return [
         'sort' => 52,
     ],
     'truck_report' => [
-        'heading' => 'تفاصيل الشحنة',
+        'heading' => 'تقرير الشحنة للمخازن',
         'icon' => 'heroicon-m-truck',
         'group' => 'الشحن والشركات',
         'sort' => 53,
@@ -153,7 +153,7 @@ return [
         'sort' => 55,
     ],
     'company_currency_report' => [
-        'heading' => 'تقرير العملات للشركات',
+        'heading' => 'ملخص حسابات المصانع والشركات',
         'icon' => 'heroicon-m-currency-dollar',
         'group' => 'الشحن والشركات',
         'sort' => 56,

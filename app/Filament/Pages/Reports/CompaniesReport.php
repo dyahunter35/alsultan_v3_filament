@@ -13,6 +13,7 @@ use Illuminate\Support\Collection;
 class CompaniesReport extends Page
 {
     use HasReport;
+    protected static bool $shouldRegisterNavigation = false;
 
     protected string $view = 'filament.pages.reports.companies-report';
 
