@@ -39,7 +39,7 @@ return [
         'sort' => 25,
     ],
     'inventory_summary_report' => [
-        'heading' => 'تقرير ملخص المخزون',
+        'heading' => 'تقرير الجرد الكامل ',
         'icon' => 'heroicon-m-archive-box',
         'group' => 'التقارير المالية',
         'sort' => 26,
