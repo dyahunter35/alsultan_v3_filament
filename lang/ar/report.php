@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'inventory_reconciliation' => [
+        'heading' => 'مطابقة الجرد',
+        'icon' => 'heroicon-o-clipboard-document-check',
+        'group' => 'إدارة المنتجات',
+        'sort' => 9,
+    ],
     // --- مجموعة التقارير المالية (تبدأ من 20) ---
     'orders_report' => [
         'heading' => 'تقرير المبيعات',
@@ -114,6 +120,7 @@ return [
         'group' => 'تقارير إدارة المخزون',
         'sort' => 44,
     ],
+
 
     // --- مجموعة تقارير الشحن والشركات (تبدأ من 50) ---
     'companies_report' => [

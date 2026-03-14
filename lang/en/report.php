@@ -1,6 +1,13 @@
 <?php
 
 return [
+    'inventory_reconciliation' => [
+        'heading' => 'Inventory Reconciliation',
+        'icon' => 'heroicon-o-clipboard-document-check',
+        'group' => 'Inventory Management',
+        'sort' => 8,
+    ],
+
     // --- Financial Reports Group (Starts at 20) ---
     'orders_report' => [
         'heading' => 'Sales Report',
@@ -114,6 +121,7 @@ return [
         'group' => 'Inventory Management',
         'sort' => 44,
     ],
+
 
     // --- Shipping & Companies Group (Starts at 50) ---
     'companies_report' => [
