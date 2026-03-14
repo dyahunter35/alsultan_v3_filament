@@ -56,7 +56,7 @@ class TruckTrackingReport extends Page implements HasForms
     protected function getFormSchema(): array
     {
         return [
-            Schemas\Components\Grid::make(4)->schema([
+            Schemas\Components\Grid::make(5)->schema([
                 Forms\Components\Select::make('status')
                     ->label('حالة الشحنة')
                     ->options(TruckState::class)
@@ -140,6 +140,7 @@ class TruckTrackingReport extends Page implements HasForms
         if ($start && $end) {
             $query->whereBetween('pack_date', [$start, $end]);
         }
+
 
         $this->trucks = $query->orderBy('pack_date', 'desc')->get();
 

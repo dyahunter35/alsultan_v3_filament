@@ -2,11 +2,13 @@
 
 namespace App\Filament\Pages\Reports;
 
+use App\Enums\ExpenseGroup;
 use App\Enums\TruckState;
 use App\Filament\Pages\Concerns\HasReport;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Customer;
+use App\Models\Expense;
 use App\Models\TruckCargo;
 use App\Models\User;
 use App\Services\CustomerService;
@@ -183,17 +185,16 @@ class InventorySummaryReport extends Page implements HasForms
         )->sum(DB::raw('COALESCE(base_total_foreign, ton_weight * ton_price)'));
 
         // 1e. مصاريف الشحن المرتبطة بالشاحنات الفعّالة (expenses linked to active trucks cargo)
-        $truckExpenses = (float) DB::table('expenses')
-            ->whereNotNull('truck_id')
-            ->whereNull('deleted_at')
-            ->sum('amount');
+        $truckExpenses = (float) Expense::query()
+            ->types(ExpenseGroup::SHIPMENT_CLEARANCE) // استخدام الـ scope مباشرة
+            ->sum('total_amount');
 
         $items = [
-            ['label' => 'تكلفة بضاعة المخازن', 'value' => $warehouseValue],
-            ['label' => 'تكلفة البضاعة علي الطريق', 'value' => $onWayValue],
-            ['label' => 'تكلفة بضاعة الميناء', 'value' => $portValue],
-            ['label' => 'تكلفة بضاعة الحظيرة', 'value' => $barnValue],
-            ['label' => 'مصاريف الشحن المرتبطة', 'value' => $truckExpenses],
+            ['label' => 'تكلفة بضاعة المخازن', 'value' => $warehouseValue, 'link' => null],
+            ['label' => 'تكلفة البضاعة علي الطريق', 'value' => $onWayValue, 'link' => null],
+            ['label' => 'تكلفة بضاعة الميناء', 'value' => $portValue, 'link' => null],
+            ['label' => 'تكلفة بضاعة الحظيرة', 'value' => $barnValue, 'link' => null],
+            ['label' => 'مصاريف الشحن المرتبطة', 'value' => $truckExpenses, 'link' => 'truck'],
         ];
 
         $totalGoodsCostEquivalent = 0;
@@ -208,6 +209,7 @@ class InventorySummaryReport extends Page implements HasForms
                 'label' => $item['label'],
                 'value' => $item['value'],
                 'rate' => $rate,
+                'link' => $item['link'],
                 'equivalent' => $equiv,
             ];
         }
@@ -268,12 +270,14 @@ class InventorySummaryReport extends Page implements HasForms
             $totalBalanceEquivalent += $equiv;
 
             $rows[] = [
+                'id' => $delegate->id,
                 'label' => $delegate->name,
                 'deposits' => $deposits,
                 'expenses' => $expenses,
                 'balance' => $balance,
                 'rate' => $rate,
                 'equivalent' => $equiv,
+
             ];
         }
 
@@ -310,6 +314,7 @@ class InventorySummaryReport extends Page implements HasForms
                 'balance' => $companyCurrencyBalance,
                 'rate' => $rate0,
                 'equivalent' => $companyEquiv,
+                'link' => 'company',
             ],
             [
                 'label' => 'رصيد عملاء التحويلات',
@@ -318,6 +323,7 @@ class InventorySummaryReport extends Page implements HasForms
                 'balance' => $currencyCustomerBalance,
                 'rate' => $rate1,
                 'equivalent' => $customerEquiv,
+                'link' => 'currency_customer',
             ],
         ];
 
@@ -332,5 +338,17 @@ class InventorySummaryReport extends Page implements HasForms
     public function getTitle(): string
     {
         return 'تقرير الجرد الشامل';
+    }
+
+    public function goReport($type, $id = null): string
+    {
+        return match ($type) {
+            'truck' => TruckExpensesReport::getUrl(['truckId' => $id]),
+            'customer' => CustomersReport::getUrl(['customerId' => $id]),
+            'delegate' => DelegatesReport::getUrl(['delegateId' => $id]),
+            'company' => CompanyLedgerReport::getUrl(['companyId' => $id]),
+            'currency_customer' => CurrencyCustomersReport::getUrl(['companyId' => $id]),
+            default => '#',
+        };
     }
 }

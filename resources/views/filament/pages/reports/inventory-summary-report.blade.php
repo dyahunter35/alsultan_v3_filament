@@ -60,7 +60,13 @@
                     @foreach($goodsCosts as $i => $row)
                         <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30 transition-colors">
                             <td class="p-3 text-center text-gray-400 font-mono">{{ $i + 1 }}</td>
-                            <td class="p-3 font-semibold">{{ $row['label'] }}</td>
+                            <td class="p-3 font-semibold ">
+                                @if($row['link'])
+                                    <a class="flex items-center gap-2" target="_blank" href="{{ $this->goReport($row['link']) }}">{{ $row['label'] }}<x-heroicon-o-arrow-left class="w-4 h-4" /></a>
+                                @else
+                                    {{ $row['label'] }}
+                                @endif
+                            </td>
                             <td class="p-3 text-center font-mono tabular-nums font-bold">
                                 {{ number_format($row['value'], 2) }}
                             </td>
@@ -116,7 +122,7 @@
                     @foreach($customers as $i => $row)
                         <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30">
                             <td class="p-3 text-center text-gray-400 font-mono">{{ $i + 1 }}</td>
-                            <td class="p-3 font-semibold">{{ $row['label'] }}</td>
+                            <td class="p-3 font-semibold "><a class="flex items-center gap-2" target="_blank" href="{{ $this->goReport('customer') }}">{{ $row['label'] }}<x-heroicon-o-arrow-left class="w-4 h-4" /></a></td>
                             <td class="p-3 text-center font-mono tabular-nums">{{ number_format($row['sales'], 2) }}</td>
                             <td class="p-3 text-center font-mono tabular-nums">{{ number_format($row['deposits'], 2) }}</td>
                             <td
@@ -174,7 +180,9 @@
                     @forelse($delegates as $i => $row)
                         <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30">
                             <td class="p-3 text-center text-gray-400 font-mono">{{ $i + 1 }}</td>
-                            <td class="p-3 font-semibold">{{ $row['label'] }}</td>
+                            <td class="p-3 font-semibold">
+                                <a class="flex items-center gap-2" target="_blank" href="{{ $this->goReport('delegate', $row['id']) }}">{{ $row['label'] }}<x-heroicon-o-arrow-left class="w-4 h-4" /></a>
+                            </td>
                             <td class="p-3 text-center font-mono tabular-nums">{{ number_format($row['deposits'], 2) }}</td>
                             <td class="p-3 text-center font-mono tabular-nums">{{ number_format($row['expenses'], 2) }}</td>
                             <td
@@ -236,7 +244,11 @@
                     @foreach($companies as $i => $row)
                         <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30">
                             <td class="p-3 text-center text-gray-400 font-mono">{{ $i + 1 }}</td>
-                            <td class="p-3 font-semibold">{{ $row['label'] }}</td>
+                            @if($row['link'])
+                                <td class="p-3 font-semibold"><a class="flex items-center gap-2" target="_blank" href="{{ $this->goReport($row['link']) }}">{{ $row['label'] }}<x-heroicon-o-arrow-left class="w-4 h-4" /></a></td>
+                            @else
+                                <td class="p-3 font-semibold">{{ $row['label'] }}</td>
+                            @endif
                             <td class="p-3 text-center font-mono tabular-nums">{{ number_format($row['claims'], 2) }}</td>
                             <td class="p-3 text-center font-mono tabular-nums">{{ number_format($row['payments'], 2) }}</td>
                             <td
