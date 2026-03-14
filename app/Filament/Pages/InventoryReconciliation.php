@@ -29,7 +29,7 @@ class InventoryReconciliation extends Page implements HasForms
 
     #[Url] public ?int $branchId = null;
     public array $productIds = [];
-    #[Url] public bool $showAllProducts = false;
+    #[Url] public bool $showAllProducts = true;
 
     // هذا المتغير ضروري جداً لمقارنة الفرع ومنع المسح عند الفلترة
     public ?int $oldBranchId = null;
@@ -55,6 +55,7 @@ class InventoryReconciliation extends Page implements HasForms
                             ->options(auth()->user()->branch->pluck('name', 'id'))
                             ->searchable()
                             ->live()
+                            ->columns(1)
                             ->afterStateUpdated(function ($state) {
                                 $this->loadProducts();
                             }),
@@ -65,6 +66,8 @@ class InventoryReconciliation extends Page implements HasForms
                             ->searchable()
                             ->multiple()
                             ->live()
+                            ->columnSpan(2)
+                            ->visible(fn() => $this->branchId)
                             ->suffixAction(
                                 Action::make('remove_all')
                                     ->label('إلغاء الكل')
@@ -85,6 +88,8 @@ class InventoryReconciliation extends Page implements HasForms
                                 ])
                             ->default(false)
                             ->inline()
+                            ->visible(fn() => $this->branchId)
+
                             ->grouped()
                             ->live()
                             ->afterStateUpdated(fn() => $this->loadProducts()),
