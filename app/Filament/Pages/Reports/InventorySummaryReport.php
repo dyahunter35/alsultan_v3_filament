@@ -32,6 +32,13 @@ class InventorySummaryReport extends Page implements HasForms
     public array $exchangeRates = [];
     public ?int $targetCurrencyId = null;
 
+    public array $customRates = [
+        'goods' => [],
+        'customers' => [],
+        'delegates' => [],
+        'companies' => [],
+    ];
+
     // --- Report Sections ---
     public array $goodsCosts = [];   // Section 1
     public array $customers = [];   // Section 2
@@ -73,6 +80,12 @@ class InventorySummaryReport extends Page implements HasForms
                 ->afterStateUpdated(function ($state) {
                     $this->targetCurrencyId = (int) $state;
                     $this->targetCurrencyName = Currency::find($state)?->name ?? '';
+                    $this->customRates = [
+                        'goods' => [],
+                        'customers' => [],
+                        'delegates' => [],
+                        'companies' => [],
+                    ];
                     $this->loadData();
                 }),
         ]);
@@ -81,6 +94,18 @@ class InventorySummaryReport extends Page implements HasForms
     public function updateRate(int $currencyId, float $value): void
     {
         $this->exchangeRates[$currencyId] = $value;
+        $this->customRates = [
+            'goods' => [],
+            'customers' => [],
+            'delegates' => [],
+            'companies' => [],
+        ];
+        $this->loadData();
+    }
+
+    public function updateCustomRate(string $section, int $index, $value): void
+    {
+        $this->customRates[$section][$index] = (float) $value;
         $this->loadData();
     }
 
@@ -126,14 +151,15 @@ class InventorySummaryReport extends Page implements HasForms
     // ─────────────────────────────────────────────────────────────────────────
     // Section 1 — تكاليف البضاعة
     // ─────────────────────────────────────────────────────────────────────────
-    private function loadGoodsCosts(float $rate): void
+    private function loadGoodsCosts(float $defaultRate): void
     {
         // 1a. مخزون الفروع (المخازن) — branch_product pivot
         $warehouseValue = (float) TruckCargo::whereHas(
             'truck',
             fn($q) =>
             $q->where('truck_status', TruckState::reach->value)
-        )->sum(DB::raw('COALESCE(base_total_foreign, ton_weight * ton_price)'));
+        )
+            ->sum(DB::raw('COALESCE(base_total_foreign, ton_weight * ton_price)'));
 
         // 1b. البضاعة في الطريق — TruckCargo where truck.truck_status = OnWay
         $onWayValue = (float) TruckCargo::whereHas(
@@ -162,31 +188,48 @@ class InventorySummaryReport extends Page implements HasForms
             ->whereNull('deleted_at')
             ->sum('amount');
 
-        $totalGoodsCost = $warehouseValue + $onWayValue + $portValue + $barnValue + $truckExpenses;
-
-        $this->goodsCosts = [
-            ['label' => 'تكلفة بضاعة المخازن', 'value' => $warehouseValue, 'equivalent' => $rate > 0 ? $warehouseValue / $rate : 0],
-            ['label' => 'تكلفة البضاعة علي الطريق', 'value' => $onWayValue, 'equivalent' => $rate > 0 ? $onWayValue / $rate : 0],
-            ['label' => 'تكلفة بضاعة الميناء', 'value' => $portValue, 'equivalent' => $rate > 0 ? $portValue / $rate : 0],
-            ['label' => 'تكلفة بضاعة الحظيرة', 'value' => $barnValue, 'equivalent' => $rate > 0 ? $barnValue / $rate : 0],
-            ['label' => 'مصاريف الشحن المرتبطة', 'value' => $truckExpenses, 'equivalent' => $rate > 0 ? $truckExpenses / $rate : 0],
+        $items = [
+            ['label' => 'تكلفة بضاعة المخازن', 'value' => $warehouseValue],
+            ['label' => 'تكلفة البضاعة علي الطريق', 'value' => $onWayValue],
+            ['label' => 'تكلفة بضاعة الميناء', 'value' => $portValue],
+            ['label' => 'تكلفة بضاعة الحظيرة', 'value' => $barnValue],
+            ['label' => 'مصاريف الشحن المرتبطة', 'value' => $truckExpenses],
         ];
 
-        $this->goodsCostsTotal = $rate > 0 ? $totalGoodsCost / $rate : 0;
+        $totalGoodsCostEquivalent = 0;
+        $this->goodsCosts = [];
+
+        foreach ($items as $i => $item) {
+            $rate = $this->customRates['goods'][$i] ?? $defaultRate;
+            $equiv = $rate > 0 ? $item['value'] / $rate : 0;
+            $totalGoodsCostEquivalent += $equiv;
+
+            $this->goodsCosts[] = [
+                'label' => $item['label'],
+                'value' => $item['value'],
+                'rate' => $rate,
+                'equivalent' => $equiv,
+            ];
+        }
+
+        $this->goodsCostsTotal = $totalGoodsCostEquivalent;
     }
 
     // ─────────────────────────────────────────────────────────────────────────
     // Section 2 — رصيد العملاء
     // ─────────────────────────────────────────────────────────────────────────
-    private function loadCustomers(float $rate): void
+    private function loadCustomers(float $defaultRate): void
     {
         $customers = Customer::withSum('sales as total_sales', 'total')
+            ->sale()
             ->withSum('supplyings as total_deposits', 'total_amount')
             ->get();
 
         $totalSales = $customers->sum('total_sales');
         $totalDeposits = $customers->sum('total_deposits');
+
         $balance = $totalSales - $totalDeposits;
+        $rate = $this->customRates['customers'][0] ?? $defaultRate;
         $equivalent = $rate > 0 ? $balance / $rate : 0;
 
         $this->customers = [
@@ -195,6 +238,7 @@ class InventorySummaryReport extends Page implements HasForms
                 'sales' => $totalSales,
                 'deposits' => $totalDeposits,
                 'balance' => $balance,
+                'rate' => $rate,
                 'equivalent' => $equivalent,
             ],
         ];
@@ -205,43 +249,42 @@ class InventorySummaryReport extends Page implements HasForms
     // ─────────────────────────────────────────────────────────────────────────
     // Section 3 — رصيد المناديب (الخزنة)
     // ─────────────────────────────────────────────────────────────────────────
-    private function loadDelegates(float $rate): void
+    private function loadDelegates(float $defaultRate): void
     {
         // Using the User::sales() scope which filters ROLE_SALES + is_valut
         // scopeSales returns a pluck, so we rebuild query ourselves using same criteria
         $delegates = User::role(User::ROLE_SALES)->orWhere('is_valut', true)->get();
 
-        $totalDeposits = 0;
-        $totalExpenses = 0;
+        $totalBalanceEquivalent = 0;
         $rows = [];
 
-        foreach ($delegates as $delegate) {
+        foreach ($delegates as $i => $delegate) {
             $deposits = (float) $delegate->total_received;    // expensesAsBeneficiary
             $expenses = (float) $delegate->total_paid;        // expensesAsPayer
             $balance = (float) $delegate->net_balance;
 
-            $totalDeposits += $deposits;
-            $totalExpenses += $expenses;
+            $rate = $this->customRates['delegates'][$i] ?? $defaultRate;
+            $equiv = $rate > 0 ? $balance / $rate : 0;
+            $totalBalanceEquivalent += $equiv;
 
             $rows[] = [
                 'label' => $delegate->name,
                 'deposits' => $deposits,
                 'expenses' => $expenses,
                 'balance' => $balance,
-                'equivalent' => $rate > 0 ? $balance / $rate : 0,
+                'rate' => $rate,
+                'equivalent' => $equiv,
             ];
         }
 
-        $totalBalance = $totalDeposits - $totalExpenses;
-
         $this->delegates = $rows;
-        $this->delegatesTotal = $rate > 0 ? $totalBalance / $rate : 0;
+        $this->delegatesTotal = $totalBalanceEquivalent;
     }
 
     // ─────────────────────────────────────────────────────────────────────────
     // Section 4 — رصيد الشركات والمصانع
     // ─────────────────────────────────────────────────────────────────────────
-    private function loadCompanies(float $rate): void
+    private function loadCompanies(float $defaultRate): void
     {
         // Companies: currency balances (foreign) from CurrencyBalance
         $companyCurrencyBalance = (float) DB::table('currency_balances')
@@ -253,8 +296,11 @@ class InventorySummaryReport extends Page implements HasForms
             ->where('owner_type', Customer::class)
             ->sum('total_in_sdg');
 
-        $companyEquiv = $rate > 0 ? $companyCurrencyBalance / $rate : 0;
-        $customerEquiv = $rate > 0 ? $currencyCustomerBalance / $rate : 0;
+        $rate0 = $this->customRates['companies'][0] ?? $defaultRate;
+        $companyEquiv = $rate0 > 0 ? $companyCurrencyBalance / $rate0 : 0;
+
+        $rate1 = $this->customRates['companies'][1] ?? $defaultRate;
+        $customerEquiv = $rate1 > 0 ? $currencyCustomerBalance / $rate1 : 0;
 
         $this->companies = [
             [
@@ -262,6 +308,7 @@ class InventorySummaryReport extends Page implements HasForms
                 'claims' => $companyCurrencyBalance,
                 'payments' => 0,
                 'balance' => $companyCurrencyBalance,
+                'rate' => $rate0,
                 'equivalent' => $companyEquiv,
             ],
             [
@@ -269,6 +316,7 @@ class InventorySummaryReport extends Page implements HasForms
                 'claims' => $currencyCustomerBalance,
                 'payments' => 0,
                 'balance' => $currencyCustomerBalance,
+                'rate' => $rate1,
                 'equivalent' => $customerEquiv,
             ],
         ];

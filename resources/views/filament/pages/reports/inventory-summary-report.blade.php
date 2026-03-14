@@ -65,7 +65,10 @@
                                 {{ number_format($row['value'], 2) }}
                             </td>
                             <td class="p-3 text-center font-mono tabular-nums text-gray-500">
-                                {{ $exchangeRates[(int) $targetCurrencyId] ?? 1 }}
+                                <input type="number" step="0.00001"
+                                    wire:change="updateCustomRate('goods', {{ $i }}, $event.target.value)"
+                                    value="{{ $row['rate'] }}"
+                                    class="w-24 text-center border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1 text-sm font-mono dark:bg-gray-800 focus:ring-primary-500 focus:border-primary-500">
                             </td>
                             <td
                                 class="p-3 text-center font-mono tabular-nums font-bold text-primary-700 dark:text-primary-400 bg-primary-50/30 dark:bg-primary-900/5">
@@ -121,7 +124,10 @@
                                 {{ number_format($row['balance'], 2) }}
                             </td>
                             <td class="p-3 text-center font-mono tabular-nums text-gray-500">
-                                {{ $exchangeRates[(int) $targetCurrencyId] ?? 1 }}
+                                <input type="number" step="0.00001"
+                                    wire:change="updateCustomRate('customers', {{ $i }}, $event.target.value)"
+                                    value="{{ $row['rate'] }}"
+                                    class="w-24 text-center border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1 text-sm font-mono dark:bg-gray-800 focus:ring-primary-500 focus:border-primary-500">
                             </td>
                             <td
                                 class="p-3 text-center font-mono tabular-nums font-bold text-primary-700 dark:text-primary-400 bg-primary-50/30 dark:bg-primary-900/5">
@@ -176,7 +182,10 @@
                                 {{ number_format($row['balance'], 2) }}
                             </td>
                             <td class="p-3 text-center font-mono tabular-nums text-gray-500">
-                                {{ $exchangeRates[(int) $targetCurrencyId] ?? 1 }}
+                                <input type="number" step="0.00001"
+                                    wire:change="updateCustomRate('delegates', {{ $i }}, $event.target.value)"
+                                    value="{{ $row['rate'] }}"
+                                    class="w-24 text-center border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1 text-sm font-mono dark:bg-gray-800 focus:ring-primary-500 focus:border-primary-500">
                             </td>
                             <td
                                 class="p-3 text-center font-mono tabular-nums font-bold text-primary-700 dark:text-primary-400 bg-primary-50/30 dark:bg-primary-900/5">
@@ -235,7 +244,10 @@
                                 {{ number_format($row['balance'], 2) }}
                             </td>
                             <td class="p-3 text-center font-mono tabular-nums text-gray-500">
-                                {{ $exchangeRates[(int) $targetCurrencyId] ?? 1 }}
+                                <input type="number" step="0.00001"
+                                    wire:change="updateCustomRate('companies', {{ $i }}, $event.target.value)"
+                                    value="{{ $row['rate'] }}"
+                                    class="w-24 text-center border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1 text-sm font-mono dark:bg-gray-800 focus:ring-primary-500 focus:border-primary-500">
                             </td>
                             <td
                                 class="p-3 text-center font-mono tabular-nums font-bold text-primary-700 dark:text-primary-400 bg-primary-50/30 dark:bg-primary-900/5">

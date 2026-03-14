@@ -9,9 +9,9 @@ return [
         'icon' => 'heroicon-m-building-office-2',
     ],
     'breadcrumbs' => [
-        'index' => ' بالعملات',
-        'create' => 'إضافة معاملة عملة',
-        'edit' => 'تعديل معاملة عملة',
+        'index' => ' التحويلات',
+        'create' => 'إضافة تحويل',
+        'edit' => 'تعديل تحويل',
     ],
     'fields' => [
         'currency' => [
